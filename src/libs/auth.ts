@@ -2,14 +2,12 @@
 import CredentialProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '@auth/prisma-adapter'
-import { PrismaClient } from '@prisma/client'
 import type { NextAuthOptions } from 'next-auth'
-import type { Adapter } from 'next-auth/adapters'
 
-const prisma = new PrismaClient()
+import { prisma } from '@/prisma/prisma'
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as Adapter,
+  adapter: PrismaAdapter(prisma), //PrismaAdapter(prisma) as Adapter,
 
   // ** Configure one or more authentication providers
   // ** Please refer to https://next-auth.js.org/configuration/options#providers for more `providers` options
@@ -105,6 +103,9 @@ export const authOptions: NextAuthOptions = {
      * via `jwt()` callback to make them accessible in the `session()` callback
      */
     async jwt({ token, user }) {
+      console.log('callback')
+      console.log(user)
+
       if (user) {
         /*
          * For adding custom parameters to user in session, we first need to add those parameters

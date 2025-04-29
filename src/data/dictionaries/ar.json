@@ -40,6 +40,7 @@
     "rolesPermissions": "الأدوار والأذونات",
     "roles": "الأدوار",
     "permissions": "أذونات",
+    "medical": "طبي",
     "pages": "الصفحات",
     "userProfile": "ملف تعريفي للمستخدم",
     "accountSettings": "إعدادت الحساب",
@@ -100,6 +101,8 @@
     "menuLevels": "مستويات القائمة",
     "menuLevel2": "مستوى القائمة 2",
     "menuLevel3": "مستوى القائمة 3",
-    "disabledMenu": "قائمة المعوقين"
+    "disabledMenu": "قائمة المعوقين",
+    "patientProfile": "الملف الطبي للمريض",
+    "patientProfileView": "عرض الملف الطبي للمريض"
   }
 }

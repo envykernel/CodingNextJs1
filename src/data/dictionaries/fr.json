@@ -40,6 +40,7 @@
     "rolesPermissions": "Rôles et autorisations",
     "roles": "Les rôles",
     "permissions": "Autorisations",
+    "medical": "Médical",
     "pages": "Pages",
     "userProfile": "Profil de l'utilisateur",
     "accountSettings": "Paramètres du compte",
@@ -100,6 +101,12 @@
     "menuLevels": "Niveaux de menus",
     "menuLevel2": "Niveau menu 2",
     "menuLevel3": "Niveau menu 3",
-    "disabledMenu": "Menu désactivé"
+    "disabledMenu": "Menu désactivé",
+    "patientProfile": "Profil du patient",
+    "patientProfileView": "Vue du profil du patient",
+    "appointments": "Rendez-vous",
+    "appointmentsList": "Liste des rendez-vous",
+    "bookAppointment": "Prendre rendez-vous",
+    "appointmentDetails": "Détails du rendez-vous"
   }
 }

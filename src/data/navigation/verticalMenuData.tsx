@@ -1,11 +1,123 @@
 // Type Imports
 import type { VerticalMenuDataType } from '@/types/menuTypes'
-import type { getDictionary } from '@/utils/getDictionary'
 
-const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>): VerticalMenuDataType[] => [
+type Dictionary = {
+  navigation: {
+    dashboards: string
+    crm: string
+    analytics: string
+    eCommerce: string
+    academy: string
+    logistics: string
+    frontPages: string
+    landing: string
+    pricing: string
+    payment: string
+    checkout: string
+    helpCenter: string
+    appsPages: string
+    apps: string
+    dashboard: string
+    products: string
+    list: string
+    add: string
+    category: string
+    orders: string
+    details: string
+    customers: string
+    manageReviews: string
+    referrals: string
+    settings: string
+    myCourses: string
+    courseDetails: string
+    fleet: string
+    email: string
+    chat: string
+    calendar: string
+    kanban: string
+    invoice: string
+    preview: string
+    edit: string
+    user: string
+    view: string
+    rolesPermissions: string
+    roles: string
+    permissions: string
+    medical: string
+    pages: string
+    userProfile: string
+    accountSettings: string
+    faq: string
+    miscellaneous: string
+    comingSoon: string
+    underMaintenance: string
+    pageNotFound404: string
+    notAuthorized401: string
+    authPages: string
+    login: string
+    loginV1: string
+    loginV2: string
+    register: string
+    registerV1: string
+    registerV2: string
+    registerMultiSteps: string
+    verifyEmail: string
+    verifyEmailV1: string
+    verifyEmailV2: string
+    forgotPassword: string
+    forgotPasswordV1: string
+    forgotPasswordV2: string
+    resetPassword: string
+    resetPasswordV1: string
+    resetPasswordV2: string
+    twoSteps: string
+    twoStepsV1: string
+    twoStepsV2: string
+    wizardExamples: string
+    propertyListing: string
+    createDeal: string
+    dialogExamples: string
+    widgetExamples: string
+    basic: string
+    advanced: string
+    statistics: string
+    actions: string
+    formsAndTables: string
+    formLayouts: string
+    formValidation: string
+    formWizard: string
+    reactTable: string
+    formELements: string
+    muiTables: string
+    chartsMisc: string
+    charts: string
+    recharts: string
+    apex: string
+    foundation: string
+    components: string
+    menuExamples: string
+    raiseSupport: string
+    documentation: string
+    others: string
+    itemWithBadge: string
+    externalLink: string
+    menuLevels: string
+    menuLevel2: string
+    menuLevel3: string
+    disabledMenu: string
+    patientProfile: string
+    patientProfileView: string
+    appointments: string
+    appointmentsList: string
+    bookAppointment: string
+    appointmentDetails: string
+  }
+}
+
+const verticalMenuData = (dictionary: Dictionary): VerticalMenuDataType[] => [
   // This is how you will normally render submenu
   {
-    label: dictionary['navigation'].dashboards,
+    label: dictionary.navigation.dashboards,
     suffix: {
       label: '5',
       color: 'error'
@@ -14,62 +126,85 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
     children: [
       // This is how you will normally render menu item
       {
-        label: dictionary['navigation'].crm,
+        label: dictionary.navigation.crm,
         icon: 'tabler-circle',
         href: '/dashboards/crm'
       },
       {
-        label: dictionary['navigation'].analytics,
+        label: dictionary.navigation.analytics,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
       },
       {
-        label: dictionary['navigation'].eCommerce,
+        label: dictionary.navigation.eCommerce,
         icon: 'tabler-circle',
         href: '/dashboards/ecommerce'
       },
       {
-        label: dictionary['navigation'].academy,
+        label: dictionary.navigation.academy,
         icon: 'tabler-circle',
         href: '/dashboards/academy'
       },
       {
-        label: dictionary['navigation'].logistics,
+        label: dictionary.navigation.logistics,
         icon: 'tabler-circle',
         href: '/dashboards/logistics'
       }
     ]
   },
   {
-    label: dictionary['navigation'].frontPages,
+    label: dictionary.navigation.appointments,
+    icon: 'tabler-calendar-event',
+    children: [
+      {
+        label: dictionary.navigation.appointmentsList,
+        icon: 'tabler-list',
+        href: '/pages/appointments/list'
+      },
+      {
+        label: dictionary.navigation.bookAppointment,
+        icon: 'tabler-plus',
+        href: '/pages/appointments/book'
+      },
+      {
+        label: dictionary.navigation.appointmentDetails,
+        icon: 'tabler-file-text',
+        href: '/pages/appointments/details',
+        exactMatch: false,
+        activeUrl: '/pages/appointments'
+      }
+    ]
+  },
+  {
+    label: dictionary.navigation.frontPages,
     icon: 'tabler-files',
     children: [
       {
-        label: dictionary['navigation'].landing,
+        label: dictionary.navigation.landing,
         href: '/front-pages/landing-page',
         target: '_blank',
         excludeLang: true
       },
       {
-        label: dictionary['navigation'].pricing,
+        label: dictionary.navigation.pricing,
         href: '/front-pages/pricing',
         target: '_blank',
         excludeLang: true
       },
       {
-        label: dictionary['navigation'].payment,
+        label: dictionary.navigation.payment,
         href: '/front-pages/payment',
         target: '_blank',
         excludeLang: true
       },
       {
-        label: dictionary['navigation'].checkout,
+        label: dictionary.navigation.checkout,
         href: '/front-pages/checkout',
         target: '_blank',
         excludeLang: true
       },
       {
-        label: dictionary['navigation'].helpCenter,
+        label: dictionary.navigation.helpCenter,
         href: '/front-pages/help-center',
         target: '_blank',
         excludeLang: true
@@ -79,43 +214,43 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
 
   // This is how you will normally render menu section
   {
-    label: dictionary['navigation'].appsPages,
+    label: dictionary.navigation.appsPages,
     isSection: true,
     children: [
       {
-        label: dictionary['navigation'].eCommerce,
+        label: dictionary.navigation.eCommerce,
         icon: 'tabler-shopping-cart',
         children: [
           {
-            label: dictionary['navigation'].dashboard,
+            label: dictionary.navigation.dashboard,
             href: '/apps/ecommerce/dashboard'
           },
           {
-            label: dictionary['navigation'].products,
+            label: dictionary.navigation.products,
             children: [
               {
-                label: dictionary['navigation'].list,
+                label: dictionary.navigation.list,
                 href: '/apps/ecommerce/products/list'
               },
               {
-                label: dictionary['navigation'].add,
+                label: dictionary.navigation.add,
                 href: '/apps/ecommerce/products/add'
               },
               {
-                label: dictionary['navigation'].category,
+                label: dictionary.navigation.category,
                 href: '/apps/ecommerce/products/category'
               }
             ]
           },
           {
-            label: dictionary['navigation'].orders,
+            label: dictionary.navigation.orders,
             children: [
               {
-                label: dictionary['navigation'].list,
+                label: dictionary.navigation.list,
                 href: '/apps/ecommerce/orders/list'
               },
               {
-                label: dictionary['navigation'].details,
+                label: dictionary.navigation.details,
                 href: '/apps/ecommerce/orders/details/5434',
                 exactMatch: false,
                 activeUrl: '/apps/ecommerce/orders/details'
@@ -123,14 +258,14 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
             ]
           },
           {
-            label: dictionary['navigation'].customers,
+            label: dictionary.navigation.customers,
             children: [
               {
-                label: dictionary['navigation'].list,
+                label: dictionary.navigation.list,
                 href: '/apps/ecommerce/customers/list'
               },
               {
-                label: dictionary['navigation'].details,
+                label: dictionary.navigation.details,
                 href: '/apps/ecommerce/customers/details/879861',
                 exactMatch: false,
                 activeUrl: '/apps/ecommerce/customers/details'
@@ -138,183 +273,188 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
             ]
           },
           {
-            label: dictionary['navigation'].manageReviews,
+            label: dictionary.navigation.manageReviews,
             href: '/apps/ecommerce/manage-reviews'
           },
           {
-            label: dictionary['navigation'].referrals,
+            label: dictionary.navigation.referrals,
             href: '/apps/ecommerce/referrals'
           },
           {
-            label: dictionary['navigation'].settings,
+            label: dictionary.navigation.settings,
             href: '/apps/ecommerce/settings'
           }
         ]
       },
       {
-        label: dictionary['navigation'].academy,
+        label: dictionary.navigation.academy,
         icon: 'tabler-school',
         children: [
           {
-            label: dictionary['navigation'].dashboard,
+            label: dictionary.navigation.dashboard,
             href: '/apps/academy/dashboard'
           },
           {
-            label: dictionary['navigation'].myCourses,
+            label: dictionary.navigation.myCourses,
             href: '/apps/academy/my-courses'
           },
           {
-            label: dictionary['navigation'].courseDetails,
+            label: dictionary.navigation.courseDetails,
             href: '/apps/academy/course-details'
           }
         ]
       },
       {
-        label: dictionary['navigation'].logistics,
+        label: dictionary.navigation.logistics,
         icon: 'tabler-truck',
         children: [
           {
-            label: dictionary['navigation'].dashboard,
+            label: dictionary.navigation.dashboard,
             href: '/apps/logistics/dashboard'
           },
           {
-            label: dictionary['navigation'].fleet,
+            label: dictionary.navigation.fleet,
             href: '/apps/logistics/fleet'
           }
         ]
       },
       {
-        label: dictionary['navigation'].email,
+        label: dictionary.navigation.email,
         icon: 'tabler-mail',
         href: '/apps/email',
         exactMatch: false,
         activeUrl: '/apps/email'
       },
       {
-        label: dictionary['navigation'].chat,
+        label: dictionary.navigation.chat,
         icon: 'tabler-message-circle-2',
         href: '/apps/chat'
       },
       {
-        label: dictionary['navigation'].calendar,
+        label: dictionary.navigation.calendar,
         icon: 'tabler-calendar',
         href: '/apps/calendar'
       },
       {
-        label: dictionary['navigation'].kanban,
+        label: dictionary.navigation.kanban,
         icon: 'tabler-copy',
         href: '/apps/kanban'
       },
       {
-        label: dictionary['navigation'].invoice,
+        label: dictionary.navigation.invoice,
         icon: 'tabler-file-description',
         children: [
           {
-            label: dictionary['navigation'].list,
+            label: dictionary.navigation.list,
             icon: 'tabler-circle',
             href: '/apps/invoice/list'
           },
           {
-            label: dictionary['navigation'].preview,
+            label: dictionary.navigation.preview,
             icon: 'tabler-circle',
             href: '/apps/invoice/preview/4987',
             exactMatch: false,
             activeUrl: '/apps/invoice/preview'
           },
           {
-            label: dictionary['navigation'].edit,
+            label: dictionary.navigation.edit,
             icon: 'tabler-circle',
             href: '/apps/invoice/edit/4987',
             exactMatch: false,
             activeUrl: '/apps/invoice/edit'
           },
           {
-            label: dictionary['navigation'].add,
+            label: dictionary.navigation.add,
             icon: 'tabler-circle',
             href: '/apps/invoice/add'
           }
         ]
       },
       {
-        label: dictionary['navigation'].user,
+        label: dictionary.navigation.user,
         icon: 'tabler-user',
         children: [
           {
-            label: dictionary['navigation'].list,
+            label: dictionary.navigation.list,
             icon: 'tabler-circle',
             href: '/apps/user/list'
           },
           {
-            label: dictionary['navigation'].view,
+            label: dictionary.navigation.view,
             icon: 'tabler-circle',
             href: '/apps/user/view'
           }
         ]
       },
       {
-        label: dictionary['navigation'].rolesPermissions,
+        label: dictionary.navigation.rolesPermissions,
         icon: 'tabler-lock',
         children: [
           {
-            label: dictionary['navigation'].roles,
+            label: dictionary.navigation.roles,
             icon: 'tabler-circle',
             href: '/apps/roles'
           },
           {
-            label: dictionary['navigation'].permissions,
+            label: dictionary.navigation.permissions,
             icon: 'tabler-circle',
             href: '/apps/permissions'
           }
         ]
       },
       {
-        label: dictionary['navigation'].pages,
+        label: dictionary.navigation.pages,
         icon: 'tabler-file',
         children: [
           {
-            label: dictionary['navigation'].userProfile,
+            label: dictionary.navigation.userProfile,
             icon: 'tabler-circle',
             href: '/pages/user-profile'
           },
           {
-            label: dictionary['navigation'].accountSettings,
+            label: dictionary.navigation.accountSettings,
             icon: 'tabler-circle',
             href: '/pages/account-settings'
           },
           {
-            label: dictionary['navigation'].faq,
+            label: dictionary.navigation.faq,
             icon: 'tabler-circle',
             href: '/pages/faq'
           },
           {
-            label: dictionary['navigation'].pricing,
+            label: dictionary.navigation.pricing,
             icon: 'tabler-circle',
             href: '/pages/pricing'
           },
           {
-            label: dictionary['navigation'].miscellaneous,
+            label: 'Patient Profile',
+            icon: 'tabler-circle',
+            href: '/pages/patient/profile'
+          },
+          {
+            label: dictionary.navigation.miscellaneous,
             icon: 'tabler-circle',
             children: [
               {
-                label: dictionary['navigation'].comingSoon,
+                label: dictionary.navigation.comingSoon,
                 icon: 'tabler-circle',
                 href: '/pages/misc/coming-soon',
                 target: '_blank'
               },
               {
-                label: dictionary['navigation'].underMaintenance,
+                label: dictionary.navigation.underMaintenance,
                 icon: 'tabler-circle',
                 href: '/pages/misc/under-maintenance',
                 target: '_blank'
               },
               {
-                label: dictionary['navigation'].pageNotFound404,
+                label: dictionary.navigation.pageNotFound404,
                 icon: 'tabler-circle',
                 href: '/pages/misc/404-not-found',
                 target: '_blank'
               },
               {
-                label: dictionary['navigation'].notAuthorized401,
+                label: dictionary.navigation.notAuthorized401,
                 icon: 'tabler-circle',
                 href: '/pages/misc/401-not-authorized',
                 target: '_blank'
@@ -324,21 +464,21 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
         ]
       },
       {
-        label: dictionary['navigation'].authPages,
+        label: dictionary.navigation.authPages,
         icon: 'tabler-shield-lock',
         children: [
           {
-            label: dictionary['navigation'].login,
+            label: dictionary.navigation.login,
             icon: 'tabler-circle',
             children: [
               {
-                label: dictionary['navigation'].loginV1,
+                label: dictionary.navigation.loginV1,
                 icon: 'tabler-circle',
                 href: '/pages/auth/login-v1',
                 target: '_blank'
               },
               {
-                label: dictionary['navigation'].loginV2,
+                label: dictionary.navigation.loginV2,
                 icon: 'tabler-circle',
                 href: '/pages/auth/login-v2',
                 target: '_blank'
@@ -346,23 +486,23 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
             ]
           },
           {
-            label: dictionary['navigation'].register,
+            label: dictionary.navigation.register,
             icon: 'tabler-circle',
             children: [
               {
-                label: dictionary['navigation'].registerV1,
+                label: dictionary.navigation.registerV1,
                 icon: 'tabler-circle',
                 href: '/pages/auth/register-v1',
                 target: '_blank'
               },
               {
-                label: dictionary['navigation'].registerV2,
+                label: dictionary.navigation.registerV2,
                 icon: 'tabler-circle',
                 href: '/pages/auth/register-v2',
                 target: '_blank'
               },
               {
-                label: dictionary['navigation'].registerMultiSteps,
+                label: dictionary.navigation.registerMultiSteps,
                 icon: 'tabler-circle',
                 href: '/pages/auth/register-multi-steps',
                 target: '_blank'
@@ -370,17 +510,17 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
             ]
           },
           {
-            label: dictionary['navigation'].verifyEmail,
+            label: dictionary.navigation.verifyEmail,
             icon: 'tabler-circle',
             children: [
               {
-                label: dictionary['navigation'].verifyEmailV1,
+                label: dictionary.navigation.verifyEmailV1,
                 icon: 'tabler-circle',
                 href: '/pages/auth/verify-email-v1',
                 target: '_blank'
               },
               {
-                label: dictionary['navigation'].verifyEmailV2,
+                label: dictionary.navigation.verifyEmailV2,
                 icon: 'tabler-circle',
                 href: '/pages/auth/verify-email-v2',
                 target: '_blank'
@@ -388,17 +528,17 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
             ]
           },
           {
-            label: dictionary['navigation'].forgotPassword,
+            label: dictionary.navigation.forgotPassword,
             icon: 'tabler-circle',
             children: [
               {
-                label: dictionary['navigation'].forgotPasswordV1,
+                label: dictionary.navigation.forgotPasswordV1,
                 icon: 'tabler-circle',
                 href: '/pages/auth/forgot-password-v1',
                 target: '_blank'
               },
               {
-                label: dictionary['navigation'].forgotPasswordV2,
+                label: dictionary.navigation.forgotPasswordV2,
                 icon: 'tabler-circle',
                 href: '/pages/auth/forgot-password-v2',
                 target: '_blank'
@@ -406,17 +546,17 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
             ]
           },
           {
-            label: dictionary['navigation'].resetPassword,
+            label: dictionary.navigation.resetPassword,
             icon: 'tabler-circle',
             children: [
               {
-                label: dictionary['navigation'].resetPasswordV1,
+                label: dictionary.navigation.resetPasswordV1,
                 icon: 'tabler-circle',
                 href: '/pages/auth/reset-password-v1',
                 target: '_blank'
               },
               {
-                label: dictionary['navigation'].resetPasswordV2,
+                label: dictionary.navigation.resetPasswordV2,
                 icon: 'tabler-circle',
                 href: '/pages/auth/reset-password-v2',
                 target: '_blank'
@@ -424,17 +564,17 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
             ]
           },
           {
-            label: dictionary['navigation'].twoSteps,
+            label: dictionary.navigation.twoSteps,
             icon: 'tabler-circle',
             children: [
               {
-                label: dictionary['navigation'].twoStepsV1,
+                label: dictionary.navigation.twoStepsV1,
                 icon: 'tabler-circle',
                 href: '/pages/auth/two-steps-v1',
                 target: '_blank'
               },
               {
-                label: dictionary['navigation'].twoStepsV2,
+                label: dictionary.navigation.twoStepsV2,
                 icon: 'tabler-circle',
                 href: '/pages/auth/two-steps-v2',
                 target: '_blank'
@@ -444,56 +584,56 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
         ]
       },
       {
-        label: dictionary['navigation'].wizardExamples,
+        label: dictionary.navigation.wizardExamples,
         icon: 'tabler-dots',
         children: [
           {
-            label: dictionary['navigation'].checkout,
+            label: dictionary.navigation.checkout,
             icon: 'tabler-circle',
             href: '/pages/wizard-examples/checkout'
           },
           {
-            label: dictionary['navigation'].propertyListing,
+            label: dictionary.navigation.propertyListing,
             icon: 'tabler-circle',
             href: '/pages/wizard-examples/property-listing'
           },
           {
-            label: dictionary['navigation'].createDeal,
+            label: dictionary.navigation.createDeal,
             icon: 'tabler-circle',
             href: '/pages/wizard-examples/create-deal'
           }
         ]
       },
       {
-        label: dictionary['navigation'].dialogExamples,
+        label: dictionary.navigation.dialogExamples,
         icon: 'tabler-square',
         href: '/pages/dialog-examples'
       },
       {
-        label: dictionary['navigation'].widgetExamples,
+        label: dictionary.navigation.widgetExamples,
         icon: 'tabler-chart-bar',
         children: [
           {
-            label: dictionary['navigation'].basic,
+            label: dictionary.navigation.basic,
             href: '/pages/widget-examples/basic'
           },
           {
-            label: dictionary['navigation'].advanced,
+            label: dictionary.navigation.advanced,
             icon: 'tabler-circle',
             href: '/pages/widget-examples/advanced'
           },
           {
-            label: dictionary['navigation'].statistics,
+            label: dictionary.navigation.statistics,
             icon: 'tabler-circle',
             href: '/pages/widget-examples/statistics'
           },
           {
-            label: dictionary['navigation'].charts,
+            label: dictionary.navigation.charts,
             icon: 'tabler-circle',
             href: '/pages/widget-examples/charts'
           },
           {
-            label: dictionary['navigation'].actions,
+            label: dictionary.navigation.actions,
             href: '/pages/widget-examples/actions'
           }
         ]
@@ -501,38 +641,38 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
     ]
   },
   {
-    label: dictionary['navigation'].formsAndTables,
+    label: dictionary.navigation.formsAndTables,
     isSection: true,
     children: [
       {
-        label: dictionary['navigation'].formLayouts,
+        label: dictionary.navigation.formLayouts,
         icon: 'tabler-layout',
         href: '/forms/form-layouts'
       },
       {
-        label: dictionary['navigation'].formValidation,
+        label: dictionary.navigation.formValidation,
         icon: 'tabler-checkup-list',
         href: '/forms/form-validation'
       },
       {
-        label: dictionary['navigation'].formWizard,
+        label: dictionary.navigation.formWizard,
         icon: 'tabler-git-merge',
         href: '/forms/form-wizard'
       },
       {
-        label: dictionary['navigation'].reactTable,
+        label: dictionary.navigation.reactTable,
         icon: 'tabler-table',
         href: '/react-table'
       },
       {
-        label: dictionary['navigation'].formELements,
+        label: dictionary.navigation.formELements,
         icon: 'tabler-checkbox',
         suffix: <i className='tabler-external-link text-xl' />,
         href: `${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/form-elements`,
         target: '_blank'
       },
       {
-        label: dictionary['navigation'].muiTables,
+        label: dictionary.navigation.muiTables,
         icon: 'tabler-layout-board-split',
         href: `${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/mui-table`,
         suffix: <i className='tabler-external-link text-xl' />,
@@ -541,20 +681,20 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
     ]
   },
   {
-    label: dictionary['navigation'].chartsMisc,
+    label: dictionary.navigation.chartsMisc,
     isSection: true,
     children: [
       {
-        label: dictionary['navigation'].charts,
+        label: dictionary.navigation.charts,
         icon: 'tabler-chart-donut-2',
         children: [
           {
-            label: dictionary['navigation'].apex,
+            label: dictionary.navigation.apex,
             icon: 'tabler-circle',
             href: '/charts/apex-charts'
           },
           {
-            label: dictionary['navigation'].recharts,
+            label: dictionary.navigation.recharts,
             icon: 'tabler-circle',
             href: '/charts/recharts'
           }
@@ -562,42 +702,42 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
       },
 
       {
-        label: dictionary['navigation'].foundation,
+        label: dictionary.navigation.foundation,
         icon: 'tabler-cards',
         href: `${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/foundation`,
         suffix: <i className='tabler-external-link text-xl' />,
         target: '_blank'
       },
       {
-        label: dictionary['navigation'].components,
+        label: dictionary.navigation.components,
         icon: 'tabler-atom',
         href: `${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/components`,
         suffix: <i className='tabler-external-link text-xl' />,
         target: '_blank'
       },
       {
-        label: dictionary['navigation'].menuExamples,
+        label: dictionary.navigation.menuExamples,
         icon: 'tabler-list-search',
         href: `${process.env.NEXT_PUBLIC_DOCS_URL}/docs/menu-examples/overview`,
         suffix: <i className='tabler-external-link text-xl' />,
         target: '_blank'
       },
       {
-        label: dictionary['navigation'].raiseSupport,
+        label: dictionary.navigation.raiseSupport,
         icon: 'tabler-lifebuoy',
         suffix: <i className='tabler-external-link text-xl' />,
         target: '_blank',
         href: 'https://pixinvent.ticksy.com'
       },
       {
-        label: dictionary['navigation'].documentation,
+        label: dictionary.navigation.documentation,
         icon: 'tabler-book-2',
         suffix: <i className='tabler-external-link text-xl' />,
         target: '_blank',
         href: `${process.env.NEXT_PUBLIC_DOCS_URL}`
       },
       {
-        label: dictionary['navigation'].others,
+        label: dictionary.navigation.others,
         icon: 'tabler-menu-2',
         children: [
           {
@@ -605,34 +745,34 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
               label: 'New',
               color: 'info'
             },
-            label: dictionary['navigation'].itemWithBadge,
+            label: dictionary.navigation.itemWithBadge,
             icon: 'tabler-circle'
           },
           {
-            label: dictionary['navigation'].externalLink,
+            label: dictionary.navigation.externalLink,
             icon: 'tabler-circle',
             href: 'https://pixinvent.com',
             target: '_blank',
             suffix: <i className='tabler-external-link text-xl' />
           },
           {
-            label: dictionary['navigation'].menuLevels,
+            label: dictionary.navigation.menuLevels,
             icon: 'tabler-circle',
             children: [
               {
-                label: dictionary['navigation'].menuLevel2,
+                label: dictionary.navigation.menuLevel2,
                 icon: 'tabler-circle'
               },
               {
-                label: dictionary['navigation'].menuLevel2,
+                label: dictionary.navigation.menuLevel2,
                 icon: 'tabler-circle',
                 children: [
                   {
-                    label: dictionary['navigation'].menuLevel3,
+                    label: dictionary.navigation.menuLevel3,
                     icon: 'tabler-circle'
                   },
                   {
-                    label: dictionary['navigation'].menuLevel3,
+                    label: dictionary.navigation.menuLevel3,
                     icon: 'tabler-circle'
                   }
                 ]
@@ -640,7 +780,7 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
             ]
           },
           {
-            label: dictionary['navigation'].disabledMenu,
+            label: dictionary.navigation.disabledMenu,
             disabled: true
           }
         ]
