@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+When adding a new page to the sidebar menu, always update the following files: VerticalMenu.tsx, horizontalMenuData.tsx, verticalMenuData.tsx, en.json, fr.json, ar.json. Also update any other files required to ensure the new menu item appears correctly in all layouts and languages.

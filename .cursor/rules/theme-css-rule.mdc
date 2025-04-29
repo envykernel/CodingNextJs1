@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Use only Tailwind CSS and MUI (@mui/material) for all styling. Do not install or use any additional CSS, UI, or component libraries (e.g., Bootstrap, Chakra UI, Ant Design). Always prefer reusing or extending existing styles and components from the current project template.

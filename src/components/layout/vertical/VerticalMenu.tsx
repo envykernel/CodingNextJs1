@@ -201,6 +201,19 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
               {dictionary['navigation'].patientProfileView}
             </MenuItem>
           </SubMenu>
+          <SubMenu label={dictionary['navigation'].appointments} icon={<i className='tabler-calendar-event' />}>
+            <MenuItem href={`/${locale}/pages/appointments/list`}>{dictionary['navigation'].appointmentsList}</MenuItem>
+            <MenuItem href={`/${locale}/pages/appointments/book`}>{dictionary['navigation'].bookAppointment}</MenuItem>
+            <MenuItem href={`/${locale}/pages/appointments/details`}>
+              {dictionary['navigation'].appointmentDetails}
+            </MenuItem>
+          </SubMenu>
+          <SubMenu label={dictionary['navigation'].prescriptions} icon={<i className='tabler-prescription' />}>
+            <MenuItem href={`/${locale}/apps/prescriptions/list`}>{dictionary['navigation'].allPrescriptions}</MenuItem>
+            <MenuItem href={`/${locale}/apps/prescriptions/create`}>
+              {dictionary['navigation'].createPrescription}
+            </MenuItem>
+          </SubMenu>
           <SubMenu label={dictionary['navigation'].pages} icon={<i className='tabler-file' />}>
             <MenuItem href={`/${locale}/pages/user-profile`}>{dictionary['navigation'].userProfile}</MenuItem>
             <MenuItem href={`/${locale}/pages/account-settings`}>{dictionary['navigation'].accountSettings}</MenuItem>

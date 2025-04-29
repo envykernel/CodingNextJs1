@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+When creating any UI elements such as forms, labels, buttons, messages, or titles, ensure they support multiple languages. All user-facing text must be added to the translation files: en.json, fr.json, and ar.json. Do not hardcode any display text in components.

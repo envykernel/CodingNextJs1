@@ -111,6 +111,9 @@ type Dictionary = {
     appointmentsList: string
     bookAppointment: string
     appointmentDetails: string
+    prescriptions: string
+    allPrescriptions: string
+    createPrescription: string
   }
 }
 
@@ -172,6 +175,22 @@ const verticalMenuData = (dictionary: Dictionary): VerticalMenuDataType[] => [
         href: '/pages/appointments/details',
         exactMatch: false,
         activeUrl: '/pages/appointments'
+      }
+    ]
+  },
+  {
+    label: dictionary.navigation.prescriptions,
+    icon: 'tabler-prescription',
+    children: [
+      {
+        label: dictionary.navigation.allPrescriptions,
+        icon: 'tabler-list',
+        href: '/apps/prescriptions/list'
+      },
+      {
+        label: dictionary.navigation.createPrescription,
+        icon: 'tabler-plus',
+        href: '/apps/prescriptions/create'
       }
     ]
   },
@@ -635,6 +654,36 @@ const verticalMenuData = (dictionary: Dictionary): VerticalMenuDataType[] => [
           {
             label: dictionary.navigation.actions,
             href: '/pages/widget-examples/actions'
+          }
+        ]
+      },
+      {
+        label: dictionary.navigation.medical,
+        icon: 'tabler-stethoscope',
+        children: [
+          {
+            label: dictionary.navigation.patientProfile,
+            href: '/pages/patient/profile'
+          },
+          {
+            label: dictionary.navigation.patientProfileView,
+            href: '/pages/medical/patient-profile'
+          }
+        ]
+      },
+      {
+        label: dictionary.navigation.prescriptions,
+        icon: 'tabler-prescription',
+        children: [
+          {
+            label: dictionary.navigation.allPrescriptions,
+            icon: 'tabler-list',
+            href: '/apps/prescriptions/list'
+          },
+          {
+            label: dictionary.navigation.createPrescription,
+            icon: 'tabler-plus',
+            href: '/apps/prescriptions/create'
           }
         ]
       }
