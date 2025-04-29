@@ -1,6 +1,7 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
 
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -44,7 +45,8 @@ export default function PrescriptionForm({
   submitButtonText,
   title
 }: PrescriptionFormProps) {
-  const router = useRouter()
+  const params = useParams()
+  const { lang: locale } = params
 
   const {
     control,
@@ -109,9 +111,11 @@ export default function PrescriptionForm({
       <CardHeader
         title={title}
         action={
-          <Button variant='outlined' color='secondary' onClick={() => router.push('/apps/prescriptions/list')}>
-            {dictionary?.navigation?.cancel}
-          </Button>
+          <Link href={`/${locale}/apps/prescriptions/list`} passHref>
+            <Button variant='outlined' color='secondary'>
+              {dictionary?.navigation?.cancel}
+            </Button>
+          </Link>
         }
       />
       <CardContent>
@@ -184,9 +188,11 @@ export default function PrescriptionForm({
 
             <Grid item xs={12}>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                <Button variant='outlined' color='secondary' onClick={() => router.push('/apps/prescriptions/list')}>
-                  {dictionary?.navigation?.cancel}
-                </Button>
+                <Link href={`/${locale}/apps/prescriptions/list`} passHref>
+                  <Button variant='outlined' color='secondary'>
+                    {dictionary?.navigation?.cancel}
+                  </Button>
+                </Link>
                 <Button type='submit' variant='contained' color='primary'>
                   {submitButtonText}
                 </Button>

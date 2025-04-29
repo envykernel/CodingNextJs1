@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
+
 import { Card, CardContent, CardHeader, Typography, Button, Grid, Box } from '@mui/material'
 
 // Mock data for a single prescription
@@ -20,6 +23,8 @@ const mockPrescription = {
 
 export default function ViewPrescriptionClient({ dictionary }: { dictionary: any }) {
   const [prescription] = useState(mockPrescription)
+  const params = useParams()
+  const { lang: locale } = params
 
   const handlePrint = () => {
     window.print()
@@ -30,9 +35,16 @@ export default function ViewPrescriptionClient({ dictionary }: { dictionary: any
       <CardHeader
         title={dictionary?.navigation?.prescriptionDetails}
         action={
-          <Button variant='contained' color='primary' onClick={handlePrint}>
-            {dictionary?.navigation?.printPrescription}
-          </Button>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Link href={`/${locale}/apps/prescriptions/list`} passHref>
+              <Button variant='outlined' color='secondary'>
+                {dictionary?.navigation?.cancel}
+              </Button>
+            </Link>
+            <Button variant='contained' color='primary' onClick={handlePrint}>
+              {dictionary?.navigation?.printPrescription}
+            </Button>
+          </Box>
         }
       />
       <CardContent>
