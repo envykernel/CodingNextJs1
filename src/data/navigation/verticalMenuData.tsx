@@ -663,12 +663,8 @@ const verticalMenuData = (dictionary: Dictionary): VerticalMenuDataType[] => [
         icon: 'tabler-users',
         children: [
           {
-            label: dictionary.navigation.patientProfile,
-            href: '/pages/patient/profile'
-          },
-          {
-            label: dictionary.navigation.patientProfileView,
-            href: '/pages/patient/patient-profile'
+            label: dictionary.navigation.list,
+            href: '/apps/patient/list'
           }
         ]
       },

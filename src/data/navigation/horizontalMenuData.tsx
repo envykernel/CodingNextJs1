@@ -238,6 +238,16 @@ const horizontalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>
             href: '/apps/prescriptions/create'
           }
         ]
+      },
+      {
+        label: dictionary['navigation'].patients,
+        icon: 'tabler-users',
+        children: [
+          {
+            label: dictionary['navigation'].list,
+            href: '/apps/patient/list'
+          }
+        ]
       }
     ]
   },

@@ -196,10 +196,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
             <MenuItem href={`/${locale}/apps/permissions`}>{dictionary['navigation'].permissions}</MenuItem>
           </SubMenu>
           <SubMenu label={dictionary['navigation'].patients} icon={<i className='tabler-users' />}>
-            <MenuItem href={`/${locale}/pages/patient/profile`}>{dictionary['navigation'].patientProfile}</MenuItem>
-            <MenuItem href={`/${locale}/pages/patient/patient-profile`}>
-              {dictionary['navigation'].patientProfileView}
-            </MenuItem>
+            <MenuItem href={`/${locale}/apps/patient/list`}>{dictionary['navigation'].list}</MenuItem>
           </SubMenu>
           <SubMenu label={dictionary['navigation'].appointments} icon={<i className='tabler-calendar-event' />}>
             <MenuItem href={`/${locale}/pages/appointments/list`}>{dictionary['navigation'].appointmentsList}</MenuItem>
