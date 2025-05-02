@@ -5,7 +5,7 @@ import { useEffect, useState, useMemo } from 'react'
 
 // Next Imports
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 // MUI Imports
 import Card from '@mui/material/Card'
@@ -45,7 +45,6 @@ import type { Locale } from '@configs/i18n'
 import PatientTableFilters from './PatientTableFilters'
 import AddPatientDrawer from './AddPatientDrawer'
 import OptionMenu from '@core/components/option-menu'
-import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomAvatar from '@core/components/mui/Avatar'
 
@@ -69,14 +68,25 @@ declare module '@tanstack/table-core' {
 export type PatientType = {
   id: number
   name: string
-  medicalRecordNumber: string
   age: number
   gender: string
-  diagnosis: string
-  doctor: string
-  admissionDate: string
-  status: string
+  doctor?: string
+  status?: string
   avatar?: string
+  address?: string
+  city?: string
+  phone_number?: string
+  email?: string
+  emergency_contact_name?: string
+  emergency_contact_phone?: string
+  emergency_contact_email?: string
+  created_at?: Date
+  updated_at?: Date
+
+  // Optionally add related arrays if you want to use them in the table
+  // patient_measurements?: any[]
+  // patient_medical?: any[]
+  // patient_medical_history?: any[]
 }
 
 type PatientTypeWithAction = PatientType & { action?: string }
@@ -128,13 +138,21 @@ const patientStatusObj: { [key: string]: ThemeColor } = {
   admitted: 'success',
   discharged: 'secondary',
   critical: 'error',
-  underObservation: 'warning'
+  underObservation: 'warning',
+  unknown: 'secondary' // default color
 }
 
 // Column Definitions
 const columnHelper = createColumnHelper<PatientTypeWithAction>()
 
-const PatientListTable = ({ tableData }: { tableData?: PatientType[] }) => {
+type PatientListTableProps = {
+  tableData?: PatientType[]
+  page?: number
+  pageSize?: number
+  total?: number
+}
+
+const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: PatientListTableProps) => {
   // States
   const [addPatientOpen, setAddPatientOpen] = useState(false)
   const [rowSelection, setRowSelection] = useState({})
@@ -145,24 +163,18 @@ const PatientListTable = ({ tableData }: { tableData?: PatientType[] }) => {
       {
         id: 1,
         name: 'John Doe',
-        medicalRecordNumber: 'MRN123456',
         age: 45,
         gender: 'Male',
-        diagnosis: 'Hypertension',
         doctor: 'Dr. Smith',
-        admissionDate: '2024-06-01',
         status: 'admitted',
         avatar: ''
       },
       {
         id: 2,
         name: 'Jane Smith',
-        medicalRecordNumber: 'MRN654321',
         age: 60,
         gender: 'Female',
-        diagnosis: 'Diabetes',
         doctor: 'Dr. Brown',
-        admissionDate: '2024-05-28',
         status: 'underObservation',
         avatar: ''
       }
@@ -172,8 +184,17 @@ const PatientListTable = ({ tableData }: { tableData?: PatientType[] }) => {
   const [filteredData, setFilteredData] = useState(data)
   const [globalFilter, setGlobalFilter] = useState('')
 
+  // Sync data and filteredData with tableData prop
+  useEffect(() => {
+    setData(tableData || [])
+    setFilteredData(tableData || [])
+  }, [tableData])
+
   // Hooks
   const { lang: locale } = useParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   const columns = useMemo<ColumnDef<PatientTypeWithAction, any>[]>(
     () => [
@@ -206,7 +227,7 @@ const PatientListTable = ({ tableData }: { tableData?: PatientType[] }) => {
             {getAvatar({ avatar: row.original.avatar, fullName: row.original.name })}
             <div className='flex flex-col'>
               <Typography color='text.primary' className='font-medium'>
-                {row.original.name}
+                {row.original.name || '-'}
               </Typography>
             </div>
           </div>
@@ -214,20 +235,20 @@ const PatientListTable = ({ tableData }: { tableData?: PatientType[] }) => {
       }),
       columnHelper.accessor('age', {
         header: 'Age',
-        cell: ({ row }) => <Typography>{row.original.age}</Typography>
+        cell: ({ row }) => <Typography>{row.original.age || '-'}</Typography>
       }),
       columnHelper.accessor('gender', {
         header: 'Gender',
-        cell: ({ row }) => <Typography>{row.original.gender}</Typography>
+        cell: ({ row }) => <Typography>{row.original.gender || '-'}</Typography>
       }),
       columnHelper.accessor('status', {
         header: 'Status',
         cell: ({ row }) => (
           <Chip
             variant='tonal'
-            label={row.original.status}
+            label={row.original.status || '-'}
             size='small'
-            color={patientStatusObj[row.original.status] || 'secondary'}
+            color={patientStatusObj[String(row.original.status || 'unknown')]}
             className='capitalize'
           />
         )
@@ -316,8 +337,14 @@ const PatientListTable = ({ tableData }: { tableData?: PatientType[] }) => {
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
+            value={pageSize}
+            onChange={e => {
+              const params = new URLSearchParams(searchParams.toString())
+
+              params.set('pageSize', e.target.value)
+              params.set('page', '1') // reset to first page on pageSize change
+              router.push(`${pathname}?${params.toString()}`)
+            }}
             className='max-sm:is-full sm:is-[70px]'
           >
             <MenuItem value='10'>10</MenuItem>
@@ -405,12 +432,22 @@ const PatientListTable = ({ tableData }: { tableData?: PatientType[] }) => {
           </table>
         </div>
         <TablePagination
-          component={() => <TablePaginationComponent table={table} />}
-          count={table.getFilteredRowModel().rows.length}
-          rowsPerPage={table.getState().pagination.pageSize}
-          page={table.getState().pagination.pageIndex}
-          onPageChange={(_, page) => {
-            table.setPageIndex(page)
+          component='div'
+          count={total}
+          rowsPerPage={pageSize}
+          page={page - 1}
+          onPageChange={(_, newPage) => {
+            const params = new URLSearchParams(searchParams.toString())
+
+            params.set('page', (newPage + 1).toString())
+            router.push(`${pathname}?${params.toString()}`)
+          }}
+          onRowsPerPageChange={e => {
+            const params = new URLSearchParams(searchParams.toString())
+
+            params.set('pageSize', e.target.value)
+            params.set('page', '1')
+            router.push(`${pathname}?${params.toString()}`)
           }}
         />
       </Card>

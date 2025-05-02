@@ -2,7 +2,7 @@
 import PatientList from '@views/apps/patient/list'
 
 // Data Imports
-import { getPatientData } from '@/app/server/patientActions'
+import { getPatientList } from '@/app/server/patientActions'
 import { getDictionary } from '@/utils/getDictionary'
 import type { Locale } from '@configs/i18n'
 import { TranslationProvider } from '@/contexts/translationContext'
@@ -25,14 +25,38 @@ import { TranslationProvider } from '@/contexts/translationContext'
   return res.json()
 } */
 
-const PatientListApp = async ({ params }: { params: { lang: Locale } }) => {
-  // Vars
-  const patientData = await getPatientData()
-  const dictionary = await getDictionary(params.lang)
+const PatientListApp = async ({
+  params,
+  searchParams
+}: {
+  params: Promise<{ lang: Locale }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) => {
+  const { lang } = await params
+  const resolvedSearchParams = await searchParams
+
+  // Parse pagination params
+  const page = resolvedSearchParams?.page
+    ? Number(Array.isArray(resolvedSearchParams.page) ? resolvedSearchParams.page[0] : resolvedSearchParams.page)
+    : 1
+
+  const pageSize = resolvedSearchParams?.pageSize
+    ? Number(
+        Array.isArray(resolvedSearchParams.pageSize) ? resolvedSearchParams.pageSize[0] : resolvedSearchParams.pageSize
+      )
+    : 10
+
+  const patientData = await getPatientList({ page, pageSize })
+  const dictionary = await getDictionary(lang)
 
   return (
     <TranslationProvider dictionary={dictionary}>
-      <PatientList patientData={patientData} />
+      <PatientList
+        patientData={patientData.patients}
+        page={patientData.page}
+        pageSize={patientData.pageSize}
+        total={patientData.total}
+      />
     </TranslationProvider>
   )
 }

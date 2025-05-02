@@ -9,14 +9,21 @@ import type { PatientType } from './PatientListTable'
 import PatientListTable from './PatientListTable'
 import PatientListCards from './PatientListCards'
 
-const PatientList = ({ patientData }: { patientData?: PatientType[] }) => {
+type PatientListProps = {
+  patientData?: PatientType[]
+  page?: number
+  pageSize?: number
+  total?: number
+}
+
+const PatientList = ({ patientData, page, pageSize, total }: PatientListProps) => {
   return (
     <Grid container spacing={6}>
       <Grid size={{ xs: 12 }}>
         <PatientListCards />
       </Grid>
       <Grid size={{ xs: 12 }}>
-        <PatientListTable tableData={patientData} />
+        <PatientListTable tableData={patientData} page={page} pageSize={pageSize} total={total} />
       </Grid>
     </Grid>
   )
