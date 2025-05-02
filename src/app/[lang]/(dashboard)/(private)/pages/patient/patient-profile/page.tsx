@@ -1,5 +1,5 @@
 // Component Imports
-import PatientProfileView from '@views/apps/medical/PatientProfileView'
+import PatientProfileView from '@/views/apps/patient/PatientProfileView'
 
 const PatientProfilePage = () => {
   return <PatientProfileView />
