@@ -114,6 +114,7 @@ type Dictionary = {
     prescriptions: string
     allPrescriptions: string
     createPrescription: string
+    patients: string
   }
 }
 
@@ -658,8 +659,8 @@ const verticalMenuData = (dictionary: Dictionary): VerticalMenuDataType[] => [
         ]
       },
       {
-        label: dictionary.navigation.medical,
-        icon: 'tabler-stethoscope',
+        label: dictionary.navigation.patients,
+        icon: 'tabler-users',
         children: [
           {
             label: dictionary.navigation.patientProfile,
@@ -667,7 +668,7 @@ const verticalMenuData = (dictionary: Dictionary): VerticalMenuDataType[] => [
           },
           {
             label: dictionary.navigation.patientProfileView,
-            href: '/pages/medical/patient-profile'
+            href: '/pages/patient/patient-profile'
           }
         ]
       },

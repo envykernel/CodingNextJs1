@@ -131,6 +131,7 @@
     "date": "Date",
     "editPrescription": "Edit Prescription",
     "saveChanges": "Save Changes",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "patients": "Patients"
   }
 }

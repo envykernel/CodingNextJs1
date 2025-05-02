@@ -131,6 +131,7 @@
     "date": "Date",
     "editPrescription": "Modifier l'ordonnance",
     "saveChanges": "Enregistrer les modifications",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "patients": "Patients"
   }
 }

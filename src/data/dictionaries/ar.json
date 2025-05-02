@@ -132,6 +132,7 @@
     "actions": "إجراءات",
     "editPrescription": "تعديل الوصفة الطبية",
     "saveChanges": "حفظ التغييرات",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "patients": "المرضى"
   }
 }
