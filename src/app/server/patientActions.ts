@@ -3,9 +3,25 @@
 // Type Imports
 // (Optional) import type { PatientType } from '@/views/apps/patient/list/PatientListTable'
 
-import { PrismaClient } from '@prisma/client'
+import { z } from 'zod'
 
-const prisma = new PrismaClient()
+import { prisma } from '@/prisma/prisma'
+
+const patientSchema = z.object({
+  name: z.string().min(1),
+  phone_number: z.string().min(1),
+  gender: z.string().min(1),
+  status: z.string().min(1),
+  age: z.coerce.number().min(0, 'required'),
+  doctor: z.string().optional(),
+  avatar: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  email: z.string().optional(),
+  emergency_contact_name: z.string().optional(),
+  emergency_contact_phone: z.string().optional(),
+  emergency_contact_email: z.string().optional()
+})
 
 function decimalToNumber(val: any) {
   if (val === null || val === undefined) return val
@@ -89,5 +105,50 @@ export async function getPatientList({
     page,
     pageSize,
     totalPages: Math.ceil(total / pageSize)
+  }
+}
+
+export async function createPatient(data: any) {
+  const parsed = patientSchema.safeParse(data)
+
+  if (!parsed.success) {
+    return { error: 'Validation failed', details: parsed.error.flatten() }
+  }
+
+  try {
+    const {
+      name,
+      age,
+      gender,
+      status,
+      phone_number,
+      doctor,
+      avatar,
+      address,
+      city,
+      email,
+      emergency_contact_name,
+      emergency_contact_phone,
+      emergency_contact_email
+    } = parsed.data
+
+    const data: any = { name, age, gender, status, phone_number }
+
+    if (doctor !== undefined) data.doctor = doctor
+    if (avatar !== undefined) data.avatar = avatar
+    if (address !== undefined) data.address = address
+    if (city !== undefined) data.city = city
+    if (email !== undefined) data.email = email
+    if (emergency_contact_name !== undefined) data.emergency_contact_name = emergency_contact_name
+    if (emergency_contact_phone !== undefined) data.emergency_contact_phone = emergency_contact_phone
+    if (emergency_contact_email !== undefined) data.emergency_contact_email = emergency_contact_email
+    console.log('Creating patient with data:', data)
+    const patient = await prisma.patient.create({ data })
+
+    return { success: true, patient }
+  } catch (error) {
+    console.error('Prisma error:', error)
+
+    return { error: 'Database error', details: error }
   }
 }

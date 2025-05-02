@@ -93,33 +93,60 @@ const AddUserDrawer = (props: Props) => {
     }
   })
 
-  const onSubmit = (data: FormValidateType) => {
-    const newPatient: PatientType = {
-      id: (patientData?.length && patientData?.length + 1) || 1,
-      name: data.name,
-      age: Number(data.age),
-      gender: data.gender,
-      doctor: data.doctor,
-      status: data.status,
-      avatar: data.avatar,
-      address: data.address,
-      city: data.city,
-      phone_number: data.phone_number,
-      email: data.email,
-      emergency_contact_name: data.emergency_contact_name,
-      emergency_contact_phone: data.emergency_contact_phone,
-      emergency_contact_email: data.emergency_contact_email,
-      created_at: new Date(),
-      updated_at: new Date()
-    }
+  const onSubmit = async (data: FormValidateType) => {
+    try {
+      const res = await fetch('/api/patient', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
 
-    setData([...(patientData ?? []), newPatient])
-    handleClose()
-    resetForm()
+      const result = await res.json()
+
+      if (result && result.success) {
+        if (setData && patientData) {
+          setData([mapNullToUndefined(result.patient), ...patientData])
+        }
+
+        handleClose()
+        resetForm()
+      } else {
+        // TODO: Show error to user (e.g., toast, alert, etc.)
+        // alert(result?.error || 'Failed to save patient')
+        console.error(result)
+      }
+    } catch (error) {
+      console.error('Network or server error:', error)
+    }
   }
 
   const handleReset = () => {
     handleClose()
+  }
+
+  function mapNullToUndefined(patient: any) {
+    const fields = [
+      'doctor',
+      'status',
+      'avatar',
+      'address',
+      'city',
+      'phone_number',
+      'email',
+      'emergency_contact_name',
+      'emergency_contact_phone',
+      'emergency_contact_email',
+      'created_at',
+      'updated_at'
+    ]
+
+    const mapped = { ...patient }
+
+    for (const key of fields) {
+      if (mapped[key] === null) mapped[key] = undefined
+    }
+
+    return mapped
   }
 
   return (
