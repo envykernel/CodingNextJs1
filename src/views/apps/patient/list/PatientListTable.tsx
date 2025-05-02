@@ -47,6 +47,7 @@ import AddPatientDrawer from './AddPatientDrawer'
 import OptionMenu from '@core/components/option-menu'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomAvatar from '@core/components/mui/Avatar'
+import { useTranslation } from '@/contexts/translationContext'
 
 // Util Imports
 import { getInitials } from '@/utils/getInitials'
@@ -135,10 +136,10 @@ const DebouncedInput = ({
 
 // Vars
 const patientStatusObj: { [key: string]: ThemeColor } = {
-  admitted: 'success',
-  discharged: 'secondary',
-  critical: 'error',
-  underObservation: 'warning',
+  enabled: 'success',
+  disabled: 'secondary',
+  blocked: 'error',
+  pending: 'warning',
   unknown: 'secondary' // default color
 }
 
@@ -195,9 +196,10 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const dictionary = useTranslation()
 
-  const columns = useMemo<ColumnDef<PatientTypeWithAction, any>[]>(
-    () => [
+  const columns = useMemo<ColumnDef<PatientTypeWithAction, any>[]>(() => {
+    return [
       {
         id: 'select',
         header: ({ table }) => (
@@ -246,7 +248,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
         cell: ({ row }) => (
           <Chip
             variant='tonal'
-            label={row.original.status || '-'}
+            label={dictionary.form[row.original.status || 'unknown'] || '-'}
             size='small'
             color={patientStatusObj[String(row.original.status || 'unknown')]}
             className='capitalize'
@@ -285,9 +287,8 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
         ),
         enableSorting: false
       })
-    ],
-    [data, filteredData]
-  )
+    ]
+  }, [data, filteredData, dictionary])
 
   const table = useReactTable({
     data: filteredData as PatientType[],
