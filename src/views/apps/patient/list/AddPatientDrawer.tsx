@@ -32,7 +32,7 @@ type Props = {
 
 type FormValidateType = {
   name: string
-  age: number
+  birthdate: string
   gender: string
   doctor?: string
   status?: string
@@ -52,7 +52,7 @@ const patientSchema = z.object({
   phone_number: z.string().min(1, 'required'),
   gender: z.string().min(1, 'required'),
   status: z.string().min(1, 'required'),
-  age: z.coerce.number().optional(),
+  birthdate: z.coerce.date({ required_error: 'required', invalid_type_error: 'required' }),
   doctor: z.string().optional(),
   avatar: z.string().optional(),
   address: z.string().optional(),
@@ -78,7 +78,7 @@ const AddUserDrawer = (props: Props) => {
     resolver: zodResolver(patientSchema),
     defaultValues: {
       name: '',
-      age: 0,
+      birthdate: '',
       gender: '',
       doctor: '',
       status: '',
@@ -187,18 +187,17 @@ const AddUserDrawer = (props: Props) => {
               )}
             />
             <Controller
-              name='age'
+              name='birthdate'
               control={control}
-              rules={{ required: true, min: 0 }}
               render={({ field }) => (
                 <CustomTextField
                   {...field}
-                  type='number'
+                  type='date'
                   fullWidth
-                  label={dictionary.form.age}
-                  placeholder={dictionary.form.agePlaceholder}
-                  error={!!errors.age}
-                  helperText={errors.age ? dictionary.form.required : ''}
+                  label={dictionary.form.birthdate}
+                  InputLabelProps={{ shrink: true }}
+                  error={!!errors.birthdate}
+                  helperText={errors.birthdate ? dictionary.form.required : ''}
                 />
               )}
             />

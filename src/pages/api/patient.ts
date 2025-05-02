@@ -9,7 +9,7 @@ const patientSchema = z.object({
   phone_number: z.string().min(1),
   gender: z.string().min(1),
   status: z.string().min(1),
-  age: z.coerce.number().min(0, 'required'),
+  birthdate: z.string().min(1),
   doctor: z.string().optional(),
   avatar: z.string().optional(),
   address: z.string().optional(),
@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const {
       name,
-      age,
+      birthdate,
       gender,
       status,
       phone_number,
@@ -42,7 +42,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       emergency_contact_phone,
       emergency_contact_email
     } = parsed.data
-    const data: any = { name, age, gender, status, phone_number }
+
+    const data: any = { name, birthdate: new Date(birthdate), gender, status, phone_number }
 
     if (doctor !== undefined) data.doctor = doctor
     if (avatar !== undefined) data.avatar = avatar

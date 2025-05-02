@@ -55,7 +55,7 @@ model VerificationToken {
 model patient {
   id                      Int                       @id @default(autoincrement())
   name                    String                    @db.VarChar(100)
-  age                     Int
+  birthdate               DateTime                  @db.Date
   gender                  String                    @db.VarChar(20)
   doctor                  String?                   @db.VarChar(100)
   status                  String?                   @db.VarChar(50)

@@ -12,7 +12,7 @@ const patientSchema = z.object({
   phone_number: z.string().min(1),
   gender: z.string().min(1),
   status: z.string().min(1),
-  age: z.coerce.number().min(0, 'required'),
+  birthdate: z.string().min(1),
   doctor: z.string().optional(),
   avatar: z.string().optional(),
   address: z.string().optional(),
@@ -91,6 +91,7 @@ export async function getPatientList({
     city: p.city ?? undefined,
     phone_number: p.phone_number ?? undefined,
     email: p.email ?? undefined,
+    birthdate: p.birthdate ?? undefined,
     emergency_contact_name: p.emergency_contact_name ?? undefined,
     emergency_contact_phone: p.emergency_contact_phone ?? undefined,
     emergency_contact_email: p.emergency_contact_email ?? undefined,
@@ -118,7 +119,7 @@ export async function createPatient(data: any) {
   try {
     const {
       name,
-      age,
+      birthdate,
       gender,
       status,
       phone_number,
@@ -132,7 +133,7 @@ export async function createPatient(data: any) {
       emergency_contact_email
     } = parsed.data
 
-    const data: any = { name, age, gender, status, phone_number }
+    const data: any = { name, birthdate: new Date(birthdate), gender, status, phone_number }
 
     if (doctor !== undefined) data.doctor = doctor
     if (avatar !== undefined) data.avatar = avatar

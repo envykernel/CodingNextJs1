@@ -62,9 +62,9 @@ const PatientTableFilters = ({
           <CustomTextField
             fullWidth
             id='filter-name'
-            defaultValue={searchParams.get('name') || ''}
+            defaultValue={searchParams ? searchParams.get('name') || '' : ''}
             onChange={e => {
-              const params = new URLSearchParams(searchParams.toString())
+              const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
 
               if (e.target.value) {
                 params.set('name', e.target.value)

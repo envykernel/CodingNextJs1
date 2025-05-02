@@ -52,6 +52,7 @@ import { useTranslation } from '@/contexts/translationContext'
 // Util Imports
 import { getInitials } from '@/utils/getInitials'
 import { getLocalizedUrl } from '@/utils/i18n'
+import { calculateAge } from '@/utils/date'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
@@ -69,7 +70,7 @@ declare module '@tanstack/table-core' {
 export type PatientType = {
   id: number
   name: string
-  age: number
+  birthdate: string | Date
   gender: string
   doctor?: string
   status?: string
@@ -164,7 +165,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
       {
         id: 1,
         name: 'John Doe',
-        age: 45,
+        birthdate: '1980-01-01',
         gender: 'Male',
         doctor: 'Dr. Smith',
         status: 'admitted',
@@ -173,7 +174,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
       {
         id: 2,
         name: 'Jane Smith',
-        age: 60,
+        birthdate: '1965-05-15',
         gender: 'Female',
         doctor: 'Dr. Brown',
         status: 'underObservation',
@@ -192,7 +193,8 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
   }, [tableData])
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams()
+  const locale = params && 'lang' in params ? (params.lang as string) : 'en'
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -235,9 +237,22 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
           </div>
         )
       }),
-      columnHelper.accessor('age', {
-        header: 'Age',
-        cell: ({ row }) => <Typography>{row.original.age || '-'}</Typography>
+      columnHelper.accessor('birthdate', {
+        header: 'Birthdate',
+        cell: ({ row }) => {
+          const date = row.original.birthdate ? new Date(row.original.birthdate) : null
+
+          return <Typography>{date ? date.toLocaleDateString() : '-'}</Typography>
+        }
+      }),
+      columnHelper.display({
+        id: 'age',
+        header: dictionary.form.age,
+        cell: ({ row }) => {
+          const age = calculateAge(row.original.birthdate)
+
+          return <Typography>{age !== undefined ? age : '-'}</Typography>
+        }
       }),
       columnHelper.accessor('gender', {
         header: 'Gender',
@@ -340,7 +355,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
             select
             value={pageSize}
             onChange={e => {
-              const params = new URLSearchParams(searchParams.toString())
+              const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
 
               params.set('pageSize', e.target.value)
               params.set('page', '1') // reset to first page on pageSize change
@@ -438,13 +453,13 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
           rowsPerPage={pageSize}
           page={page - 1}
           onPageChange={(_, newPage) => {
-            const params = new URLSearchParams(searchParams.toString())
+            const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
 
             params.set('page', (newPage + 1).toString())
             router.push(`${pathname}?${params.toString()}`)
           }}
           onRowsPerPageChange={e => {
-            const params = new URLSearchParams(searchParams.toString())
+            const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
 
             params.set('pageSize', e.target.value)
             params.set('page', '1')
