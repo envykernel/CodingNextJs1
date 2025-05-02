@@ -46,7 +46,14 @@ const PatientListApp = async ({
       )
     : 10
 
-  const patientData = await getPatientList({ page, pageSize })
+  const name = resolvedSearchParams?.name
+    ? Array.isArray(resolvedSearchParams.name)
+      ? resolvedSearchParams.name[0]
+      : resolvedSearchParams.name
+    : undefined
+
+  const patientData = await getPatientList({ page, pageSize, name })
+
   const dictionary = await getDictionary(lang)
 
   return (

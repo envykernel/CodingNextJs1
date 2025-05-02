@@ -1,6 +1,8 @@
 // React Imports
 import { useState, useEffect } from 'react'
 
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+
 // MUI Imports
 import CardContent from '@mui/material/CardContent'
 import Grid from '@mui/material/Grid2'
@@ -21,20 +23,22 @@ const PatientTableFilters = ({
 }) => {
   // States
   const [gender, setGender] = useState('')
-  const [doctor, setDoctor] = useState('')
   const [status, setStatus] = useState('')
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
+    // Only filter by gender and status client-side
     const filteredData = tableData?.filter(patient => {
       if (gender && patient.gender !== gender) return false
-      if (doctor && patient.doctor !== doctor) return false
       if (status && patient.status !== status) return false
 
       return true
     })
 
     setData(filteredData || [])
-  }, [gender, doctor, status, tableData, setData])
+  }, [gender, status, tableData, setData])
 
   return (
     <CardContent>
@@ -57,10 +61,22 @@ const PatientTableFilters = ({
         <Grid size={{ xs: 12, sm: 4 }}>
           <CustomTextField
             fullWidth
-            id='select-doctor'
-            value={doctor}
-            onChange={e => setDoctor(e.target.value)}
-            placeholder='Doctor'
+            id='filter-name'
+            defaultValue={searchParams.get('name') || ''}
+            onChange={e => {
+              const params = new URLSearchParams(searchParams.toString())
+
+              if (e.target.value) {
+                params.set('name', e.target.value)
+                params.set('page', '1') // reset to first page on filter
+              } else {
+                params.delete('name')
+                params.set('page', '1')
+              }
+
+              router.push(`${pathname}?${params.toString()}`)
+            }}
+            placeholder='Patient Name'
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
