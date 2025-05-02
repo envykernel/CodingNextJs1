@@ -154,6 +154,18 @@ type PatientListTableProps = {
   total?: number
 }
 
+function ClientBirthdateCell({ birthdate }: { birthdate: string | Date }) {
+  const [clientDate, setClientDate] = useState('')
+
+  useEffect(() => {
+    if (birthdate) {
+      setClientDate(new Date(birthdate).toLocaleDateString())
+    }
+  }, [birthdate])
+
+  return <Typography>{clientDate || '-'}</Typography>
+}
+
 const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: PatientListTableProps) => {
   // States
   const [addPatientOpen, setAddPatientOpen] = useState(false)
@@ -239,11 +251,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
       }),
       columnHelper.accessor('birthdate', {
         header: 'Birthdate',
-        cell: ({ row }) => {
-          const date = row.original.birthdate ? new Date(row.original.birthdate) : null
-
-          return <Typography>{date ? date.toLocaleDateString() : '-'}</Typography>
-        }
+        cell: ({ row }) => <ClientBirthdateCell birthdate={row.original.birthdate} />
       }),
       columnHelper.display({
         id: 'age',
