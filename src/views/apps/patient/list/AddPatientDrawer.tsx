@@ -12,6 +12,8 @@ import Divider from '@mui/material/Divider'
 // Third-party Imports
 import { useForm, Controller } from 'react-hook-form'
 
+import { useTranslation } from '@/contexts/translationContext'
+
 // Types Imports
 // import type { UsersType } from '@/types/apps/userTypes'
 import type { PatientType } from './PatientListTable'
@@ -51,6 +53,7 @@ const initialData = {
 const AddUserDrawer = (props: Props) => {
   // Props
   const { open, handleClose, patientData, setData } = props
+  const dictionary = useTranslation()
 
   // States
   const [formData, setFormData] = useState<FormNonValidateType>(initialData)
@@ -107,7 +110,7 @@ const AddUserDrawer = (props: Props) => {
       sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 400 } } }}
     >
       <div className='flex items-center justify-between plb-5 pli-6'>
-        <Typography variant='h5'>Add New User</Typography>
+        <Typography variant='h5'>{dictionary.navigation.addNewPatient}</Typography>
         <IconButton size='small' onClick={handleReset}>
           <i className='tabler-x text-2xl text-textPrimary' />
         </IconButton>

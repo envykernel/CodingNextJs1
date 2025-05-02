@@ -132,6 +132,7 @@
     "editPrescription": "Edit Prescription",
     "saveChanges": "Save Changes",
     "cancel": "Cancel",
-    "patients": "Patients"
+    "patients": "Patients",
+    "addNewPatient": "Add New Patient"
   }
 }

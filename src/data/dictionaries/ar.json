@@ -133,6 +133,7 @@
     "editPrescription": "تعديل الوصفة الطبية",
     "saveChanges": "حفظ التغييرات",
     "cancel": "إلغاء",
-    "patients": "المرضى"
+    "patients": "المرضى",
+    "addNewPatient": "إضافة مريض جديد"
   }
 }

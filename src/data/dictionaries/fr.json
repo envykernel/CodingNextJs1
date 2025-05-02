@@ -132,6 +132,7 @@
     "editPrescription": "Modifier l'ordonnance",
     "saveChanges": "Enregistrer les modifications",
     "cancel": "Annuler",
-    "patients": "Patients"
+    "patients": "Patients",
+    "addNewPatient": "Ajouter un patient"
   }
 }

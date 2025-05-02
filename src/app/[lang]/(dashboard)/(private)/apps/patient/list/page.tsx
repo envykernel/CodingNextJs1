@@ -3,6 +3,9 @@ import PatientList from '@views/apps/patient/list'
 
 // Data Imports
 import { getPatientData } from '@/app/server/patientActions'
+import { getDictionary } from '@/utils/getDictionary'
+import type { Locale } from '@configs/i18n'
+import { TranslationProvider } from '@/contexts/translationContext'
 
 /**
  * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
@@ -22,11 +25,16 @@ import { getPatientData } from '@/app/server/patientActions'
   return res.json()
 } */
 
-const PatientListApp = async () => {
+const PatientListApp = async ({ params }: { params: { lang: Locale } }) => {
   // Vars
   const patientData = await getPatientData()
+  const dictionary = await getDictionary(params.lang)
 
-  return <PatientList patientData={patientData} />
+  return (
+    <TranslationProvider dictionary={dictionary}>
+      <PatientList patientData={patientData} />
+    </TranslationProvider>
+  )
 }
 
 export default PatientListApp
