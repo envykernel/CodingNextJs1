@@ -8,6 +8,22 @@
         "phone": "Téléphone",
         "email": "E-mail",
         "address": "Adresse",
-        "city": "Ville"
+        "city": "Ville",
+        "medicalData": "Données médicales"
+    },
+    "appointments": "Rendez-vous",
+    "noAppointments": "Aucun rendez-vous disponible.",
+    "date": "Date",
+    "time": "Heure",
+    "type": "Type",
+    "status": "Statut",
+    "doctor": "Médecin",
+    "notes": "Remarques",
+    "common": {
+        "overview": "Vue d'ensemble",
+        "security": "Sécurité",
+        "billingPlans": "Facturation & Abonnements",
+        "notifications": "Notifications",
+        "connections": "Connexions"
     }
 }

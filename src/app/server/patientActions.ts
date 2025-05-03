@@ -184,3 +184,17 @@ export async function getPatientById(id: number) {
     patient_measurements: serializeMeasurements(patient.patient_measurements)
   }
 }
+
+// Fetch all appointments for a given patient_id
+export async function getAppointmentsByPatientId(patient_id: number) {
+  const appointments = await prisma.patient_appointment.findMany({
+    where: { patient_id },
+    include: {
+      doctor: true,
+      organisation: true
+    },
+    orderBy: { appointment_date: 'desc' }
+  })
+
+  return appointments
+}

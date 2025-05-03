@@ -8,6 +8,22 @@
         "phone": "الهاتف",
         "email": "البريد الإلكتروني",
         "address": "العنوان",
-        "city": "المدينة"
+        "city": "المدينة",
+        "medicalData": "البيانات الطبية"
+    },
+    "appointments": "المواعيد",
+    "noAppointments": "لا توجد مواعيد متاحة.",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "type": "النوع",
+    "status": "الحالة",
+    "doctor": "الطبيب",
+    "notes": "ملاحظات",
+    "common": {
+        "overview": "نظرة عامة",
+        "security": "الأمان",
+        "billingPlans": "الفوترة والاشتراكات",
+        "notifications": "الإشعارات",
+        "connections": "الاتصالات"
     }
 }

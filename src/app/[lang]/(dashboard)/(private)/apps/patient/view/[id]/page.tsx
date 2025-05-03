@@ -14,7 +14,7 @@ import PatientLeftOverview from '@views/apps/patient/view/patient-left-overview'
 import PatientRight from '@views/apps/patient/view/patient-right'
 
 // Data Imports
-import { getPatientById } from '@/app/server/patientActions'
+import { getPatientById, getAppointmentsByPatientId } from '@/app/server/patientActions'
 import { getDictionary } from '@/utils/getDictionary'
 import { TranslationProvider } from '@/contexts/translationContext'
 
@@ -24,11 +24,13 @@ const BillingPlans = dynamic(() => import('@views/apps/patient/view/patient-righ
 const NotificationsTab = dynamic(() => import('@views/apps/patient/view/patient-right/notifications'))
 const ConnectionsTab = dynamic(() => import('@views/apps/patient/view/patient-right/connections'))
 const MedicalDataTab = dynamic(() => import('@views/apps/patient/view/patient-right/medical'))
+const AppointmentsTab = dynamic(() => import('@views/apps/patient/view/patient-right/appointments'))
 
 // Vars
-const tabContentList = (patientData: any): { [key: string]: ReactElement } => ({
+const tabContentList = (patientData: any, appointments: any[]): { [key: string]: ReactElement } => ({
   overview: <OverViewTab patientData={patientData} />,
   medical: <MedicalDataTab patientData={patientData} />,
+  appointments: <AppointmentsTab appointments={appointments} />,
   security: <SecurityTab />,
   'billing-plans': <BillingPlans data={[]} />,
   notifications: <NotificationsTab />,
@@ -62,6 +64,7 @@ interface PatientViewTabProps {
 const PatientViewTab = async ({ params }: PatientViewTabProps) => {
   const patientId = Number(params.id)
   const patientData = await getPatientById(patientId)
+  const appointments = await getAppointmentsByPatientId(patientId)
   const dictionary = await getDictionary(params.lang)
 
   return (
@@ -71,7 +74,7 @@ const PatientViewTab = async ({ params }: PatientViewTabProps) => {
           <PatientLeftOverview patientData={patientData} />
         </Grid>
         <Grid size={{ xs: 12, lg: 8, md: 7 }}>
-          <PatientRight tabContentList={tabContentList(patientData)} />
+          <PatientRight tabContentList={tabContentList(patientData, appointments)} />
         </Grid>
       </Grid>
     </TranslationProvider>

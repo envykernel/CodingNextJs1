@@ -8,6 +8,22 @@
         "phone": "Phone",
         "email": "Email",
         "address": "Address",
-        "city": "City"
+        "city": "City",
+        "medicalData": "Medical Data"
+    },
+    "appointments": "Appointments",
+    "noAppointments": "No appointments available.",
+    "date": "Date",
+    "time": "Time",
+    "type": "Type",
+    "status": "Status",
+    "doctor": "Doctor",
+    "notes": "Notes",
+    "common": {
+        "overview": "Overview",
+        "security": "Security",
+        "billingPlans": "Billing & Plans",
+        "notifications": "Notifications",
+        "connections": "Connections"
     }
 }

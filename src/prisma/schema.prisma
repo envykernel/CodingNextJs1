@@ -53,25 +53,29 @@ model VerificationToken {
 }
 
 model patient {
-  id                      Int                       @id @default(autoincrement())
-  name                    String                    @db.VarChar(100)
-  birthdate               DateTime                  @db.Date
-  gender                  String                    @db.VarChar(20)
-  doctor                  String?                   @db.VarChar(100)
-  status                  String?                   @db.VarChar(50)
-  avatar                  String?                   @db.VarChar(255)
-  address                 String?                   @db.VarChar(255)
-  city                    String?                   @db.VarChar(100)
-  phone_number            String?                   @db.VarChar(30)
-  email                   String?                   @db.VarChar(100)
-  emergency_contact_name  String?                   @db.VarChar(100)
-  emergency_contact_phone String?                   @db.VarChar(30)
-  emergency_contact_email String?                   @db.VarChar(100)
-  created_at              DateTime?                 @default(now()) @db.Timestamptz(6)
-  updated_at              DateTime?                 @default(now()) @db.Timestamptz(6)
+  id                      Int          @id @default(autoincrement())
+  organisation_id         Int
+  name                    String       @db.VarChar(100)
+  birthdate               DateTime     @db.Date
+  gender                  String       @db.VarChar(20)
+  doctor                  String?      @db.VarChar(100)
+  status                  String?      @db.VarChar(50)
+  avatar                  String?      @db.VarChar(255)
+  address                 String?      @db.VarChar(255)
+  city                    String?      @db.VarChar(100)
+  phone_number            String?      @db.VarChar(30)
+  email                   String?      @db.VarChar(100)
+  emergency_contact_name  String?      @db.VarChar(100)
+  emergency_contact_phone String?      @db.VarChar(30)
+  emergency_contact_email String?      @db.VarChar(100)
+  created_at              DateTime?    @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime?    @default(now()) @db.Timestamptz(6)
+  organisation            organisation @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   patient_measurements    patient_measurements[]
   patient_medical         patient_medical[]
   patient_medical_history patient_medical_history[]
+
+  @@index([organisation_id], map: "idx_patient_organisation_id")
 }
 
 model patient_measurements {
@@ -83,7 +87,7 @@ model patient_measurements {
   temperature_c            Decimal?  @db.Decimal(4, 1)
   blood_pressure_systolic  Int?
   blood_pressure_diastolic Int?
-  patient                  patient   @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  patient                  patient   @relation(fields: [patient_id], references: [id], onDelete: Cascade)
 }
 
 model patient_medical {
@@ -91,7 +95,7 @@ model patient_medical {
   patient_id Int
   created_at DateTime? @default(now()) @db.Timestamptz(6)
   updated_at DateTime? @default(now()) @db.Timestamptz(6)
-  patient    patient   @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  patient    patient   @relation(fields: [patient_id], references: [id], onDelete: Cascade)
 }
 
 model patient_medical_history {
@@ -101,5 +105,54 @@ model patient_medical_history {
   description   String
   date_occurred DateTime? @db.Date
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
-  patient       patient   @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  patient       patient   @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+}
+
+model doctor {
+  id                  Int                   @id @default(autoincrement())
+  organisation_id     Int
+  name                String                @db.VarChar(255)
+  specialty           String?               @db.VarChar(100)
+  phone_number        String?               @db.VarChar(50)
+  email               String?               @db.VarChar(255)
+  status              String?               @default("enabled") @db.VarChar(50)
+  created_at          DateTime?             @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?             @default(now()) @db.Timestamp(6)
+  organisation        organisation          @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  patient_appointment patient_appointment[]
+
+  @@index([organisation_id], map: "idx_doctor_organisation_id")
+}
+
+model organisation {
+  id                  Int                   @id @default(autoincrement())
+  name                String                @db.VarChar(255)
+  address             String?
+  phone_number        String?               @db.VarChar(50)
+  email               String?               @db.VarChar(255)
+  status              String?               @default("enabled") @db.VarChar(50)
+  created_at          DateTime?             @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?             @default(now()) @db.Timestamp(6)
+  doctor              doctor[]
+  patient             patient[]
+  patient_appointment patient_appointment[]
+}
+
+model patient_appointment {
+  id               Int          @id @default(autoincrement())
+  organisation_id  Int
+  patient_id       Int
+  doctor_id        Int?
+  appointment_date DateTime     @db.Timestamp(6)
+  appointment_type String?      @db.VarChar(100)
+  status           String?      @default("scheduled") @db.VarChar(50)
+  notes            String?
+  created_at       DateTime?    @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?    @default(now()) @db.Timestamp(6)
+  doctor           doctor?      @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  organisation     organisation @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([doctor_id], map: "idx_patient_appointment_doctor_id")
+  @@index([organisation_id], map: "idx_patient_appointment_organisation_id")
+  @@index([patient_id], map: "idx_patient_appointment_patient_id")
 }
