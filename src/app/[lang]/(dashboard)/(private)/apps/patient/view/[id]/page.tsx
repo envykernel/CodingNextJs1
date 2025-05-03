@@ -13,22 +13,24 @@ import Grid from '@mui/material/Grid2'
 import PatientLeftOverview from '@views/apps/patient/view/patient-left-overview'
 import PatientRight from '@views/apps/patient/view/patient-right'
 
-import type { PricingPlanType } from '@/types/pages/pricingTypes'
-
 // Data Imports
-import { getPricingData } from '@/app/server/actions'
+import { getPatientById } from '@/app/server/patientActions'
+import { getDictionary } from '@/utils/getDictionary'
+import { TranslationProvider } from '@/contexts/translationContext'
 
 const OverViewTab = dynamic(() => import('@views/apps/patient/view/patient-right/overview'))
 const SecurityTab = dynamic(() => import('@views/apps/patient/view/patient-right/security'))
 const BillingPlans = dynamic(() => import('@views/apps/patient/view/patient-right/billing-plans'))
 const NotificationsTab = dynamic(() => import('@views/apps/patient/view/patient-right/notifications'))
 const ConnectionsTab = dynamic(() => import('@views/apps/patient/view/patient-right/connections'))
+const MedicalDataTab = dynamic(() => import('@views/apps/patient/view/patient-right/medical'))
 
 // Vars
-const tabContentList = (data?: PricingPlanType[]): { [key: string]: ReactElement } => ({
-  overview: <OverViewTab />,
+const tabContentList = (patientData: any): { [key: string]: ReactElement } => ({
+  overview: <OverViewTab patientData={patientData} />,
+  medical: <MedicalDataTab patientData={patientData} />,
   security: <SecurityTab />,
-  'billing-plans': <BillingPlans data={data} />,
+  'billing-plans': <BillingPlans data={[]} />,
   notifications: <NotificationsTab />,
   connections: <ConnectionsTab />
 })
@@ -51,19 +53,28 @@ const tabContentList = (data?: PricingPlanType[]): { [key: string]: ReactElement
   return res.json()
 } */
 
-const PatientViewTab = async () => {
-  // Vars
-  const data = await getPricingData()
+import type { Locale } from '@configs/i18n'
+
+interface PatientViewTabProps {
+  params: { id: string; lang: Locale }
+}
+
+const PatientViewTab = async ({ params }: PatientViewTabProps) => {
+  const patientId = Number(params.id)
+  const patientData = await getPatientById(patientId)
+  const dictionary = await getDictionary(params.lang)
 
   return (
-    <Grid container spacing={6}>
-      <Grid size={{ xs: 12, lg: 4, md: 5 }}>
-        <PatientLeftOverview />
+    <TranslationProvider dictionary={dictionary}>
+      <Grid container spacing={6}>
+        <Grid size={{ xs: 12, lg: 4, md: 5 }}>
+          <PatientLeftOverview patientData={patientData} />
+        </Grid>
+        <Grid size={{ xs: 12, lg: 8, md: 7 }}>
+          <PatientRight tabContentList={tabContentList(patientData)} />
+        </Grid>
       </Grid>
-      <Grid size={{ xs: 12, lg: 8, md: 7 }}>
-        <PatientRight tabContentList={tabContentList(data)} />
-      </Grid>
-    </Grid>
+    </TranslationProvider>
   )
 }
 

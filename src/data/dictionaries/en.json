@@ -175,5 +175,13 @@
     "disabled": "Disabled",
     "blocked": "Blocked",
     "pending": "Pending"
+  },
+  "patient": {
+    "birthdate": "Birthdate",
+    "gender": "Gender",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "city": "City"
   }
 }

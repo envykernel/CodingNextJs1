@@ -174,5 +174,13 @@
     "disabled": "Désactivé",
     "blocked": "Bloqué",
     "pending": "En attente"
+  },
+  "patient": {
+    "birthdate": "Date de naissance",
+    "gender": "Genre",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "address": "Adresse",
+    "city": "Ville"
   }
 }

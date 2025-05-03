@@ -1,148 +1,110 @@
+'use client'
+
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import Button from '@mui/material/Button'
-import type { ButtonProps } from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
 
-// Type Imports
-import type { ThemeColor } from '@core/types'
+import CustomAvatar from '@core/components/mui/Avatar'
+import { useTranslation } from '@/contexts/translationContext'
 
 // Component Imports
-import EditUserInfo from '@components/dialogs/edit-user-info'
-import ConfirmationDialog from '@components/dialogs/confirmation-dialog'
-import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementClick'
-import CustomAvatar from '@core/components/mui/Avatar'
 
 // Vars
-const userData = {
-  firstName: 'Seth',
-  lastName: 'Hallam',
-  userName: '@shallamb',
-  billingEmail: 'shallamb@gmail.com',
-  status: 'active',
-  role: 'Subscriber',
-  taxId: 'Tax-8894',
-  contact: '+1 (234) 464-0600',
-  language: ['English'],
-  country: 'France',
-  useAsBillingAddress: true
+interface UserDetailsProps {
+  patientData: any
 }
 
-const UserDetails = () => {
-  // Vars
-  const buttonProps = (children: string, color: ThemeColor, variant: ButtonProps['variant']): ButtonProps => ({
-    children,
-    color,
-    variant
-  })
+// Patient status color mapping (same as PatientListTable)
+const patientStatusObj: { [key: string]: 'success' | 'secondary' | 'error' | 'warning' | 'default' } = {
+  admitted: 'success',
+  critical: 'error',
+  discharged: 'default',
+  underObservation: 'warning',
+  enabled: 'success',
+  disabled: 'secondary',
+  blocked: 'error',
+  pending: 'warning',
+  unknown: 'secondary'
+}
+
+// Helper for SSR-safe date formatting
+const formatDate = (dateString: string | null | undefined) => {
+  if (!dateString) return '-'
+
+  return new Date(dateString).toISOString().slice(0, 10)
+}
+
+const UserDetails = ({ patientData }: UserDetailsProps) => {
+  const t = useTranslation()
 
   return (
-    <>
-      <Card>
-        <CardContent className='flex flex-col pbs-12 gap-6'>
-          <div className='flex flex-col gap-6'>
-            <div className='flex items-center justify-center flex-col gap-4'>
-              <div className='flex flex-col items-center gap-4'>
-                <CustomAvatar alt='user-profile' src='/images/avatars/1.png' variant='rounded' size={120} />
-                <Typography variant='h5'>{`${userData.firstName} ${userData.lastName}`}</Typography>
-              </div>
-              <Chip label='Author' color='secondary' size='small' variant='tonal' />
-            </div>
-            <div className='flex items-center justify-around flex-wrap gap-4'>
-              <div className='flex items-center gap-4'>
-                <CustomAvatar variant='rounded' color='primary' skin='light'>
-                  <i className='tabler-checkbox' />
-                </CustomAvatar>
-                <div>
-                  <Typography variant='h5'>1.23k</Typography>
-                  <Typography>Task Done</Typography>
-                </div>
-              </div>
-              <div className='flex items-center gap-4'>
-                <CustomAvatar variant='rounded' color='primary' skin='light'>
-                  <i className='tabler-briefcase' />
-                </CustomAvatar>
-                <div>
-                  <Typography variant='h5'>568</Typography>
-                  <Typography>Project Done</Typography>
-                </div>
-              </div>
-            </div>
+    <Card>
+      <CardContent className='flex flex-col items-center gap-6 pbs-12'>
+        <CustomAvatar
+          alt='user-profile'
+          src={patientData?.avatar || '/images/avatars/1.png'}
+          variant='rounded'
+          size={120}
+        />
+        <Typography variant='h5' className='font-bold text-center'>
+          {patientData?.name || '-'}
+        </Typography>
+        <Chip
+          label={t.form[patientData?.status || 'unknown'] || '-'}
+          color={patientStatusObj[String(patientData?.status || 'unknown')]}
+          variant='filled'
+          className='mb-2 capitalize'
+        />
+        <Divider className='w-full' />
+        <div className='w-full flex flex-col gap-3'>
+          <div className='flex items-center gap-2'>
+            <Typography className='font-medium' color='text.secondary'>
+              {t.patient.birthdate}
+            </Typography>
+            <Typography color='text.primary'>
+              {patientData?.birthdate ? formatDate(patientData.birthdate) : '-'}
+            </Typography>
           </div>
-          <div>
-            <Typography variant='h5'>Details</Typography>
-            <Divider className='mlb-4' />
-            <div className='flex flex-col gap-2'>
-              <div className='flex items-center flex-wrap gap-x-1.5'>
-                <Typography className='font-medium' color='text.primary'>
-                  Username:
-                </Typography>
-                <Typography>{userData.userName}</Typography>
-              </div>
-              <div className='flex items-center flex-wrap gap-x-1.5'>
-                <Typography className='font-medium' color='text.primary'>
-                  Billing Email:
-                </Typography>
-                <Typography>{userData.billingEmail}</Typography>
-              </div>
-              <div className='flex items-center flex-wrap gap-x-1.5'>
-                <Typography className='font-medium' color='text.primary'>
-                  Status
-                </Typography>
-                <Typography color='text.primary'>{userData.status}</Typography>
-              </div>
-              <div className='flex items-center flex-wrap gap-x-1.5'>
-                <Typography className='font-medium' color='text.primary'>
-                  Role:
-                </Typography>
-                <Typography color='text.primary'>{userData.role}</Typography>
-              </div>
-              <div className='flex items-center flex-wrap gap-x-1.5'>
-                <Typography className='font-medium' color='text.primary'>
-                  Tax ID:
-                </Typography>
-                <Typography color='text.primary'>{userData.taxId}</Typography>
-              </div>
-              <div className='flex items-center flex-wrap gap-x-1.5'>
-                <Typography className='font-medium' color='text.primary'>
-                  Contact:
-                </Typography>
-                <Typography color='text.primary'>{userData.contact}</Typography>
-              </div>
-              <div className='flex items-center flex-wrap gap-x-1.5'>
-                <Typography className='font-medium' color='text.primary'>
-                  Language:
-                </Typography>
-                <Typography color='text.primary'>{userData.language}</Typography>
-              </div>
-              <div className='flex items-center flex-wrap gap-x-1.5'>
-                <Typography className='font-medium' color='text.primary'>
-                  Country:
-                </Typography>
-                <Typography color='text.primary'>{userData.country}</Typography>
-              </div>
-            </div>
+          <div className='flex items-center gap-2'>
+            <Typography className='font-medium' color='text.secondary'>
+              {t.patient.gender}
+            </Typography>
+            <Typography color='text.primary'>{patientData?.gender || '-'}</Typography>
           </div>
-          <div className='flex gap-4 justify-center'>
-            <OpenDialogOnElementClick
-              element={Button}
-              elementProps={buttonProps('Edit', 'primary', 'contained')}
-              dialog={EditUserInfo}
-              dialogProps={{ data: userData }}
-            />
-            <OpenDialogOnElementClick
-              element={Button}
-              elementProps={buttonProps('Suspend', 'error', 'tonal')}
-              dialog={ConfirmationDialog}
-              dialogProps={{ type: 'suspend-account' }}
-            />
+          <div className='flex items-center gap-2'>
+            <Typography className='font-medium' color='text.secondary'>
+              {t.patient.phone}
+            </Typography>
+            <Typography color='text.primary'>{patientData?.phone_number || '-'}</Typography>
           </div>
-        </CardContent>
-      </Card>
-    </>
+          <div className='flex items-center gap-2'>
+            <Typography className='font-medium' color='text.secondary'>
+              {t.patient.email}
+            </Typography>
+            <Typography color='text.primary'>{patientData?.email || '-'}</Typography>
+          </div>
+          <div className='flex items-center gap-2'>
+            <Typography className='font-medium' color='text.secondary'>
+              {t.patient.address}
+            </Typography>
+            <Typography color='text.primary'>{patientData?.address || '-'}</Typography>
+          </div>
+          <div className='flex items-center gap-2'>
+            <Typography className='font-medium' color='text.secondary'>
+              {t.patient.city}
+            </Typography>
+            <Typography color='text.primary'>{patientData?.city || '-'}</Typography>
+          </div>
+        </div>
+        <Button variant='contained' color='primary' className='mt-6 w-full'>
+          {t.navigation.edit}
+        </Button>
+      </CardContent>
+    </Card>
   )
 }
 

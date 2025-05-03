@@ -1,5 +1,13 @@
 {
     "patients": "Patients",
     "list": "Liste",
-    "view": "Voir"
+    "view": "Voir",
+    "patient": {
+        "birthdate": "Date de naissance",
+        "gender": "Genre",
+        "phone": "Téléphone",
+        "email": "E-mail",
+        "address": "Adresse",
+        "city": "Ville"
+    }
 }

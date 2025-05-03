@@ -153,3 +153,34 @@ export async function createPatient(data: any) {
     return { error: 'Database error', details: error }
   }
 }
+
+export async function getPatientById(id: number) {
+  const patient = await prisma.patient.findUnique({
+    where: { id },
+    include: {
+      patient_measurements: true,
+      patient_medical: true,
+      patient_medical_history: true
+    }
+  })
+
+  if (!patient) return null
+
+  return {
+    ...patient,
+    doctor: patient.doctor ?? undefined,
+    status: patient.status ?? undefined,
+    avatar: patient.avatar ?? undefined,
+    address: patient.address ?? undefined,
+    city: patient.city ?? undefined,
+    phone_number: patient.phone_number ?? undefined,
+    email: patient.email ?? undefined,
+    birthdate: patient.birthdate ?? undefined,
+    emergency_contact_name: patient.emergency_contact_name ?? undefined,
+    emergency_contact_phone: patient.emergency_contact_phone ?? undefined,
+    emergency_contact_email: patient.emergency_contact_email ?? undefined,
+    created_at: patient.created_at ?? undefined,
+    updated_at: patient.updated_at ?? undefined,
+    patient_measurements: serializeMeasurements(patient.patient_measurements)
+  }
+}

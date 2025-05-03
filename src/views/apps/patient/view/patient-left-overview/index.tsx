@@ -5,11 +5,15 @@ import Grid from '@mui/material/Grid2'
 import UserDetails from './UserDetails'
 import UserPlan from './UserPlan'
 
-const UserLeftOverview = () => {
+interface PatientLeftOverviewProps {
+  patientData: any
+}
+
+const UserLeftOverview = ({ patientData }: PatientLeftOverviewProps) => {
   return (
     <Grid container spacing={6}>
       <Grid size={{ xs: 12 }}>
-        <UserDetails />
+        <UserDetails patientData={patientData} />
       </Grid>
       <Grid size={{ xs: 12 }}>
         <UserPlan />
