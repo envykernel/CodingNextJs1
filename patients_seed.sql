@@ -266,6 +266,13 @@ CREATE TABLE IF NOT EXISTS doctor (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Insert sample doctors for Organisation 1
+INSERT INTO doctor (id, organisation_id, name, specialty, phone_number, email, status, created_at, updated_at) VALUES
+  (1, 1, 'Dr. Sami Youssef', 'Cardiology', '+1234567001', 'sami.youssef@drsamia.org', 'enabled', NOW(), NOW()),
+  (2, 1, 'Dr. Laila Hassan', 'Pediatrics', '+1234567002', 'laila.hassan@drsamia.org', 'enabled', NOW(), NOW()),
+  (3, 1, 'Dr. Emad Kamal', 'General Medicine', '+1234567003', 'emad.kamal@drsamia.org', 'enabled', NOW(), NOW()),
+  (4, 1, 'Dr. Mona Abdullah', 'Dermatology', '+1234567004', 'mona.abdullah@drsamia.org', 'enabled', NOW(), NOW());
+
 CREATE TABLE IF NOT EXISTS patient_appointment (
     id SERIAL PRIMARY KEY,
     organisation_id INTEGER NOT NULL REFERENCES organisation(id) ON DELETE CASCADE,
@@ -282,4 +289,46 @@ CREATE TABLE IF NOT EXISTS patient_appointment (
 CREATE INDEX IF NOT EXISTS idx_patient_appointment_patient_id ON patient_appointment(patient_id);
 CREATE INDEX IF NOT EXISTS idx_patient_appointment_doctor_id ON patient_appointment(doctor_id);
 CREATE INDEX IF NOT EXISTS idx_patient_appointment_organisation_id ON patient_appointment(organisation_id);
-CREATE INDEX IF NOT EXISTS idx_doctor_organisation_id ON doctor(organisation_id); 
+CREATE INDEX IF NOT EXISTS idx_doctor_organisation_id ON doctor(organisation_id);
+
+-- Insert 6 appointments (3 past, 3 future) for each of the first 5 patients in Organisation 1
+INSERT INTO patient_appointment (organisation_id, patient_id, doctor_id, appointment_date, appointment_type, status, notes, created_at, updated_at) VALUES
+-- Patient 1
+(1, 1, 1, '2024-05-01 09:00:00', 'Consultation', 'completed', 'Routine checkup.', NOW(), NOW()),
+(1, 1, 2, '2024-05-15 10:00:00', 'Pediatrics', 'completed', 'Follow-up visit.', NOW(), NOW()),
+(1, 1, 3, '2024-05-29 11:00:00', 'General Medicine', 'cancelled', 'Patient cancelled.', NOW(), NOW()),
+(1, 1, 4, '2024-06-20 09:00:00', 'Dermatology', 'scheduled', 'Skin check.', NOW(), NOW()),
+(1, 1, 1, '2024-07-05 10:00:00', 'Cardiology', 'scheduled', 'Heart review.', NOW(), NOW()),
+(1, 1, 2, '2024-07-19 11:00:00', 'Consultation', 'scheduled', 'General consultation.', NOW(), NOW()),
+
+-- Patient 2
+(1, 2, 2, '2024-05-02 09:30:00', 'Pediatrics', 'completed', 'Routine pediatric check.', NOW(), NOW()),
+(1, 2, 3, '2024-05-16 10:30:00', 'General Medicine', 'completed', 'General health review.', NOW(), NOW()),
+(1, 2, 4, '2024-05-30 11:30:00', 'Dermatology', 'cancelled', 'No show.', NOW(), NOW()),
+(1, 2, 1, '2024-06-21 09:30:00', 'Cardiology', 'scheduled', 'Cardio follow-up.', NOW(), NOW()),
+(1, 2, 2, '2024-07-06 10:30:00', 'Pediatrics', 'scheduled', 'Vaccination.', NOW(), NOW()),
+(1, 2, 3, '2024-07-20 11:30:00', 'General Medicine', 'scheduled', 'Annual check.', NOW(), NOW()),
+
+-- Patient 3
+(1, 3, 3, '2024-05-03 10:00:00', 'General Medicine', 'completed', 'Blood test.', NOW(), NOW()),
+(1, 3, 4, '2024-05-17 11:00:00', 'Dermatology', 'completed', 'Skin allergy.', NOW(), NOW()),
+(1, 3, 1, '2024-05-31 12:00:00', 'Cardiology', 'cancelled', 'Rescheduled.', NOW(), NOW()),
+(1, 3, 2, '2024-06-22 10:00:00', 'Pediatrics', 'scheduled', 'Growth check.', NOW(), NOW()),
+(1, 3, 3, '2024-07-07 11:00:00', 'General Medicine', 'scheduled', 'Lab results.', NOW(), NOW()),
+(1, 3, 4, '2024-07-21 12:00:00', 'Dermatology', 'scheduled', 'Skin follow-up.', NOW(), NOW()),
+
+-- Patient 4
+(1, 4, 4, '2024-05-04 10:30:00', 'Dermatology', 'completed', 'Mole removal.', NOW(), NOW()),
+(1, 4, 1, '2024-05-18 11:30:00', 'Cardiology', 'completed', 'ECG.', NOW(), NOW()),
+(1, 4, 2, '2024-06-01 12:30:00', 'Pediatrics', 'cancelled', 'Family emergency.', NOW(), NOW()),
+(1, 4, 3, '2024-06-23 10:30:00', 'General Medicine', 'scheduled', 'Blood pressure check.', NOW(), NOW()),
+(1, 4, 4, '2024-07-08 11:30:00', 'Dermatology', 'scheduled', 'Acne treatment.', NOW(), NOW()),
+(1, 4, 1, '2024-07-22 12:30:00', 'Cardiology', 'scheduled', 'Heart review.', NOW(), NOW()),
+
+-- Patient 5
+(1, 5, 1, '2024-05-05 11:00:00', 'Cardiology', 'completed', 'Heart murmur review.', NOW(), NOW()),
+(1, 5, 2, '2024-05-19 12:00:00', 'Pediatrics', 'completed', 'Childhood illness.', NOW(), NOW()),
+(1, 5, 3, '2024-06-02 13:00:00', 'General Medicine', 'cancelled', 'Patient sick.', NOW(), NOW()),
+(1, 5, 4, '2024-06-24 11:00:00', 'Dermatology', 'scheduled', 'Eczema check.', NOW(), NOW()),
+(1, 5, 1, '2024-07-09 12:00:00', 'Cardiology', 'scheduled', 'Routine ECG.', NOW(), NOW()),
+(1, 5, 2, '2024-07-23 13:00:00', 'Pediatrics', 'scheduled', 'Growth follow-up.', NOW(), NOW());
