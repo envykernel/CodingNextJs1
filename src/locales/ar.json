@@ -25,5 +25,8 @@
         "billingPlans": "الفوترة والاشتراكات",
         "notifications": "الإشعارات",
         "connections": "الاتصالات"
-    }
+    },
+    "appointmentsList": "قائمة المواعيد",
+    "bookAppointment": "حجز موعد",
+    "appointmentDetails": "تفاصيل الموعد"
 }

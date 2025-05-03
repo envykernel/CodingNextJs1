@@ -198,3 +198,49 @@ export async function getAppointmentsByPatientId(patient_id: number) {
 
   return appointments
 }
+
+// Fetch paginated appointments for the appointments list
+export async function getAppointmentsList({
+  page = 1,
+  pageSize = 20,
+  patientName,
+  status
+}: {
+  page?: number
+  pageSize?: number
+  patientName?: string
+  status?: string
+} = {}) {
+  const skip = (page - 1) * pageSize
+  const where: any = {}
+
+  if (patientName) {
+    where.patient = { name: { contains: patientName, mode: 'insensitive' } }
+  }
+
+  if (status) {
+    where.status = status
+  }
+
+  const [appointments, total] = await Promise.all([
+    prisma.patient_appointment.findMany({
+      skip,
+      take: pageSize,
+      where,
+      include: {
+        patient: true,
+        doctor: true
+      },
+      orderBy: { appointment_date: 'desc' }
+    }),
+    prisma.patient_appointment.count({ where })
+  ])
+
+  return {
+    appointments,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize)
+  }
+}

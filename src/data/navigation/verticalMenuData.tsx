@@ -163,7 +163,7 @@ const verticalMenuData = (dictionary: Dictionary): VerticalMenuDataType[] => [
       {
         label: dictionary.navigation.appointmentsList,
         icon: 'tabler-list',
-        href: '/pages/appointments/list'
+        href: '/apps/appointments/list'
       },
       {
         label: dictionary.navigation.bookAppointment,

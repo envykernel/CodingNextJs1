@@ -25,5 +25,8 @@
         "billingPlans": "Billing & Plans",
         "notifications": "Notifications",
         "connections": "Connections"
-    }
+    },
+    "appointmentsList": "Appointments List",
+    "bookAppointment": "Book Appointment",
+    "appointmentDetails": "Appointment Details"
 }

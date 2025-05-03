@@ -248,6 +248,17 @@ const horizontalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>
             href: '/apps/patient/list'
           }
         ]
+      },
+      {
+        label: dictionary['navigation'].appointments,
+        icon: 'tabler-calendar-event',
+        children: [
+          {
+            label: dictionary['navigation'].appointmentsList,
+            icon: 'tabler-list',
+            href: '/apps/appointments/list'
+          }
+        ]
       }
     ]
   },

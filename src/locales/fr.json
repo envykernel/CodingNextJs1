@@ -25,5 +25,8 @@
         "billingPlans": "Facturation & Abonnements",
         "notifications": "Notifications",
         "connections": "Connexions"
-    }
+    },
+    "appointmentsList": "Liste des rendez-vous",
+    "bookAppointment": "Prendre rendez-vous",
+    "appointmentDetails": "Détails du rendez-vous"
 }
