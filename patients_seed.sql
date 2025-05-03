@@ -3,6 +3,9 @@ TRUNCATE TABLE patient_measurements CASCADE;
 TRUNCATE TABLE patient_medical_history CASCADE;
 TRUNCATE TABLE patient_medical CASCADE;
 TRUNCATE TABLE patient CASCADE;
+TRUNCATE TABLE patient_appointment CASCADE;
+TRUNCATE TABLE doctor CASCADE;
+TRUNCATE TABLE organisation CASCADE;
 
 -- Reset patient id sequence to start from 1
 ALTER SEQUENCE patient_id_seq RESTART WITH 1;
@@ -12,54 +15,93 @@ ALTER SEQUENCE patient_id_seq RESTART WITH 1;
 
 BEGIN;
 
+-- Create Organisation, Doctor, and Patient Appointment tables for multi-tenant support
+CREATE TABLE IF NOT EXISTS organisation (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address TEXT,
+    phone_number VARCHAR(50),
+    email VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'enabled', -- e.g., enabled, disabled, pending, etc.
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+DROP TABLE IF EXISTS patient CASCADE;
+CREATE TABLE IF NOT EXISTS patient (
+    id SERIAL PRIMARY KEY,
+    organisation_id INTEGER NOT NULL REFERENCES organisation(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    birthdate DATE NOT NULL,
+    gender VARCHAR(20) NOT NULL,
+    doctor VARCHAR(100),
+    status VARCHAR(50),
+    avatar VARCHAR(255),
+    address VARCHAR(255),
+    city VARCHAR(100),
+    phone_number VARCHAR(30),
+    email VARCHAR(100),
+    emergency_contact_name VARCHAR(100),
+    emergency_contact_phone VARCHAR(30),
+    emergency_contact_email VARCHAR(100),
+    created_at TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_patient_organisation_id ON patient(organisation_id);
+
+-- Create the first organisation for multi-tenant support
+INSERT INTO organisation (id, name, address, phone_number, email, status, created_at, updated_at)
+VALUES (1, 'Organisation Dr.Samia', '123 Main St', '+1234567890', 'contact@drsamia.org', 'enabled', NOW(), NOW());
+
 -- Insert patients
-INSERT INTO patient (id, name, birthdate, gender, doctor, status, avatar, address, city, phone_number, email, emergency_contact_name, emergency_contact_phone, emergency_contact_email, created_at, updated_at)
+INSERT INTO patient (id, organisation_id, name, birthdate, gender, doctor, status, avatar, address, city, phone_number, email, emergency_contact_name, emergency_contact_phone, emergency_contact_email, created_at, updated_at)
 VALUES
-  (1,  'Ahmad Ali',      '1985-03-12', 'male', 'Dr. Sami Youssef', 'enabled', NULL, '12 Victory St', 'Riyadh', '0501234567', 'ahmad.ali1@email.com', 'Khaled Ali', '0507654321', 'khaled.ali@email.com', NOW(), NOW()),
-  (2,  'Fatima Zahra',   '1990-07-25', 'female', 'Dr. Laila Hassan', 'disabled', NULL, '8 Queen St', 'Jeddah', '0552345678', 'fatima.zahra@email.com', 'Sara Zahra', '0558765432', 'sara.zahra@email.com', NOW(), NOW()),
-  (3,  'Mohamed Said',   '1978-11-02', 'male', 'Dr. Emad Kamal', 'blocked', NULL, '22 Freedom St', 'Mecca', '0533456789', 'mohamed.said@email.com', 'Said Mohamed', '0539876543', 'said.mohamed@email.com', NOW(), NOW()),
-  (4,  'Salma Hassan',   '1982-05-18', 'female', 'Dr. Mona Abdullah', 'pending', NULL, '5 Flowers St', 'Dammam', '0544567890', 'salma.hassan@email.com', 'Hassan Ali', '0540987654', 'hassan.ali@email.com', NOW(), NOW()),
-  (5,  'Youssef Ibrahim','1995-09-30', 'male', 'Dr. Sami Youssef', 'enabled', NULL, '10 Noor St', 'Riyadh', '0505678901', 'youssef.ibrahim@email.com', 'Ibrahim Youssef', '0501987654', 'ibrahim.youssef@email.com', NOW(), NOW()),
-  (6,  'Mariam Khaled',  '1988-12-14', 'female', 'Dr. Laila Hassan', 'disabled', NULL, '3 Spring St', 'Jeddah', '0556789012', 'mariam.khaled@email.com', 'Khaled Mariam', '0552987654', 'khaled.mariam@email.com', NOW(), NOW()),
-  (7,  'Ali Hussein',    '1975-01-22', 'male', 'Dr. Emad Kamal', 'blocked', NULL, '7 Dawn St', 'Mecca', '0537890123', 'ali.hussein@email.com', 'Hussein Ali', '0533987654', 'hussein.ali@email.com', NOW(), NOW()),
-  (8,  'Huda Abdullah',  '1983-04-09', 'female', 'Dr. Mona Abdullah', 'pending', NULL, '15 Hope St', 'Dammam', '0548901234', 'huda.abdullah@email.com', 'Abdullah Huda', '0544987654', 'abdullah.huda@email.com', NOW(), NOW()),
-  (9,  'Saeed Mahmoud',  '1992-08-27', 'male', 'Dr. Sami Youssef', 'enabled', NULL, '18 Sunrise St', 'Riyadh', '0509012345', 'saeed.mahmoud@email.com', 'Mahmoud Saeed', '0505987654', 'mahmoud.saeed@email.com', NOW(), NOW()),
-  (10, 'Leila Omar',     '1986-02-16', 'female', 'Dr. Laila Hassan', 'disabled', NULL, '2 Breeze St', 'Jeddah', '0550123456', 'leila.omar@email.com', 'Omar Leila', '0556987654', 'omar.leila@email.com', NOW(), NOW()),
-  (11, 'Omar Nasser',    '1981-06-10', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '11 Palm St', 'Riyadh', '0501122334', 'omar.nasser@email.com', 'Nasser Omar', '0504433221', 'nasser.omar@email.com', NOW(), NOW()),
-  (12, 'Amina Fathi',    '1993-09-19', 'female', 'Dr. Laila Hassan', 'pending', NULL, '19 Lotus St', 'Jeddah', '0552233445', 'amina.fathi@email.com', 'Fathi Amina', '0555544332', 'fathi.amina@email.com', NOW(), NOW()),
-  (13, 'Hassan Tarek',   '1987-12-23', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '23 Olive St', 'Mecca', '0533344556', 'hassan.tarek@email.com', 'Tarek Hassan', '0536655443', 'tarek.hassan@email.com', NOW(), NOW()),
-  (14, 'Rania Adel',     '1991-03-05', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '5 Jasmine St', 'Dammam', '0544455667', 'rania.adel@email.com', 'Adel Rania', '0547766554', 'adel.rania@email.com', NOW(), NOW()),
-  (15, 'Khaled Samir',   '1984-08-29', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '29 Cedar St', 'Riyadh', '0505566778', 'khaled.samir@email.com', 'Samir Khaled', '0508877665', 'samir.khaled@email.com', NOW(), NOW()),
-  (16, 'Nour Hani',      '1996-11-11', 'female', 'Dr. Laila Hassan', 'pending', NULL, '11 Sunflower St', 'Jeddah', '0556677889', 'nour.hani@email.com', 'Hani Nour', '0559988776', 'hani.nour@email.com', NOW(), NOW()),
-  (17, 'Tariq Fadel',    '1979-02-14', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '14 Maple St', 'Mecca', '0537788990', 'tariq.fadel@email.com', 'Fadel Tariq', '0530099887', 'fadel.tariq@email.com', NOW(), NOW()),
-  (18, 'Dina Samir',     '1985-05-21', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '21 Pine St', 'Dammam', '0548899001', 'dina.samir@email.com', 'Samir Dina', '0541100998', 'samir.dina@email.com', NOW(), NOW()),
-  (19, 'Majed Adel',     '1994-10-13', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '13 Oak St', 'Riyadh', '0509900112', 'majed.adel@email.com', 'Adel Majed', '0502211009', 'adel.majed@email.com', NOW(), NOW()),
-  (20, 'Yasmin Fathi',   '1989-01-27', 'female', 'Dr. Laila Hassan', 'pending', NULL, '27 Rose St', 'Jeddah', '0551011122', 'yasmin.fathi@email.com', 'Fathi Yasmin', '0553322110', 'fathi.yasmin@email.com', NOW(), NOW()),
-  (21, 'Samir Nabil',    '1982-04-15', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '15 Tulip St', 'Mecca', '0532122233', 'samir.nabil@email.com', 'Nabil Samir', '0534343212', 'nabil.samir@email.com', NOW(), NOW()),
-  (22, 'Hiba Khalil',    '1997-07-08', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '8 Daisy St', 'Dammam', '0543233344', 'hiba.khalil@email.com', 'Khalil Hiba', '0545454323', 'khalil.hiba@email.com', NOW(), NOW()),
-  (23, 'Fadi Zaki',      '1980-10-19', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '19 Lily St', 'Riyadh', '0504344455', 'fadi.zaki@email.com', 'Zaki Fadi', '0506565434', 'zaki.fadi@email.com', NOW(), NOW()),
-  (24, 'Lina Nasser',    '1992-02-03', 'female', 'Dr. Laila Hassan', 'pending', NULL, '3 Orchid St', 'Jeddah', '0555454567', 'lina.nasser@email.com', 'Nasser Lina', '0557676545', 'nasser.lina@email.com', NOW(), NOW()),
-  (25, 'Adel Fathi',     '1986-06-17', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '17 Ivy St', 'Mecca', '0536565678', 'adel.fathi@email.com', 'Fathi Adel', '0538787656', 'fathi.adel@email.com', NOW(), NOW()),
-  (26, 'Sara Tarek',     '1991-09-29', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '29 Fern St', 'Dammam', '0547676789', 'sara.tarek@email.com', 'Tarek Sara', '0549898767', 'tarek.sara@email.com', NOW(), NOW()),
-  (27, 'Nabil Hossam',   '1983-12-12', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '12 Elm St', 'Riyadh', '0508787890', 'nabil.hossam@email.com', 'Hossam Nabil', '0500909878', 'hossam.nabil@email.com', NOW(), NOW()),
-  (28, 'Mona Fadel',     '1995-03-24', 'female', 'Dr. Laila Hassan', 'pending', NULL, '24 Willow St', 'Jeddah', '0559898901', 'mona.fadel@email.com', 'Fadel Mona', '0551010989', 'fadel.mona@email.com', NOW(), NOW()),
-  (29, 'Hossam Adel',    '1977-08-06', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '6 Cypress St', 'Mecca', '0531011123', 'hossam.adel@email.com', 'Adel Hossam', '0533232101', 'adel.hossam@email.com', NOW(), NOW()),
-  (30, 'Rana Sami',      '1984-11-18', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '18 Magnolia St', 'Dammam', '0542122234', 'rana.sami@email.com', 'Sami Rana', '0544343212', 'sami.rana@email.com', NOW(), NOW()),
-  (31, 'Fathi Khaled',   '1993-02-01', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '1 Garden St', 'Riyadh', '0505454567', 'fathi.khaled@email.com', 'Khaled Fathi', '0507676545', 'khaled.fathi@email.com', NOW(), NOW()),
-  (32, 'Nisreen Omar',   '1987-05-13', 'female', 'Dr. Laila Hassan', 'pending', NULL, '13 River St', 'Jeddah', '0556565678', 'nisreen.omar@email.com', 'Omar Nisreen', '0558787656', 'omar.nisreen@email.com', NOW(), NOW()),
-  (33, 'Tamer Samir',    '1981-08-25', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '25 Lake St', 'Mecca', '0537676789', 'tamer.samir@email.com', 'Samir Tamer', '0539898767', 'samir.tamer@email.com', NOW(), NOW()),
-  (34, 'Hana Zaki',      '1996-12-07', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '7 Bay St', 'Dammam', '0548787890', 'hana.zaki@email.com', 'Zaki Hana', '0540909878', 'zaki.hana@email.com', NOW(), NOW()),
-  (35, 'Zaki Hassan',    '1980-03-19', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '19 Hill St', 'Riyadh', '0509898901', 'zaki.hassan@email.com', 'Hassan Zaki', '0501010989', 'hassan.zaki@email.com', NOW(), NOW()),
-  (36, 'Laila Fathi',    '1992-06-30', 'female', 'Dr. Laila Hassan', 'pending', NULL, '30 Cliff St', 'Jeddah', '0551011123', 'laila.fathi@email.com', 'Fathi Laila', '0553232101', 'fathi.laila@email.com', NOW(), NOW()),
-  (37, 'Fadel Nabil',    '1985-09-11', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '11 Field St', 'Mecca', '0532122234', 'fadel.nabil@email.com', 'Nabil Fadel', '0534343212', 'nabil.fadel@email.com', NOW(), NOW()),
-  (38, 'Samah Khalil',   '1997-12-23', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '23 Forest St', 'Dammam', '0543233344', 'samah.khalil@email.com', 'Khalil Samah', '0545454323', 'khalil.samah@email.com', NOW(), NOW()),
-  (39, 'Kamal Fathi',    '1982-03-05', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '5 Meadow St', 'Riyadh', '0504344455', 'kamal.fathi@email.com', 'Fathi Kamal', '0506565434', 'fathi.kamal@email.com', NOW(), NOW()),
-  (40, 'Nadia Adel',     '1994-07-17', 'female', 'Dr. Laila Hassan', 'pending', NULL, '17 Valley St', 'Jeddah', '0555454567', 'nadia.adel@email.com', 'Adel Nadia', '0557676545', 'adel.nadia@email.com', NOW(), NOW()),
-  (41, 'Adnan Tarek',    '1986-10-29', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '29 Ridge St', 'Mecca', '0536565678', 'adnan.tarek@email.com', 'Tarek Adnan', '0538787656', 'tarek.adnan@email.com', NOW(), NOW()),
-  (42, 'Rasha Sami',     '1991-01-12', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '12 Grove St', 'Dammam', '0547676789', 'rasha.sami@email.com', 'Sami Rasha', '0549898767', 'sami.rasha@email.com', NOW(), NOW()),
-  (43, 'Nasser Hossam',  '1983-04-24', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '24 Park St', 'Riyadh', '0508787890', 'nasser.hossam@email.com', 'Hossam Nasser', '0500909878', 'hossam.nasser@email.com', NOW(), NOW()),
-  (44, 'Iman Fadel',     '1995-08-06', 'female', 'Dr. Laila Hassan', 'pending', NULL, '6 Plaza St', 'Jeddah', '0559898901', 'iman.fadel@email.com', 'Fadel Iman', '0551010989', 'fadel.iman@email.com', NOW(), NOW()),
-  (45, 'Sara Abdulrahman','1991-10-11', 'female', 'Dr. Mona Abdullah', 'enabled', NULL, '45 Unity St', 'Dammam', '0543456789', 'sara.abdulrahman@email.com', 'Abdulrahman Sara', '0549987654', 'abdulrahman.sara@email.com', NOW(), NOW());
+  (1,  1, 'Ahmad Ali',      '1985-03-12', 'male', 'Dr. Sami Youssef', 'enabled', NULL, '12 Victory St', 'Riyadh', '0501234567', 'ahmad.ali1@email.com', 'Khaled Ali', '0507654321', 'khaled.ali@email.com', NOW(), NOW()),
+  (2,  1, 'Fatima Zahra',   '1990-07-25', 'female', 'Dr. Laila Hassan', 'disabled', NULL, '8 Queen St', 'Jeddah', '0552345678', 'fatima.zahra@email.com', 'Sara Zahra', '0558765432', 'sara.zahra@email.com', NOW(), NOW()),
+  (3,  1, 'Mohamed Said',   '1978-11-02', 'male', 'Dr. Emad Kamal', 'blocked', NULL, '22 Freedom St', 'Mecca', '0533456789', 'mohamed.said@email.com', 'Said Mohamed', '0539876543', 'said.mohamed@email.com', NOW(), NOW()),
+  (4,  1, 'Salma Hassan',   '1982-05-18', 'female', 'Dr. Mona Abdullah', 'pending', NULL, '5 Flowers St', 'Dammam', '0544567890', 'salma.hassan@email.com', 'Hassan Ali', '0540987654', 'hassan.ali@email.com', NOW(), NOW()),
+  (5,  1, 'Youssef Ibrahim','1995-09-30', 'male', 'Dr. Sami Youssef', 'enabled', NULL, '10 Noor St', 'Riyadh', '0505678901', 'youssef.ibrahim@email.com', 'Ibrahim Youssef', '0501987654', 'ibrahim.youssef@email.com', NOW(), NOW()),
+  (6,  1, 'Mariam Khaled',  '1988-12-14', 'female', 'Dr. Laila Hassan', 'disabled', NULL, '3 Spring St', 'Jeddah', '0556789012', 'mariam.khaled@email.com', 'Khaled Mariam', '0552987654', 'khaled.mariam@email.com', NOW(), NOW()),
+  (7,  1, 'Ali Hussein',    '1975-01-22', 'male', 'Dr. Emad Kamal', 'blocked', NULL, '7 Dawn St', 'Mecca', '0537890123', 'ali.hussein@email.com', 'Hussein Ali', '0533987654', 'hussein.ali@email.com', NOW(), NOW()),
+  (8,  1, 'Huda Abdullah',  '1983-04-09', 'female', 'Dr. Mona Abdullah', 'pending', NULL, '15 Hope St', 'Dammam', '0548901234', 'huda.abdullah@email.com', 'Abdullah Huda', '0544987654', 'abdullah.huda@email.com', NOW(), NOW()),
+  (9,  1, 'Saeed Mahmoud',  '1992-08-27', 'male', 'Dr. Sami Youssef', 'enabled', NULL, '18 Sunrise St', 'Riyadh', '0509012345', 'saeed.mahmoud@email.com', 'Mahmoud Saeed', '0505987654', 'mahmoud.saeed@email.com', NOW(), NOW()),
+  (10, 1, 'Leila Omar',     '1986-02-16', 'female', 'Dr. Laila Hassan', 'disabled', NULL, '2 Breeze St', 'Jeddah', '0550123456', 'leila.omar@email.com', 'Omar Leila', '0556987654', 'omar.leila@email.com', NOW(), NOW()),
+  (11, 1, 'Omar Nasser',    '1981-06-10', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '11 Palm St', 'Riyadh', '0501122334', 'omar.nasser@email.com', 'Nasser Omar', '0504433221', 'nasser.omar@email.com', NOW(), NOW()),
+  (12, 1, 'Amina Fathi',    '1993-09-19', 'female', 'Dr. Laila Hassan', 'pending', NULL, '19 Lotus St', 'Jeddah', '0552233445', 'amina.fathi@email.com', 'Fathi Amina', '0555544332', 'fathi.amina@email.com', NOW(), NOW()),
+  (13, 1, 'Hassan Tarek',   '1987-12-23', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '23 Olive St', 'Mecca', '0533344556', 'hassan.tarek@email.com', 'Tarek Hassan', '0536655443', 'tarek.hassan@email.com', NOW(), NOW()),
+  (14, 1, 'Rania Adel',     '1991-03-05', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '5 Jasmine St', 'Dammam', '0544455667', 'rania.adel@email.com', 'Adel Rania', '0547766554', 'adel.rania@email.com', NOW(), NOW()),
+  (15, 1, 'Khaled Samir',   '1984-08-29', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '29 Cedar St', 'Riyadh', '0505566778', 'khaled.samir@email.com', 'Samir Khaled', '0508877665', 'samir.khaled@email.com', NOW(), NOW()),
+  (16, 1, 'Nour Hani',      '1996-11-11', 'female', 'Dr. Laila Hassan', 'pending', NULL, '11 Sunflower St', 'Jeddah', '0556677889', 'nour.hani@email.com', 'Hani Nour', '0559988776', 'hani.nour@email.com', NOW(), NOW()),
+  (17, 1, 'Tariq Fadel',    '1979-02-14', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '14 Maple St', 'Mecca', '0537788990', 'tariq.fadel@email.com', 'Fadel Tariq', '0530099887', 'fadel.tariq@email.com', NOW(), NOW()),
+  (18, 1, 'Dina Samir',     '1985-05-21', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '21 Pine St', 'Dammam', '0548899001', 'dina.samir@email.com', 'Samir Dina', '0541100998', 'samir.dina@email.com', NOW(), NOW()),
+  (19, 1, 'Majed Adel',     '1994-10-13', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '13 Oak St', 'Riyadh', '0509900112', 'majed.adel@email.com', 'Adel Majed', '0502211009', 'adel.majed@email.com', NOW(), NOW()),
+  (20, 1, 'Yasmin Fathi',   '1989-01-27', 'female', 'Dr. Laila Hassan', 'pending', NULL, '27 Rose St', 'Jeddah', '0551011122', 'yasmin.fathi@email.com', 'Fathi Yasmin', '0553322110', 'fathi.yasmin@email.com', NOW(), NOW()),
+  (21, 1, 'Samir Nabil',    '1982-04-15', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '15 Tulip St', 'Mecca', '0532122233', 'samir.nabil@email.com', 'Nabil Samir', '0534343212', 'nabil.samir@email.com', NOW(), NOW()),
+  (22, 1, 'Hiba Khalil',    '1997-07-08', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '8 Daisy St', 'Dammam', '0543233344', 'hiba.khalil@email.com', 'Khalil Hiba', '0545454323', 'khalil.hiba@email.com', NOW(), NOW()),
+  (23, 1, 'Fadi Zaki',      '1980-10-19', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '19 Lily St', 'Riyadh', '0504344455', 'fadi.zaki@email.com', 'Zaki Fadi', '0506565434', 'zaki.fadi@email.com', NOW(), NOW()),
+  (24, 1, 'Lina Nasser',    '1992-02-03', 'female', 'Dr. Laila Hassan', 'pending', NULL, '3 Orchid St', 'Jeddah', '0555454567', 'lina.nasser@email.com', 'Nasser Lina', '0557676545', 'nasser.lina@email.com', NOW(), NOW()),
+  (25, 1, 'Adel Fathi',     '1986-06-17', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '17 Ivy St', 'Mecca', '0536565678', 'adel.fathi@email.com', 'Fathi Adel', '0538787656', 'fathi.adel@email.com', NOW(), NOW()),
+  (26, 1, 'Sara Tarek',     '1991-09-29', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '29 Fern St', 'Dammam', '0547676789', 'sara.tarek@email.com', 'Tarek Sara', '0549898767', 'tarek.sara@email.com', NOW(), NOW()),
+  (27, 1, 'Nabil Hossam',   '1983-12-12', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '12 Elm St', 'Riyadh', '0508787890', 'nabil.hossam@email.com', 'Hossam Nabil', '0500909878', 'hossam.nabil@email.com', NOW(), NOW()),
+  (28, 1, 'Mona Fadel',     '1995-03-24', 'female', 'Dr. Laila Hassan', 'pending', NULL, '24 Willow St', 'Jeddah', '0559898901', 'mona.fadel@email.com', 'Fadel Mona', '0551010989', 'fadel.mona@email.com', NOW(), NOW()),
+  (29, 1, 'Hossam Adel',    '1977-08-06', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '6 Cypress St', 'Mecca', '0531011123', 'hossam.adel@email.com', 'Adel Hossam', '0533232101', 'adel.hossam@email.com', NOW(), NOW()),
+  (30, 1, 'Rana Sami',      '1984-11-18', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '18 Magnolia St', 'Dammam', '0542122234', 'rana.sami@email.com', 'Sami Rana', '0544343212', 'sami.rana@email.com', NOW(), NOW()),
+  (31, 1, 'Fathi Khaled',   '1993-02-01', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '1 Garden St', 'Riyadh', '0505454567', 'fathi.khaled@email.com', 'Khaled Fathi', '0507676545', 'khaled.fathi@email.com', NOW(), NOW()),
+  (32, 1, 'Nisreen Omar',   '1987-05-13', 'female', 'Dr. Laila Hassan', 'pending', NULL, '13 River St', 'Jeddah', '0556565678', 'nisreen.omar@email.com', 'Omar Nisreen', '0558787656', 'omar.nisreen@email.com', NOW(), NOW()),
+  (33, 1, 'Tamer Samir',    '1981-08-25', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '25 Lake St', 'Mecca', '0537676789', 'tamer.samir@email.com', 'Samir Tamer', '0539898767', 'samir.tamer@email.com', NOW(), NOW()),
+  (34, 1, 'Hana Zaki',      '1996-12-07', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '7 Bay St', 'Dammam', '0548787890', 'hana.zaki@email.com', 'Zaki Hana', '0540909878', 'zaki.hana@email.com', NOW(), NOW()),
+  (35, 1, 'Zaki Hassan',    '1980-03-19', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '19 Hill St', 'Riyadh', '0509898901', 'zaki.hassan@email.com', 'Hassan Zaki', '0501010989', 'hassan.zaki@email.com', NOW(), NOW()),
+  (36, 1, 'Laila Fathi',    '1992-06-30', 'female', 'Dr. Laila Hassan', 'pending', NULL, '30 Cliff St', 'Jeddah', '0551011123', 'laila.fathi@email.com', 'Fathi Laila', '0553232101', 'fathi.laila@email.com', NOW(), NOW()),
+  (37, 1, 'Fadel Nabil',    '1985-09-11', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '11 Field St', 'Mecca', '0532122234', 'fadel.nabil@email.com', 'Nabil Fadel', '0534343212', 'nabil.fadel@email.com', NOW(), NOW()),
+  (38, 1, 'Samah Khalil',   '1997-12-23', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '23 Forest St', 'Dammam', '0543233344', 'samah.khalil@email.com', 'Khalil Samah', '0545454323', 'khalil.samah@email.com', NOW(), NOW()),
+  (39, 1, 'Kamal Fathi',    '1982-03-05', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '5 Meadow St', 'Riyadh', '0504344455', 'kamal.fathi@email.com', 'Fathi Kamal', '0506565434', 'fathi.kamal@email.com', NOW(), NOW()),
+  (40, 1, 'Nadia Adel',     '1994-07-17', 'female', 'Dr. Laila Hassan', 'pending', NULL, '17 Valley St', 'Jeddah', '0555454567', 'nadia.adel@email.com', 'Adel Nadia', '0557676545', 'adel.nadia@email.com', NOW(), NOW()),
+  (41, 1, 'Adnan Tarek',    '1986-10-29', 'male', 'Dr. Emad Kamal', 'enabled', NULL, '29 Ridge St', 'Mecca', '0536565678', 'adnan.tarek@email.com', 'Tarek Adnan', '0538787656', 'tarek.adnan@email.com', NOW(), NOW()),
+  (42, 1, 'Rasha Sami',     '1991-01-12', 'female', 'Dr. Mona Abdullah', 'disabled', NULL, '12 Grove St', 'Dammam', '0547676789', 'rasha.sami@email.com', 'Sami Rasha', '0549898767', 'sami.rasha@email.com', NOW(), NOW()),
+  (43, 1, 'Nasser Hossam',  '1983-04-24', 'male', 'Dr. Sami Youssef', 'blocked', NULL, '24 Park St', 'Riyadh', '0508787890', 'nasser.hossam@email.com', 'Hossam Nasser', '0500909878', 'hossam.nasser@email.com', NOW(), NOW()),
+  (44, 1, 'Iman Fadel',     '1995-08-06', 'female', 'Dr. Laila Hassan', 'pending', NULL, '6 Plaza St', 'Jeddah', '0559898901', 'iman.fadel@email.com', 'Fadel Iman', '0551010989', 'fadel.iman@email.com', NOW(), NOW()),
+  (45, 1, 'Sara Abdulrahman','1991-10-11', 'female', 'Dr. Mona Abdullah', 'enabled', NULL, '45 Unity St', 'Dammam', '0543456789', 'sara.abdulrahman@email.com', 'Abdulrahman Sara', '0549987654', 'abdulrahman.sara@email.com', NOW(), NOW());
 
 -- Insert patient_measurements (one per patient)
 INSERT INTO patient_measurements (patient_id, measured_at, weight_kg, height_cm, temperature_c, blood_pressure_systolic, blood_pressure_diastolic)
@@ -208,7 +250,36 @@ VALUES
   (44, 'Hypertension', 'Hypertension familiale.', '2015-09-30', NOW()),
   (45, 'Allergie', 'Allergique aux arachides.', '2017-12-01', NOW());
 
-
 -- After inserting all patients
 SELECT setval('patient_id_seq', (SELECT MAX(id) FROM patient));
-COMMIT; 
+COMMIT;
+
+CREATE TABLE IF NOT EXISTS doctor (
+    id SERIAL PRIMARY KEY,
+    organisation_id INTEGER NOT NULL REFERENCES organisation(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    specialty VARCHAR(100),
+    phone_number VARCHAR(50),
+    email VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'enabled', -- e.g., enabled, disabled, pending, etc.
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS patient_appointment (
+    id SERIAL PRIMARY KEY,
+    organisation_id INTEGER NOT NULL REFERENCES organisation(id) ON DELETE CASCADE,
+    patient_id INTEGER NOT NULL REFERENCES patient(id) ON DELETE CASCADE,
+    doctor_id INTEGER REFERENCES doctor(id), -- optional
+    appointment_date TIMESTAMP NOT NULL,
+    appointment_type VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'scheduled', -- e.g., scheduled, completed, cancelled, no_show
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_patient_appointment_patient_id ON patient_appointment(patient_id);
+CREATE INDEX IF NOT EXISTS idx_patient_appointment_doctor_id ON patient_appointment(doctor_id);
+CREATE INDEX IF NOT EXISTS idx_patient_appointment_organisation_id ON patient_appointment(organisation_id);
+CREATE INDEX IF NOT EXISTS idx_doctor_organisation_id ON doctor(organisation_id); 
