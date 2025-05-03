@@ -4,6 +4,9 @@ TRUNCATE TABLE patient_medical_history CASCADE;
 TRUNCATE TABLE patient_medical CASCADE;
 TRUNCATE TABLE patient CASCADE;
 
+-- Reset patient id sequence to start from 1
+ALTER SEQUENCE patient_id_seq RESTART WITH 1;
+
 -- PostgreSQL script to seed 45 patients with Arabic names (in English characters) and related data
 -- Assumes IDs are sequential from 1 to 45
 
@@ -205,4 +208,7 @@ VALUES
   (44, 'Hypertension', 'Hypertension familiale.', '2015-09-30', NOW()),
   (45, 'Allergie', 'Allergique aux arachides.', '2017-12-01', NOW());
 
+
+-- After inserting all patients
+SELECT setval('patient_id_seq', (SELECT MAX(id) FROM patient));
 COMMIT; 
