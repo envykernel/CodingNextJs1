@@ -9,24 +9,16 @@ import Grid from '@mui/material/Grid'
 
 import AppointmentListCards from './AppointmentListCards'
 import AppointmentListTable from './AppointmentListTable'
+import { APPOINTMENT_STATUS_OPTIONS, APPOINTMENT_TYPE_OPTIONS } from '../constants'
 
 interface AppointmentsListProps {
   appointmentData: any[]
   page: number
   pageSize: number
   total: number
-  statusOptions?: string[]
-  typeOptions?: string[]
 }
 
-const AppointmentsList: React.FC<AppointmentsListProps> = ({
-  appointmentData,
-  page,
-  pageSize,
-  total,
-  statusOptions,
-  typeOptions
-}) => {
+const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointmentData, page, pageSize, total }) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -59,8 +51,8 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({
           total={total}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
-          statusOptions={statusOptions}
-          typeOptions={typeOptions}
+          statusOptions={APPOINTMENT_STATUS_OPTIONS}
+          typeOptions={APPOINTMENT_TYPE_OPTIONS}
         />
       </Grid>
     </Grid>

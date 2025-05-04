@@ -1,4 +1,8 @@
 import { prisma } from '@/prisma/prisma'
+import {
+  APPOINTMENT_STATUS_OPTIONS,
+  APPOINTMENT_TYPE_OPTIONS
+} from '@/app/[lang]/(dashboard)/(private)/apps/appointments/constants'
 
 function getTodayRange() {
   const now = new Date()
@@ -67,7 +71,7 @@ export async function getAppointments({
   }
 
   // Fetch distinct status and type values, filtered by date if filter is set
-  const [appointments, total, statusOptions, typeOptions] = await Promise.all([
+  const [appointments, total] = await Promise.all([
     prisma.patient_appointment.findMany({
       skip,
       take: pageSize,
@@ -78,17 +82,7 @@ export async function getAppointments({
         doctor: true
       }
     }),
-    prisma.patient_appointment.count({ where }),
-    prisma.patient_appointment.findMany({
-      where: dateWhere,
-      select: { status: true },
-      distinct: ['status']
-    }),
-    prisma.patient_appointment.findMany({
-      where: dateWhere,
-      select: { appointment_type: true },
-      distinct: ['appointment_type']
-    })
+    prisma.patient_appointment.count({ where })
   ])
 
   // Map to table-friendly format
@@ -102,12 +96,16 @@ export async function getAppointments({
     doctorName: appt.doctor?.name || ''
   }))
 
+  // Static options
+  const statusOptionsStatic = APPOINTMENT_STATUS_OPTIONS
+  const typeOptionsStatic = APPOINTMENT_TYPE_OPTIONS
+
   return {
     appointments: mappedAppointments,
     page,
     pageSize,
     total,
-    statusOptions: statusOptions.map(s => s.status).filter(Boolean),
-    typeOptions: typeOptions.map(t => t.appointment_type).filter(Boolean)
+    statusOptions: statusOptionsStatic,
+    typeOptions: typeOptionsStatic
   }
 }

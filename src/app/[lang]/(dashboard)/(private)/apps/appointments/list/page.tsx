@@ -54,8 +54,6 @@ const AppointmentsListApp = async ({
         page={appointmentData.page}
         pageSize={appointmentData.pageSize}
         total={appointmentData.total}
-        statusOptions={appointmentData.statusOptions}
-        typeOptions={appointmentData.typeOptions}
       />
     </TranslationProvider>
   )
