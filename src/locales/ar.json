@@ -28,5 +28,6 @@
     },
     "appointmentsList": "قائمة المواعيد",
     "bookAppointment": "حجز موعد",
-    "appointmentDetails": "تفاصيل الموعد"
+    "appointmentDetails": "تفاصيل الموعد",
+    "createAppointment": "إنشاء موعد جديد"
 }

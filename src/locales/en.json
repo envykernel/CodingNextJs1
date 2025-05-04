@@ -28,5 +28,6 @@
     },
     "appointmentsList": "Appointments List",
     "bookAppointment": "Book Appointment",
-    "appointmentDetails": "Appointment Details"
+    "appointmentDetails": "Appointment Details",
+    "createAppointment": "Create New Appointment"
 }

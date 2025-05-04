@@ -244,3 +244,11 @@ export async function getAppointmentsList({
     totalPages: Math.ceil(total / pageSize)
   }
 }
+
+export async function getAllPatients() {
+  const patients = await prisma.patient.findMany({
+    select: { id: true, name: true }
+  })
+
+  return patients
+}

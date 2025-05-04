@@ -28,5 +28,6 @@
     },
     "appointmentsList": "Liste des rendez-vous",
     "bookAppointment": "Prendre rendez-vous",
-    "appointmentDetails": "Détails du rendez-vous"
+    "appointmentDetails": "Détails du rendez-vous",
+    "createAppointment": "Créer un nouveau rendez-vous"
 }

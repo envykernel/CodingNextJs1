@@ -1,12 +1,11 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 import {
   Card,
-  CardHeader,
   Button,
   Chip,
   TablePagination,
@@ -26,6 +25,9 @@ import {
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
 
+import { useTranslation } from '@/contexts/translationContext'
+import AddAppointmentDrawer from './AddAppointmentDrawer'
+
 interface AppointmentListTableProps {
   appointmentData: any[]
   page: number
@@ -35,6 +37,8 @@ interface AppointmentListTableProps {
   onPageSizeChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   statusOptions?: string[]
   typeOptions?: string[]
+  doctors: { id: string | number; name: string }[]
+  patients: { id: string | number; name: string }[]
 }
 
 const statusColor: { [key: string]: string } = {
@@ -52,7 +56,9 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   onPageChange = () => {},
   onPageSizeChange = () => {},
   statusOptions = [],
-  typeOptions = []
+  typeOptions = [],
+  doctors = [],
+  patients = []
 }) => {
   const router = useRouter()
   const pathname = usePathname()
@@ -60,6 +66,8 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   const filter = searchParams?.get('filter') || ''
   const status = searchParams?.get('status') || ''
   const type = searchParams?.get('type') || ''
+  const t = useTranslation()
+  const [addOpen, setAddOpen] = useState(false)
 
   const handleFilter = (newFilter: string) => {
     const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
@@ -104,7 +112,15 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
 
   return (
     <Card>
-      <CardHeader title='Appointments List' />
+      <div className='flex items-center justify-between px-6 pt-6'>
+        <span className='text-xl font-semibold'>
+          {t.appointmentsList || t.appointments?.appointmentsList || 'Appointments List'}
+        </span>
+        <Button variant='contained' color='primary' onClick={() => setAddOpen(true)}>
+          {t.createAppointment || t.appointments?.createAppointment || 'Create New Appointment'}
+        </Button>
+      </div>
+      <Divider className='my-4' />
       <div className='mb-4 flex flex-wrap items-center justify-between px-6 gap-2'>
         {/* Left side: Status/Type filters */}
         <div className='flex gap-2 order-1'>
@@ -202,6 +218,12 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
         rowsPerPage={pageSize}
         onRowsPerPageChange={onPageSizeChange}
         rowsPerPageOptions={[10, 25, 50]}
+      />
+      <AddAppointmentDrawer
+        open={addOpen}
+        handleClose={() => setAddOpen(false)}
+        doctors={doctors}
+        patients={patients}
       />
     </Card>
   )

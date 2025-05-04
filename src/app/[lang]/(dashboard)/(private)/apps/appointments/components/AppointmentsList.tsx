@@ -1,15 +1,14 @@
 // AppointmentsList component
-'use client'
 
 import React from 'react'
-
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 import Grid from '@mui/material/Grid'
 
 import AppointmentListCards from './AppointmentListCards'
 import AppointmentListTable from './AppointmentListTable'
 import { APPOINTMENT_STATUS_OPTIONS, APPOINTMENT_TYPE_OPTIONS } from '../constants'
+import { getAllDoctors } from '@/app/server/doctorActions'
+import { getAllPatients } from '@/app/server/patientActions'
 
 interface AppointmentsListProps {
   appointmentData: any[]
@@ -18,25 +17,9 @@ interface AppointmentsListProps {
   total: number
 }
 
-const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointmentData, page, pageSize, total }) => {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-
-  const handlePageChange = (_: unknown, newPage: number) => {
-    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
-
-    params.set('page', (newPage + 1).toString()) // TablePagination is 0-based
-    router.push(`${pathname}?${params.toString()}`)
-  }
-
-  const handlePageSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
-
-    params.set('pageSize', event.target.value)
-    params.set('page', '1') // Reset to first page on pageSize change
-    router.push(`${pathname}?${params.toString()}`)
-  }
+const AppointmentsList = async ({ appointmentData, page, pageSize, total }: AppointmentsListProps) => {
+  const doctors = (await getAllDoctors()).map(d => ({ ...d, id: String(d.id) }))
+  const patients = (await getAllPatients()).map(p => ({ ...p, id: String(p.id) }))
 
   return (
     <Grid container spacing={6}>
@@ -49,10 +32,10 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointmentData, pa
           page={page - 1} // TablePagination expects 0-based page
           pageSize={pageSize}
           total={total}
-          onPageChange={handlePageChange}
-          onPageSizeChange={handlePageSizeChange}
           statusOptions={APPOINTMENT_STATUS_OPTIONS}
           typeOptions={APPOINTMENT_TYPE_OPTIONS}
+          doctors={doctors}
+          patients={patients}
         />
       </Grid>
     </Grid>

@@ -1,5 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-
 import { z } from 'zod'
 
 import { prisma } from '@/prisma/prisma'
@@ -20,11 +18,16 @@ const patientSchema = z.object({
   emergency_contact_email: z.string().optional()
 })
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') return res.status(405).end()
-  const parsed = patientSchema.safeParse(req.body)
+export async function POST(request: Request) {
+  const body = await request.json()
+  const parsed = patientSchema.safeParse(body)
 
-  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() })
+  if (!parsed.success) {
+    return new Response(JSON.stringify({ error: parsed.error.flatten() }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  }
 
   try {
     const {
@@ -55,9 +58,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (emergency_contact_email !== undefined) data.emergency_contact_email = emergency_contact_email
     const patient = await prisma.patient.create({ data })
 
-    res.status(201).json({ success: true, patient })
+    return new Response(JSON.stringify({ success: true, patient }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' }
+    })
   } catch (error) {
     console.error('Prisma error:', error)
-    res.status(500).json({ error: 'Database error', details: error })
+
+    return new Response(
+      JSON.stringify({
+        error: 'Database error',
+        details: error instanceof Error ? error.message : JSON.stringify(error)
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
   }
 }
