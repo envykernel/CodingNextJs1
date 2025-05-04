@@ -33,7 +33,8 @@
         "emergencyContactPhonePlaceholder": "Enter emergency contact phone",
         "emergencyContactEmail": "Emergency Contact Email",
         "emergencyContactEmailPlaceholder": "Enter emergency contact email",
-        "required": "This field is required."
+        "required": "This field is required.",
+        "birthdate": "Date of Birth"
     },
     "notAuthorized": {
         "title": "You are not authorized! 🔐",

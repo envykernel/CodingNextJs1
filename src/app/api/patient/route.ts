@@ -15,7 +15,8 @@ const patientSchema = z.object({
   email: z.string().optional(),
   emergency_contact_name: z.string().optional(),
   emergency_contact_phone: z.string().optional(),
-  emergency_contact_email: z.string().optional()
+  emergency_contact_email: z.string().optional(),
+  organisation_id: z.number()
 })
 
 export async function POST(request: Request) {
@@ -43,10 +44,11 @@ export async function POST(request: Request) {
       email,
       emergency_contact_name,
       emergency_contact_phone,
-      emergency_contact_email
+      emergency_contact_email,
+      organisation_id
     } = parsed.data
 
-    const data: any = { name, birthdate: new Date(birthdate), gender, status, phone_number }
+    const data: any = { name, birthdate: new Date(birthdate), gender, status, phone_number, organisation_id }
 
     if (doctor !== undefined) data.doctor = doctor
     if (avatar !== undefined) data.avatar = avatar

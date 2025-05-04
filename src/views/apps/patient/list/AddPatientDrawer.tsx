@@ -13,6 +13,7 @@ import Divider from '@mui/material/Divider'
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useSession } from 'next-auth/react'
 
 import { useTranslation } from '@/contexts/translationContext'
 
@@ -67,6 +68,7 @@ const AddUserDrawer = (props: Props) => {
   // Props
   const { open, handleClose, patientData, setData } = props
   const dictionary = useTranslation()
+  const { data: session } = useSession()
 
   // Hooks
   const {
@@ -95,10 +97,16 @@ const AddUserDrawer = (props: Props) => {
 
   const onSubmit = async (data: FormValidateType) => {
     try {
+      // Add organisation_id from session
+      const payload = {
+        ...data,
+        organisation_id: session?.user?.organisationId ? Number(session.user.organisationId) : undefined
+      }
+
       const res = await fetch('/api/patient', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(payload)
       })
 
       const result = await res.json()
@@ -209,9 +217,9 @@ const AddUserDrawer = (props: Props) => {
                   select
                   fullWidth
                   label={dictionary.form.gender}
-                  {...field}
                   error={!!errors.gender}
                   helperText={errors.gender ? dictionary.form.required : ''}
+                  {...field}
                 >
                   <MenuItem value=''>{dictionary.form.selectGender}</MenuItem>
                   <MenuItem value='Male'>{dictionary.form.male}</MenuItem>
@@ -240,9 +248,9 @@ const AddUserDrawer = (props: Props) => {
                   select
                   fullWidth
                   label={dictionary.form.status}
-                  {...field}
                   error={!!errors.status}
                   helperText={errors.status ? dictionary.form.required : ''}
+                  {...field}
                 >
                   <MenuItem value=''>{dictionary.form.selectStatus}</MenuItem>
                   <MenuItem value='enabled'>{dictionary.form.enabled}</MenuItem>

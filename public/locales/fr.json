@@ -33,7 +33,8 @@
         "emergencyContactPhonePlaceholder": "Entrez le téléphone du contact d'urgence",
         "emergencyContactEmail": "E-mail du contact d'urgence",
         "emergencyContactEmailPlaceholder": "Entrez l'e-mail du contact d'urgence",
-        "required": "Ce champ est requis."
+        "required": "Ce champ est requis.",
+        "birthdate": "Date de naissance"
     },
     "notAuthorized": {
         "title": "Vous n'êtes pas autorisé ! 🔐",

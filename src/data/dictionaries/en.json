@@ -174,7 +174,8 @@
     "enabled": "Enabled",
     "disabled": "Disabled",
     "blocked": "Blocked",
-    "pending": "Pending"
+    "pending": "Pending",
+    "birthdate": "Date of Birth"
   },
   "patient": {
     "birthdate": "Birthdate",
