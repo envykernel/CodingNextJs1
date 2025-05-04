@@ -158,6 +158,13 @@ model organisation {
   patient_measurements patient_measurements[]
   patient_medical      patient_medical[]
   patient_medical_history patient_medical_history[]
+
+  // New fields for working days, hours, and break
+  working_days        String[]              @db.VarChar(20)
+  work_start_time     String?               @db.VarChar(5) // e.g., "09:00"
+  work_end_time       String?               @db.VarChar(5) // e.g., "18:00"
+  break_start_time    String?               @db.VarChar(5) // e.g., "12:30"
+  break_end_time      String?               @db.VarChar(5) // e.g., "13:30"
 }
 
 model patient_appointment {

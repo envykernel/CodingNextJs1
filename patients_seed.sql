@@ -24,7 +24,12 @@ CREATE TABLE IF NOT EXISTS organisation (
     email VARCHAR(255),
     status VARCHAR(50) DEFAULT 'enabled', -- e.g., enabled, disabled, pending, etc.
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    working_days VARCHAR(20)[] DEFAULT ARRAY['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+    work_start_time VARCHAR(5) DEFAULT '08:30',
+    work_end_time VARCHAR(5) DEFAULT '18:00',
+    break_start_time VARCHAR(5) DEFAULT '12:00',
+    break_end_time VARCHAR(5) DEFAULT '13:30'
 );
 
 DROP TABLE IF EXISTS patient CASCADE;
@@ -51,8 +56,8 @@ CREATE TABLE IF NOT EXISTS patient (
 CREATE INDEX IF NOT EXISTS idx_patient_organisation_id ON patient(organisation_id);
 
 -- Create the first organisation for multi-tenant support
-INSERT INTO organisation (id, name, address, phone_number, email, status, created_at, updated_at)
-VALUES (1, 'Organisation Dr.Samia', '123 Main St', '+1234567890', 'contact@drsamia.org', 'enabled', NOW(), NOW());
+INSERT INTO organisation (id, name, address, phone_number, email, status, created_at, updated_at, working_days, work_start_time, work_end_time, break_start_time, break_end_time)
+VALUES (1, 'Organisation Dr.Samia', '123 Main St', '+1234567890', 'contact@drsamia.org', 'enabled', NOW(), NOW(), ARRAY['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'], '08:30', '18:00', '12:00', '13:30');
 
 -- Insert patients
 INSERT INTO patient (id, organisation_id, name, birthdate, gender, doctor, status, avatar, address, city, phone_number, email, emergency_contact_name, emergency_contact_phone, emergency_contact_email, created_at, updated_at)
