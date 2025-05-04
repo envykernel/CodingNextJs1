@@ -104,6 +104,17 @@ VALUES
   (45, 1, 'Sara Abdulrahman','1991-10-11', 'female', 'Dr. Mona Abdullah', 'enabled', NULL, '45 Unity St', 'Dammam', '0543456789', 'sara.abdulrahman@email.com', 'Abdulrahman Sara', '0549987654', 'abdulrahman.sara@email.com', NOW(), NOW());
 
 -- Insert patient_measurements (one per patient)
+CREATE TABLE IF NOT EXISTS patient_measurements (
+    id SERIAL PRIMARY KEY,
+    patient_id INTEGER NOT NULL REFERENCES patient(id) ON DELETE CASCADE,
+    measured_at TIMESTAMP NOT NULL,
+    weight_kg NUMERIC(5,2),
+    height_cm NUMERIC(5,2),
+    temperature_c NUMERIC(4,1),
+    blood_pressure_systolic INTEGER,
+    blood_pressure_diastolic INTEGER
+);
+
 INSERT INTO patient_measurements (patient_id, measured_at, weight_kg, height_cm, temperature_c, blood_pressure_systolic, blood_pressure_diastolic)
 VALUES
   (1,  NOW(), 75.2, 175.0, 36.7, 120, 80),
