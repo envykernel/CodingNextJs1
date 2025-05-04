@@ -9,3 +9,22 @@ export type UserTable = {
   password: string
   organisationId: number
 }
+
+export const users: UserTable[] = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john@example.com',
+    image: '',
+    password: 'password123',
+    organisationId: 101
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    image: '',
+    password: 'password456',
+    organisationId: 102
+  }
+]
