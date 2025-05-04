@@ -54,7 +54,17 @@ const UserDropdown = () => {
   const router = useRouter()
   const { data: session } = useSession()
   const { settings } = useSettings()
-  const { lang: locale } = useParams()
+  const { lang } = useParams() as { lang?: string }
+
+  // Translation for organisationId
+  const translations: Record<string, Record<string, string>> = {
+    en: { organisationId: 'Organisation ID' },
+    fr: { organisationId: "ID de l'organisation" },
+    ar: { organisationId: 'معرف المؤسسة' }
+  }
+
+  const organisationId = (session?.user as any)?.organisationId
+  const orgLabel = translations[lang || 'en']?.organisationId || 'Organisation ID'
 
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
@@ -62,7 +72,7 @@ const UserDropdown = () => {
 
   const handleDropdownClose = (event?: MouseEvent<HTMLLIElement> | (MouseEvent | TouchEvent), url?: string) => {
     if (url) {
-      router.push(getLocalizedUrl(url, locale as Locale))
+      router.push(getLocalizedUrl(url, lang as Locale))
     }
 
     if (anchorRef.current && anchorRef.current.contains(event?.target as HTMLElement)) {
@@ -126,6 +136,9 @@ const UserDropdown = () => {
                         {session?.user?.name || ''}
                       </Typography>
                       <Typography variant='caption'>{session?.user?.email || ''}</Typography>
+                      <Typography variant='caption' color={organisationId ? 'text.secondary' : 'error'}>
+                        {orgLabel}: {organisationId ? organisationId : 'No Orga'}
+                      </Typography>
                     </div>
                   </div>
                   <Divider className='mlb-1' />

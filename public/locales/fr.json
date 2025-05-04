@@ -40,5 +40,6 @@
         "description": "Vous n'avez pas la permission d'accéder à cette page. Retournez à l'accueil !",
         "orgMissingTitle": "Aucune organisation assignée",
         "orgMissingDescription": "Votre compte n'est assigné à aucune organisation. Veuillez contacter votre administrateur."
-    }
+    },
+    "organisationId": "ID de l'organisation"
 }
