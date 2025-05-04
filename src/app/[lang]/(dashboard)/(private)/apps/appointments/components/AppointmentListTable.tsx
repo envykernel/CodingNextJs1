@@ -105,43 +105,49 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   return (
     <Card>
       <CardHeader title='Appointments List' />
-      <div className='mb-4 flex gap-2 px-6 flex-wrap items-center'>
-        <Button
-          variant={filter === 'today' ? 'contained' : 'outlined'}
-          color={filter === 'today' ? 'primary' : 'inherit'}
-          onClick={() => handleFilter(filter === 'today' ? '' : 'today')}
-        >
-          Today
-        </Button>
-        <Button
-          variant={filter === 'week' ? 'contained' : 'outlined'}
-          color={filter === 'week' ? 'primary' : 'inherit'}
-          onClick={() => handleFilter(filter === 'week' ? '' : 'week')}
-        >
-          This Week
-        </Button>
-        <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%', mr: 2 }}>
-          <InputLabel shrink>Status</InputLabel>
-          <Select value={status} label='Status' onChange={handleStatusChange} displayEmpty>
-            <MenuItem value=''>All Statuses</MenuItem>
-            {statusOptions.map(option => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%', mr: 2 }}>
-          <InputLabel shrink>Type</InputLabel>
-          <Select value={type} label='Type' onChange={handleTypeChange} displayEmpty>
-            <MenuItem value=''>All Types</MenuItem>
-            {typeOptions.map(option => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <div className='mb-4 flex flex-wrap items-center justify-between px-6 gap-2'>
+        {/* Left side: Status/Type filters */}
+        <div className='flex gap-2 order-1'>
+          <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%', mr: 2 }}>
+            <InputLabel shrink>Status</InputLabel>
+            <Select value={status} label='Status' onChange={handleStatusChange} displayEmpty>
+              <MenuItem value=''>All Statuses</MenuItem>
+              {statusOptions.map(option => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%', mr: 2 }}>
+            <InputLabel shrink>Type</InputLabel>
+            <Select value={type} label='Type' onChange={handleTypeChange} displayEmpty>
+              <MenuItem value=''>All Types</MenuItem>
+              {typeOptions.map(option => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        {/* Right side: Today/This Week buttons */}
+        <div className='flex gap-2 order-2'>
+          <Button
+            variant={filter === 'today' ? 'contained' : 'outlined'}
+            color={filter === 'today' ? 'primary' : 'inherit'}
+            onClick={() => handleFilter(filter === 'today' ? '' : 'today')}
+          >
+            Today
+          </Button>
+          <Button
+            variant={filter === 'week' ? 'contained' : 'outlined'}
+            color={filter === 'week' ? 'primary' : 'inherit'}
+            onClick={() => handleFilter(filter === 'week' ? '' : 'week')}
+          >
+            This Week
+          </Button>
+        </div>
       </div>
       <Divider className='mb-2' />
       <TableContainer component={Paper} sx={{ backgroundColor: 'transparent' }}>
