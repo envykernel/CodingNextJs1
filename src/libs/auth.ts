@@ -6,6 +6,23 @@ import type { NextAuthOptions } from 'next-auth'
 
 import { prisma } from '@/prisma/prisma'
 
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      name?: string | null
+      email?: string | null
+      image?: string | null
+      organisationId?: string
+      organisationName?: string | null
+    }
+  }
+}
+
+// Helper to ensure string or undefined (never null)
+function safeString(val: unknown): string | undefined {
+  return typeof val === 'string' ? val : undefined
+}
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma), //PrismaAdapter(prisma) as Adapter,
 
@@ -103,26 +120,51 @@ export const authOptions: NextAuthOptions = {
      * via `jwt()` callback to make them accessible in the `session()` callback
      */
     async jwt({ token, user }) {
-      console.log('callback')
-      console.log(user)
-
+      // If user is present (on sign in), fetch from DB to get organisationId and organisation name
       if (user) {
-        /*
-         * For adding custom parameters to user in session, we first need to add those parameters
-         * in token which then will be available in the `session()` callback
-         */
-        token.name = user.name
+        const dbUser = await prisma.user.findUnique({
+          where: { email: safeString(user.email) },
+          include: { organisation: true }
+        })
+
+        token.name = safeString(user.name)
+        token.email = safeString(user.email)
+
+        // Always convert organisationId to string if not null/undefined
+        token.organisationId = dbUser?.organisationId != null ? String(dbUser.organisationId) : undefined
+        token.organisationName = dbUser?.organisation?.name ? safeString(dbUser.organisation.name) : undefined
       }
 
       return token
     },
     async session({ session, token }) {
       if (session.user) {
-        // ** Add custom params to user in session which are added in `jwt()` callback via `token` parameter
-        session.user.name = token.name
+        session.user.name = safeString(token.name)
+        session.user.email = safeString(token.email)
+
+        // Always convert organisationId to string if not null/undefined
+        ;(session.user as any).organisationId = token.organisationId != null ? String(token.organisationId) : undefined
+        ;(session.user as any).organisationName = token.organisationName
+          ? safeString(token.organisationName)
+          : undefined
       }
 
       return session
+    },
+    async signIn({ user }) {
+      const dbUser = await prisma.user.findUnique({
+        where: { email: safeString(user.email) },
+        include: { organisation: true }
+      })
+
+      // Always convert organisationId to string if not null/undefined
+      const orgId = dbUser?.organisationId != null ? String(dbUser.organisationId) : undefined
+
+      if (!orgId) {
+        return '/no-organisation'
+      }
+
+      return true
     }
   }
 }

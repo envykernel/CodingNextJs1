@@ -8,6 +8,8 @@ import type { CSSProperties } from 'react'
 import styled from '@emotion/styled'
 
 // Type Imports
+import { useSession } from 'next-auth/react'
+
 import type { VerticalNavContextProps } from '@menu/contexts/verticalNavContext'
 
 // Component Imports
@@ -50,6 +52,7 @@ const Logo = ({ color }: { color?: CSSProperties['color'] }) => {
   // Hooks
   const { isHovered, transitionDuration, isBreakpointReached } = useVerticalNav()
   const { settings } = useSettings()
+  const { data: session } = useSession()
 
   // Vars
   const { layout } = settings
@@ -80,7 +83,7 @@ const Logo = ({ color }: { color?: CSSProperties['color'] }) => {
         transitionDuration={transitionDuration}
         isBreakpointReached={isBreakpointReached}
       >
-        {themeConfig.templateName}
+        {(session?.user as any)?.organisationName || themeConfig.templateName}
       </LogoText>
     </div>
   )

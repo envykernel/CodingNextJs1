@@ -41,5 +41,10 @@
         "orgMissingTitle": "Aucune organisation assignée",
         "orgMissingDescription": "Votre compte n'est assigné à aucune organisation. Veuillez contacter votre administrateur."
     },
-    "organisationId": "ID de l'organisation"
+    "organisationId": "ID de l'organisation",
+    "noOrganisationTitle": "Vous n'appartenez à aucune organisation.",
+    "noOrganisationPrompt": "Veuillez rejoindre ou créer une organisation pour continuer.",
+    "joinOrganisation": "Rejoindre une organisation",
+    "createOrganisation": "Créer une organisation",
+    "signOut": "Se déconnecter"
 }

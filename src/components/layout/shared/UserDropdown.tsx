@@ -56,15 +56,15 @@ const UserDropdown = () => {
   const { settings } = useSettings()
   const { lang } = useParams() as { lang?: string }
 
-  // Translation for organisationId
+  // Translation for organisation label
   const translations: Record<string, Record<string, string>> = {
-    en: { organisationId: 'Organisation ID' },
-    fr: { organisationId: "ID de l'organisation" },
-    ar: { organisationId: 'معرف المؤسسة' }
+    en: { organisation: 'Organisation' },
+    fr: { organisation: 'Organisation' },
+    ar: { organisation: 'المؤسسة' }
   }
 
-  const organisationId = (session?.user as any)?.organisationId
-  const orgLabel = translations[lang || 'en']?.organisationId || 'Organisation ID'
+  const organisationName = (session?.user as any)?.organisationName
+  const orgLabel = translations[lang || 'en']?.organisation || 'Organisation'
 
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
@@ -136,8 +136,8 @@ const UserDropdown = () => {
                         {session?.user?.name || ''}
                       </Typography>
                       <Typography variant='caption'>{session?.user?.email || ''}</Typography>
-                      <Typography variant='caption' color={organisationId ? 'text.secondary' : 'error'}>
-                        {orgLabel}: {organisationId ? organisationId : 'No Orga'}
+                      <Typography variant='caption' color={organisationName ? 'text.secondary' : 'error'}>
+                        {orgLabel}: {organisationName ? organisationName : 'No Organisation'}
                       </Typography>
                     </div>
                   </div>

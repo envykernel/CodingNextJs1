@@ -41,5 +41,10 @@
         "orgMissingTitle": "لم يتم تعيين مؤسسة",
         "orgMissingDescription": "حسابك غير مرتبط بأي مؤسسة. يرجى التواصل مع المسؤول."
     },
-    "organisationId": "معرف المؤسسة"
+    "organisationId": "معرف المؤسسة",
+    "noOrganisationTitle": "أنت لا تنتمي إلى أي مؤسسة.",
+    "noOrganisationPrompt": "يرجى الانضمام أو إنشاء مؤسسة للمتابعة.",
+    "joinOrganisation": "انضم إلى مؤسسة",
+    "createOrganisation": "إنشاء مؤسسة",
+    "signOut": "تسجيل الخروج"
 }

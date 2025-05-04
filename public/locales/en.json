@@ -41,5 +41,10 @@
         "orgMissingTitle": "No Organisation Assigned",
         "orgMissingDescription": "Your account is not assigned to any organisation. Please contact your administrator."
     },
-    "organisationId": "Organisation ID"
+    "organisationId": "Organisation ID",
+    "noOrganisationTitle": "You don't belong to any organisation.",
+    "noOrganisationPrompt": "Please join or create an organisation to continue.",
+    "joinOrganisation": "Join Organisation",
+    "createOrganisation": "Create Organisation",
+    "signOut": "Sign Out"
 }
