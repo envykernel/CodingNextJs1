@@ -109,7 +109,10 @@ export const authOptions: NextAuthOptions = {
 
   // ** Please refer to https://next-auth.js.org/configuration/options#pages for more `pages` options
   pages: {
-    signIn: '/login'
+    signIn: '/login',
+
+    // NOTE: This is hardcoded to English. For full i18n, handle language prefix dynamically (middleware or custom logic).
+    error: '/en/pages/misc/access-denied'
   },
 
   // ** Please refer to https://next-auth.js.org/configuration/options#callbacks for more `callbacks` options
@@ -120,9 +123,9 @@ export const authOptions: NextAuthOptions = {
      * via `jwt()` callback to make them accessible in the `session()` callback
      */
     async jwt({ token, user }) {
-      // If user is present (on sign in), fetch from DB to get organisationId and organisation name
+      // If user is present (on sign in), fetch from UserInternal to get organisationId and organisation name
       if (user) {
-        const dbUser = await prisma.user.findUnique({
+        const internalUser = await prisma.userInternal.findUnique({
           where: { email: safeString(user.email) },
           include: { organisation: true }
         })
@@ -131,8 +134,10 @@ export const authOptions: NextAuthOptions = {
         token.email = safeString(user.email)
 
         // Always convert organisationId to string if not null/undefined
-        token.organisationId = dbUser?.organisationId != null ? String(dbUser.organisationId) : undefined
-        token.organisationName = dbUser?.organisation?.name ? safeString(dbUser.organisation.name) : undefined
+        token.organisationId = internalUser?.organisationId != null ? String(internalUser.organisationId) : undefined
+        token.organisationName = internalUser?.organisation?.name
+          ? safeString(internalUser.organisation.name)
+          : undefined
       }
 
       return token
@@ -152,16 +157,13 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     async signIn({ user }) {
-      const dbUser = await prisma.user.findUnique({
-        where: { email: safeString(user.email) },
-        include: { organisation: true }
+      // Check UserInternal approval and organisation
+      const internalUser = await prisma.userInternal.findUnique({
+        where: { email: safeString(user.email) }
       })
 
-      // Always convert organisationId to string if not null/undefined
-      const orgId = dbUser?.organisationId != null ? String(dbUser.organisationId) : undefined
-
-      if (!orgId) {
-        return '/no-organisation'
+      if (!internalUser || !internalUser.isApproved || !internalUser.organisationId) {
+        return false
       }
 
       return true

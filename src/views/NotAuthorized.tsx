@@ -13,6 +13,8 @@ import Typography from '@mui/material/Typography'
 // Third-party Imports
 import classnames from 'classnames'
 
+import { useTranslation } from '@/contexts/translationContext'
+
 // Type Imports
 import type { SystemMode } from '@core/types'
 import type { Locale } from '@/configs/i18n'
@@ -33,37 +35,72 @@ const MaskImg = styled('img')({
   zIndex: -1
 })
 
-const NotAuthorized = ({ mode }: { mode: SystemMode }) => {
+const NotAuthorized = ({
+  mode,
+  heading,
+  message,
+  buttonText,
+  simple = false
+}: {
+  mode: SystemMode
+  heading?: string
+  message?: string
+  buttonText?: string
+  simple?: boolean
+}) => {
   // Vars
   const darkImg = '/images/pages/misc-mask-dark.png'
   const lightImg = '/images/pages/misc-mask-light.png'
 
   // Hooks
   const theme = useTheme()
-  const { lang: locale } = useParams()
+  const params = useParams()
+  const locale = params?.lang || 'en'
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
   const miscBackground = useImageVariant(mode, lightImg, darkImg)
+  const t = useTranslation()
+
+  // Debug: log the accessDenied translation object
+  console.log('t.accessDenied:', t.accessDenied)
 
   return (
     <div className='flex items-center justify-center min-bs-[100dvh] relative p-6 overflow-x-hidden'>
       <div className='flex items-center flex-col text-center'>
         <div className='flex flex-col gap-2 is-[90vw] sm:is-[unset] mbe-6'>
-          <Typography className='font-medium text-8xl' color='text.primary'>
-            401
-          </Typography>
-          <Typography variant='h4'>You are not authorized! 🔐</Typography>
-          <Typography>You don&#39;t have permission to access this page. Go Home!</Typography>
+          {simple ? (
+            <>
+              <Typography className='font-medium text-8xl' color='text.primary'>
+                403
+              </Typography>
+              <Typography variant='h4'>{heading || t.accessDenied?.heading || 'You do not have access'}</Typography>
+              <Typography>
+                {message || t.accessDenied?.message || 'You do not have permission to access this page.'}
+              </Typography>
+            </>
+          ) : (
+            <>
+              <Typography className='font-medium text-8xl' color='text.primary'>
+                401
+              </Typography>
+              <Typography variant='h4'>{heading || t.accessDenied?.heading || 'You do not have access'}</Typography>
+              <Typography>
+                {message || t.accessDenied?.message || 'You do not have permission to access this page.'}
+              </Typography>
+            </>
+          )}
         </div>
         <Button href={getLocalizedUrl('/', locale as Locale)} component={Link} variant='contained'>
-          Back To Home
+          {buttonText || t.accessDenied?.button || 'Back to Home'}
         </Button>
-        <img
-          alt='error-401-illustration'
-          src='/images/illustrations/characters/3.png'
-          className='object-cover bs-[400px] md:bs-[450px] lg:bs-[500px] mbs-10 md:mbs-14 lg:mbs-20'
-        />
+        {!simple && (
+          <img
+            alt='error-401-illustration'
+            src='/images/illustrations/characters/3.png'
+            className='object-cover bs-[400px] md:bs-[450px] lg:bs-[500px] mbs-10 md:mbs-14 lg:mbs-20'
+          />
+        )}
       </div>
-      {!hidden && (
+      {!hidden && !simple && (
         <MaskImg
           alt='mask'
           src={miscBackground}

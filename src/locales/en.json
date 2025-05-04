@@ -46,5 +46,11 @@
     "createAppointment": "Create New Appointment",
     "availabilityTitle": "Availability",
     "available": "Available",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "accessDenied": {
+        "title": "Access Denied",
+        "heading": "You do not have access",
+        "message": "You do not have permission to access this page. Please contact your administrator if you believe this is a mistake.",
+        "button": "Back to Home"
+    }
 }

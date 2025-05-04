@@ -46,5 +46,11 @@
     "createAppointment": "Créer un nouveau rendez-vous",
     "availabilityTitle": "Disponibilité",
     "available": "Disponible",
-    "unavailable": "Indisponible"
+    "unavailable": "Indisponible",
+    "accessDenied": {
+        "title": "Accès refusé",
+        "heading": "Vous n'avez pas accès",
+        "message": "Vous n'avez pas la permission d'accéder à cette page. Veuillez contacter votre administrateur si vous pensez qu'il s'agit d'une erreur.",
+        "button": "Retour à l'accueil"
+    }
 }
