@@ -15,9 +15,10 @@ interface AppointmentsListProps {
   page: number
   pageSize: number
   total: number
+  dictionary: any
 }
 
-const AppointmentsList = async ({ appointmentData, page, pageSize, total }: AppointmentsListProps) => {
+const AppointmentsList = async ({ appointmentData, page, pageSize, total, dictionary }: AppointmentsListProps) => {
   const doctors = (await getAllDoctors()).map(d => ({ ...d, id: String(d.id) }))
   const patients = (await getAllPatients()).map(p => ({ ...p, id: String(p.id) }))
 
@@ -36,6 +37,7 @@ const AppointmentsList = async ({ appointmentData, page, pageSize, total }: Appo
           typeOptions={APPOINTMENT_TYPE_OPTIONS}
           doctors={doctors}
           patients={patients}
+          dictionary={dictionary}
         />
       </Grid>
     </Grid>

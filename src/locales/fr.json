@@ -13,7 +13,19 @@
         "newPatientHighlight": "Nouveau patient créé !",
         "newLabel": "nouveau"
     },
-    "appointments": "Rendez-vous",
+    "appointments": {
+        "typeOptions": {
+            "Consultation": "Consultation",
+            "Medical Check": "Bilan médical",
+            "Clinical Procedure": "Procédure clinique",
+            "Other": "Autre"
+        },
+        "statusOptions": {
+            "scheduled": "Planifié",
+            "completed": "Terminé",
+            "cancelled": "Annulé"
+        }
+    },
     "noAppointments": "Aucun rendez-vous disponible.",
     "date": "Date",
     "time": "Heure",
@@ -31,5 +43,8 @@
     "appointmentsList": "Liste des rendez-vous",
     "bookAppointment": "Prendre rendez-vous",
     "appointmentDetails": "Détails du rendez-vous",
-    "createAppointment": "Créer un nouveau rendez-vous"
+    "createAppointment": "Créer un nouveau rendez-vous",
+    "availabilityTitle": "Disponibilité",
+    "available": "Disponible",
+    "unavailable": "Indisponible"
 }

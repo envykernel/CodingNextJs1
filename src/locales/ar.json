@@ -13,7 +13,19 @@
         "newPatientHighlight": "تم إنشاء مريض جديد!",
         "newLabel": "جديد"
     },
-    "appointments": "المواعيد",
+    "appointments": {
+        "typeOptions": {
+            "Consultation": "استشارة",
+            "Medical Check": "فحص طبي",
+            "Clinical Procedure": "إجراء سريري",
+            "Other": "أخرى"
+        },
+        "statusOptions": {
+            "scheduled": "مجدول",
+            "completed": "مكتمل",
+            "cancelled": "ملغى"
+        }
+    },
     "noAppointments": "لا توجد مواعيد متاحة.",
     "date": "التاريخ",
     "time": "الوقت",
@@ -31,5 +43,8 @@
     "appointmentsList": "قائمة المواعيد",
     "bookAppointment": "حجز موعد",
     "appointmentDetails": "تفاصيل الموعد",
-    "createAppointment": "إنشاء موعد جديد"
+    "createAppointment": "إنشاء موعد جديد",
+    "availabilityTitle": "التوفر",
+    "available": "متاح",
+    "unavailable": "غير متاح"
 }

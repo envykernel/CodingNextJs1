@@ -13,7 +13,19 @@
         "newPatientHighlight": "New patient created!",
         "newLabel": "new"
     },
-    "appointments": "Appointments",
+    "appointments": {
+        "typeOptions": {
+            "Consultation": "Consultation",
+            "Medical Check": "Medical Check",
+            "Clinical Procedure": "Clinical Procedure",
+            "Other": "Other"
+        },
+        "statusOptions": {
+            "scheduled": "Scheduled",
+            "completed": "Completed",
+            "cancelled": "Cancelled"
+        }
+    },
     "noAppointments": "No appointments available.",
     "date": "Date",
     "time": "Time",
@@ -31,5 +43,8 @@
     "appointmentsList": "Appointments List",
     "bookAppointment": "Book Appointment",
     "appointmentDetails": "Appointment Details",
-    "createAppointment": "Create New Appointment"
+    "createAppointment": "Create New Appointment",
+    "availabilityTitle": "Availability",
+    "available": "Available",
+    "unavailable": "Unavailable"
 }

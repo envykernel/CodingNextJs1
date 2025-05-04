@@ -25,7 +25,7 @@ import {
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
 
-import { useTranslation } from '@/contexts/translationContext'
+import { useTranslation, TranslationProvider } from '@/contexts/translationContext'
 import AddAppointmentDrawer from './AddAppointmentDrawer'
 
 interface AppointmentListTableProps {
@@ -39,6 +39,7 @@ interface AppointmentListTableProps {
   typeOptions?: string[]
   doctors: { id: string | number; name: string }[]
   patients: { id: string | number; name: string }[]
+  dictionary: any
 }
 
 const statusColor: { [key: string]: string } = {
@@ -58,7 +59,8 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   statusOptions = [],
   typeOptions = [],
   doctors = [],
-  patients = []
+  patients = [],
+  dictionary
 }) => {
   const router = useRouter()
   const pathname = usePathname()
@@ -219,12 +221,15 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
         onRowsPerPageChange={onPageSizeChange}
         rowsPerPageOptions={[10, 25, 50]}
       />
-      <AddAppointmentDrawer
-        open={addOpen}
-        handleClose={() => setAddOpen(false)}
-        doctors={doctors}
-        patients={patients}
-      />
+      <TranslationProvider dictionary={dictionary}>
+        <AddAppointmentDrawer
+          open={addOpen}
+          handleClose={() => setAddOpen(false)}
+          doctors={doctors}
+          patients={patients}
+          dictionary={dictionary}
+        />
+      </TranslationProvider>
     </Card>
   )
 }
