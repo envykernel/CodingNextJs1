@@ -170,6 +170,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
   // States
   const [addPatientOpen, setAddPatientOpen] = useState(false)
   const [rowSelection, setRowSelection] = useState({})
+  const [newPatientId, setNewPatientId] = useState<number | null>(null)
 
   // Use mock data if tableData is not provided
   const [data, setData] = useState<PatientType[]>(
@@ -238,16 +239,29 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
       },
       columnHelper.accessor('name', {
         header: 'Patient Name',
-        cell: ({ row }) => (
-          <div className='flex items-center gap-4'>
-            {getAvatar({ avatar: row.original.avatar, fullName: row.original.name })}
-            <div className='flex flex-col'>
-              <Typography color='text.primary' className='font-medium'>
-                {row.original.name || '-'}
-              </Typography>
+        cell: ({ row }) => {
+          const isNewPatient = row.original.id === newPatientId
+          const newLabel = dictionary?.patient?.newLabel || 'new'
+
+          return (
+            <div className='flex items-center gap-2'>
+              {getAvatar({ avatar: row.original.avatar, fullName: row.original.name })}
+              <div className='flex items-center gap-2'>
+                <Typography color='text.primary' className='font-medium'>
+                  {row.original.name || '-'}
+                </Typography>
+                {isNewPatient && (
+                  <Chip
+                    label={newLabel}
+                    color='success'
+                    size='small'
+                    sx={{ fontWeight: 600, textTransform: 'lowercase', height: 22 }}
+                  />
+                )}
+              </div>
             </div>
-          </div>
-        )
+          )
+        }
       }),
       columnHelper.accessor('birthdate', {
         header: 'Birthdate',
@@ -353,6 +367,13 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
     }
   }
 
+  // Handler to show 'new' label for a short time after patient creation
+  const handleAddPatient = (newPatient: PatientType) => {
+    setData([newPatient, ...data])
+    setNewPatientId(newPatient.id)
+    setTimeout(() => setNewPatientId(null), 2000)
+  }
+
   return (
     <>
       <Card>
@@ -442,9 +463,18 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
                 {table
                   .getRowModel()
                   .rows.slice(0, table.getState().pagination.pageSize)
-                  .map(row => {
+                  .map((row, idx) => {
+                    // Highlight the first row if it's a new patient (not present in the rest of the data)
+                    const isNewPatient = idx === 0 && data.length > 0 && data[0].id === row.original.id
+
                     return (
-                      <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                      <tr
+                        key={row.id}
+                        className={classnames({
+                          selected: row.getIsSelected(),
+                          [tableStyles.newPatientRow]: isNewPatient
+                        })}
+                      >
                         {row.getVisibleCells().map(cell => (
                           <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                         ))}
@@ -480,6 +510,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
         handleClose={() => setAddPatientOpen(!addPatientOpen)}
         patientData={data}
         setData={setData}
+        onPatientCreated={handleAddPatient}
       />
     </>
   )

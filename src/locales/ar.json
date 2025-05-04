@@ -9,7 +9,9 @@
         "email": "البريد الإلكتروني",
         "address": "العنوان",
         "city": "المدينة",
-        "medicalData": "البيانات الطبية"
+        "medicalData": "البيانات الطبية",
+        "newPatientHighlight": "تم إنشاء مريض جديد!",
+        "newLabel": "جديد"
     },
     "appointments": "المواعيد",
     "noAppointments": "لا توجد مواعيد متاحة.",

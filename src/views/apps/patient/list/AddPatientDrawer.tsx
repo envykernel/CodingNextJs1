@@ -29,6 +29,7 @@ type Props = {
   handleClose: () => void
   patientData?: PatientType[]
   setData: (data: PatientType[]) => void
+  onPatientCreated?: (patient: PatientType) => void
 }
 
 type FormValidateType = {
@@ -114,6 +115,10 @@ const AddUserDrawer = (props: Props) => {
       if (result && result.success) {
         if (setData && patientData) {
           setData([mapNullToUndefined(result.patient), ...patientData])
+        }
+
+        if (props.onPatientCreated) {
+          props.onPatientCreated(mapNullToUndefined(result.patient))
         }
 
         handleClose()

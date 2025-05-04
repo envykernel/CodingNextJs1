@@ -9,7 +9,9 @@
         "email": "E-mail",
         "address": "Adresse",
         "city": "Ville",
-        "medicalData": "Données médicales"
+        "medicalData": "Données médicales",
+        "newPatientHighlight": "Nouveau patient créé !",
+        "newLabel": "nouveau"
     },
     "appointments": "Rendez-vous",
     "noAppointments": "Aucun rendez-vous disponible.",
