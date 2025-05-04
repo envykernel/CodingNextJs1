@@ -1,4 +1,6 @@
 // Component Imports
+// import { getServerSession } from 'next-auth'
+
 import PatientList from '@views/apps/patient/list'
 
 // Data Imports
@@ -6,6 +8,9 @@ import { getPatientList } from '@/app/server/patientActions'
 import { getDictionary } from '@/utils/getDictionary'
 import type { Locale } from '@configs/i18n'
 import { TranslationProvider } from '@/contexts/translationContext'
+
+// import { authOptions } from '@/libs/auth'
+import { getUserOrganisation } from '@/utils/getUserOrganisation'
 
 /**
  * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
@@ -52,7 +57,9 @@ const PatientListApp = async ({
       : resolvedSearchParams.name
     : undefined
 
-  const patientData = await getPatientList({ page, pageSize, name })
+  // Get the logged-in user's organisationId
+  const { organisationId } = await getUserOrganisation()
+  const patientData = await getPatientList({ page, pageSize, name, organisationId })
 
   const dictionary = await getDictionary(lang)
 

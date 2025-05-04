@@ -39,21 +39,25 @@ function serializeMeasurements(measurements: any[]) {
   }))
 }
 
-export async function getPatientList({
-  page = 1,
-  pageSize = 20,
-  name,
-  city,
-  status
-}: {
-  page?: number
-  pageSize?: number
-  name?: string
-  city?: string
-  status?: string
-} = {}) {
+export async function getPatientList(
+  {
+    page = 1,
+    pageSize = 20,
+    name,
+    city,
+    status,
+    organisationId
+  }: {
+    page?: number
+    pageSize?: number
+    name?: string
+    city?: string
+    status?: string
+    organisationId: number
+  } = { organisationId: 0 }
+) {
   const skip = (page - 1) * pageSize
-  const where: any = {}
+  const where: any = { organisation_id: organisationId }
 
   if (name) {
     where.name = { contains: name, mode: 'insensitive' }
