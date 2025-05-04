@@ -34,5 +34,11 @@
         "emergencyContactEmail": "Emergency Contact Email",
         "emergencyContactEmailPlaceholder": "Enter emergency contact email",
         "required": "This field is required."
+    },
+    "notAuthorized": {
+        "title": "You are not authorized! 🔐",
+        "description": "You don't have permission to access this page. Go Home!",
+        "orgMissingTitle": "No Organisation Assigned",
+        "orgMissingDescription": "Your account is not assigned to any organisation. Please contact your administrator."
     }
 }

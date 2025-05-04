@@ -21,6 +21,8 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
+  organisationId    Int?
+  organisation      organisation? @relation(fields: [organisationId], references: [id])
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -40,6 +42,8 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  organisationId Int?
+  organisation   organisation? @relation(fields: [organisationId], references: [id])
   accounts      Account[]
   sessions      Session[]
 }
@@ -137,6 +141,8 @@ model organisation {
   doctor              doctor[]
   patient             patient[]
   patient_appointment patient_appointment[]
+  users               User[]
+  accounts            Account[]
 }
 
 model patient_appointment {
