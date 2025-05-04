@@ -27,6 +27,7 @@ import type { SelectChangeEvent } from '@mui/material/Select'
 
 import { useTranslation, TranslationProvider } from '@/contexts/translationContext'
 import AddAppointmentDrawer from './AddAppointmentDrawer'
+import { LocalDate, LocalTime } from '@/components/LocalTime'
 
 interface AppointmentListTableProps {
   appointmentData: any[]
@@ -184,8 +185,12 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
             {appointmentData.map(row => (
               <TableRow key={row.id}>
                 <TableCell>{row.patientName}</TableCell>
-                <TableCell>{row.date}</TableCell>
-                <TableCell>{row.time}</TableCell>
+                <TableCell>
+                  <LocalDate iso={row.appointmentDate} />
+                </TableCell>
+                <TableCell>
+                  <LocalTime iso={row.appointmentDate} />
+                </TableCell>
                 <TableCell>{row.type}</TableCell>
                 <TableCell>
                   <Chip

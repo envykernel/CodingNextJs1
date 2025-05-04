@@ -12,6 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
+import { useSession } from 'next-auth/react'
 
 import CustomTextField from '@core/components/mui/TextField'
 import { APPOINTMENT_STATUS_OPTIONS } from '../constants'
@@ -37,48 +38,12 @@ type Props = {
   dictionary: any
 }
 
-// Helper: Get next 7 days from today
-const getNext7Days = () => {
-  const days = []
-  const today = new Date()
-
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(today)
-
-    date.setDate(today.getDate() + i)
-    days.push({
-      date,
-      label: date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }),
-      iso: date.toISOString().split('T')[0]
-    })
-  }
-
-  return days
-}
-
-// Helper to generate time slots between two times
-const generateTimeSlots = (start = 9, end = 18, interval = 30) => {
-  const slots = []
-
-  for (let hour = start; hour < end; hour++) {
-    for (let min = 0; min < 60; min += interval) {
-      const h = hour.toString().padStart(2, '0')
-      const m = min.toString().padStart(2, '0')
-
-      slots.push(`${h}:${m}`)
-    }
-  }
-
-  // Add the last slot at the end hour
-  slots.push(`${end.toString().padStart(2, '0')}:00`)
-
-  return slots
-}
-
 // Replace APPOINTMENT_TYPE_OPTIONS with keys for translation
 const APPOINTMENT_TYPE_OPTION_KEYS = ['Consultation', 'Medical Check', 'Clinical Procedure', 'Other']
 
 const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary }: Props) => {
+  const { data: session } = useSession()
+
   const {
     control,
     handleSubmit,
@@ -100,6 +65,7 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
 
   const [submitError, setSubmitError] = React.useState<string | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<{ day: string; time: string } | null>(null)
+  const [availability, setAvailability] = useState<{ date: string; slots: string[] }[]>([])
 
   // Reset form to default values every time the drawer is opened
   useEffect(() => {
@@ -115,8 +81,30 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
     }
   }, [open, reset])
 
+  // Fetch availability when drawer opens or organisation changes
+  useEffect(() => {
+    const organisationId = session?.user?.organisationId
+
+    if (open && organisationId) {
+      fetch(`/api/appointments/availability?organisation_id=${organisationId}`)
+        .then(res => res.json())
+        .then(data => setAvailability(data))
+        .catch(() => setAvailability([]))
+    } else if (!open) {
+      setAvailability([])
+    }
+  }, [open, session?.user?.organisationId])
+
   const onSubmit = async (data: AppointmentFormType) => {
     setSubmitError(null)
+
+    // Convert local datetime to UTC ISO string for backend
+    const localDate = new Date(data.appointment_date)
+
+    const payload = {
+      ...data,
+      appointment_date: localDate.toISOString()
+    }
 
     try {
       const result = await fetch('/api/appointments', {
@@ -124,7 +112,7 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(payload)
       })
 
       if (result.ok) {
@@ -146,20 +134,12 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
     }
   }
 
-  // Disponibility week logic
-  const weekDays = getNext7Days()
-  const timeSlots = generateTimeSlots(9, 18, 30) // 09:00 to 18:00, every 30 min
-
-  // For demo, randomly mark some slots as unavailable
-  const isSlotAvailable = (dayIdx: number, slotIdx: number) => (dayIdx + slotIdx) % 3 !== 0
-
   // When a slot is clicked, update the form and highlight
   const handleSlotClick = (dayIso: string, slot: string) => {
-    // Compose ISO datetime string for the slot
-    // Assume slot is in HH:mm, dayIso is YYYY-MM-DD
-    const dateTime = `${dayIso}T${slot}:00`
+    // Compose local datetime string for the input (YYYY-MM-DDTHH:mm)
+    const localDateTime = `${dayIso}T${slot}`
 
-    setValue('appointment_date', dateTime)
+    setValue('appointment_date', localDateTime)
     setSelectedSlot({ day: dayIso, time: slot })
   }
 
@@ -355,33 +335,74 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
                 </Box>
               </Box>
               <Box className='flex flex-col gap-3'>
-                {weekDays.map((day, dayIdx) => (
-                  <Box key={day.iso}>
-                    <Typography variant='caption' className='mb-1 font-semibold'>
-                      {day.label}
-                    </Typography>
-                    <Box className='flex flex-wrap gap-2'>
-                      {timeSlots.map((slot, slotIdx) => {
-                        const available = isSlotAvailable(dayIdx, slotIdx)
-                        const isSelected = selectedSlot && selectedSlot.day === day.iso && selectedSlot.time === slot
+                {availability.length === 0 ? (
+                  <Typography variant='body2'>
+                    {dictionary.appointments?.noAppointments ||
+                      dictionary.noAppointments ||
+                      'No appointments available.'}
+                  </Typography>
+                ) : (
+                  availability.map(day => (
+                    <Box key={day.date}>
+                      <Typography variant='caption' className='mb-1 font-semibold'>
+                        {day.date}
+                      </Typography>
+                      <Box className='flex flex-wrap gap-2'>
+                        {(() => {
+                          const allSlots = [
+                            '09:00',
+                            '09:30',
+                            '10:00',
+                            '10:30',
+                            '11:00',
+                            '11:30',
+                            '12:00',
+                            '12:30',
+                            '13:00',
+                            '13:30',
+                            '14:00',
+                            '14:30',
+                            '15:00',
+                            '15:30',
+                            '16:00',
+                            '16:30',
+                            '17:00',
+                            '17:30'
+                          ]
 
-                        return (
-                          <Button
-                            key={slot}
-                            variant='contained'
-                            color={isSelected ? 'primary' : available ? 'success' : 'inherit'}
-                            size='small'
-                            disabled={!available}
-                            onClick={available ? () => handleSlotClick(day.iso, slot) : undefined}
-                            sx={isSelected ? { border: '2px solid #1976d2' } : {}}
-                          >
-                            {slot}
-                          </Button>
-                        )
-                      })}
+                          return allSlots.map(slot => {
+                            const isAvailable = day.slots.includes(slot)
+
+                            const isSelected =
+                              isAvailable && selectedSlot && selectedSlot.day === day.date && selectedSlot.time === slot
+
+                            return (
+                              <Button
+                                key={slot}
+                                variant='contained'
+                                color={isSelected ? 'primary' : isAvailable ? 'success' : 'inherit'}
+                                size='small'
+                                disabled={!isAvailable}
+                                onClick={isAvailable ? () => handleSlotClick(day.date, slot) : undefined}
+                                sx={[
+                                  isSelected ? { border: '2px solid #1976d2' } : {},
+                                  !isAvailable ? { backgroundColor: '#e0e0e0', color: '#888' } : {}
+                                ]}
+                              >
+                                {slot}
+                                {!isAvailable && (
+                                  <span style={{ fontSize: 10, marginLeft: 4 }}>
+                                    {dictionary.appointments?.unavailable || dictionary.unavailable || 'Unavailable'}
+                                  </span>
+                                )}
+                              </Button>
+                            )
+                          })
+                        })()}
+                      </Box>
                     </Box>
-                  </Box>
-                ))}
+                  ))
+                )}
               </Box>
             </Card>
           </Box>

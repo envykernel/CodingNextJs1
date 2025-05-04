@@ -91,8 +91,7 @@ export async function getAppointments({
   const mappedAppointments = appointments.map(appt => ({
     id: appt.id,
     patientName: appt.patient?.name || '',
-    date: appt.appointment_date.toISOString().split('T')[0],
-    time: appt.appointment_date.toISOString().split('T')[1]?.slice(0, 5) || '',
+    appointmentDate: appt.appointment_date.toISOString(),
     type: appt.appointment_type || '',
     status: appt.status || '',
     doctorName: appt.doctor?.name || ''
@@ -167,4 +166,84 @@ export async function createAppointment(data: any) {
       details: error instanceof Error ? error.message : JSON.stringify(error)
     }
   }
+}
+
+/**
+ * Get available appointment slots for an organisation for the next 7 days.
+ * Returns an array of { date: 'YYYY-MM-DD', slots: ['09:00', '09:30', ...] }
+ * Excludes slots already booked in patient_appointment for any doctor in the organisation.
+ */
+export async function getOrganisationAvailability(organisation_id: number, startDate?: string, endDate?: string) {
+  // Default: next 7 days
+  const start = startDate ? new Date(startDate) : new Date()
+  const end = endDate ? new Date(endDate) : new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000)
+
+  // Generate all slots for each day (09:00 to 18:00, every 30 min)
+  const slotsPerDay: string[] = []
+
+  for (let hour = 9; hour < 18; hour++) {
+    slotsPerDay.push(`${hour.toString().padStart(2, '0')}:00`)
+    slotsPerDay.push(`${hour.toString().padStart(2, '0')}:30`)
+  }
+
+  // Get all appointments for the organisation in the range
+  const appointments = await prisma.patient_appointment.findMany({
+    where: {
+      organisation_id: Number(organisation_id),
+      appointment_date: {
+        gte: new Date(start.setHours(0, 0, 0, 0)),
+        lte: new Date(end.setHours(23, 59, 59, 999))
+      },
+      status: { not: 'cancelled' }
+    },
+    select: { appointment_date: true }
+  })
+
+  // Map booked slots: { 'YYYY-MM-DD': Set(['09:00', ...]) }
+  const booked: Record<string, Set<string>> = {}
+
+  appointments.forEach(appt => {
+    const date = appt.appointment_date.toISOString().split('T')[0]
+    const time = appt.appointment_date.toISOString().split('T')[1]?.slice(0, 5)
+
+    if (!booked[date]) booked[date] = new Set()
+    if (time) booked[date].add(time)
+  })
+
+  // Build availability
+  const days: { date: string; slots: string[] }[] = []
+
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const dateStr = d.toISOString().split('T')[0]
+    const availableSlots: string[] = []
+
+    for (const slot of slotsPerDay) {
+      // Construct the slot as a local datetime (not UTC)
+      const [hour, minute] = slot.split(':')
+      const slotDate = new Date(d)
+
+      slotDate.setHours(Number(hour), Number(minute), 0, 0)
+
+      // Check if this slot is booked (compare local time)
+      const isBooked = appointments.some(appt => {
+        const apptDate = new Date(appt.appointment_date)
+
+        return (
+          apptDate.getFullYear() === slotDate.getFullYear() &&
+          apptDate.getMonth() === slotDate.getMonth() &&
+          apptDate.getDate() === slotDate.getDate() &&
+          apptDate.getHours() === slotDate.getHours() &&
+          apptDate.getMinutes() === slotDate.getMinutes()
+        )
+      })
+
+      if (!isBooked) {
+        availableSlots.push(slot)
+      }
+    }
+
+    days.push({ date: dateStr, slots: availableSlots })
+  }
+
+  return days
 }
