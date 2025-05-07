@@ -1,10 +1,12 @@
 'use client'
 import React from 'react'
 
+import { format } from 'date-fns'
+
 export function LocalDate({ iso }: { iso: string }) {
-  return <>{new Date(iso).toLocaleDateString()}</>
+  return <>{format(new Date(iso), 'dd/MM/yyyy')}</>
 }
 
 export function LocalTime({ iso }: { iso: string }) {
-  return <>{new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</>
+  return <>{format(new Date(iso), 'HH:mm')}</>
 }

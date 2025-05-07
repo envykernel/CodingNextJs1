@@ -47,5 +47,19 @@
     "noOrganisationPrompt": "Please join or create an organisation to continue.",
     "joinOrganisation": "Join Organisation",
     "createOrganisation": "Create Organisation",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "patient": {
+        "label": "Patient",
+        "birthdate": "Birthdate",
+        "gender": "Gender",
+        "phone": "Phone",
+        "email": "Email",
+        "address": "Address",
+        "city": "City"
+    },
+    "doctor": {
+        "label": "Doctor",
+        "email": "Email",
+        "phone": "Phone"
+    }
 }

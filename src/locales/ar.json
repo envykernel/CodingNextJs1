@@ -44,6 +44,9 @@
     "bookAppointment": "حجز موعد",
     "appointmentDetails": "تفاصيل الموعد",
     "createAppointment": "إنشاء موعد جديد",
+    "createVisit": "إنشاء زيارة",
+    "createVisitSuccess": "تم إنشاء الزيارة بنجاح!",
+    "loading": "جارٍ التحميل...",
     "availabilityTitle": "التوفر",
     "available": "متاح",
     "unavailable": "غير متاح",
@@ -52,5 +55,6 @@
         "heading": "ليس لديك صلاحية الوصول",
         "message": "ليس لديك إذن للوصول إلى هذه الصفحة. يرجى التواصل مع المسؤول إذا كنت تعتقد أن هذا خطأ.",
         "button": "العودة إلى الصفحة الرئيسية"
-    }
+    },
+    "goToVisit": "الذهاب إلى الزيارة"
 }

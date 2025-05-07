@@ -44,6 +44,9 @@
     "bookAppointment": "Book Appointment",
     "appointmentDetails": "Appointment Details",
     "createAppointment": "Create New Appointment",
+    "createVisit": "Create Visit",
+    "createVisitSuccess": "Visit created successfully!",
+    "loading": "Loading...",
     "availabilityTitle": "Availability",
     "available": "Available",
     "unavailable": "Unavailable",
@@ -52,5 +55,6 @@
         "heading": "You do not have access",
         "message": "You do not have permission to access this page. Please contact your administrator if you believe this is a mistake.",
         "button": "Back to Home"
-    }
+    },
+    "goToVisit": "Go to Visit"
 }

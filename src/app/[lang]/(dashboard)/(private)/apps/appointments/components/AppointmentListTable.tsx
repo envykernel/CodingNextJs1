@@ -28,6 +28,7 @@ import type { SelectChangeEvent } from '@mui/material/Select'
 import { useTranslation, TranslationProvider } from '@/contexts/translationContext'
 import AddAppointmentDrawer from './AddAppointmentDrawer'
 import { LocalDate, LocalTime } from '@/components/LocalTime'
+import VisitActionButton from './VisitActionButton'
 
 interface AppointmentListTableProps {
   appointmentData: any[]
@@ -41,6 +42,7 @@ interface AppointmentListTableProps {
   doctors: { id: string | number; name: string }[]
   patients: { id: string | number; name: string }[]
   dictionary: any
+  visitsByAppointmentId?: Record<number, any>
 }
 
 const statusColor: { [key: string]: string } = {
@@ -61,7 +63,8 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   typeOptions = [],
   doctors = [],
   patients = [],
-  dictionary
+  dictionary,
+  visitsByAppointmentId = {}
 }) => {
   const router = useRouter()
   const pathname = usePathname()
@@ -211,6 +214,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                   <IconButton>
                     <i className='tabler-trash text-textSecondary' />
                   </IconButton>
+                  <VisitActionButton appointmentId={row.id} visit={visitsByAppointmentId[row.id]} t={t} />
                 </TableCell>
               </TableRow>
             ))}

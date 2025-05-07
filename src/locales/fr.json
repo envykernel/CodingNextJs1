@@ -44,6 +44,9 @@
     "bookAppointment": "Prendre rendez-vous",
     "appointmentDetails": "Détails du rendez-vous",
     "createAppointment": "Créer un nouveau rendez-vous",
+    "createVisit": "Créer une visite",
+    "createVisitSuccess": "Visite créée avec succès !",
+    "loading": "Chargement...",
     "availabilityTitle": "Disponibilité",
     "available": "Disponible",
     "unavailable": "Indisponible",
@@ -52,5 +55,6 @@
         "heading": "Vous n'avez pas accès",
         "message": "Vous n'avez pas la permission d'accéder à cette page. Veuillez contacter votre administrateur si vous pensez qu'il s'agit d'une erreur.",
         "button": "Retour à l'accueil"
-    }
+    },
+    "goToVisit": "Aller à la visite"
 }

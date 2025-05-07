@@ -1,6 +1,7 @@
 // Component Imports
 import AppointmentsList from '../components/AppointmentsList'
 import { getAppointments } from '@/app/server/appointmentsActions'
+import { getVisitsByAppointmentIds } from '@/app/server/visitActions'
 import { getDictionary } from '@/utils/getDictionary'
 import type { Locale } from '@configs/i18n'
 import { TranslationProvider } from '@/contexts/translationContext'
@@ -46,6 +47,8 @@ const AppointmentsListApp = async ({
 
   const appointmentData = await getAppointments({ page, pageSize, filter, status, type })
   const dictionary = await getDictionary(lang)
+  const appointmentIds = appointmentData.appointments.map((a: any) => a.id)
+  const visitsByAppointmentId = await getVisitsByAppointmentIds(appointmentIds)
 
   return (
     <TranslationProvider dictionary={dictionary}>
@@ -55,6 +58,7 @@ const AppointmentsListApp = async ({
         pageSize={appointmentData.pageSize}
         total={appointmentData.total}
         dictionary={dictionary}
+        visitsByAppointmentId={visitsByAppointmentId}
       />
     </TranslationProvider>
   )

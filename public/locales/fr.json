@@ -47,5 +47,19 @@
     "noOrganisationPrompt": "Veuillez rejoindre ou créer une organisation pour continuer.",
     "joinOrganisation": "Rejoindre une organisation",
     "createOrganisation": "Créer une organisation",
-    "signOut": "Se déconnecter"
+    "signOut": "Se déconnecter",
+    "patient": {
+        "label": "Patient",
+        "birthdate": "Date de naissance",
+        "gender": "Sexe",
+        "phone": "Téléphone",
+        "email": "E-mail",
+        "address": "Adresse",
+        "city": "Ville"
+    },
+    "doctor": {
+        "label": "Médecin",
+        "email": "E-mail",
+        "phone": "Téléphone"
+    }
 }

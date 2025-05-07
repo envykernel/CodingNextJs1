@@ -47,5 +47,19 @@
     "noOrganisationPrompt": "يرجى الانضمام أو إنشاء مؤسسة للمتابعة.",
     "joinOrganisation": "انضم إلى مؤسسة",
     "createOrganisation": "إنشاء مؤسسة",
-    "signOut": "تسجيل الخروج"
+    "signOut": "تسجيل الخروج",
+    "patient": {
+        "label": "المريض",
+        "birthdate": "تاريخ الميلاد",
+        "gender": "الجنس",
+        "phone": "الهاتف",
+        "email": "البريد الإلكتروني",
+        "address": "العنوان",
+        "city": "المدينة"
+    },
+    "doctor": {
+        "label": "الطبيب",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف"
+    }
 }
