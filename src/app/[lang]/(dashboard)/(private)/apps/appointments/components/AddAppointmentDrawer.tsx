@@ -13,6 +13,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import { useSession } from 'next-auth/react'
+import Alert from '@mui/material/Alert'
 
 import CustomTextField from '@core/components/mui/TextField'
 import { APPOINTMENT_STATUS_OPTIONS } from '../constants'
@@ -66,6 +67,7 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
   const [submitError, setSubmitError] = React.useState<string | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<{ day: string; time: string } | null>(null)
   const [availability, setAvailability] = useState<{ date: string; slots: string[] }[]>([])
+  const [unavailableWarning, setUnavailableWarning] = useState<string | null>(null)
 
   // Reset form to default values every time the drawer is opened
   useEffect(() => {
@@ -154,9 +156,41 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
         const slot = time.slice(0, 5) // HH:mm
 
         setSelectedSlot({ day: date, time: slot })
+
+        // Check if the selected date/time is available
+        const dayAvailability = availability.find(day => day.date === date)
+        let isAvailable = false
+
+        if (dayAvailability) {
+          // Check if slot is in available slots and not in the past (if today)
+          isAvailable = dayAvailability.slots.includes(slot)
+
+          if (date === new Date().toISOString().slice(0, 10)) {
+            const now = new Date()
+            const [slotHour, slotMinute] = slot.split(':').map(Number)
+
+            if (now.getHours() > slotHour || (now.getHours() === slotHour && now.getMinutes() >= slotMinute)) {
+              isAvailable = false
+            }
+          }
+        }
+
+        if (!isAvailable) {
+          setUnavailableWarning(
+            dictionary.appointments?.unavailableWarning ||
+              dictionary.unavailableWarning ||
+              'The selected date and time is unavailable.'
+          )
+        } else {
+          setUnavailableWarning(null)
+        }
+      } else {
+        setUnavailableWarning(null)
       }
+    } else {
+      setUnavailableWarning(null)
     }
-  }, [appointmentDateValue])
+  }, [appointmentDateValue, availability, dictionary])
 
   return (
     <Drawer
@@ -311,6 +345,14 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
                 )}
               />
             </div>
+            {/* Warning message after notes and before availability */}
+            {unavailableWarning && (
+              <div className='col-span-1 md:col-span-2 mb-4'>
+                <Alert severity='warning' sx={{ width: '100%' }}>
+                  {unavailableWarning}
+                </Alert>
+              </div>
+            )}
           </div>
           {submitError && <div className='text-red-500 mt-2'>{submitError}</div>}
 
@@ -342,66 +384,98 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
                       'No appointments available.'}
                   </Typography>
                 ) : (
-                  availability.map(day => (
-                    <Box key={day.date}>
-                      <Typography variant='caption' className='mb-1 font-semibold'>
-                        {day.date}
-                      </Typography>
-                      <Box className='flex flex-wrap gap-2'>
-                        {(() => {
-                          const allSlots = [
-                            '09:00',
-                            '09:30',
-                            '10:00',
-                            '10:30',
-                            '11:00',
-                            '11:30',
-                            '12:00',
-                            '12:30',
-                            '13:00',
-                            '13:30',
-                            '14:00',
-                            '14:30',
-                            '15:00',
-                            '15:30',
-                            '16:00',
-                            '16:30',
-                            '17:00',
-                            '17:30'
-                          ]
+                  availability
+                    .filter(day => {
+                      // Compare only the date part (YYYY-MM-DD)
+                      const today = new Date()
+                      const todayStr = today.toISOString().slice(0, 10)
 
-                          return allSlots.map(slot => {
-                            const isAvailable = day.slots.includes(slot)
+                      return day.date >= todayStr
+                    })
+                    .map(day => (
+                      <Box key={day.date}>
+                        <Typography variant='caption' className='mb-1 font-semibold'>
+                          {/* Show day name and date */}
+                          {(() => {
+                            const dateObj = new Date(day.date)
 
-                            const isSelected =
-                              isAvailable && selectedSlot && selectedSlot.day === day.date && selectedSlot.time === slot
+                            // Use user's locale for day name
+                            const dayName = dateObj.toLocaleDateString(undefined, { weekday: 'long' })
 
-                            return (
-                              <Button
-                                key={slot}
-                                variant='contained'
-                                color={isSelected ? 'primary' : isAvailable ? 'success' : 'inherit'}
-                                size='small'
-                                disabled={!isAvailable}
-                                onClick={isAvailable ? () => handleSlotClick(day.date, slot) : undefined}
-                                sx={[
-                                  isSelected ? { border: '2px solid #1976d2' } : {},
-                                  !isAvailable ? { backgroundColor: '#e0e0e0', color: '#888' } : {}
-                                ]}
-                              >
-                                {slot}
-                                {!isAvailable && (
-                                  <span style={{ fontSize: 10, marginLeft: 4 }}>
-                                    {dictionary.appointments?.unavailable || dictionary.unavailable || 'Unavailable'}
-                                  </span>
-                                )}
-                              </Button>
-                            )
-                          })
-                        })()}
+                            return `${dayName} - ${day.date}`
+                          })()}
+                        </Typography>
+                        <Box className='flex flex-wrap gap-2'>
+                          {(() => {
+                            const allSlots = [
+                              '09:00',
+                              '09:30',
+                              '10:00',
+                              '10:30',
+                              '11:00',
+                              '11:30',
+                              '12:00',
+                              '12:30',
+                              '13:00',
+                              '13:30',
+                              '14:00',
+                              '14:30',
+                              '15:00',
+                              '15:30',
+                              '16:00',
+                              '16:30',
+                              '17:00',
+                              '17:30'
+                            ]
+
+                            return allSlots.map(slot => {
+                              let isAvailable = day.slots.includes(slot)
+
+                              // Mark passed times for today as unavailable
+                              if (day.date === new Date().toISOString().slice(0, 10)) {
+                                const now = new Date()
+                                const [slotHour, slotMinute] = slot.split(':').map(Number)
+
+                                if (
+                                  now.getHours() > slotHour ||
+                                  (now.getHours() === slotHour && now.getMinutes() >= slotMinute)
+                                ) {
+                                  isAvailable = false
+                                }
+                              }
+
+                              const isSelected =
+                                isAvailable &&
+                                selectedSlot &&
+                                selectedSlot.day === day.date &&
+                                selectedSlot.time === slot
+
+                              return (
+                                <Button
+                                  key={slot}
+                                  variant='contained'
+                                  color={isSelected ? 'primary' : isAvailable ? 'success' : 'inherit'}
+                                  size='small'
+                                  disabled={!isAvailable}
+                                  onClick={isAvailable ? () => handleSlotClick(day.date, slot) : undefined}
+                                  sx={[
+                                    isSelected ? { border: '2px solid #1976d2' } : {},
+                                    !isAvailable ? { backgroundColor: '#e0e0e0', color: '#888' } : {}
+                                  ]}
+                                >
+                                  {slot}
+                                  {!isAvailable && (
+                                    <span style={{ fontSize: 10, marginLeft: 4 }}>
+                                      {dictionary.appointments?.unavailable || dictionary.unavailable || 'Unavailable'}
+                                    </span>
+                                  )}
+                                </Button>
+                              )
+                            })
+                          })()}
+                        </Box>
                       </Box>
-                    </Box>
-                  ))
+                    ))
                 )}
               </Box>
             </Card>
