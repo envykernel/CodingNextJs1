@@ -13,3 +13,14 @@ export async function getVisitsByAppointmentIds(appointmentIds: number[]) {
 
   return map
 }
+
+export async function getVisitById(id: number) {
+  return await prisma.patient_visit.findUnique({
+    where: { id },
+    include: {
+      patient: true,
+      doctor: true,
+      organisation: true
+    }
+  })
+}

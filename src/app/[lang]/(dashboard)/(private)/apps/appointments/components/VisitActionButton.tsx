@@ -22,7 +22,7 @@ const VisitActionButton: React.FC<VisitActionButtonProps> = ({ appointmentId, vi
         variant='outlined'
         color='success'
         className='ml-2'
-        onClick={() => router.push(`/fr/apps/visits/details?id=${visit.id}`)}
+        onClick={() => router.push(`/fr/apps/visits/view/${visit.id}`)}
       >
         {t.goToVisit || 'Go to Visit'}
       </Button>
