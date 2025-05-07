@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Account {
-  id                String  @id @default(cuid())
+  id                String        @id @default(cuid())
   userId            String
   type              String
   provider          String
@@ -23,7 +23,7 @@ model Account {
   session_state     String?
   organisationId    Int?
   organisation      organisation? @relation(fields: [organisationId], references: [id])
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -37,15 +37,15 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
+  id             String        @id @default(cuid())
+  name           String?
+  email          String?       @unique
+  emailVerified  DateTime?
+  image          String?
   organisationId Int?
   organisation   organisation? @relation(fields: [organisationId], references: [id])
-  accounts      Account[]
-  sessions      Session[]
+  accounts       Account[]
+  sessions       Session[]
 }
 
 model VerificationToken {
@@ -57,70 +57,71 @@ model VerificationToken {
 }
 
 model patient {
-  id                      Int          @id @default(autoincrement())
+  id                      Int                       @id @default(autoincrement())
   organisation_id         Int
-  name                    String       @db.VarChar(100)
-  birthdate               DateTime     @db.Date
-  gender                  String       @db.VarChar(20)
-  doctor                  String?      @db.VarChar(100)
-  status                  String?      @db.VarChar(50)
-  avatar                  String?      @db.VarChar(255)
-  address                 String?      @db.VarChar(255)
-  city                    String?      @db.VarChar(100)
-  phone_number            String?      @db.VarChar(30)
-  email                   String?      @db.VarChar(100)
-  emergency_contact_name  String?      @db.VarChar(100)
-  emergency_contact_phone String?      @db.VarChar(30)
-  emergency_contact_email String?      @db.VarChar(100)
-  created_at              DateTime?    @default(now()) @db.Timestamptz(6)
-  updated_at              DateTime?    @default(now()) @db.Timestamptz(6)
-  organisation            organisation @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  name                    String                    @db.VarChar(100)
+  birthdate               DateTime                  @db.Date
+  gender                  String                    @db.VarChar(20)
+  doctor                  String?                   @db.VarChar(100)
+  status                  String?                   @db.VarChar(50)
+  avatar                  String?                   @db.VarChar(255)
+  address                 String?                   @db.VarChar(255)
+  city                    String?                   @db.VarChar(100)
+  phone_number            String?                   @db.VarChar(30)
+  email                   String?                   @db.VarChar(100)
+  emergency_contact_name  String?                   @db.VarChar(100)
+  emergency_contact_phone String?                   @db.VarChar(30)
+  emergency_contact_email String?                   @db.VarChar(100)
+  created_at              DateTime?                 @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime?                 @default(now()) @db.Timestamptz(6)
+  organisation            organisation              @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   patient_measurements    patient_measurements[]
   patient_medical         patient_medical[]
   patient_medical_history patient_medical_history[]
-  patient_appointments    patient_appointment[] @relation("patient_appointment_patient_id")
+  patient_appointments    patient_appointment[]     @relation("patient_appointment_patient_id")
+  patient_visits          patient_visit[]
 
   @@index([organisation_id], map: "idx_patient_organisation_id")
 }
 
 model patient_measurements {
-  id                       Int       @id @default(autoincrement())
+  id                       Int          @id @default(autoincrement())
   patient_id               Int
   organisation_id          Int
-  measured_at              DateTime? @default(now()) @db.Timestamptz(6)
-  weight_kg                Decimal?  @db.Decimal(5, 2)
-  height_cm                Decimal?  @db.Decimal(5, 2)
-  temperature_c            Decimal?  @db.Decimal(4, 1)
+  measured_at              DateTime?    @default(now()) @db.Timestamptz(6)
+  weight_kg                Decimal?     @db.Decimal(5, 2)
+  height_cm                Decimal?     @db.Decimal(5, 2)
+  temperature_c            Decimal?     @db.Decimal(4, 1)
   blood_pressure_systolic  Int?
   blood_pressure_diastolic Int?
-  patient                  patient   @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  patient                  patient      @relation(fields: [patient_id], references: [id], onDelete: Cascade)
   organisation             organisation @relation(fields: [organisation_id], references: [id])
 
   @@index([organisation_id], map: "idx_patient_measurements_organisation_id")
 }
 
 model patient_medical {
-  id              Int           @id @default(autoincrement())
+  id              Int          @id @default(autoincrement())
   patient_id      Int
   organisation_id Int
-  created_at      DateTime?     @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime?     @default(now()) @db.Timestamptz(6)
-  patient         patient       @relation(fields: [patient_id], references: [id], onDelete: Cascade)
-  organisation    organisation  @relation(fields: [organisation_id], references: [id])
+  created_at      DateTime?    @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime?    @default(now()) @db.Timestamptz(6)
+  patient         patient      @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  organisation    organisation @relation(fields: [organisation_id], references: [id])
 
   @@index([organisation_id], map: "idx_patient_medical_organisation_id")
 }
 
 model patient_medical_history {
-  id              Int           @id @default(autoincrement())
+  id              Int          @id @default(autoincrement())
   patient_id      Int
   organisation_id Int
-  history_type    String?       @db.VarChar(100)
+  history_type    String?      @db.VarChar(100)
   description     String
-  date_occurred   DateTime?     @db.Date
-  created_at      DateTime?     @default(now()) @db.Timestamptz(6)
-  patient         patient       @relation(fields: [patient_id], references: [id], onDelete: Cascade)
-  organisation    organisation  @relation(fields: [organisation_id], references: [id])
+  date_occurred   DateTime?    @db.Date
+  created_at      DateTime?    @default(now()) @db.Timestamptz(6)
+  patient         patient      @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  organisation    organisation @relation(fields: [organisation_id], references: [id])
 
   @@index([organisation_id], map: "idx_patient_medical_history_organisation_id")
 }
@@ -137,49 +138,52 @@ model doctor {
   updated_at          DateTime?             @default(now()) @db.Timestamp(6)
   organisation        organisation          @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   patient_appointment patient_appointment[]
+  patient_visits      patient_visit[]
 
   @@index([organisation_id], map: "idx_doctor_organisation_id")
 }
 
 model organisation {
-  id                  Int                   @id @default(autoincrement())
-  name                String                @db.VarChar(255)
-  address             String?
-  phone_number        String?               @db.VarChar(50)
-  email               String?               @db.VarChar(255)
-  status              String?               @default("enabled") @db.VarChar(50)
-  created_at          DateTime?             @default(now()) @db.Timestamp(6)
-  updated_at          DateTime?             @default(now()) @db.Timestamp(6)
-  doctor              doctor[]
-  patient             patient[]
-  patient_appointment patient_appointment[]
-  users               User[]
-  accounts            Account[]
-  patient_measurements patient_measurements[]
-  patient_medical      patient_medical[]
+  id                      Int                       @id @default(autoincrement())
+  name                    String                    @db.VarChar(255)
+  address                 String?
+  phone_number            String?                   @db.VarChar(50)
+  email                   String?                   @db.VarChar(255)
+  status                  String?                   @default("enabled") @db.VarChar(50)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  updated_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  doctor                  doctor[]
+  patient                 patient[]
+  patient_appointment     patient_appointment[]
+  users                   User[]
+  accounts                Account[]
+  patient_measurements    patient_measurements[]
+  patient_medical         patient_medical[]
   patient_medical_history patient_medical_history[]
-  working_days        String[]              @db.VarChar(20)
-  work_start_time     String?               @db.VarChar(5)
-  work_end_time       String?               @db.VarChar(5)
-  break_start_time    String?               @db.VarChar(5)
-  break_end_time      String?               @db.VarChar(5)
-  userInternals       UserInternal[]
+  working_days            String[]                  @db.VarChar(20)
+  work_start_time         String?                   @db.VarChar(5)
+  work_end_time           String?                   @db.VarChar(5)
+  break_start_time        String?                   @db.VarChar(5)
+  break_end_time          String?                   @db.VarChar(5)
+  userInternals           UserInternal[]
+  patient_visits          patient_visit[]
 }
 
 model patient_appointment {
-  id               Int          @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   organisation_id  Int
   patient_id       Int
   doctor_id        Int?
-  appointment_date DateTime     @db.Timestamp(6)
-  appointment_type String?      @db.VarChar(100)
-  status           String?      @default("scheduled") @db.VarChar(50)
+  appointment_date DateTime        @db.Timestamp(6)
+  appointment_type String?         @db.VarChar(100)
+  status           String?         @default("scheduled") @db.VarChar(50)
   notes            String?
-  created_at       DateTime?    @default(now()) @db.Timestamp(6)
-  updated_at       DateTime?    @default(now()) @db.Timestamp(6)
-  doctor           doctor?      @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organisation     organisation @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  patient          patient      @relation(fields: [patient_id], references: [id], onDelete: Cascade, name: "patient_appointment_patient_id")
+  created_at       DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?       @default(now()) @db.Timestamp(6)
+  doctor           doctor?         @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  organisation     organisation    @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  patient          patient         @relation(fields: [patient_id], references: [id], onDelete: Cascade, name: "patient_appointment_patient_id")
+  patient_visits   patient_visit[]
 
   @@index([doctor_id], map: "idx_patient_appointment_doctor_id")
   @@index([organisation_id], map: "idx_patient_appointment_organisation_id")
@@ -187,12 +191,32 @@ model patient_appointment {
 }
 
 model UserInternal {
-  userId         String      @id @default(uuid())
+  userId         String        @id @default(uuid())
   name           String
-  email          String      @unique
-  isApproved     Boolean     @default(false)
+  email          String        @unique
+  isApproved     Boolean       @default(false)
   organisationId Int?
   organisation   organisation? @relation(fields: [organisationId], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model patient_visit {
+  id              Int       @id @default(autoincrement())
+  appointment_id  Int? // Lien optionnel vers un rendez-vous
+  patient_id      Int // Obligatoire
+  doctor_id       Int? // Médecin consulté
+  organisation_id Int // Obligatoire pour le multi-tenant
+  arrival_time    DateTime? // Heure d'arrivée
+  start_time      DateTime? // Début consultation
+  end_time        DateTime? // Fin consultation
+  status          String?   @default("completed") @db.VarChar(50)
+  notes           String?
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
+
+  // Relations
+  appointment  patient_appointment? @relation(fields: [appointment_id], references: [id])
+  patient      patient              @relation(fields: [patient_id], references: [id])
+  doctor       doctor?              @relation(fields: [doctor_id], references: [id])
+  organisation organisation         @relation(fields: [organisation_id], references: [id])
 }
