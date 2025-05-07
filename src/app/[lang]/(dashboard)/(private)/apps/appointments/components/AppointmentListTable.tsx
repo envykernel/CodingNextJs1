@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useRouter, usePathname, useSearchParams, useParams } from 'next/navigation'
 
 import {
   Card,
@@ -69,6 +69,8 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const params = useParams()
+  const lang = params?.lang || 'en'
   const filter = searchParams?.get('filter') || ''
   const status = searchParams?.get('status') || ''
   const type = searchParams?.get('type') || ''
@@ -214,7 +216,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                   <IconButton>
                     <i className='tabler-trash text-textSecondary' />
                   </IconButton>
-                  <VisitActionButton appointmentId={row.id} visit={visitsByAppointmentId[row.id]} t={t} />
+                  <VisitActionButton appointmentId={row.id} visit={visitsByAppointmentId[row.id]} t={t} lang={lang} />
                 </TableCell>
               </TableRow>
             ))}

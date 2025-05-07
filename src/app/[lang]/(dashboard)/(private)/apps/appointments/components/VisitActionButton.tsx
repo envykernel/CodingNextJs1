@@ -9,10 +9,11 @@ interface VisitActionButtonProps {
   appointmentId: number
   visit?: patient_visit
   t: any
+  lang: string
   onVisitCreated?: () => void
 }
 
-const VisitActionButton: React.FC<VisitActionButtonProps> = ({ appointmentId, visit, t, onVisitCreated }) => {
+const VisitActionButton: React.FC<VisitActionButtonProps> = ({ appointmentId, visit, t, lang, onVisitCreated }) => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
@@ -22,7 +23,7 @@ const VisitActionButton: React.FC<VisitActionButtonProps> = ({ appointmentId, vi
         variant='outlined'
         color='success'
         className='ml-2'
-        onClick={() => router.push(`/fr/apps/visits/view/${visit.id}`)}
+        onClick={() => router.push(`/${lang}/apps/visits/view/${visit.id}`)}
       >
         {t.goToVisit || 'Go to Visit'}
       </Button>
@@ -47,6 +48,10 @@ const VisitActionButton: React.FC<VisitActionButtonProps> = ({ appointmentId, vi
           const data = await res.json()
 
           if (res.ok) {
+            if (data.visit && data.visit.id) {
+              router.push(`/${lang}/apps/visits/view/${data.visit.id}`)
+            }
+
             if (onVisitCreated) onVisitCreated()
           } else {
             console.error(data.error || 'Error creating visit')
