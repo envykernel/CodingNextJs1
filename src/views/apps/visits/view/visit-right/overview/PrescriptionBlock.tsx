@@ -16,6 +16,7 @@ import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import PrintIcon from '@mui/icons-material/Print'
+import Box from '@mui/material/Box'
 
 interface Medication {
   id: number
@@ -85,7 +86,7 @@ const PrescriptionBlock: React.FC<PrescriptionBlockProps> = ({ prescription, dic
             </Typography>
             <TableContainer
               component={Paper}
-              sx={{ boxShadow: 3, borderRadius: 2, background: theme.palette.background.paper }}
+              sx={{ boxShadow: 3, borderRadius: 0, background: theme.palette.background.paper }}
             >
               <Table size='small'>
                 <TableHead>
@@ -130,12 +131,19 @@ const PrescriptionBlock: React.FC<PrescriptionBlockProps> = ({ prescription, dic
           </div>
         )}
         {isFilled(prescription.notes) && (
-          <div className='mt-2'>
-            <Typography variant='subtitle2' className='font-semibold'>
+          <Box
+            sx={{
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: 0,
+              p: 2,
+              mt: 2
+            }}
+          >
+            <Typography variant='subtitle2' className='font-semibold mb-1'>
               {t.additionalNotes || 'Additional Notes'}
             </Typography>
             <Typography>{prescription.notes}</Typography>
-          </div>
+          </Box>
         )}
       </AccordionDetails>
     </Accordion>
