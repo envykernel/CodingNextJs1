@@ -113,6 +113,7 @@ export default function PrescriptionForm({
 
   const medications = watch('medications')
   const [medicationsCollapsed, setMedicationsCollapsed] = useState(false)
+  const [collapsedItems, setCollapsedItems] = useState<{ [index: number]: boolean }>({})
 
   const [snackbar, setSnackbar] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({
     open: false,
@@ -136,6 +137,17 @@ export default function PrescriptionForm({
       if (alertTimerRef.current) clearTimeout(alertTimerRef.current)
     }
   }, [snackbar.open, alertHovered])
+
+  // When global collapse/expand is toggled, update all collapsedItems
+  useEffect(() => {
+    const newState: { [index: number]: boolean } = {}
+
+    medications.forEach((_, idx) => {
+      newState[idx] = medicationsCollapsed
+    })
+    setCollapsedItems(newState)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [medicationsCollapsed, medications.length])
 
   const handleMedicationChange = (index: number, field: string, value: string) => {
     const currentMedications = watch('medications')
@@ -166,6 +178,10 @@ export default function PrescriptionForm({
     const updatedMedications = currentMedications.filter((_, i) => i !== index)
 
     setValue('medications', updatedMedications)
+  }
+
+  const toggleItemCollapse = (index: number) => {
+    setCollapsedItems(prev => ({ ...prev, [index]: !prev[index] }))
   }
 
   const handleFormSubmit = async (data: PrescriptionFormValues) => {
@@ -247,18 +263,55 @@ export default function PrescriptionForm({
               </Box>
 
               {!medicationsCollapsed &&
-                medications.map((medication, index) => (
-                  <MedicationBlock
-                    key={medication.id}
-                    medication={{ ...medication, notes: medication.notes ?? '' }}
-                    index={index}
-                    dictionary={dictionary}
-                    onMedicationChange={handleMedicationChange}
-                    onRemove={removeMedication}
-                    canRemove={medications.length > 1}
-                    errors={errors.medications?.[index]}
-                  />
-                ))}
+                medications.map((medication: (typeof medications)[0], index: number) => {
+                  const isCollapsed = collapsedItems[index]
+
+                  return (
+                    <Box
+                      key={medication.id}
+                      sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          mb: isCollapsed ? 0 : 2
+                        }}
+                      >
+                        <Typography variant='subtitle1'>
+                          {dictionary?.navigation?.medication} {index + 1}: {medication.name || ''}
+                        </Typography>
+                        <Button
+                          variant='text'
+                          size='small'
+                          onClick={() => toggleItemCollapse(index)}
+                          aria-label={
+                            isCollapsed
+                              ? dictionary?.navigation?.expandMedication || 'Expand'
+                              : dictionary?.navigation?.collapseMedication || 'Collapse'
+                          }
+                          startIcon={<i className={isCollapsed ? 'tabler-chevron-down' : 'tabler-chevron-up'} />}
+                        >
+                          {isCollapsed
+                            ? dictionary?.navigation?.expandMedication || 'Expand'
+                            : dictionary?.navigation?.collapseMedication || 'Collapse'}
+                        </Button>
+                      </Box>
+                      <Box sx={{ display: isCollapsed ? 'none' : 'block' }}>
+                        <MedicationBlock
+                          medication={{ ...medication, notes: medication.notes ?? '' }}
+                          index={index}
+                          dictionary={dictionary}
+                          onMedicationChange={handleMedicationChange}
+                          onRemove={removeMedication}
+                          canRemove={medications.length > 1}
+                          errors={errors.medications?.[index]}
+                        />
+                      </Box>
+                    </Box>
+                  )
+                })}
             </Grid>
 
             <Grid item xs={12}>
