@@ -19,7 +19,10 @@ const PatientMeasurementBlock: React.FC<PatientMeasurementBlockProps> = ({ measu
   return (
     <Accordion sx={{ mt: 2 }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant='subtitle1'>{tForm.title}</Typography>
+        <div className='flex items-center gap-3'>
+          <i className='tabler-activity text-xl text-primary' />
+          <Typography variant='subtitle1'>{tForm.title}</Typography>
+        </div>
       </AccordionSummary>
       <AccordionDetails>
         <table className='min-w-full text-sm'>

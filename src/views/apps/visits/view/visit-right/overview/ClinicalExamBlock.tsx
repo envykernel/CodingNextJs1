@@ -23,7 +23,10 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
   return (
     <Accordion sx={{ mt: 2 }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant='subtitle1'>{tForm.title}</Typography>
+        <div className='flex items-center gap-3'>
+          <i className='tabler-clipboard-text text-xl text-primary' />
+          <Typography variant='subtitle1'>{tForm.title}</Typography>
+        </div>
       </AccordionSummary>
       <AccordionDetails>
         <div className='flex flex-col gap-4'>
