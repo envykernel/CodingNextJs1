@@ -28,7 +28,9 @@ const tabContentList = (visitData: any, lang: string, dictionary: any) => ({
       key={lang}
       visitId={visitData.id}
       dictionary={dictionary}
-      initialValues={visitData.clinical_exam}
+      initialValues={
+        visitData.clinical_exams && visitData.clinical_exams.length > 0 ? visitData.clinical_exams[0] : undefined
+      }
     />
   )
 })

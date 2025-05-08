@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography'
 
 import { useTranslation } from '@/contexts/translationContext'
 import PatientMeasurementBlock from './PatientMeasurementBlock'
+import ClinicalExamBlock from './ClinicalExamBlock'
 
 const VisitOverviewTab = ({ visitData }: { visitData: any }) => {
   const t = useTranslation()
@@ -73,6 +74,11 @@ const VisitOverviewTab = ({ visitData }: { visitData: any }) => {
       {visitData.patient_measurement && (
         <Grid size={{ xs: 12 }}>
           <PatientMeasurementBlock measurement={visitData.patient_measurement} />
+        </Grid>
+      )}
+      {visitData.clinical_exams && visitData.clinical_exams.length > 0 && (
+        <Grid size={{ xs: 12 }}>
+          <ClinicalExamBlock exam={visitData.clinical_exams[0]} />
         </Grid>
       )}
     </Grid>

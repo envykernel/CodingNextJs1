@@ -30,6 +30,15 @@ const initialState = {
   plan: ''
 }
 
+const generalSectionKeys = [
+  'chief_complaint',
+  'history_illness',
+  'medical_history',
+  'general_appearance',
+  'assessment',
+  'plan'
+]
+
 const sectionKeys = [
   'chief_complaint',
   'history_illness',
@@ -50,7 +59,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
   const t = dictionary.clinicalExamForm
   const tSections = t.sections
 
-  const [selectedSections, setSelectedSections] = useState<string[]>(sectionKeys)
+  const [selectedSections, setSelectedSections] = useState<string[]>(generalSectionKeys)
 
   const [form, setForm] = useState(() => {
     if (initialValues) {
@@ -132,7 +141,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
           <Grid container spacing={2}>
             {selectedSections.includes('chief_complaint') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.chiefComplaint}
                   name='chief_complaint'
@@ -145,7 +154,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('history_illness') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.historyIllness}
                   name='history_illness'
@@ -158,7 +167,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('medical_history') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.medicalHistory}
                   name='medical_history'
@@ -171,7 +180,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('general_appearance') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.generalAppearance}
                   name='general_appearance'
@@ -184,7 +193,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('cardiovascular') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.cardiovascular}
                   name='cardiovascular'
@@ -197,7 +206,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('respiratory') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.respiratory}
                   name='respiratory'
@@ -210,7 +219,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('gastrointestinal') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.gastrointestinal}
                   name='gastrointestinal'
@@ -223,7 +232,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('neurological') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.neurological}
                   name='neurological'
@@ -236,7 +245,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('musculoskeletal') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.musculoskeletal}
                   name='musculoskeletal'
@@ -249,7 +258,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('skin') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.skin}
                   name='skin'
@@ -262,7 +271,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('ent') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.ent}
                   name='ent'
@@ -275,7 +284,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('assessment') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.assessment}
                   name='assessment'
@@ -288,7 +297,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
             {selectedSections.includes('plan') && (
-              <Grid item xs={12}>
+              <Grid item xs={12} className='mb-3'>
                 <TextField
                   label={t.plan}
                   name='plan'
