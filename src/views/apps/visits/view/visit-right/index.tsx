@@ -7,9 +7,12 @@ import TabPanel from '@mui/lab/TabPanel'
 import Grid from '@mui/material/Grid2'
 
 import CustomTabList from '@core/components/mui/TabList'
+import { useTranslation } from '@/contexts/translationContext'
+import PatientMeasurementsForm from './PatientMeasurementsForm'
 
 const VisitRight = ({ tabContentList }: { tabContentList: { [key: string]: React.ReactNode } }) => {
   const [activeTab, setActiveTab] = useState('overview')
+  const t = useTranslation()
   const handleChange = (event: React.SyntheticEvent, value: string) => setActiveTab(value)
 
   return (
@@ -17,8 +20,18 @@ const VisitRight = ({ tabContentList }: { tabContentList: { [key: string]: React
       <Grid container spacing={6}>
         <Grid size={{ xs: 12 }}>
           <CustomTabList onChange={handleChange} variant='scrollable' pill='true'>
-            <Tab icon={<i className='tabler-users' />} value='overview' label='Overview' iconPosition='start' />
-            {/* Add more tabs as needed */}
+            <Tab
+              icon={<i className='tabler-users' />}
+              value='overview'
+              label={t.overview || 'Overview'}
+              iconPosition='start'
+            />
+            <Tab
+              icon={<i className='tabler-activity' />}
+              value='measurements'
+              label={t.patientMeasurements || 'Patient Measurements'}
+              iconPosition='start'
+            />
           </CustomTabList>
         </Grid>
         <Grid size={{ xs: 12 }}>

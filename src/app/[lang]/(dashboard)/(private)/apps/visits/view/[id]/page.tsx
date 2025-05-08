@@ -8,13 +8,13 @@ import { getVisitById } from '@/app/server/visitActions'
 import { getDictionary } from '@/utils/getDictionary'
 import { TranslationProvider } from '@/contexts/translationContext'
 import type { Locale } from '@configs/i18n'
+import PatientMeasurementsForm from '@views/apps/visits/view/visit-right/PatientMeasurementsForm'
 
 const VisitOverviewTab = dynamic(() => import('@views/apps/visits/view/visit-right/overview'))
 
 const tabContentList = (visitData: any) => ({
-  overview: <VisitOverviewTab visitData={visitData} />
-
-  // add more tabs as needed
+  overview: <VisitOverviewTab visitData={visitData} />,
+  measurements: <PatientMeasurementsForm visitId={visitData.id} />
 })
 
 export default async function VisitViewTab({ params }: { params: { id: string; lang: string } }) {
