@@ -85,19 +85,38 @@ model patient {
 }
 
 model patient_measurements {
-  id                       Int          @id @default(autoincrement())
-  patient_id               Int
-  organisation_id          Int
-  measured_at              DateTime?    @default(now()) @db.Timestamptz(6)
-  weight_kg                Decimal?     @db.Decimal(5, 2)
-  height_cm                Decimal?     @db.Decimal(5, 2)
-  temperature_c            Decimal?     @db.Decimal(4, 1)
+  id              Int       @id @default(autoincrement())
+  patient_id      Int
+  visit_id        Int?      @unique // Nouveau - Lien optionnel à une visite
+  organisation_id Int
+  measured_at     DateTime? @default(now()) @db.Timestamptz(6)
+
+  // ---- Données physiologiques ----
+  weight_kg                Decimal? @db.Decimal(5, 2)
+  height_cm                Decimal? @db.Decimal(5, 2)
+  temperature_c            Decimal? @db.Decimal(4, 1)
   blood_pressure_systolic  Int?
   blood_pressure_diastolic Int?
-  patient                  patient      @relation(fields: [patient_id], references: [id], onDelete: Cascade)
-  organisation             organisation @relation(fields: [organisation_id], references: [id])
+  pulse                    Int? // Nouveau - Pouls (bpm)
+  oxygen_saturation        Decimal? @db.Decimal(5, 2) // Nouveau - SpO2 (%)
+  respiratory_rate         Int? // Nouveau - Fréquence respiratoire
 
-  @@index([organisation_id], map: "idx_patient_measurements_organisation_id")
+  // ---- Métadonnées ----
+  measurement_type String? @default("routine") @db.VarChar(50) // "routine", "pre_consult", "post_consult"
+  taken_by         String? @db.VarChar(100) // Nom du professionnel
+  location         String? @db.VarChar(50) // "Cabinet 1", "Urgence", "Domicile"
+  notes            String?
+
+  // ---- Relations ----
+  patient      patient        @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  visit        patient_visit? @relation(fields: [visit_id], references: [id], onDelete: Cascade)
+  organisation organisation   @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
+
+  // ---- Index ----
+  @@index([patient_id])
+  @@index([visit_id]) // Index pour requêtes par visite
+  @@index([organisation_id])
+  @@index([measured_at]) // Pour analyses chronologiques
 }
 
 model patient_medical {
@@ -215,8 +234,9 @@ model patient_visit {
   created_at      DateTime? @default(now()) @db.Timestamp(6)
 
   // Relations
-  appointment  patient_appointment? @relation(fields: [appointment_id], references: [id])
-  patient      patient              @relation(fields: [patient_id], references: [id])
-  doctor       doctor?              @relation(fields: [doctor_id], references: [id])
-  organisation organisation         @relation(fields: [organisation_id], references: [id])
+  appointment         patient_appointment?  @relation(fields: [appointment_id], references: [id])
+  patient             patient               @relation(fields: [patient_id], references: [id])
+  doctor              doctor?               @relation(fields: [doctor_id], references: [id])
+  organisation        organisation          @relation(fields: [organisation_id], references: [id])
+  patient_measurement patient_measurements?
 }
