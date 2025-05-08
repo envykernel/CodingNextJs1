@@ -1,13 +1,15 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { TextField, Button, Grid, Card, CardContent, Typography } from '@mui/material'
-
-import { useTranslation } from '@/contexts/translationContext'
+import Alert from '@mui/material/Alert'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 interface PatientMeasurementsFormProps {
   visitId: number
+  dictionary: any
+  initialValues?: any
 }
 
 const initialState = {
@@ -22,12 +24,31 @@ const initialState = {
   notes: ''
 }
 
-const PatientMeasurementsForm: React.FC<PatientMeasurementsFormProps> = ({ visitId }) => {
-  const t = useTranslation()
-  const [form, setForm] = useState(initialState)
+const PatientMeasurementsForm: React.FC<PatientMeasurementsFormProps> = ({ visitId, dictionary, initialValues }) => {
+  const t = dictionary.patientMeasurementsForm
+
+  const [form, setForm] = useState(() => {
+    if (initialValues) {
+      return {
+        ...initialState,
+        ...Object.fromEntries(Object.entries(initialValues).map(([k, v]) => [k, v == null ? '' : v]))
+      }
+    }
+
+    return initialState
+  })
+
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(false), 4000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [success])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -63,8 +84,13 @@ const PatientMeasurementsForm: React.FC<PatientMeasurementsFormProps> = ({ visit
   return (
     <Card className='mt-6'>
       <CardContent>
+        {success && (
+          <Alert icon={<CheckCircleIcon fontSize='inherit' />} severity='success' sx={{ mb: 2 }}>
+            {t.savedSuccessfully}
+          </Alert>
+        )}
         <Typography variant='h6' className='mb-4'>
-          {t.patientMeasurements || 'Patient Measurements'}
+          {t.title}
         </Typography>
         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
           <Grid container spacing={2}>
@@ -166,10 +192,13 @@ const PatientMeasurementsForm: React.FC<PatientMeasurementsFormProps> = ({ visit
           </Grid>
           <div className='flex gap-4 mt-4'>
             <Button type='submit' variant='contained' color='primary' disabled={loading}>
-              {loading ? t.saving || 'Saving...' : t.save || 'Save'}
+              {loading ? t.saving : t.save}
             </Button>
-            {success && <Typography color='success.main'>{t.savedSuccessfully || 'Saved successfully!'}</Typography>}
-            {error && <Typography color='error.main'>{error}</Typography>}
+            {error && (
+              <Typography color='error.main' sx={{ ml: 2 }}>
+                {error}
+              </Typography>
+            )}
           </div>
         </form>
       </CardContent>

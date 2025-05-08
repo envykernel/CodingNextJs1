@@ -182,5 +182,20 @@
     "email": "E-mail",
     "address": "Adresse",
     "city": "Ville"
+  },
+  "patientMeasurementsForm": {
+    "title": "Mesures du patient",
+    "weight": "Poids (kg)",
+    "height": "Taille (cm)",
+    "temperature": "Température (°C)",
+    "bloodPressureSystolic": "Pression artérielle systolique",
+    "bloodPressureDiastolic": "Pression artérielle diastolique",
+    "pulse": "Pouls (bpm)",
+    "oxygenSaturation": "Saturation en oxygène (%)",
+    "respiratoryRate": "Fréquence respiratoire",
+    "notes": "Notes",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "savedSuccessfully": "Enregistré avec succès !"
   }
 }

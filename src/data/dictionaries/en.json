@@ -184,5 +184,20 @@
     "email": "Email",
     "address": "Address",
     "city": "City"
+  },
+  "patientMeasurementsForm": {
+    "title": "Patient Measurements",
+    "weight": "Weight (kg)",
+    "height": "Height (cm)",
+    "temperature": "Temperature (°C)",
+    "bloodPressureSystolic": "Blood Pressure Systolic",
+    "bloodPressureDiastolic": "Blood Pressure Diastolic",
+    "pulse": "Pulse (bpm)",
+    "oxygenSaturation": "Oxygen Saturation (%)",
+    "respiratoryRate": "Respiratory Rate",
+    "notes": "Notes",
+    "save": "Save",
+    "saving": "Saving...",
+    "savedSuccessfully": "Saved successfully!"
   }
 }

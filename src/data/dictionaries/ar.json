@@ -183,5 +183,20 @@
     "email": "البريد الإلكتروني",
     "address": "العنوان",
     "city": "المدينة"
+  },
+  "patientMeasurementsForm": {
+    "title": "قياسات المريض",
+    "weight": "الوزن (كجم)",
+    "height": "الطول (سم)",
+    "temperature": "درجة الحرارة (°م)",
+    "bloodPressureSystolic": "ضغط الدم الانقباضي",
+    "bloodPressureDiastolic": "ضغط الدم الانبساطي",
+    "pulse": "النبض (نبضة/دقيقة)",
+    "oxygenSaturation": "تشبع الأكسجين (%)",
+    "respiratoryRate": "معدل التنفس",
+    "notes": "ملاحظات",
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ...",
+    "savedSuccessfully": "تم الحفظ بنجاح!"
   }
 }

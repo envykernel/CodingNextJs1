@@ -12,15 +12,25 @@ import PatientMeasurementsForm from '@views/apps/visits/view/visit-right/Patient
 
 const VisitOverviewTab = dynamic(() => import('@views/apps/visits/view/visit-right/overview'))
 
-const tabContentList = (visitData: any) => ({
+const tabContentList = (visitData: any, lang: string, dictionary: any) => ({
   overview: <VisitOverviewTab visitData={visitData} />,
-  measurements: <PatientMeasurementsForm visitId={visitData.id} />
+  measurements: (
+    <PatientMeasurementsForm
+      key={lang}
+      visitId={visitData.id}
+      dictionary={dictionary}
+      initialValues={visitData.patient_measurement}
+    />
+  )
 })
 
-export default async function VisitViewTab({ params }: { params: { id: string; lang: string } }) {
-  const visitId = Number(params.id)
+export default async function VisitViewTab({ params }: { params: Promise<{ id: string; lang: string }> }) {
+  const { id, lang } = await params
+  const visitId = Number(id)
   const visitData = await getVisitById(visitId)
-  const dictionary = await getDictionary(params.lang as Locale)
+  const dictionary = await getDictionary(lang as Locale)
+
+  console.log(dictionary)
 
   return (
     <TranslationProvider dictionary={dictionary}>
@@ -29,7 +39,7 @@ export default async function VisitViewTab({ params }: { params: { id: string; l
           <VisitLeftOverview visitData={visitData} />
         </Grid>
         <Grid size={{ xs: 12, lg: 8, md: 7 }}>
-          <VisitRight tabContentList={tabContentList(visitData)} />
+          <VisitRight tabContentList={tabContentList(visitData, lang, dictionary)} />
         </Grid>
       </Grid>
     </TranslationProvider>

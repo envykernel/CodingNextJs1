@@ -20,7 +20,8 @@ export async function getVisitById(id: number) {
     include: {
       patient: true,
       doctor: true,
-      organisation: true
+      organisation: true,
+      patient_measurement: true
     }
   })
 }
