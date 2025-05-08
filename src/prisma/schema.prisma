@@ -158,6 +158,7 @@ model doctor {
   organisation        organisation          @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   patient_appointment patient_appointment[]
   patient_visits      patient_visit[]
+  clinical_exams      clinical_exam[]
 
   @@index([organisation_id], map: "idx_doctor_organisation_id")
 }
@@ -186,6 +187,7 @@ model organisation {
   break_end_time          String?                   @db.VarChar(5)
   userInternals           UserInternal[]
   patient_visits          patient_visit[]
+  clinical_exams          clinical_exam[]
 }
 
 model patient_appointment {
@@ -239,4 +241,45 @@ model patient_visit {
   doctor              doctor?               @relation(fields: [doctor_id], references: [id])
   organisation        organisation          @relation(fields: [organisation_id], references: [id])
   patient_measurement patient_measurements?
+  clinical_exams      clinical_exam[]
+}
+
+model clinical_exam {
+  id              Int  @id @default(autoincrement())
+  visit_id        Int
+  organisation_id Int
+  examiner_id     Int? // ID du médecin examinateur
+
+  // ---- Anamnèse ----
+  chief_complaint String? @db.VarChar(1000) // Motif de consultation
+  history_illness String? @db.VarChar(2000) // Histoire de la maladie
+  medical_history String? @db.VarChar(2000) // Antécédents médicaux
+
+  // ---- Examen Systémique ----
+  general_appearance String? @db.VarChar(500)
+  cardiovascular     String? @db.VarChar(1000)
+  respiratory        String? @db.VarChar(1000)
+  gastrointestinal   String? @db.VarChar(1000)
+  neurological       String? @db.VarChar(1000)
+  musculoskeletal    String? @db.VarChar(1000)
+  skin               String? @db.VarChar(1000)
+  ent                String? @db.VarChar(1000) // ORL
+
+  // ---- Évaluation ----
+  assessment String? @db.VarChar(2000) // Impression clinique
+  plan       String? @db.VarChar(2000) // Plan de traitement
+
+  // ---- Métadonnées ----
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+
+  // ---- Relations ----
+  visit        patient_visit @relation(fields: [visit_id], references: [id], onDelete: Cascade)
+  organisation organisation  @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
+  examiner     doctor?       @relation(fields: [examiner_id], references: [id])
+
+  // ---- Index ----
+  @@index([visit_id])
+  @@index([organisation_id])
+  @@index([examiner_id])
 }
