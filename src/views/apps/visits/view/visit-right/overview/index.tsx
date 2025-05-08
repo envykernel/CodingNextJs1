@@ -6,6 +6,7 @@ import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 
 import { useTranslation } from '@/contexts/translationContext'
+import PatientMeasurementBlock from './PatientMeasurementBlock'
 
 const VisitOverviewTab = ({ visitData }: { visitData: any }) => {
   const t = useTranslation()
@@ -63,6 +64,11 @@ const VisitOverviewTab = ({ visitData }: { visitData: any }) => {
           </CardContent>
         </Card>
       </Grid>
+      {visitData.patient_measurement && (
+        <Grid size={{ xs: 12 }}>
+          <PatientMeasurementBlock measurement={visitData.patient_measurement} />
+        </Grid>
+      )}
     </Grid>
   )
 }
