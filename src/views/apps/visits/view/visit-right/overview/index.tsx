@@ -8,8 +8,9 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from '@/contexts/translationContext'
 import PatientMeasurementBlock from './PatientMeasurementBlock'
 import ClinicalExamBlock from './ClinicalExamBlock'
+import PrescriptionBlock from './PrescriptionBlock'
 
-const VisitOverviewTab = ({ visitData }: { visitData: any }) => {
+const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionary: any }) => {
   const t = useTranslation()
 
   return (
@@ -79,6 +80,26 @@ const VisitOverviewTab = ({ visitData }: { visitData: any }) => {
       {visitData.clinical_exams && visitData.clinical_exams.length > 0 && (
         <Grid size={{ xs: 12 }}>
           <ClinicalExamBlock exam={visitData.clinical_exams[0]} />
+        </Grid>
+      )}
+      {visitData.prescriptions && visitData.prescriptions.length > 0 && (
+        <Grid size={{ xs: 12 }}>
+          <PrescriptionBlock
+            prescription={{
+              doctor: visitData.prescriptions[0].doctor?.name || '',
+              medications:
+                visitData.prescriptions[0].lines?.map((line: any, idx: number) => ({
+                  id: idx + 1,
+                  name: line.drug_name,
+                  dosage: line.dosage || '',
+                  frequency: line.frequency || '',
+                  duration: line.duration || '',
+                  notes: line.instructions ?? ''
+                })) || [],
+              notes: visitData.prescriptions[0].notes || ''
+            }}
+            dictionary={dictionary}
+          />
         </Grid>
       )}
     </Grid>

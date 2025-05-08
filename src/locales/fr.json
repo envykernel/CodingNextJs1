@@ -70,5 +70,9 @@
     "collapseMedications": "Réduire les médicaments",
     "expandMedications": "Développer les médicaments",
     "collapseMedication": "Réduire le médicament",
-    "expandMedication": "Développer le médicament"
+    "expandMedication": "Développer le médicament",
+    "prescriptionDetails": "Détails de l'ordonnance",
+    "prescriptionInformation": "Informations sur l'ordonnance",
+    "printPrescription": "Imprimer l'ordonnance",
+    "patientInformation": "Informations sur le patient"
 }

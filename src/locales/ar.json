@@ -70,5 +70,9 @@
     "collapseMedications": "طي الأدوية",
     "expandMedications": "توسيع الأدوية",
     "collapseMedication": "طي الدواء",
-    "expandMedication": "توسيع الدواء"
+    "expandMedication": "توسيع الدواء",
+    "prescriptionDetails": "تفاصيل الوصفة الطبية",
+    "prescriptionInformation": "معلومات الوصفة الطبية",
+    "printPrescription": "طباعة الوصفة الطبية",
+    "patientInformation": "معلومات المريض"
 }

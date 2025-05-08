@@ -26,7 +26,7 @@ const tabContentList = (
   prescriptionInitialData: any,
   prescriptionExists: boolean
 ) => ({
-  overview: <VisitOverviewTab visitData={visitData} />,
+  overview: <VisitOverviewTab visitData={visitData} dictionary={dictionary} />,
   measurements: (
     <PatientMeasurementsForm
       key={lang}

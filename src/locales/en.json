@@ -70,5 +70,9 @@
     "collapseMedications": "Collapse medications",
     "expandMedications": "Expand medications",
     "collapseMedication": "Collapse medication",
-    "expandMedication": "Expand medication"
+    "expandMedication": "Expand medication",
+    "prescriptionDetails": "Prescription Details",
+    "prescriptionInformation": "Prescription Information",
+    "printPrescription": "Print Prescription",
+    "patientInformation": "Patient Information"
 }
