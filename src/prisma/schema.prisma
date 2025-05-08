@@ -92,13 +92,13 @@ model patient_measurements {
   measured_at     DateTime? @default(now()) @db.Timestamptz(6)
 
   // ---- Données physiologiques ----
-  weight_kg                Decimal? @db.Decimal(5, 2)
-  height_cm                Decimal? @db.Decimal(5, 2)
-  temperature_c            Decimal? @db.Decimal(4, 1)
+  weight_kg                Float? @db.DoublePrecision
+  height_cm                Float? @db.DoublePrecision
+  temperature_c            Float? @db.DoublePrecision
   blood_pressure_systolic  Int?
   blood_pressure_diastolic Int?
   pulse                    Int? // Nouveau - Pouls (bpm)
-  oxygen_saturation        Decimal? @db.Decimal(5, 2) // Nouveau - SpO2 (%)
+  oxygen_saturation        Float? @db.DoublePrecision // Nouveau - SpO2 (%)
   respiratory_rate         Int? // Nouveau - Fréquence respiratoire
 
   // ---- Métadonnées ----

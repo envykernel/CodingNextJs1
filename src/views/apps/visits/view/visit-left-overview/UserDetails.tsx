@@ -46,7 +46,9 @@ const UserDetails = ({ visitData }: { visitData: any }) => {
               {t.patient?.birthdate}
             </Typography>
             <Typography color='text.primary'>
-              {patient.birthdate ? new Date(patient.birthdate).toISOString().slice(0, 10) : '-'}
+              {patient.birthdate && !isNaN(new Date(patient.birthdate).getTime())
+                ? new Date(patient.birthdate).toISOString().slice(0, 10)
+                : '-'}
             </Typography>
           </div>
           <div className='flex items-center gap-2'>

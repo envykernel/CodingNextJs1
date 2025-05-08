@@ -29,21 +29,27 @@ const VisitOverviewTab = ({ visitData }: { visitData: any }) => {
                   <i className='tabler-calendar-event text-lg' />
                   <Typography>
                     <b>{t.date || 'Date'}:</b>{' '}
-                    {visitData.arrival_time ? new Date(visitData.arrival_time).toISOString().slice(0, 10) : '-'}
+                    {visitData.arrival_time && !isNaN(new Date(visitData.arrival_time).getTime())
+                      ? new Date(visitData.arrival_time).toISOString().slice(0, 10)
+                      : '-'}
                   </Typography>
                 </div>
                 <div className='flex items-center gap-2'>
                   <i className='tabler-clock-hour-8 text-lg' />
                   <Typography>
                     <b>{t.startTime || 'Start Time'}:</b>{' '}
-                    {visitData.start_time ? new Date(visitData.start_time).toISOString().slice(11, 19) : '-'}
+                    {visitData.start_time && !isNaN(new Date(visitData.start_time).getTime())
+                      ? new Date(visitData.start_time).toISOString().slice(11, 19)
+                      : '-'}
                   </Typography>
                 </div>
                 <div className='flex items-center gap-2'>
                   <i className='tabler-clock-hour-4 text-lg' />
                   <Typography>
                     <b>{t.endTime || 'End Time'}:</b>{' '}
-                    {visitData.end_time ? new Date(visitData.end_time).toISOString().slice(11, 19) : '-'}
+                    {visitData.end_time && !isNaN(new Date(visitData.end_time).getTime())
+                      ? new Date(visitData.end_time).toISOString().slice(11, 19)
+                      : '-'}
                   </Typography>
                 </div>
                 <div className='flex items-center gap-2'>

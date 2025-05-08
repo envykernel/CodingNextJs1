@@ -197,5 +197,41 @@
     "save": "Enregistrer",
     "saving": "Enregistrement...",
     "savedSuccessfully": "Enregistré avec succès !"
+  },
+  "clinicalExam": "Examen clinique",
+  "clinicalExamForm": {
+    "title": "Examen clinique",
+    "chiefComplaint": "Motif de consultation",
+    "historyIllness": "Histoire de la maladie",
+    "medicalHistory": "Antécédents médicaux",
+    "generalAppearance": "Apparence générale",
+    "cardiovascular": "Cardiovasculaire",
+    "respiratory": "Respiratoire",
+    "gastrointestinal": "Gastro-intestinal",
+    "neurological": "Neurologique",
+    "musculoskeletal": "Musculo-squelettique",
+    "skin": "Peau",
+    "ent": "ORL (Oreille, Nez, Gorge)",
+    "assessment": "Évaluation",
+    "plan": "Plan de traitement",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "savedSuccessfully": "Examen clinique enregistré avec succès !",
+    "selectSections": "Sélectionnez les sections à remplir",
+    "sections": {
+      "chiefComplaint": "Motif principal",
+      "historyIllness": "Histoire de la maladie",
+      "medicalHistory": "Antécédents médicaux",
+      "generalAppearance": "Apparence générale",
+      "cardiovascular": "Cardiovasculaire",
+      "respiratory": "Respiratoire",
+      "gastrointestinal": "Gastro-intestinal",
+      "neurological": "Neurologique",
+      "musculoskeletal": "Musculo-squelettique",
+      "skin": "Peau",
+      "ent": "ORL (Oreille, Nez, Gorge)",
+      "assessment": "Évaluation",
+      "plan": "Plan"
+    }
   }
 }

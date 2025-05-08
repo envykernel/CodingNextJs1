@@ -8,7 +8,6 @@ import Grid from '@mui/material/Grid2'
 
 import CustomTabList from '@core/components/mui/TabList'
 import { useTranslation } from '@/contexts/translationContext'
-import PatientMeasurementsForm from './PatientMeasurementsForm'
 
 const VisitRight = ({ tabContentList }: { tabContentList: { [key: string]: React.ReactNode } }) => {
   const [activeTab, setActiveTab] = useState('overview')
@@ -30,6 +29,12 @@ const VisitRight = ({ tabContentList }: { tabContentList: { [key: string]: React
               icon={<i className='tabler-activity' />}
               value='measurements'
               label={t.patientMeasurements || 'Patient Measurements'}
+              iconPosition='start'
+            />
+            <Tab
+              icon={<i className='tabler-clipboard-text' />}
+              value='clinicalExam'
+              label={t.clinicalExam || 'Clinical Exam'}
               iconPosition='start'
             />
           </CustomTabList>

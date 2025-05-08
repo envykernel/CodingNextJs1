@@ -198,5 +198,41 @@
     "save": "حفظ",
     "saving": "جارٍ الحفظ...",
     "savedSuccessfully": "تم الحفظ بنجاح!"
+  },
+  "clinicalExam": "الفحص السريري",
+  "clinicalExamForm": {
+    "title": "الفحص السريري",
+    "chiefComplaint": "الشكوى الرئيسية",
+    "historyIllness": "تاريخ المرض الحالي",
+    "medicalHistory": "التاريخ الطبي",
+    "generalAppearance": "المظهر العام",
+    "cardiovascular": "القلب والأوعية الدموية",
+    "respiratory": "الجهاز التنفسي",
+    "gastrointestinal": "الجهاز الهضمي",
+    "neurological": "الجهاز العصبي",
+    "musculoskeletal": "الجهاز العضلي الهيكلي",
+    "skin": "الجلد",
+    "ent": "الأنف والأذن والحنجرة",
+    "assessment": "التقييم",
+    "plan": "خطة العلاج",
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ...",
+    "savedSuccessfully": "تم حفظ الفحص السريري بنجاح!",
+    "selectSections": "اختر الأقسام التي تريد تعبئتها",
+    "sections": {
+      "chiefComplaint": "الشكوى الرئيسية",
+      "historyIllness": "تاريخ المرض الحالي",
+      "medicalHistory": "التاريخ الطبي",
+      "generalAppearance": "المظهر العام",
+      "cardiovascular": "القلب والأوعية الدموية",
+      "respiratory": "الجهاز التنفسي",
+      "gastrointestinal": "الجهاز الهضمي",
+      "neurological": "الجهاز العصبي",
+      "musculoskeletal": "الجهاز العضلي الهيكلي",
+      "skin": "الجلد",
+      "ent": "الأنف والأذن والحنجرة",
+      "assessment": "التقييم",
+      "plan": "الخطة"
+    }
   }
 }

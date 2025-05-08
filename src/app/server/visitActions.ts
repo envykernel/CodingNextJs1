@@ -1,4 +1,5 @@
 import { prisma } from '@/prisma/prisma'
+import { prismaDecimalToNumber } from '@/utils/prismaDecimalToNumber'
 
 export async function getVisitsByAppointmentIds(appointmentIds: number[]) {
   const visits = await prisma.patient_visit.findMany({
@@ -15,13 +16,16 @@ export async function getVisitsByAppointmentIds(appointmentIds: number[]) {
 }
 
 export async function getVisitById(id: number) {
-  return await prisma.patient_visit.findUnique({
+  const visit = await prisma.patient_visit.findUnique({
     where: { id },
     include: {
       patient: true,
       doctor: true,
       organisation: true,
-      patient_measurement: true
+      patient_measurement: true,
+      clinical_exams: true
     }
   })
+
+  return prismaDecimalToNumber(visit)
 }

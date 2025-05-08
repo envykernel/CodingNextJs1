@@ -134,7 +134,8 @@
     "cancel": "Cancel",
     "patients": "Patients",
     "addNewPatient": "Add New Patient",
-    "enabled": "Enabled"
+    "enabled": "Enabled",
+    "clinicalExam": "Clinical Exam"
   },
   "form": {
     "name": "Name",
@@ -199,5 +200,40 @@
     "save": "Save",
     "saving": "Saving...",
     "savedSuccessfully": "Saved successfully!"
+  },
+  "clinicalExamForm": {
+    "title": "Clinical Exam",
+    "chiefComplaint": "Chief Complaint",
+    "historyIllness": "History of Present Illness",
+    "medicalHistory": "Medical History",
+    "generalAppearance": "General Appearance",
+    "cardiovascular": "Cardiovascular",
+    "respiratory": "Respiratory",
+    "gastrointestinal": "Gastrointestinal",
+    "neurological": "Neurological",
+    "musculoskeletal": "Musculoskeletal",
+    "skin": "Skin",
+    "ent": "ENT (Ear, Nose, Throat)",
+    "assessment": "Assessment",
+    "plan": "Plan",
+    "save": "Save",
+    "saving": "Saving...",
+    "savedSuccessfully": "Clinical exam saved successfully!",
+    "selectSections": "Select sections to fill",
+    "sections": {
+      "chiefComplaint": "Chief Complaint",
+      "historyIllness": "History of Present Illness",
+      "medicalHistory": "Medical History",
+      "generalAppearance": "General Appearance",
+      "cardiovascular": "Cardiovascular",
+      "respiratory": "Respiratory",
+      "gastrointestinal": "Gastrointestinal",
+      "neurological": "Neurological",
+      "musculoskeletal": "Musculoskeletal",
+      "skin": "Skin",
+      "ent": "ENT (Ear, Nose, Throat)",
+      "assessment": "Assessment",
+      "plan": "Plan"
+    }
   }
 }

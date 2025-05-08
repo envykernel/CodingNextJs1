@@ -9,6 +9,7 @@ import { getDictionary } from '@/utils/getDictionary'
 import { TranslationProvider } from '@/contexts/translationContext'
 import type { Locale } from '@configs/i18n'
 import PatientMeasurementsForm from '@views/apps/visits/view/visit-right/PatientMeasurementsForm'
+import ClinicalExamForm from '@views/apps/visits/view/visit-right/ClinicalExamForm'
 
 const VisitOverviewTab = dynamic(() => import('@views/apps/visits/view/visit-right/overview'))
 
@@ -21,6 +22,14 @@ const tabContentList = (visitData: any, lang: string, dictionary: any) => ({
       dictionary={dictionary}
       initialValues={visitData.patient_measurement}
     />
+  ),
+  clinicalExam: (
+    <ClinicalExamForm
+      key={lang}
+      visitId={visitData.id}
+      dictionary={dictionary}
+      initialValues={visitData.clinical_exam}
+    />
   )
 })
 
@@ -29,8 +38,6 @@ export default async function VisitViewTab({ params }: { params: Promise<{ id: s
   const visitId = Number(id)
   const visitData = await getVisitById(visitId)
   const dictionary = await getDictionary(lang as Locale)
-
-  console.log(dictionary)
 
   return (
     <TranslationProvider dictionary={dictionary}>
