@@ -80,6 +80,7 @@ model patient {
   patient_medical_history patient_medical_history[]
   patient_appointments    patient_appointment[]     @relation("patient_appointment_patient_id")
   patient_visits          patient_visit[]
+  prescriptions           prescription[]
 
   @@index([organisation_id], map: "idx_patient_organisation_id")
 }
@@ -159,6 +160,7 @@ model doctor {
   patient_appointment patient_appointment[]
   patient_visits      patient_visit[]
   clinical_exams      clinical_exam[]
+  prescriptions       prescription[]
 
   @@index([organisation_id], map: "idx_doctor_organisation_id")
 }
@@ -188,6 +190,7 @@ model organisation {
   userInternals           UserInternal[]
   patient_visits          patient_visit[]
   clinical_exams          clinical_exam[]
+  prescriptions           prescription[]
 }
 
 model patient_appointment {
@@ -242,6 +245,12 @@ model patient_visit {
   organisation        organisation          @relation(fields: [organisation_id], references: [id])
   patient_measurement patient_measurements?
   clinical_exams      clinical_exam[]
+  prescriptions       prescription[]
+
+  // ---- Index ----
+  @@index([patient_id])
+  @@index([doctor_id])
+  @@index([organisation_id])
 }
 
 model clinical_exam {
@@ -282,4 +291,42 @@ model clinical_exam {
   @@index([visit_id])
   @@index([organisation_id])
   @@index([examiner_id])
+}
+
+model prescription {
+  id              Int       @id @default(autoincrement())
+  visit_id        Int
+  doctor_id       Int
+  organisation_id Int
+  patient_id      Int
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
+  updated_at      DateTime? @default(now()) @db.Timestamp(6)
+  notes           String?   @db.VarChar(1000)
+
+  // Relations
+  visit        patient_visit       @relation(fields: [visit_id], references: [id], onDelete: Cascade)
+  doctor       doctor              @relation(fields: [doctor_id], references: [id])
+  organisation organisation        @relation(fields: [organisation_id], references: [id])
+  patient      patient             @relation(fields: [patient_id], references: [id])
+  lines        prescription_line[]
+
+  @@index([visit_id])
+  @@index([doctor_id])
+  @@index([organisation_id])
+  @@index([patient_id])
+}
+
+model prescription_line {
+  id              Int     @id @default(autoincrement())
+  prescription_id Int
+  drug_name       String  @db.VarChar(255)
+  dosage          String? @db.VarChar(255)
+  frequency       String? @db.VarChar(255)
+  duration        String? @db.VarChar(255)
+  instructions    String? @db.VarChar(1000)
+
+  // Relations
+  prescription prescription @relation(fields: [prescription_id], references: [id], onDelete: Cascade)
+
+  @@index([prescription_id])
 }
