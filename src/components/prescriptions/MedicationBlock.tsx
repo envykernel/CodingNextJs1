@@ -1,15 +1,8 @@
 'use client'
 
-import { Box, TextField, Typography, Autocomplete, IconButton, Grid } from '@mui/material'
+import { useEffect, useState } from 'react'
 
-// Mock data for medications
-const medications = [
-  { id: 1, name: 'Amoxicillin', category: 'Antibiotic' },
-  { id: 2, name: 'Ibuprofen', category: 'Pain Relief' },
-  { id: 3, name: 'Omeprazole', category: 'Antacid' },
-  { id: 4, name: 'Metformin', category: 'Diabetes' },
-  { id: 5, name: 'Lisinopril', category: 'Blood Pressure' }
-]
+import { Box, TextField, Typography, Autocomplete, IconButton, Grid } from '@mui/material'
 
 interface Medication {
   id: number
@@ -27,6 +20,7 @@ interface MedicationBlockProps {
   onMedicationChange: (index: number, field: string, value: string) => void
   onRemove: (index: number) => void
   canRemove: boolean
+  errors?: any
 }
 
 export default function MedicationBlock({
@@ -35,10 +29,29 @@ export default function MedicationBlock({
   dictionary,
   onMedicationChange,
   onRemove,
-  canRemove
+  canRemove,
+  errors
 }: MedicationBlockProps) {
+  const [medications, setMedications] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setLoading(true)
+    fetch('/api/medications')
+      .then(res => res.json())
+      .then(data => {
+        setMedications(data)
+        console.log('Fetched medications:', data)
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  const selectedMedication = medications.find(m => m.name === medication.name)
+  const possibleDosages = selectedMedication ? selectedMedication.dosages : []
+
   return (
     <Box sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+      {medications.length === 0 && <Typography color='error'>No medications found in database.</Typography>}
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -57,17 +70,29 @@ export default function MedicationBlock({
             value={medications.find(m => m.name === medication.name) || null}
             onChange={(_, newValue) => {
               onMedicationChange(index, 'name', newValue?.name || '')
+              onMedicationChange(index, 'dosage', '')
             }}
+            loading={loading}
+            openOnFocus
             renderInput={params => <TextField {...params} label={dictionary?.navigation?.medication} required />}
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            label={dictionary?.navigation?.dosage}
-            value={medication.dosage}
-            onChange={e => onMedicationChange(index, 'dosage', e.target.value)}
-            required
+          <Autocomplete
+            options={possibleDosages}
+            getOptionLabel={option => option}
+            value={medication.dosage || null}
+            onChange={(_, newValue) => onMedicationChange(index, 'dosage', newValue || '')}
+            renderInput={params => (
+              <TextField
+                {...params}
+                label={dictionary?.navigation?.dosage}
+                required
+                error={!!errors?.dosage}
+                helperText={errors?.dosage?.message || ' '}
+              />
+            )}
+            disabled={!selectedMedication}
           />
         </Grid>
         <Grid item xs={12} md={6}>

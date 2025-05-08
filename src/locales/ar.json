@@ -56,5 +56,19 @@
         "message": "ليس لديك إذن للوصول إلى هذه الصفحة. يرجى التواصل مع المسؤول إذا كنت تعتقد أن هذا خطأ.",
         "button": "العودة إلى الصفحة الرئيسية"
     },
-    "goToVisit": "الذهاب إلى الزيارة"
+    "goToVisit": "الذهاب إلى الزيارة",
+    "prescriptions": "الوصفات الطبية",
+    "savePrescription": "حفظ الوصفة الطبية",
+    "medication": "الدواء",
+    "addMedication": "إضافة دواء",
+    "medications": "الأدوية",
+    "dosage": "الجرعة",
+    "frequency": "التكرار",
+    "duration": "المدة",
+    "patientName": "اسم المريض",
+    "additionalNotes": "ملاحظات إضافية",
+    "collapseMedications": "طي الأدوية",
+    "expandMedications": "توسيع الأدوية",
+    "collapseMedication": "طي الدواء",
+    "expandMedication": "توسيع الدواء"
 }

@@ -56,5 +56,19 @@
         "message": "You do not have permission to access this page. Please contact your administrator if you believe this is a mistake.",
         "button": "Back to Home"
     },
-    "goToVisit": "Go to Visit"
+    "goToVisit": "Go to Visit",
+    "prescriptions": "Prescriptions",
+    "savePrescription": "Save Prescription",
+    "medication": "Medication",
+    "addMedication": "Add Medication",
+    "medications": "Medications",
+    "dosage": "Dosage",
+    "frequency": "Frequency",
+    "duration": "Duration",
+    "patientName": "Patient Name",
+    "additionalNotes": "Additional Notes",
+    "collapseMedications": "Collapse medications",
+    "expandMedications": "Expand medications",
+    "collapseMedication": "Collapse medication",
+    "expandMedication": "Expand medication"
 }

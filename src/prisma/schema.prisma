@@ -191,6 +191,7 @@ model organisation {
   patient_visits          patient_visit[]
   clinical_exams          clinical_exam[]
   prescriptions           prescription[]
+  medications             medication[]
 }
 
 model patient_appointment {
@@ -329,4 +330,15 @@ model prescription_line {
   prescription prescription @relation(fields: [prescription_id], references: [id], onDelete: Cascade)
 
   @@index([prescription_id])
+}
+
+model medication {
+  id              Int           @id @default(autoincrement())
+  name            String        @unique @db.VarChar(255)
+  category        String?       @db.VarChar(100)
+  organisation_id Int?
+  organisation    organisation? @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
+  dosages         String[]      @db.VarChar(100)
+
+  @@index([organisation_id])
 }
