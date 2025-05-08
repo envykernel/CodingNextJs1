@@ -86,6 +86,7 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
         <Grid size={{ xs: 12 }}>
           <PrescriptionBlock
             prescription={{
+              id: visitData.prescriptions[0].id,
               doctor: visitData.prescriptions[0].doctor?.name || '',
               medications:
                 visitData.prescriptions[0].lines?.map((line: any, idx: number) => ({

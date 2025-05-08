@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -29,6 +31,7 @@ interface PrescriptionBlockProps {
     doctor: string
     medications: Medication[]
     notes?: string
+    id?: number
   }
   dictionary: any
 }
@@ -53,9 +56,18 @@ const PrescriptionBlock: React.FC<PrescriptionBlockProps> = ({ prescription, dic
       </AccordionSummary>
       <AccordionDetails>
         <div className='flex justify-end mb-2'>
-          <Button variant='outlined' color='primary' startIcon={<PrintIcon />} onClick={() => window.print()}>
-            {t.printPrescription || 'Print Prescription'}
-          </Button>
+          {prescription.id && (
+            <Link
+              href={`/${typeof window !== 'undefined' ? window.location.pathname.split('/')[1] || 'en' : 'en'}/apps/prescriptions/${prescription.id}/print`}
+              target='_blank'
+              rel='noopener'
+              passHref
+            >
+              <Button variant='outlined' color='primary' startIcon={<PrintIcon />}>
+                {t.printPrescription || 'Print Prescription'}
+              </Button>
+            </Link>
+          )}
         </div>
         <Divider className='mb-4' />
         <div className='mb-2'>
