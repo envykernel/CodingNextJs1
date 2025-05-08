@@ -58,7 +58,7 @@ const PrescriptionBlock: React.FC<PrescriptionBlockProps> = ({ prescription, dic
         <div className='flex justify-end mb-2'>
           {prescription.id && (
             <Link
-              href={`/${typeof window !== 'undefined' ? window.location.pathname.split('/')[1] || 'en' : 'en'}/apps/prescriptions/${prescription.id}/print`}
+              href={`/${typeof window !== 'undefined' ? window.location.pathname.split('/')[1] || 'en' : 'en'}/apps/prescriptions/print/${prescription.id}`}
               target='_blank'
               rel='noopener'
               passHref

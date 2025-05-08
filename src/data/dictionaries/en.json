@@ -135,7 +135,8 @@
     "patients": "Patients",
     "addNewPatient": "Add New Patient",
     "enabled": "Enabled",
-    "clinicalExam": "Clinical Exam"
+    "clinicalExam": "Clinical Exam",
+    "doctorSignature": "Doctor Signature"
   },
   "form": {
     "name": "Name",

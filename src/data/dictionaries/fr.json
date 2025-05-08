@@ -133,7 +133,8 @@
     "saveChanges": "Enregistrer les modifications",
     "cancel": "Annuler",
     "patients": "Patients",
-    "addNewPatient": "Ajouter un patient"
+    "addNewPatient": "Ajouter un patient",
+    "doctorSignature": "Signature du médecin"
   },
   "form": {
     "name": "Nom",

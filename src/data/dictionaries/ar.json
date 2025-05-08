@@ -134,7 +134,8 @@
     "saveChanges": "حفظ التغييرات",
     "cancel": "إلغاء",
     "patients": "المرضى",
-    "addNewPatient": "إضافة مريض جديد"
+    "addNewPatient": "إضافة مريض جديد",
+    "doctorSignature": "توقيع الطبيب"
   },
   "form": {
     "name": "الاسم",
