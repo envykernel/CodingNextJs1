@@ -89,5 +89,15 @@
         "error": "حدث خطأ أثناء جلب تحاليل المختبر",
         "pending": "قيد الانتظار",
         "completed": "مكتمل"
+    },
+    "invoice": {
+        "item": "عنصر",
+        "selectService": "اختر الخدمة",
+        "unitPrice": "سعر الوحدة",
+        "quantity": "الكمية",
+        "lineTotal": "إجمالي السطر",
+        "addItem": "إضافة عنصر",
+        "itemDescription": "وصف العنصر",
+        "total": "الإجمالي"
     }
 }

@@ -1,8 +1,7 @@
 'use client'
 
 // React Imports
-import { useState } from 'react'
-import type { SyntheticEvent } from 'react'
+import { useState, useEffect } from 'react'
 
 // MUI Imports
 import Grid from '@mui/material/Grid2'
@@ -14,13 +13,15 @@ import Divider from '@mui/material/Divider'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import MenuItem from '@mui/material/MenuItem'
-import Tooltip from '@mui/material/Tooltip'
 import InputLabel from '@mui/material/InputLabel'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import type { Theme } from '@mui/material/styles'
+import CircularProgress from '@mui/material/CircularProgress'
 
 // Third-party Imports
 import classnames from 'classnames'
+
+import { useTranslation } from '@/contexts/translationContext'
 
 // Type Imports
 import type { InvoiceType } from '@/types/apps/invoiceTypes'
@@ -37,25 +38,68 @@ import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
   // States
   const [open, setOpen] = useState(false)
-  const [count, setCount] = useState(1)
   const [selectData, setSelectData] = useState<InvoiceType | null>(null)
   const [issuedDate, setIssuedDate] = useState<Date | null | undefined>(null)
   const [dueDate, setDueDate] = useState<Date | null | undefined>(null)
   const [formData, setFormData] = useState<FormDataType>(initialFormData)
+  const t = useTranslation()
+
+  console.log('TRANSLATION DICTIONARY:', t)
+  const [services, setServices] = useState<any[]>([])
+
+  const [items, setItems] = useState([{ service_id: '', description: '', quantity: 1, unit_price: 0, line_total: 0 }])
 
   // Hooks
-  const isBelowMdScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'))
   const isBelowSmScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then(res => res.json())
+      .then(setServices)
+  }, [])
+
+  // Helper to update an item
+  const updateItem = (idx: number, field: string, value: any) => {
+    setItems(prev => {
+      const updated = [...prev]
+      const item = { ...updated[idx], [field]: value }
+
+      if (field === 'service_id') {
+        const service = services.find(s => s.id === value)
+
+        item.unit_price = service ? Number(service.amount) : 0
+      }
+
+      if (field === 'quantity' || field === 'service_id') {
+        item.line_total = (item.unit_price || 0) * (item.quantity || 0)
+      }
+
+      updated[idx] = item
+
+      return updated
+    })
+  }
+
+  const addItem = () => {
+    setItems(prev => [...prev, { service_id: '', description: '', quantity: 1, unit_price: 0, line_total: 0 }])
+  }
+
+  const removeItem = (idx: number) => {
+    setItems(prev => prev.filter((_, i) => i !== idx))
+  }
+
+  const invoiceTotal = items.reduce((sum, item) => sum + (item.line_total || 0), 0)
 
   const onFormSubmit = (data: FormDataType) => {
     setFormData(data)
   }
 
-  const deleteForm = (e: SyntheticEvent) => {
-    e.preventDefault()
-
-    // @ts-ignore
-    e.target.closest('.repeater-item').remove()
+  if (!t || !t.invoice) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+        <CircularProgress />
+      </div>
+    )
   }
 
   return (
@@ -207,97 +251,74 @@ const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
               <Divider className='border-dashed' />
             </Grid>
             <Grid size={{ xs: 12 }}>
-              {Array.from(Array(count).keys()).map((item, index) => (
+              {items.map((item, idx) => (
                 <div
-                  key={index}
+                  key={idx}
                   className={classnames('repeater-item flex relative mbe-4 border rounded', {
-                    'mbs-8': !isBelowMdScreen,
-                    '!mbs-14': index !== 0 && !isBelowMdScreen,
-                    'gap-5': isBelowMdScreen
+                    'mbs-8': !isBelowSmScreen,
+                    '!mbs-14': idx !== 0 && !isBelowSmScreen,
+                    'gap-5': isBelowSmScreen
                   })}
                 >
                   <Grid container spacing={5} className='m-0 p-5'>
                     <Grid size={{ xs: 12, md: 5, lg: 6 }}>
                       <Typography className='font-medium md:absolute md:-top-8' color='text.primary'>
-                        Item
+                        {t.invoice.item}
                       </Typography>
-                      <CustomTextField select fullWidth defaultValue='App Design' className='mbe-5'>
-                        <MenuItem value='App Design'>App Design</MenuItem>
-                        <MenuItem value='App Customization'>App Customization</MenuItem>
-                        <MenuItem value='ABC Template'>ABC Template</MenuItem>
-                        <MenuItem value='App Development'>App Development</MenuItem>
+                      <CustomTextField
+                        select
+                        fullWidth
+                        value={item.service_id}
+                        onChange={e => updateItem(idx, 'service_id', e.target.value)}
+                        className='mbe-5'
+                      >
+                        <MenuItem value=''>{t.invoice.selectService}</MenuItem>
+                        {services.map(service => (
+                          <MenuItem key={service.id} value={service.id}>
+                            {service.name}
+                          </MenuItem>
+                        ))}
                       </CustomTextField>
-                      <CustomTextField rows={2} fullWidth multiline defaultValue='Customization & Bug Fixes' />
+                      <CustomTextField
+                        rows={2}
+                        fullWidth
+                        multiline
+                        value={item.description}
+                        onChange={e => updateItem(idx, 'description', e.target.value)}
+                        placeholder={t.invoice.itemDescription}
+                      />
                     </Grid>
                     <Grid size={{ xs: 12, md: 3, lg: 2 }}>
-                      <Typography className='font-medium md:absolute md:-top-8'>Cost</Typography>
-                      <CustomTextField
-                        {...(isBelowMdScreen && { fullWidth: true })}
-                        type='number'
-                        placeholder='24'
-                        defaultValue='24'
-                        className='mbe-5'
-                        slotProps={{
-                          input: {
-                            inputProps: { min: 0 }
-                          }
-                        }}
-                      />
-                      <div className='flex flex-col'>
-                        <Typography component='span' color='text.primary'>
-                          Discount:
-                        </Typography>
-                        <div className='flex gap-2'>
-                          <Typography component='span' color='text.primary'>
-                            0%
-                          </Typography>
-                          <Tooltip title='Tax 1' placement='top'>
-                            <Typography component='span' color='text.primary'>
-                              0%
-                            </Typography>
-                          </Tooltip>
-                          <Tooltip title='Tax 2' placement='top'>
-                            <Typography component='span' color='text.primary'>
-                              0%
-                            </Typography>
-                          </Tooltip>
-                        </div>
-                      </div>
+                      <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.unitPrice}</Typography>
+                      <CustomTextField fullWidth type='number' value={item.unit_price} disabled className='mbe-5' />
                     </Grid>
                     <Grid size={{ xs: 12, md: 2 }}>
-                      <Typography className='font-medium md:absolute md:-top-8'>Hours</Typography>
+                      <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.quantity}</Typography>
                       <CustomTextField
-                        {...(isBelowMdScreen && { fullWidth: true })}
+                        fullWidth
                         type='number'
-                        placeholder='1'
-                        defaultValue='1'
-                        slotProps={{
-                          input: {
-                            inputProps: { min: 0 }
-                          }
-                        }}
+                        value={item.quantity}
+                        onChange={e => updateItem(idx, 'quantity', Number(e.target.value))}
+                        inputProps={{ min: 1 }}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 2 }}>
-                      <Typography className='font-medium md:absolute md:-top-8'>Price</Typography>
-                      <Typography>$24.00</Typography>
+                      <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.lineTotal}</Typography>
+                      <Typography>
+                        {item.line_total.toLocaleString(undefined, { style: 'currency', currency: 'EUR' })}
+                      </Typography>
                     </Grid>
                   </Grid>
                   <div className='flex flex-col justify-start border-is'>
-                    <IconButton size='small' onClick={deleteForm}>
+                    <IconButton size='small' onClick={() => removeItem(idx)}>
                       <i className='tabler-x text-2xl text-actionActive' />
                     </IconButton>
                   </div>
                 </div>
               ))}
               <Grid size={{ xs: 12 }}>
-                <Button
-                  size='small'
-                  variant='contained'
-                  onClick={() => setCount(count + 1)}
-                  startIcon={<i className='tabler-plus' />}
-                >
-                  Add Item
+                <Button size='small' variant='contained' onClick={addItem} startIcon={<i className='tabler-plus' />}>
+                  {t.invoice.addItem}
                 </Button>
               </Grid>
             </Grid>
@@ -317,28 +338,9 @@ const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
                 </div>
                 <div className='min-is-[200px]'>
                   <div className='flex items-center justify-between'>
-                    <Typography>Subtotal:</Typography>
-                    <Typography className='font-medium' color='text.primary'>
-                      $1800
-                    </Typography>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <Typography>Discount:</Typography>
-                    <Typography className='font-medium' color='text.primary'>
-                      $28
-                    </Typography>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <Typography>Tax:</Typography>
-                    <Typography className='font-medium' color='text.primary'>
-                      21%
-                    </Typography>
-                  </div>
-                  <Divider className='mlb-2' />
-                  <div className='flex items-center justify-between'>
                     <Typography>Total:</Typography>
                     <Typography className='font-medium' color='text.primary'>
-                      $1690
+                      {invoiceTotal.toLocaleString(undefined, { style: 'currency', currency: 'EUR' })}
                     </Typography>
                   </div>
                 </div>

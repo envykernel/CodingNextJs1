@@ -89,5 +89,15 @@
         "error": "Erreur lors de la récupération des analyses de laboratoire",
         "pending": "En attente",
         "completed": "Terminé"
+    },
+    "invoice": {
+        "item": "Article",
+        "selectService": "Sélectionner un service",
+        "unitPrice": "Prix unitaire",
+        "quantity": "Quantité",
+        "lineTotal": "Total de la ligne",
+        "addItem": "Ajouter un article",
+        "itemDescription": "Description de l'article",
+        "total": "Total"
     }
 }

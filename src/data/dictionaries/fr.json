@@ -250,5 +250,15 @@
       "assessment": "Évaluation",
       "plan": "Plan"
     }
+  },
+  "invoice": {
+    "item": "Article",
+    "selectService": "Sélectionner un service",
+    "unitPrice": "Prix unitaire",
+    "quantity": "Quantité",
+    "lineTotal": "Total de la ligne",
+    "addItem": "Ajouter un article",
+    "itemDescription": "Description de l'article",
+    "total": "Total"
   }
 }

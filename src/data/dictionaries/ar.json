@@ -251,5 +251,15 @@
       "assessment": "التقييم",
       "plan": "الخطة"
     }
+  },
+  "invoice": {
+    "item": "عنصر",
+    "selectService": "اختر الخدمة",
+    "unitPrice": "سعر الوحدة",
+    "quantity": "الكمية",
+    "lineTotal": "إجمالي السطر",
+    "addItem": "إضافة عنصر",
+    "itemDescription": "وصف العنصر",
+    "total": "الإجمالي"
   }
 }
