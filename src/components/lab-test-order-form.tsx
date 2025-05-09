@@ -15,6 +15,7 @@ import {
   Grid,
   Box
 } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
 
 interface LabTestType {
   id: number
@@ -169,90 +170,102 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
     <Card>
       <CardHeader title={title} />
       <CardContent>
-        {success && (
-          <Alert severity='success' sx={{ mb: 4 }}>
-            {success}
-          </Alert>
-        )}
-        {error && (
-          <Alert severity='error' sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-        <form onSubmit={handleSubmit}>
-          <Autocomplete
-            multiple
-            options={testTypes}
-            getOptionLabel={option => option.name}
-            value={selectedTests}
-            onChange={(_e, value) => setSelectedTests(value)}
-            renderInput={params => (
-              <TextField
-                {...params}
-                label={dictionary?.testForm?.selectTest || 'Select Test'}
-                placeholder={dictionary?.testForm?.selectTest || 'Select Test'}
-              />
-            )}
-            sx={{ mb: 2 }}
-          />
-          {selectedTests.length > 0 && (
-            <List dense>
-              {selectedTests.map(test => (
-                <ListItem key={test.id} alignItems='flex-start' sx={{ flexDirection: 'column', alignItems: 'stretch' }}>
-                  <ListItemText primary={test.name} secondary={test.category} />
-                  <Grid container spacing={2} sx={{ mb: 2 }}>
-                    <Grid item xs={12} sm={4}>
-                      <TextField
-                        label={dictionary?.testForm?.result || 'Result'}
-                        value={testDetails[test.id]?.result_value || ''}
-                        onChange={e => handleDetailChange(test.id, 'result_value', e.target.value)}
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={2}>
-                      <TextField
-                        label={dictionary?.testForm?.unit || 'Unit'}
-                        value={testDetails[test.id]?.result_unit || ''}
-                        onChange={e => handleDetailChange(test.id, 'result_unit', e.target.value)}
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <TextField
-                        label={dictionary?.testForm?.referenceRange || 'Reference Range'}
-                        value={testDetails[test.id]?.reference_range || ''}
-                        onChange={e => handleDetailChange(test.id, 'reference_range', e.target.value)}
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <TextField
-                        label={dictionary?.testForm?.notes || 'Notes'}
-                        value={testDetails[test.id]?.notes || ''}
-                        onChange={e => handleDetailChange(test.id, 'notes', e.target.value)}
-                        fullWidth
-                      />
-                    </Grid>
-                  </Grid>
-                </ListItem>
-              ))}
-            </List>
-          )}
-          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-            <Button
-              type='button'
-              variant='outlined'
-              color='secondary'
-              onClick={fetchAndPrefillOrders}
-              disabled={loading}
-            >
-              {dictionary?.navigation?.cancel || 'Cancel'}
-            </Button>
-            <Button type='submit' variant='contained' color='primary' disabled={loading}>
-              {loading ? dictionary?.testForm?.saving || 'Saving...' : submitButtonText}
-            </Button>
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+            <CircularProgress />
           </Box>
-        </form>
+        ) : (
+          <>
+            {success && (
+              <Alert severity='success' sx={{ mb: 4 }}>
+                {success}
+              </Alert>
+            )}
+            {error && (
+              <Alert severity='error' sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+            <form onSubmit={handleSubmit}>
+              <Autocomplete
+                multiple
+                options={testTypes}
+                getOptionLabel={option => option.name}
+                value={selectedTests}
+                onChange={(_e, value) => setSelectedTests(value)}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label={dictionary?.testForm?.selectTest || 'Select Test'}
+                    placeholder={dictionary?.testForm?.selectTest || 'Select Test'}
+                  />
+                )}
+                sx={{ mb: 2 }}
+              />
+              {selectedTests.length > 0 && (
+                <List dense>
+                  {selectedTests.map(test => (
+                    <ListItem
+                      key={test.id}
+                      alignItems='flex-start'
+                      sx={{ flexDirection: 'column', alignItems: 'stretch' }}
+                    >
+                      <ListItemText primary={test.name} secondary={test.category} />
+                      <Grid container spacing={2} sx={{ mb: 2 }}>
+                        <Grid item xs={12} sm={4}>
+                          <TextField
+                            label={dictionary?.testForm?.result || 'Result'}
+                            value={testDetails[test.id]?.result_value || ''}
+                            onChange={e => handleDetailChange(test.id, 'result_value', e.target.value)}
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={2}>
+                          <TextField
+                            label={dictionary?.testForm?.unit || 'Unit'}
+                            value={testDetails[test.id]?.result_unit || ''}
+                            onChange={e => handleDetailChange(test.id, 'result_unit', e.target.value)}
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <TextField
+                            label={dictionary?.testForm?.referenceRange || 'Reference Range'}
+                            value={testDetails[test.id]?.reference_range || ''}
+                            onChange={e => handleDetailChange(test.id, 'reference_range', e.target.value)}
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                          <TextField
+                            label={dictionary?.testForm?.notes || 'Notes'}
+                            value={testDetails[test.id]?.notes || ''}
+                            onChange={e => handleDetailChange(test.id, 'notes', e.target.value)}
+                            fullWidth
+                          />
+                        </Grid>
+                      </Grid>
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+              <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+                <Button
+                  type='button'
+                  variant='outlined'
+                  color='secondary'
+                  onClick={fetchAndPrefillOrders}
+                  disabled={loading}
+                >
+                  {dictionary?.navigation?.cancel || 'Cancel'}
+                </Button>
+                <Button type='submit' variant='contained' color='primary' disabled={loading}>
+                  {loading ? dictionary?.testForm?.saving || 'Saving...' : submitButtonText}
+                </Button>
+              </Box>
+            </form>
+          </>
+        )}
       </CardContent>
     </Card>
   )
