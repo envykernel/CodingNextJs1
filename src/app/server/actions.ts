@@ -9,13 +9,13 @@
 import { db as eCommerceData } from '@/fake-db/apps/ecommerce'
 import { db as academyData } from '@/fake-db/apps/academy'
 import { db as vehicleData } from '@/fake-db/apps/logistics'
-import { db as invoiceData } from '@/fake-db/apps/invoice'
 import { db as userData } from '@/fake-db/apps/userList'
 import { db as permissionData } from '@/fake-db/apps/permissions'
 import { db as profileData } from '@/fake-db/pages/userProfile'
 import { db as faqData } from '@/fake-db/pages/faq'
 import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
+import { prisma } from '@/prisma/prisma'
 
 export const getEcommerceData = async () => {
   return eCommerceData
@@ -30,7 +30,41 @@ export const getLogisticsData = async () => {
 }
 
 export const getInvoiceData = async () => {
-  return invoiceData
+  const invoices = await prisma.invoice.findMany({
+    include: {
+      patient: true,
+      organisation: true,
+      lines: { include: { service: true } },
+      payment_applications: true
+    },
+    orderBy: { id: 'desc' }
+  })
+
+  // Map Prisma results to InvoiceType expected by the UI
+  return invoices.map(inv => {
+    const firstLine = inv.lines[0] || {}
+    const totalPaid = inv.payment_applications.reduce((sum, p) => sum + Number(p.amount_applied), 0)
+    const balance = Number(inv.total_amount) - totalPaid
+
+    return {
+      id: inv.id.toString(),
+      name: inv.patient?.name || '',
+      total: Number(inv.total_amount),
+      avatar: inv.patient?.avatar || '',
+      service: firstLine.service?.name || '',
+      dueDate: inv.due_date ? inv.due_date.toISOString().split('T')[0] : '',
+      address: inv.patient?.address || '',
+      company: inv.organisation?.name || '',
+      country: inv.organisation?.address || '', // Placeholder, no country field
+      contact: inv.patient?.phone_number || '',
+      avatarColor: 'primary', // Or any logic you want
+      companyEmail: inv.patient?.email || '',
+      balance: balance === 0 ? 0 : `$${balance}`,
+      invoiceStatus: inv.status || 'PENDING',
+      invoice_date: inv.invoice_date ? inv.invoice_date.toISOString().split('T')[0] : '',
+      invoice_number: inv.invoice_number
+    }
+  })
 }
 
 export const getUserData = async () => {

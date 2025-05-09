@@ -166,43 +166,52 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
           />
         )
       },
-      columnHelper.accessor('id', {
+      columnHelper.accessor('invoice_number', {
         header: '#',
         cell: ({ row }) => (
           <Typography
             component={Link}
             href={getLocalizedUrl(`/apps/invoice/preview/${row.original.id}`, locale as Locale)}
             color='primary.main'
-          >{`#${row.original.id}`}</Typography>
+          >
+            {row.original.invoice_number}
+          </Typography>
         )
       }),
       columnHelper.accessor('invoiceStatus', {
         header: 'Status',
-        cell: ({ row }) => (
-          <Tooltip
-            title={
-              <div>
-                <Typography variant='body2' component='span' className='text-inherit'>
-                  {row.original.invoiceStatus}
-                </Typography>
-                <br />
-                <Typography variant='body2' component='span' className='text-inherit'>
-                  Balance:
-                </Typography>{' '}
-                {row.original.balance}
-                <br />
-                <Typography variant='body2' component='span' className='text-inherit'>
-                  Due Date:
-                </Typography>{' '}
-                {row.original.dueDate}
-              </div>
-            }
-          >
-            <CustomAvatar skin='light' color={invoiceStatusObj[row.original.invoiceStatus].color} size={28}>
-              <i className={classnames('bs-4 is-4', invoiceStatusObj[row.original.invoiceStatus].icon)} />
-            </CustomAvatar>
-          </Tooltip>
-        )
+        cell: ({ row }) => {
+          const statusObj = invoiceStatusObj[row.original.invoiceStatus] || {
+            color: 'default',
+            icon: 'tabler-file-invoice'
+          }
+
+          return (
+            <Tooltip
+              title={
+                <div>
+                  <Typography variant='body2' component='span' className='text-inherit'>
+                    {row.original.invoiceStatus}
+                  </Typography>
+                  <br />
+                  <Typography variant='body2' component='span' className='text-inherit'>
+                    Balance:
+                  </Typography>{' '}
+                  {row.original.balance}
+                  <br />
+                  <Typography variant='body2' component='span' className='text-inherit'>
+                    Due Date:
+                  </Typography>{' '}
+                  {row.original.dueDate}
+                </div>
+              }
+            >
+              <CustomAvatar skin='light' color={statusObj.color} size={28}>
+                <i className={classnames('bs-4 is-4', statusObj.icon)} />
+              </CustomAvatar>
+            </Tooltip>
+          )
+        }
       }),
       columnHelper.accessor('name', {
         header: 'Client',
@@ -222,9 +231,9 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
         header: 'Total',
         cell: ({ row }) => <Typography>{`$${row.original.total}`}</Typography>
       }),
-      columnHelper.accessor('issuedDate', {
-        header: 'Issued Date',
-        cell: ({ row }) => <Typography>{row.original.issuedDate}</Typography>
+      columnHelper.accessor('invoice_date', {
+        header: 'Invoice Date',
+        cell: ({ row }) => <Typography>{row.original.invoice_date}</Typography>
       }),
       columnHelper.accessor('balance', {
         header: 'Balance',

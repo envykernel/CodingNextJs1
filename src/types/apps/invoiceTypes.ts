@@ -29,6 +29,9 @@ export type InvoiceType = {
   companyEmail: string
   balance: string | number
   invoiceStatus: InvoiceStatus
+  createdDate?: string
+  invoice_date?: string
+  invoice_number?: string
 }
 
 export type InvoicePaymentType = {
