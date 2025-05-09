@@ -127,14 +127,18 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
     setLoading(true)
 
     try {
-      const tests = selectedTests.map(test => ({
-        id: test.id,
-        result_value: testDetails[test.id]?.result_value || '',
-        result_unit: testDetails[test.id]?.result_unit || '',
-        reference_range: testDetails[test.id]?.reference_range || '',
-        notes: testDetails[test.id]?.notes || '',
-        status: testDetails[test.id]?.status || 'pending'
-      }))
+      const tests = selectedTests.map(test => {
+        const resultValue = testDetails[test.id]?.result_value || ''
+
+        return {
+          id: test.id,
+          result_value: resultValue,
+          result_unit: testDetails[test.id]?.result_unit || '',
+          reference_range: testDetails[test.id]?.reference_range || '',
+          notes: testDetails[test.id]?.notes || '',
+          status: resultValue.trim() !== '' ? 'completed' : 'pending'
+        }
+      })
 
       const res = await fetch('/api/lab-test-order', {
         method: 'POST',
