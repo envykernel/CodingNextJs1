@@ -55,6 +55,42 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
       .then(setTestTypes)
   }, [])
 
+  useEffect(() => {
+    // Fetch existing lab test orders for this visit
+    fetch(`/api/lab-test-orders-by-visit?visitId=${visitId}`)
+      .then(res => res.json())
+      .then(orders => {
+        if (!Array.isArray(orders)) return
+
+        // Find the corresponding test type for each order
+        setSelectedTests(
+          orders.map((order: any) => ({
+            id: order.test_type.id,
+            name: order.test_type.name,
+            category: order.test_type.category,
+            default_unit: order.test_type.default_unit,
+            default_reference_range: order.test_type.default_reference_range
+          }))
+        )
+
+        // Fill details for each test
+        setTestDetails((prev: any) => {
+          const details: any = { ...prev }
+
+          orders.forEach((order: any) => {
+            details[order.test_type.id] = {
+              result_value: order.result_value || '',
+              result_unit: order.result_unit || order.test_type.default_unit || '',
+              reference_range: order.reference_range || order.test_type.default_reference_range || '',
+              notes: order.notes || ''
+            }
+          })
+
+          return details
+        })
+      })
+  }, [visitId])
+
   // Reset details for removed tests
   useEffect(() => {
     setTestDetails((prev: Record<number, any>) => {
