@@ -43,9 +43,9 @@ model User {
   emailVerified  DateTime?
   image          String?
   organisationId Int?
-  organisation   organisation? @relation(fields: [organisationId], references: [id])
   accounts       Account[]
   sessions       Session[]
+  organisation   organisation? @relation(fields: [organisationId], references: [id])
 }
 
 model VerificationToken {
@@ -58,7 +58,6 @@ model VerificationToken {
 
 model patient {
   id                      Int                       @id @default(autoincrement())
-  organisation_id         Int
   name                    String                    @db.VarChar(100)
   birthdate               DateTime                  @db.Date
   gender                  String                    @db.VarChar(20)
@@ -74,61 +73,57 @@ model patient {
   emergency_contact_email String?                   @db.VarChar(100)
   created_at              DateTime?                 @default(now()) @db.Timestamptz(6)
   updated_at              DateTime?                 @default(now()) @db.Timestamptz(6)
+  organisation_id         Int
+  lab_test_orders         lab_test_order[]
   organisation            organisation              @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  patient_appointments    patient_appointment[]     @relation("patient_appointment_patient_id")
   patient_measurements    patient_measurements[]
   patient_medical         patient_medical[]
   patient_medical_history patient_medical_history[]
-  patient_appointments    patient_appointment[]     @relation("patient_appointment_patient_id")
   patient_visits          patient_visit[]
   prescriptions           prescription[]
-  lab_test_orders         lab_test_order[]
+  invoices                invoice[]
+  payments                payment[]
 
   @@index([organisation_id], map: "idx_patient_organisation_id")
 }
 
 model patient_measurements {
-  id              Int       @id @default(autoincrement())
-  patient_id      Int
-  visit_id        Int?      @unique // Nouveau - Lien optionnel à une visite
-  organisation_id Int
-  measured_at     DateTime? @default(now()) @db.Timestamptz(6)
-
-  // ---- Données physiologiques ----
-  weight_kg                Float? @db.DoublePrecision
-  height_cm                Float? @db.DoublePrecision
-  temperature_c            Float? @db.DoublePrecision
+  id                       Int            @id @default(autoincrement())
+  patient_id               Int
+  measured_at              DateTime?      @default(now()) @db.Timestamptz(6)
+  weight_kg                Float?
+  height_cm                Float?
+  temperature_c            Float?
   blood_pressure_systolic  Int?
   blood_pressure_diastolic Int?
-  pulse                    Int? // Nouveau - Pouls (bpm)
-  oxygen_saturation        Float? @db.DoublePrecision // Nouveau - SpO2 (%)
-  respiratory_rate         Int? // Nouveau - Fréquence respiratoire
+  organisation_id          Int
+  location                 String?        @db.VarChar(50)
+  measurement_type         String?        @default("routine") @db.VarChar(50)
+  notes                    String?
+  oxygen_saturation        Float?
+  pulse                    Int?
+  respiratory_rate         Int?
+  taken_by                 String?        @db.VarChar(100)
+  visit_id                 Int?           @unique
+  organisation             organisation   @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
+  patient                  patient        @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  visit                    patient_visit? @relation(fields: [visit_id], references: [id], onDelete: Cascade)
 
-  // ---- Métadonnées ----
-  measurement_type String? @default("routine") @db.VarChar(50) // "routine", "pre_consult", "post_consult"
-  taken_by         String? @db.VarChar(100) // Nom du professionnel
-  location         String? @db.VarChar(50) // "Cabinet 1", "Urgence", "Domicile"
-  notes            String?
-
-  // ---- Relations ----
-  patient      patient        @relation(fields: [patient_id], references: [id], onDelete: Cascade)
-  visit        patient_visit? @relation(fields: [visit_id], references: [id], onDelete: Cascade)
-  organisation organisation   @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
-
-  // ---- Index ----
   @@index([patient_id])
-  @@index([visit_id]) // Index pour requêtes par visite
+  @@index([visit_id])
   @@index([organisation_id])
-  @@index([measured_at]) // Pour analyses chronologiques
+  @@index([measured_at])
 }
 
 model patient_medical {
   id              Int          @id @default(autoincrement())
   patient_id      Int
-  organisation_id Int
   created_at      DateTime?    @default(now()) @db.Timestamptz(6)
   updated_at      DateTime?    @default(now()) @db.Timestamptz(6)
-  patient         patient      @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  organisation_id Int
   organisation    organisation @relation(fields: [organisation_id], references: [id])
+  patient         patient      @relation(fields: [patient_id], references: [id], onDelete: Cascade)
 
   @@index([organisation_id], map: "idx_patient_medical_organisation_id")
 }
@@ -136,13 +131,13 @@ model patient_medical {
 model patient_medical_history {
   id              Int          @id @default(autoincrement())
   patient_id      Int
-  organisation_id Int
   history_type    String?      @db.VarChar(100)
   description     String
   date_occurred   DateTime?    @db.Date
   created_at      DateTime?    @default(now()) @db.Timestamptz(6)
-  patient         patient      @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  organisation_id Int
   organisation    organisation @relation(fields: [organisation_id], references: [id])
+  patient         patient      @relation(fields: [patient_id], references: [id], onDelete: Cascade)
 
   @@index([organisation_id], map: "idx_patient_medical_history_organisation_id")
 }
@@ -157,12 +152,12 @@ model doctor {
   status              String?               @default("enabled") @db.VarChar(50)
   created_at          DateTime?             @default(now()) @db.Timestamp(6)
   updated_at          DateTime?             @default(now()) @db.Timestamp(6)
+  clinical_exams      clinical_exam[]
   organisation        organisation          @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  lab_test_orders     lab_test_order[]
   patient_appointment patient_appointment[]
   patient_visits      patient_visit[]
-  clinical_exams      clinical_exam[]
   prescriptions       prescription[]
-  lab_test_orders     lab_test_order[]
 
   @@index([organisation_id], map: "idx_doctor_organisation_id")
 }
@@ -176,25 +171,30 @@ model organisation {
   status                  String?                   @default("enabled") @db.VarChar(50)
   created_at              DateTime?                 @default(now()) @db.Timestamp(6)
   updated_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  break_end_time          String?                   @db.VarChar(5)
+  break_start_time        String?                   @db.VarChar(5)
+  work_end_time           String?                   @db.VarChar(5)
+  work_start_time         String?                   @db.VarChar(5)
+  working_days            String[]                  @db.VarChar(20)
+  accounts                Account[]
+  users                   User[]
+  userInternals           UserInternal[]
+  clinical_exams          clinical_exam[]
   doctor                  doctor[]
+  lab_test_orders         lab_test_order[]
+  medications             medication[]
   patient                 patient[]
   patient_appointment     patient_appointment[]
-  users                   User[]
-  accounts                Account[]
   patient_measurements    patient_measurements[]
   patient_medical         patient_medical[]
   patient_medical_history patient_medical_history[]
-  working_days            String[]                  @db.VarChar(20)
-  work_start_time         String?                   @db.VarChar(5)
-  work_end_time           String?                   @db.VarChar(5)
-  break_start_time        String?                   @db.VarChar(5)
-  break_end_time          String?                   @db.VarChar(5)
-  userInternals           UserInternal[]
   patient_visits          patient_visit[]
-  clinical_exams          clinical_exam[]
   prescriptions           prescription[]
-  medications             medication[]
-  lab_test_orders         lab_test_order[]
+  services                service[]
+  invoices                invoice[]
+  invoice_lines           invoice_line[]
+  payments                payment[]
+  payment_applications    payment_application[]
 }
 
 model patient_appointment {
@@ -210,7 +210,7 @@ model patient_appointment {
   updated_at       DateTime?       @default(now()) @db.Timestamp(6)
   doctor           doctor?         @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   organisation     organisation    @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  patient          patient         @relation(fields: [patient_id], references: [id], onDelete: Cascade, name: "patient_appointment_patient_id")
+  patient          patient         @relation("patient_appointment_patient_id", fields: [patient_id], references: [id], onDelete: Cascade)
   patient_visits   patient_visit[]
 
   @@index([doctor_id], map: "idx_patient_appointment_doctor_id")
@@ -224,96 +224,81 @@ model UserInternal {
   email          String        @unique
   isApproved     Boolean       @default(false)
   organisationId Int?
-  organisation   organisation? @relation(fields: [organisationId], references: [id])
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  organisation   organisation? @relation(fields: [organisationId], references: [id])
 }
 
 model patient_visit {
-  id              Int              @id @default(autoincrement())
-  appointment_id  Int? // Lien optionnel vers un rendez-vous
-  patient_id      Int // Obligatoire
-  doctor_id       Int? // Médecin consulté
-  organisation_id Int // Obligatoire pour le multi-tenant
-  arrival_time    DateTime? // Heure d'arrivée
-  start_time      DateTime? // Début consultation
-  end_time        DateTime? // Fin consultation
-  status          String?          @default("completed") @db.VarChar(50)
-  notes           String?
-  created_at      DateTime?        @default(now()) @db.Timestamp(6)
-  lab_test_orders lab_test_order[]
-
-  // Relations
+  id                  Int                   @id @default(autoincrement())
+  appointment_id      Int?
+  patient_id          Int
+  doctor_id           Int?
+  organisation_id     Int
+  arrival_time        DateTime?
+  start_time          DateTime?
+  end_time            DateTime?
+  status              String?               @default("completed") @db.VarChar(50)
+  notes               String?
+  created_at          DateTime?             @default(now()) @db.Timestamp(6)
+  clinical_exams      clinical_exam[]
+  lab_test_orders     lab_test_order[]
+  patient_measurement patient_measurements?
   appointment         patient_appointment?  @relation(fields: [appointment_id], references: [id])
-  patient             patient               @relation(fields: [patient_id], references: [id])
   doctor              doctor?               @relation(fields: [doctor_id], references: [id])
   organisation        organisation          @relation(fields: [organisation_id], references: [id])
-  patient_measurement patient_measurements?
-  clinical_exams      clinical_exam[]
+  patient             patient               @relation(fields: [patient_id], references: [id])
   prescriptions       prescription[]
+  invoices            invoice[]
 
-  // ---- Index ----
   @@index([patient_id])
   @@index([doctor_id])
   @@index([organisation_id])
 }
 
 model clinical_exam {
-  id              Int  @id @default(autoincrement())
-  visit_id        Int
-  organisation_id Int
-  examiner_id     Int? // ID du médecin examinateur
+  id                 Int           @id @default(autoincrement())
+  visit_id           Int
+  organisation_id    Int
+  examiner_id        Int?
+  chief_complaint    String?       @db.VarChar(1000)
+  history_illness    String?       @db.VarChar(2000)
+  medical_history    String?       @db.VarChar(2000)
+  general_appearance String?       @db.VarChar(500)
+  cardiovascular     String?       @db.VarChar(1000)
+  respiratory        String?       @db.VarChar(1000)
+  gastrointestinal   String?       @db.VarChar(1000)
+  neurological       String?       @db.VarChar(1000)
+  musculoskeletal    String?       @db.VarChar(1000)
+  skin               String?       @db.VarChar(1000)
+  ent                String?       @db.VarChar(1000)
+  assessment         String?       @db.VarChar(2000)
+  plan               String?       @db.VarChar(2000)
+  created_at         DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at         DateTime?     @default(now()) @db.Timestamp(6)
+  examiner           doctor?       @relation(fields: [examiner_id], references: [id])
+  organisation       organisation  @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
+  visit              patient_visit @relation(fields: [visit_id], references: [id], onDelete: Cascade)
 
-  // ---- Anamnèse ----
-  chief_complaint String? @db.VarChar(1000) // Motif de consultation
-  history_illness String? @db.VarChar(2000) // Histoire de la maladie
-  medical_history String? @db.VarChar(2000) // Antécédents médicaux
-
-  // ---- Examen Systémique ----
-  general_appearance String? @db.VarChar(500)
-  cardiovascular     String? @db.VarChar(1000)
-  respiratory        String? @db.VarChar(1000)
-  gastrointestinal   String? @db.VarChar(1000)
-  neurological       String? @db.VarChar(1000)
-  musculoskeletal    String? @db.VarChar(1000)
-  skin               String? @db.VarChar(1000)
-  ent                String? @db.VarChar(1000) // ORL
-
-  // ---- Évaluation ----
-  assessment String? @db.VarChar(2000) // Impression clinique
-  plan       String? @db.VarChar(2000) // Plan de traitement
-
-  // ---- Métadonnées ----
-  created_at DateTime? @default(now()) @db.Timestamp(6)
-  updated_at DateTime? @default(now()) @db.Timestamp(6)
-
-  // ---- Relations ----
-  visit        patient_visit @relation(fields: [visit_id], references: [id], onDelete: Cascade)
-  organisation organisation  @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
-  examiner     doctor?       @relation(fields: [examiner_id], references: [id])
-
-  // ---- Index ----
   @@index([visit_id])
   @@index([organisation_id])
   @@index([examiner_id])
 }
 
 model prescription {
-  id              Int       @id @default(autoincrement())
+  id              Int                 @id @default(autoincrement())
   visit_id        Int
   doctor_id       Int
   organisation_id Int
   patient_id      Int
-  created_at      DateTime? @default(now()) @db.Timestamp(6)
-  updated_at      DateTime? @default(now()) @db.Timestamp(6)
-  notes           String?   @db.VarChar(1000)
-
-  // Relations
-  visit        patient_visit       @relation(fields: [visit_id], references: [id], onDelete: Cascade)
-  doctor       doctor              @relation(fields: [doctor_id], references: [id])
-  organisation organisation        @relation(fields: [organisation_id], references: [id])
-  patient      patient             @relation(fields: [patient_id], references: [id])
-  lines        prescription_line[]
+  created_at      DateTime?           @default(now()) @db.Timestamp(6)
+  updated_at      DateTime?           @default(now()) @db.Timestamp(6)
+  notes           String?             @db.VarChar(1000)
+  doctor          doctor              @relation(fields: [doctor_id], references: [id])
+  organisation    organisation        @relation(fields: [organisation_id], references: [id])
+  patient         patient             @relation(fields: [patient_id], references: [id])
+  visit           patient_visit       @relation(fields: [visit_id], references: [id], onDelete: Cascade)
+  lines           prescription_line[]
 
   @@index([visit_id])
   @@index([doctor_id])
@@ -322,16 +307,14 @@ model prescription {
 }
 
 model prescription_line {
-  id              Int     @id @default(autoincrement())
+  id              Int          @id @default(autoincrement())
   prescription_id Int
-  drug_name       String  @db.VarChar(255)
-  dosage          String? @db.VarChar(255)
-  frequency       String? @db.VarChar(255)
-  duration        String? @db.VarChar(255)
-  instructions    String? @db.VarChar(1000)
-
-  // Relations
-  prescription prescription @relation(fields: [prescription_id], references: [id], onDelete: Cascade)
+  drug_name       String       @db.VarChar(255)
+  dosage          String?      @db.VarChar(255)
+  frequency       String?      @db.VarChar(255)
+  duration        String?      @db.VarChar(255)
+  instructions    String?      @db.VarChar(1000)
+  prescription    prescription @relation(fields: [prescription_id], references: [id], onDelete: Cascade)
 
   @@index([prescription_id])
 }
@@ -341,49 +324,175 @@ model medication {
   name            String        @unique @db.VarChar(255)
   category        String?       @db.VarChar(100)
   organisation_id Int?
-  organisation    organisation? @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
   dosages         String[]      @db.VarChar(100)
+  organisation    organisation? @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
 
   @@index([organisation_id])
 }
 
 model lab_test_type {
-  id                      Int       @id @default(autoincrement())
-  name                    String    @unique @db.VarChar(255)
-  category                String?   @db.VarChar(100)
-  default_unit            String?   @db.VarChar(50)
-  default_reference_range String?   @db.VarChar(100)
-  created_at              DateTime? @default(now()) @db.Timestamp(6)
-  updated_at              DateTime? @default(now()) @db.Timestamp(6)
-
-  lab_test_orders lab_test_order[]
+  id                      Int              @id @default(autoincrement())
+  name                    String           @unique @db.VarChar(255)
+  category                String?          @db.VarChar(100)
+  default_unit            String?          @db.VarChar(50)
+  default_reference_range String?          @db.VarChar(100)
+  created_at              DateTime?        @default(now()) @db.Timestamp(6)
+  updated_at              DateTime?        @default(now()) @db.Timestamp(6)
+  lab_test_orders         lab_test_order[]
 }
 
 model lab_test_order {
-  id              Int       @id @default(autoincrement())
+  id              Int            @id @default(autoincrement())
   patient_id      Int
   visit_id        Int?
   doctor_id       Int?
   test_type_id    Int
   organisation_id Int
-  ordered_at      DateTime? @default(now()) @db.Timestamp(6)
-  result_value    String?   @db.VarChar(100)
-  result_unit     String?   @db.VarChar(50)
-  reference_range String?   @db.VarChar(100)
-  status          String?   @default("pending") @db.VarChar(50)
+  ordered_at      DateTime?      @default(now()) @db.Timestamp(6)
+  result_value    String?        @db.VarChar(100)
+  result_unit     String?        @db.VarChar(50)
+  reference_range String?        @db.VarChar(100)
+  status          String?        @default("pending") @db.VarChar(50)
   notes           String?
-  result_flag     String?   @db.VarChar(20)
-
-  // Relations
-  patient      patient        @relation(fields: [patient_id], references: [id], onDelete: Cascade)
-  visit        patient_visit? @relation(fields: [visit_id], references: [id], onDelete: SetNull)
-  doctor       doctor?        @relation(fields: [doctor_id], references: [id], onDelete: SetNull)
-  test_type    lab_test_type  @relation(fields: [test_type_id], references: [id])
-  organisation organisation   @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
+  result_flag     String?        @db.VarChar(20)
+  doctor          doctor?        @relation(fields: [doctor_id], references: [id])
+  organisation    organisation   @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
+  patient         patient        @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  test_type       lab_test_type  @relation(fields: [test_type_id], references: [id])
+  visit           patient_visit? @relation(fields: [visit_id], references: [id])
 
   @@index([patient_id])
   @@index([visit_id])
   @@index([doctor_id])
   @@index([test_type_id])
   @@index([organisation_id])
+}
+
+model service {
+  id               Int           @id @default(autoincrement())
+  organisation_id  Int
+  code             String        @unique @db.VarChar(20)  // Code court pour identification
+  name             String        @db.VarChar(100)
+  description      String?
+  amount           Decimal       @db.Decimal(10,2)
+  is_active        Boolean       @default(true)          // Pour désactiver sans supprimer
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+
+  organisation     organisation  @relation(fields: [organisation_id], references: [id])
+  invoice_lines    invoice_line[]
+
+  @@index([organisation_id])
+  @@unique([organisation_id, code])  // Code unique par organisation
+}
+
+model invoice {
+  id               Int           @id @default(autoincrement())
+  organisation_id  Int
+  patient_id       Int
+  visit_id         Int?
+  invoice_number   String        @unique @db.VarChar(30) // Numéro de facture unique
+  invoice_date     DateTime      @default(now())
+  due_date         DateTime?                            // Date d'échéance
+  status           InvoiceStatus @default(PENDING)      // PENDING, PAID, PARTIAL, CANCELLED
+  total_amount     Decimal       @db.Decimal(12,2)
+  notes            String?
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+
+  organisation     organisation  @relation(fields: [organisation_id], references: [id])
+  patient          patient       @relation(fields: [patient_id], references: [id])
+  visit            patient_visit? @relation(fields: [visit_id], references: [id])
+  lines            invoice_line[]
+  payments         payment_application[] @relation("InvoicePayments")
+  payment_applications payment_application[] @relation("InvoicePaymentApplications")
+
+  @@index([organisation_id])
+  @@index([patient_id])
+  @@index([visit_id])
+  @@index([invoice_number])
+}
+
+model invoice_line {
+  id               Int           @id @default(autoincrement())
+  organisation_id  Int
+  invoice_id       Int
+  service_id       Int
+  description      String?
+  quantity         Int           @default(1)
+  unit_price       Decimal       @db.Decimal(10,2)
+  line_total       Decimal       @db.Decimal(12,2)
+  created_at       DateTime      @default(now())
+
+  organisation     organisation  @relation(fields: [organisation_id], references: [id])
+  invoice          invoice       @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  service          service       @relation(fields: [service_id], references: [id])
+  payment_apps     payment_application[] @relation("InvoiceLinePaymentApps")
+  payment_applications payment_application[] @relation("InvoiceLinePaymentApplications")
+
+  @@index([organisation_id])
+  @@index([invoice_id])
+  @@index([service_id])
+}
+
+model payment {
+  id               Int           @id @default(autoincrement())
+  organisation_id  Int
+  patient_id       Int
+  receipt_number   String        @unique @db.VarChar(30) // Numéro de reçu
+  amount           Decimal       @db.Decimal(12,2)
+  payment_date     DateTime      @default(now())
+  payment_method   PaymentMethod @default(CASH)         // CASH, CARD, BANK_TRANSFER, etc.
+  transaction_id   String?       @db.VarChar(100)       // Référence transaction
+  notes            String?
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+
+  organisation     organisation  @relation(fields: [organisation_id], references: [id])
+  patient          patient       @relation(fields: [patient_id], references: [id])
+  applications     payment_application[]
+
+  @@index([organisation_id])
+  @@index([patient_id])
+  @@index([receipt_number])
+}
+
+model payment_application {
+  id               Int           @id @default(autoincrement())
+  organisation_id  Int
+  payment_id       Int
+  invoice_id       Int
+  invoice_line_id  Int?
+  amount_applied   Decimal       @db.Decimal(10,2)
+  applied_date     DateTime      @default(now())
+
+  organisation     organisation  @relation(fields: [organisation_id], references: [id])
+  payment          payment       @relation(fields: [payment_id], references: [id], onDelete: Cascade)
+  invoice          invoice       @relation("InvoicePayments", fields: [invoice_id], references: [id], map: "payment_application_invoice_payments_fkey")
+  invoice_payment_application invoice @relation("InvoicePaymentApplications", fields: [invoice_id], references: [id], map: "payment_application_invoice_payment_applications_fkey")
+  invoice_line     invoice_line? @relation("InvoiceLinePaymentApps", fields: [invoice_line_id], references: [id], onDelete: Cascade, map: "payment_application_invoice_line_apps_fkey")
+  invoice_line_payment_applications invoice_line? @relation("InvoiceLinePaymentApplications", fields: [invoice_line_id], references: [id], onDelete: Cascade, map: "payment_application_invoice_line_payment_applications_fkey")
+
+  @@index([organisation_id])
+  @@index([payment_id])
+  @@index([invoice_id])
+  @@index([invoice_line_id])
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  PARTIAL
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  BANK_TRANSFER
+  MOBILE_MONEY
+  INSURANCE
+  CHEQUE
+  OTHER
 }
