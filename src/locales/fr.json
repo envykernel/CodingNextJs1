@@ -74,5 +74,20 @@
     "prescriptionDetails": "Détails de l'ordonnance",
     "prescriptionInformation": "Informations sur l'ordonnance",
     "printPrescription": "Imprimer l'ordonnance",
-    "patientInformation": "Informations sur le patient"
+    "patientInformation": "Informations sur le patient",
+    "labTestRecap": {
+        "title": "Récapitulatif des analyses de laboratoire",
+        "testName": "Nom du test",
+        "category": "Catégorie",
+        "status": "Statut",
+        "result": "Résultat",
+        "unit": "Unité",
+        "referenceRange": "Intervalle de référence",
+        "notes": "Remarques",
+        "noLabTests": "Aucune analyse de laboratoire n'a été demandée pour cette visite.",
+        "loading": "Chargement...",
+        "error": "Erreur lors de la récupération des analyses de laboratoire",
+        "pending": "En attente",
+        "completed": "Terminé"
+    }
 }

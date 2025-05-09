@@ -12,7 +12,8 @@ import {
   ListItem,
   ListItemText,
   Alert,
-  Grid
+  Grid,
+  Box
 } from '@mui/material'
 
 interface LabTestType {
@@ -165,7 +166,7 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
       <CardHeader title={title} />
       <CardContent>
         {success && (
-          <Alert severity='success' sx={{ mb: 2 }}>
+          <Alert severity='success' sx={{ mb: 4 }}>
             {success}
           </Alert>
         )}
@@ -233,9 +234,20 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
               ))}
             </List>
           )}
-          <Button type='submit' variant='contained' color='primary' sx={{ mt: 2 }} disabled={loading}>
-            {loading ? dictionary?.testForm?.saving || 'Saving...' : submitButtonText}
-          </Button>
+          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+            <Button
+              type='button'
+              variant='outlined'
+              color='secondary'
+              onClick={fetchAndPrefillOrders}
+              disabled={loading}
+            >
+              {dictionary?.navigation?.cancel || 'Cancel'}
+            </Button>
+            <Button type='submit' variant='contained' color='primary' disabled={loading}>
+              {loading ? dictionary?.testForm?.saving || 'Saving...' : submitButtonText}
+            </Button>
+          </Box>
         </form>
       </CardContent>
     </Card>

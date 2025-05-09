@@ -74,5 +74,20 @@
     "prescriptionDetails": "Prescription Details",
     "prescriptionInformation": "Prescription Information",
     "printPrescription": "Print Prescription",
-    "patientInformation": "Patient Information"
+    "patientInformation": "Patient Information",
+    "labTestRecap": {
+        "title": "Lab Test Recap",
+        "testName": "Test Name",
+        "category": "Category",
+        "status": "Status",
+        "result": "Result",
+        "unit": "Unit",
+        "referenceRange": "Reference Range",
+        "notes": "Notes",
+        "noLabTests": "No lab tests ordered for this visit.",
+        "loading": "Loading...",
+        "error": "Error fetching lab test orders",
+        "pending": "Pending",
+        "completed": "Completed"
+    }
 }

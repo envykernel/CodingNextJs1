@@ -74,5 +74,20 @@
     "prescriptionDetails": "تفاصيل الوصفة الطبية",
     "prescriptionInformation": "معلومات الوصفة الطبية",
     "printPrescription": "طباعة الوصفة الطبية",
-    "patientInformation": "معلومات المريض"
+    "patientInformation": "معلومات المريض",
+    "labTestRecap": {
+        "title": "ملخص تحاليل المختبر",
+        "testName": "اسم التحليل",
+        "category": "الفئة",
+        "status": "الحالة",
+        "result": "النتيجة",
+        "unit": "الوحدة",
+        "referenceRange": "النطاق المرجعي",
+        "notes": "ملاحظات",
+        "noLabTests": "لا توجد تحاليل مخبرية لهذه الزيارة.",
+        "loading": "جارٍ التحميل...",
+        "error": "حدث خطأ أثناء جلب تحاليل المختبر",
+        "pending": "قيد الانتظار",
+        "completed": "مكتمل"
+    }
 }

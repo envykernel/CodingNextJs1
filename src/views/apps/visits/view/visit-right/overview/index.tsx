@@ -9,6 +9,7 @@ import { useTranslation } from '@/contexts/translationContext'
 import PatientMeasurementBlock from './PatientMeasurementBlock'
 import ClinicalExamBlock from './ClinicalExamBlock'
 import PrescriptionBlock from './PrescriptionBlock'
+import LabTestRecapBlock from './LabTestRecapBlock'
 
 const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionary: any }) => {
   const t = useTranslation()
@@ -103,6 +104,9 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
           />
         </Grid>
       )}
+      <Grid size={{ xs: 12 }}>
+        <LabTestRecapBlock visitId={visitData.id} dictionary={dictionary} />
+      </Grid>
     </Grid>
   )
 }
