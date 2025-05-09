@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
 import {
   Card,
@@ -49,20 +49,11 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    fetch('/api/lab-test-types')
-      .then(res => res.json())
-      .then(setTestTypes)
-  }, [])
-
-  useEffect(() => {
-    // Fetch existing lab test orders for this visit
+  const fetchAndPrefillOrders = useCallback(() => {
     fetch(`/api/lab-test-orders-by-visit?visitId=${visitId}`)
       .then(res => res.json())
       .then(orders => {
         if (!Array.isArray(orders)) return
-
-        // Find the corresponding test type for each order
         setSelectedTests(
           orders.map((order: any) => ({
             id: order.test_type.id,
@@ -72,8 +63,6 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
             default_reference_range: order.test_type.default_reference_range
           }))
         )
-
-        // Fill details for each test
         setTestDetails((prev: any) => {
           const details: any = { ...prev }
 
@@ -90,6 +79,16 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
         })
       })
   }, [visitId])
+
+  useEffect(() => {
+    fetchAndPrefillOrders()
+  }, [fetchAndPrefillOrders])
+
+  useEffect(() => {
+    fetch('/api/lab-test-types')
+      .then(res => res.json())
+      .then(setTestTypes)
+  }, [])
 
   // Reset details for removed tests
   useEffect(() => {
@@ -150,8 +149,7 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
 
       if (res.ok) {
         setSuccess(dictionary?.testForm?.savedSuccessfully || 'Test order saved successfully!')
-        setSelectedTests([])
-        setTestDetails({})
+        fetchAndPrefillOrders()
       } else {
         setError(dictionary?.testForm?.error || 'Error saving lab test orders')
       }
