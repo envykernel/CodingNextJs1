@@ -81,6 +81,7 @@ model patient {
   patient_appointments    patient_appointment[]     @relation("patient_appointment_patient_id")
   patient_visits          patient_visit[]
   prescriptions           prescription[]
+  lab_test_orders         lab_test_order[]
 
   @@index([organisation_id], map: "idx_patient_organisation_id")
 }
@@ -161,6 +162,7 @@ model doctor {
   patient_visits      patient_visit[]
   clinical_exams      clinical_exam[]
   prescriptions       prescription[]
+  lab_test_orders     lab_test_order[]
 
   @@index([organisation_id], map: "idx_doctor_organisation_id")
 }
@@ -192,6 +194,7 @@ model organisation {
   clinical_exams          clinical_exam[]
   prescriptions           prescription[]
   medications             medication[]
+  lab_test_orders         lab_test_order[]
 }
 
 model patient_appointment {
@@ -227,7 +230,7 @@ model UserInternal {
 }
 
 model patient_visit {
-  id              Int       @id @default(autoincrement())
+  id              Int              @id @default(autoincrement())
   appointment_id  Int? // Lien optionnel vers un rendez-vous
   patient_id      Int // Obligatoire
   doctor_id       Int? // Médecin consulté
@@ -235,9 +238,10 @@ model patient_visit {
   arrival_time    DateTime? // Heure d'arrivée
   start_time      DateTime? // Début consultation
   end_time        DateTime? // Fin consultation
-  status          String?   @default("completed") @db.VarChar(50)
+  status          String?          @default("completed") @db.VarChar(50)
   notes           String?
-  created_at      DateTime? @default(now()) @db.Timestamp(6)
+  created_at      DateTime?        @default(now()) @db.Timestamp(6)
+  lab_test_orders lab_test_order[]
 
   // Relations
   appointment         patient_appointment?  @relation(fields: [appointment_id], references: [id])
@@ -340,5 +344,46 @@ model medication {
   organisation    organisation? @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
   dosages         String[]      @db.VarChar(100)
 
+  @@index([organisation_id])
+}
+
+model lab_test_type {
+  id                      Int       @id @default(autoincrement())
+  name                    String    @unique @db.VarChar(255)
+  category                String?   @db.VarChar(100)
+  default_unit            String?   @db.VarChar(50)
+  default_reference_range String?   @db.VarChar(100)
+  created_at              DateTime? @default(now()) @db.Timestamp(6)
+  updated_at              DateTime? @default(now()) @db.Timestamp(6)
+
+  lab_test_orders lab_test_order[]
+}
+
+model lab_test_order {
+  id              Int       @id @default(autoincrement())
+  patient_id      Int
+  visit_id        Int?
+  doctor_id       Int?
+  test_type_id    Int
+  organisation_id Int
+  ordered_at      DateTime? @default(now()) @db.Timestamp(6)
+  result_value    String?   @db.VarChar(100)
+  result_unit     String?   @db.VarChar(50)
+  reference_range String?   @db.VarChar(100)
+  status          String?   @default("pending") @db.VarChar(50)
+  notes           String?
+  result_flag     String?   @db.VarChar(20)
+
+  // Relations
+  patient      patient        @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  visit        patient_visit? @relation(fields: [visit_id], references: [id], onDelete: SetNull)
+  doctor       doctor?        @relation(fields: [doctor_id], references: [id], onDelete: SetNull)
+  test_type    lab_test_type  @relation(fields: [test_type_id], references: [id])
+  organisation organisation   @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
+
+  @@index([patient_id])
+  @@index([visit_id])
+  @@index([doctor_id])
+  @@index([test_type_id])
   @@index([organisation_id])
 }
