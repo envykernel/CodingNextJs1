@@ -3,6 +3,8 @@
 // React Imports
 import { useState, useEffect } from 'react'
 
+import { useSearchParams } from 'next/navigation'
+
 // MUI Imports
 import Grid from '@mui/material/Grid2'
 import Card from '@mui/material/Card'
@@ -12,51 +14,113 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Divider from '@mui/material/Divider'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import MenuItem from '@mui/material/MenuItem'
-import InputLabel from '@mui/material/InputLabel'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import type { Theme } from '@mui/material/styles'
 import CircularProgress from '@mui/material/CircularProgress'
+import Autocomplete from '@mui/material/Autocomplete'
+import Alert from '@mui/material/Alert'
 
 // Third-party Imports
 import classnames from 'classnames'
 
 import { useTranslation } from '@/contexts/translationContext'
 
-// Type Imports
-import type { InvoiceType } from '@/types/apps/invoiceTypes'
-import type { FormDataType } from './AddCustomerDrawer'
-
 // Component Imports
-import AddCustomerDrawer, { initialFormData } from './AddCustomerDrawer'
+import AddCustomerDrawer from './AddCustomerDrawer'
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
 
 // Styled Component Imports
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
-const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
+const AddAction = () => {
   // States
   const [open, setOpen] = useState(false)
-  const [selectData, setSelectData] = useState<InvoiceType | null>(null)
-  const [issuedDate, setIssuedDate] = useState<Date | null | undefined>(null)
-  const [dueDate, setDueDate] = useState<Date | null | undefined>(null)
-  const [formData, setFormData] = useState<FormDataType>(initialFormData)
+  const [issuedDate, setIssuedDate] = useState<Date | null | undefined>(new Date())
   const t = useTranslation()
+  const [invoiceNumber, setInvoiceNumber] = useState('')
+  const [success, setSuccess] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  console.log('TRANSLATION DICTIONARY:', t)
   const [services, setServices] = useState<any[]>([])
 
   const [items, setItems] = useState([{ service_id: '', description: '', quantity: 1, unit_price: 0, line_total: 0 }])
 
   // Hooks
   const isBelowSmScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
+  const searchParams = useSearchParams()
+  const visitId = searchParams?.get('visitId')
+  const [visit, setVisit] = useState<any>(null)
+  const [visitLoading, setVisitLoading] = useState(true)
+  const [visitError, setVisitError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!visitId) {
+      setVisitError('Missing visitId in URL')
+      setVisitLoading(false)
+
+      return
+    }
+
+    setVisitLoading(true)
+    fetch(`/api/visits?id=${visitId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.visit) {
+          setVisit(data.visit)
+          setVisitError(null)
+        } else {
+          setVisitError('Visit not found')
+        }
+
+        setVisitLoading(false)
+      })
+      .catch(() => {
+        setVisitError('Error fetching visit')
+        setVisitLoading(false)
+      })
+  }, [visitId])
 
   useEffect(() => {
     fetch('/api/services')
       .then(res => res.json())
       .then(setServices)
   }, [])
+
+  useEffect(() => {
+    setInvoiceNumber(`INV-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`)
+  }, [])
+
+  // Auto-add consultation service if visit type is Consultation
+  useEffect(() => {
+    if (
+      visit &&
+      services.length > 0 &&
+      (visit.type === 'Consultation' || visit.status === 'Consultation') &&
+      !items.some(item => {
+        const service = services.find(s => s.id === item.service_id)
+
+        return service && service.name.toLowerCase().includes('consultation')
+      })
+    ) {
+      // Find the consultation service
+      const consultationService = services.find(s => s.name.toLowerCase().includes('consultation'))
+
+      if (consultationService) {
+        setItems(prev => [
+          ...prev,
+          {
+            service_id: consultationService.id,
+            description: consultationService.description || '',
+            quantity: 1,
+            unit_price: Number(consultationService.amount),
+            line_total: Number(consultationService.amount)
+          }
+        ])
+      }
+    }
+  }, [visit, services])
 
   // Helper to update an item
   const updateItem = (idx: number, field: string, value: any) => {
@@ -90,11 +154,65 @@ const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
 
   const invoiceTotal = items.reduce((sum, item) => sum + (item.line_total || 0), 0)
 
-  const onFormSubmit = (data: FormDataType) => {
-    setFormData(data)
+  const handleSubmitInvoice = async () => {
+    setLoading(true)
+    setError('')
+    setSuccess(false)
+
+    const payload = {
+      invoice_number: invoiceNumber,
+      organisation_id: visit?.organisation_id,
+      patient_id: visit?.patient?.id || visit?.patient_id,
+      visit_id: visit?.id,
+      due_date: null, // or remove if not needed
+      lines: items
+    }
+
+    try {
+      const res = await fetch('/api/apps/invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+
+      if (res.ok) {
+        setSuccess(true)
+      } else {
+        setError(t.invoice?.error || 'Error creating invoice!')
+      }
+    } catch (e) {
+      setError(t.invoice?.error || 'Error creating invoice!')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!visitId) {
+    return <div style={{ color: 'red', padding: 32 }}>Missing visitId in URL</div>
+  }
+
+  if (visitLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+        <CircularProgress />
+      </div>
+    )
+  }
+
+  if (visitError) {
+    return <div style={{ color: 'red', padding: 32 }}>{visitError}</div>
   }
 
   if (!t || !t.invoice) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+        <CircularProgress />
+      </div>
+    )
+  }
+
+  // Show loading spinner until invoiceNumber is set (prevents hydration mismatch)
+  if (!invoiceNumber) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
         <CircularProgress />
@@ -127,7 +245,7 @@ const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
                       </Typography>
                       <CustomTextField
                         fullWidth
-                        value={invoiceData?.[0].id}
+                        value={invoiceNumber}
                         slotProps={{
                           input: {
                             disabled: true,
@@ -138,7 +256,7 @@ const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
                     </div>
                     <div className='flex items-center'>
                       <Typography className='min-is-[95px] mie-4' color='text.primary'>
-                        Date Issued:
+                        {t.invoice.date || 'Date:'}
                       </Typography>
                       <AppReactDatepicker
                         boxProps={{ className: 'is-full' }}
@@ -146,19 +264,6 @@ const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
                         placeholderText='YYYY-MM-DD'
                         dateFormat={'yyyy-MM-dd'}
                         onChange={(date: Date | null) => setIssuedDate(date)}
-                        customInput={<CustomTextField fullWidth />}
-                      />
-                    </div>
-                    <div className='flex items-center'>
-                      <Typography className='min-is-[95px] mie-4' color='text.primary'>
-                        Date Due:
-                      </Typography>
-                      <AppReactDatepicker
-                        boxProps={{ className: 'is-full' }}
-                        selected={dueDate}
-                        placeholderText='YYYY-MM-DD'
-                        dateFormat={'yyyy-MM-dd'}
-                        onChange={(date: Date | null) => setDueDate(date)}
                         customInput={<CustomTextField fullWidth />}
                       />
                     </div>
@@ -170,77 +275,22 @@ const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
             <Grid size={{ xs: 12 }}>
               <div className='flex justify-between flex-col gap-4 flex-wrap sm:flex-row'>
                 <div className='flex flex-col gap-4'>
-                  <Typography className='font-medium' color='text.primary'>
-                    Invoice To:
-                  </Typography>
-                  <CustomTextField
-                    select
-                    className={classnames('min-is-[220px]', { 'is-1/2': isBelowSmScreen })}
-                    value={selectData?.id || ''}
-                    onChange={e => {
-                      setFormData({} as FormDataType)
-                      setSelectData(invoiceData?.slice(0, 5).filter(item => item.id === e.target.value)[0] || null)
-                    }}
-                  >
-                    <MenuItem
-                      className='flex items-center gap-2 !text-success !bg-transparent hover:text-success hover:!bg-[var(--mui-palette-success-lightOpacity)]'
-                      value=''
-                      onClick={() => {
-                        setSelectData(null)
-                        setOpen(true)
-                      }}
-                    >
-                      <i className='tabler-plus text-base' />
-                      Add New Customer
-                    </MenuItem>
-                    {invoiceData?.slice(0, 5).map((invoice: InvoiceType, index) => (
-                      <MenuItem key={index} value={invoice.id}>
-                        {invoice.name}
-                      </MenuItem>
-                    ))}
-                  </CustomTextField>
-                  {selectData?.id ? (
-                    <div>
-                      <Typography>{selectData?.name}</Typography>
-                      <Typography>{selectData?.company}</Typography>
-                      <Typography>{selectData?.address}</Typography>
-                      <Typography>{selectData?.contact}</Typography>
-                      <Typography>{selectData?.companyEmail}</Typography>
-                    </div>
-                  ) : (
-                    <div>
-                      <Typography>{formData?.name}</Typography>
-                      <Typography>{formData?.company}</Typography>
-                      <Typography>{formData?.address}</Typography>
-                      <Typography>{formData?.contactNumber}</Typography>
-                      <Typography>{formData?.email}</Typography>
-                    </div>
-                  )}
+                  <div className='flex items-center gap-2'>
+                    <Typography className='font-medium' color='text.primary'>
+                      Invoice To:
+                    </Typography>
+                    <Typography color='text.primary'>{visit?.patient?.name || '-'}</Typography>
+                  </div>
                 </div>
                 <div className='flex flex-col gap-4'>
-                  <Typography className='font-medium' color='text.primary'>
-                    Bill To:
-                  </Typography>
-                  <div>
-                    <div className='flex items-center gap-4'>
-                      <Typography className='min-is-[100px]'>Total Due:</Typography>
-                      <Typography>$12,110.55</Typography>
-                    </div>
-                    <div className='flex items-center gap-4'>
-                      <Typography className='min-is-[100px]'>Bank name:</Typography>
-                      <Typography>American Bank</Typography>
-                    </div>
-                    <div className='flex items-center gap-4'>
-                      <Typography className='min-is-[100px]'>Country:</Typography>
-                      <Typography>United States</Typography>
-                    </div>
-                    <div className='flex items-center gap-4'>
-                      <Typography className='min-is-[100px]'>IBAN:</Typography>
-                      <Typography>ETD95476213874685</Typography>
-                    </div>
-                    <div className='flex items-center gap-4'>
-                      <Typography className='min-is-[100px]'>SWIFT code:</Typography>
-                      <Typography>BR91905</Typography>
+                  <div className='flex flex-col gap-2'>
+                    <div className='flex items-center gap-2'>
+                      <Typography className='font-medium' color='text.primary'>
+                        Visit Date:
+                      </Typography>
+                      <Typography color='text.secondary'>
+                        {visit?.start_time ? new Date(visit.start_time).toLocaleString('en-US') : '-'}
+                      </Typography>
                     </div>
                   </div>
                 </div>
@@ -265,20 +315,19 @@ const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
                       <Typography className='font-medium md:absolute md:-top-8' color='text.primary'>
                         {t.invoice.item}
                       </Typography>
-                      <CustomTextField
-                        select
+                      <Autocomplete
                         fullWidth
-                        value={item.service_id}
-                        onChange={e => updateItem(idx, 'service_id', e.target.value)}
-                        className='mbe-5'
-                      >
-                        <MenuItem value=''>{t.invoice.selectService}</MenuItem>
-                        {services.map(service => (
-                          <MenuItem key={service.id} value={service.id}>
-                            {service.name}
-                          </MenuItem>
-                        ))}
-                      </CustomTextField>
+                        options={services}
+                        getOptionLabel={option => option?.name || ''}
+                        value={services.find(s => s.id === item.service_id) || null}
+                        onChange={(_, newValue) => {
+                          updateItem(idx, 'service_id', newValue ? newValue.id : '')
+                        }}
+                        renderInput={params => (
+                          <CustomTextField {...params} placeholder={t.invoice.selectService} className='mbe-5' />
+                        )}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                      />
                       <CustomTextField
                         rows={2}
                         fullWidth
@@ -305,7 +354,7 @@ const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
                     <Grid size={{ xs: 12, md: 2 }}>
                       <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.lineTotal}</Typography>
                       <Typography>
-                        {item.line_total.toLocaleString(undefined, { style: 'currency', currency: 'EUR' })}
+                        {item.line_total.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -326,47 +375,37 @@ const AddAction = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
               <Divider className='border-dashed' />
             </Grid>
             <Grid size={{ xs: 12 }}>
-              <div className='flex justify-between flex-col gap-4 sm:flex-row'>
-                <div className='flex flex-col gap-4 order-2 sm:order-[unset]'>
-                  <div className='flex items-center gap-2'>
-                    <Typography className='font-medium' color='text.primary'>
-                      Salesperson:
-                    </Typography>
-                    <CustomTextField defaultValue='Tommy Shelby' />
-                  </div>
-                  <CustomTextField placeholder='Thanks for your business' />
-                </div>
-                <div className='min-is-[200px]'>
-                  <div className='flex items-center justify-between'>
-                    <Typography>Total:</Typography>
-                    <Typography className='font-medium' color='text.primary'>
-                      {invoiceTotal.toLocaleString(undefined, { style: 'currency', currency: 'EUR' })}
-                    </Typography>
-                  </div>
+              <div className='flex justify-end w-full'>
+                <div className='min-is-[200px] flex items-center justify-between'>
+                  <Typography>Total:</Typography>
+                  <Typography className='font-medium' color='text.primary'>
+                    {invoiceTotal.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
+                  </Typography>
                 </div>
               </div>
             </Grid>
             <Grid size={{ xs: 12 }}>
               <Divider className='border-dashed' />
             </Grid>
+            {success && (
+              <Alert severity='success' sx={{ mb: 4 }}>
+                {t.invoice?.confirmation || 'Invoice created successfully!'}
+              </Alert>
+            )}
+            {error && (
+              <Alert severity='error' sx={{ mb: 4 }}>
+                {error}
+              </Alert>
+            )}
             <Grid size={{ xs: 12 }}>
-              <InputLabel htmlFor='invoice-note' className='inline-flex mbe-1 text-textPrimary'>
-                Note:
-              </InputLabel>
-              <CustomTextField
-                id='invoice-note'
-                rows={2}
-                fullWidth
-                multiline
-                className='border rounded'
-                defaultValue='It was a pleasure working with you and your team. We hope you will keep us in mind for future freelance
-              projects. Thank You!'
-              />
+              <Button variant='contained' color='primary' onClick={handleSubmitInvoice} disabled={loading}>
+                {loading ? t.invoice?.saving || 'Saving...' : t.invoice?.createInvoice || 'Create Invoice'}
+              </Button>
             </Grid>
           </Grid>
         </CardContent>
       </Card>
-      <AddCustomerDrawer open={open} setOpen={setOpen} onFormSubmit={onFormSubmit} />
+      <AddCustomerDrawer open={open} setOpen={setOpen} />
     </>
   )
 }

@@ -26,7 +26,11 @@ export async function POST(req: NextRequest) {
   const data = await req.json()
 
   // data: { organisation_id, patient_id, visit_id, due_date, notes, lines: [{ service_id, quantity, description }] }
-  const { organisation_id, patient_id, visit_id, due_date, notes, lines } = data
+  const { organisation_id, patient_id, visit_id, due_date, lines, invoice_number } = data
+
+  if (!Array.isArray(lines)) {
+    return NextResponse.json({ error: 'Missing or invalid invoice lines' }, { status: 400 })
+  }
 
   // Fetch all services for the lines
   const serviceIds = lines.map((line: any) => line.service_id)
@@ -61,12 +65,11 @@ export async function POST(req: NextRequest) {
   // Create invoice and lines
   const invoice = await prisma.invoice.create({
     data: {
-      invoice_number: generateInvoiceNumber(),
+      invoice_number: invoice_number || generateInvoiceNumber(),
       organisation: { connect: { id: organisation_id } },
       patient: { connect: { id: patient_id } },
       visit: visit_id ? { connect: { id: visit_id } } : undefined,
       due_date: due_date ? new Date(due_date) : undefined,
-      notes,
       total_amount,
       lines: {
         create: invoiceLines

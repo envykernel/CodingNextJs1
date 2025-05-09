@@ -27,7 +27,7 @@
         }
     },
     "noAppointments": "No appointments available.",
-    "date": "Date",
+    "date": "Date:",
     "time": "Time",
     "type": "Type",
     "status": "Status",
@@ -98,6 +98,9 @@
         "lineTotal": "Line Total",
         "addItem": "Add Item",
         "itemDescription": "Item Description",
-        "total": "Total"
+        "total": "Total",
+        "createInvoice": "Create Invoice",
+        "dateCreation": "Date Creation:",
+        "date": "Date:"
     }
 }

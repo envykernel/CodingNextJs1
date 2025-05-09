@@ -27,7 +27,7 @@
         }
     },
     "noAppointments": "Aucun rendez-vous disponible.",
-    "date": "Date",
+    "date": "Date :",
     "time": "Heure",
     "type": "Type",
     "status": "Statut",
@@ -98,6 +98,8 @@
         "lineTotal": "Total de la ligne",
         "addItem": "Ajouter un article",
         "itemDescription": "Description de l'article",
-        "total": "Total"
+        "total": "Total",
+        "createInvoice": "Créer une facture",
+        "dateCreation": "Date de création :"
     }
 }

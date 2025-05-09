@@ -16,7 +16,6 @@ import CustomTextField from '@core/components/mui/TextField'
 type Props = {
   open: boolean
   setOpen: (open: boolean) => void
-  onFormSubmit: (formData: FormDataType) => void
 }
 
 export type FormDataType = {
@@ -40,14 +39,13 @@ export const initialFormData: FormDataType = {
 
 const countries = ['USA', 'UK', 'Russia', 'Australia', 'Canada']
 
-const AddCustomerDrawer = ({ open, setOpen, onFormSubmit }: Props) => {
+const AddCustomerDrawer = ({ open, setOpen }: Props) => {
   // States
   const [data, setData] = useState<FormDataType>(initialFormData)
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setOpen(false)
-    onFormSubmit(data)
     handleReset()
   }
 
