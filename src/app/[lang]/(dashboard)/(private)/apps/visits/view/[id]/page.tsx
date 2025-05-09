@@ -15,6 +15,7 @@ import ClinicalExamForm from '@views/apps/visits/view/visit-right/ClinicalExamFo
 import PrescriptionForm from '@/components/prescriptions/PrescriptionForm'
 import { authOptions } from '@/libs/auth'
 import { prisma } from '@/prisma/prisma'
+import LabTestOrderForm from '@/components/lab-test-order-form'
 
 const VisitOverviewTab = dynamic(() => import('@views/apps/visits/view/visit-right/overview'))
 
@@ -62,6 +63,17 @@ const tabContentList = (
       }}
       submitButtonText={dictionary?.navigation?.savePrescription || 'Save Prescription'}
       title={dictionary?.navigation?.prescriptions || 'Prescriptions'}
+    />
+  ),
+  tests: (
+    <LabTestOrderForm
+      dictionary={dictionary}
+      visitId={visitData.id}
+      patientId={visitData.patient_id}
+      doctorId={visitData.doctor_id}
+      organisationId={visitData.organisation_id}
+      submitButtonText={dictionary?.testForm?.save || 'Save'}
+      title={dictionary?.testForm?.title || 'Lab Tests'}
     />
   )
 })

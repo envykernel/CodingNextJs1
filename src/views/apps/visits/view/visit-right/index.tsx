@@ -43,6 +43,12 @@ const VisitRight = ({ tabContentList }: { tabContentList: { [key: string]: React
               label={t.prescriptions || 'Prescriptions'}
               iconPosition='start'
             />
+            <Tab
+              icon={<i className='tabler-test-pipe' />}
+              value='tests'
+              label={t.tests || 'Tests'}
+              iconPosition='start'
+            />
           </CustomTabList>
         </Grid>
         <Grid size={{ xs: 12 }}>
