@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // Next Imports
 import Link from 'next/link'
@@ -12,9 +12,6 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid2'
-import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
-import Switch from '@mui/material/Switch'
 
 // Type Imports
 import type { Locale } from '@configs/i18n'
@@ -22,7 +19,7 @@ import type { Locale } from '@configs/i18n'
 // Component Imports
 import AddPaymentDrawer from '@views/apps/invoice/shared/AddPaymentDrawer'
 import SendInvoiceDrawer from '@views/apps/invoice/shared/SendInvoiceDrawer'
-import CustomTextField from '@core/components/mui/TextField'
+import PaymentsList from '../shared/PaymentsList'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
@@ -31,10 +28,20 @@ const EditActions = ({ invoice }: { invoice: any }) => {
   // States
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false)
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false)
+  const [services, setServices] = useState<any[]>([])
 
   // Hooks
   const params = useParams() as Record<string, string>
   const locale = params && typeof params['lang'] === 'string' ? params['lang'] : 'en'
+  const t = require('@/contexts/translationContext').useTranslation()
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then(res => res.json())
+      .then(setServices)
+  }, [])
+
+  const payments = Array.isArray(invoice?.payment_applications) ? invoice.payment_applications : []
 
   return (
     <Grid container spacing={6}>
@@ -79,33 +86,8 @@ const EditActions = ({ invoice }: { invoice: any }) => {
         </Card>
         <AddPaymentDrawer open={paymentDrawerOpen} handleClose={() => setPaymentDrawerOpen(false)} invoice={invoice} />
         <SendInvoiceDrawer open={sendDrawerOpen} handleClose={() => setSendDrawerOpen(false)} />
-      </Grid>
-
-      <Grid size={{ xs: 12 }}>
-        <CustomTextField select fullWidth defaultValue='Internet Banking' label='Accept payments via'>
-          <MenuItem value='Internet Banking'>Internet Banking</MenuItem>
-          <MenuItem value='Debit Card'>Debit Card</MenuItem>
-          <MenuItem value='Credit Card'>Credit Card</MenuItem>
-          <MenuItem value='Paypal'>Paypal</MenuItem>
-          <MenuItem value='UPI Transfer'>UPI Transfer</MenuItem>
-        </CustomTextField>
-        <div className='flex items-center justify-between gap-6 mbs-3'>
-          <InputLabel htmlFor='invoice-edit-payment-terms' className='cursor-pointer'>
-            Payment Terms
-          </InputLabel>
-          <Switch defaultChecked id='invoice-edit-payment-terms' />
-        </div>
-        <div className='flex items-center justify-between gap-6'>
-          <InputLabel htmlFor='invoice-edit-client-notes' className='cursor-pointer'>
-            Client Notes
-          </InputLabel>
-          <Switch id='invoice-edit-client-notes' />
-        </div>
-        <div className='flex items-center justify-between gap-6'>
-          <InputLabel htmlFor='invoice-edit-payment-stub' className='cursor-pointer'>
-            Payment Stub
-          </InputLabel>
-          <Switch id='invoice-edit-payment-stub' />
+        <div className='mt-6'>
+          <PaymentsList payments={payments} invoice={invoice} services={services} t={t} />
         </div>
       </Grid>
     </Grid>
