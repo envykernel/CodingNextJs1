@@ -24,7 +24,9 @@ import PaymentsList from '../shared/PaymentsList'
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
 
-const EditActions = ({ invoice }: { invoice: any }) => {
+type EditActionsProps = { invoice: any; refreshInvoice?: () => void }
+
+const EditActions = ({ invoice, refreshInvoice }: EditActionsProps) => {
   // States
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false)
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false)
@@ -84,7 +86,12 @@ const EditActions = ({ invoice }: { invoice: any }) => {
             </Button>
           </CardContent>
         </Card>
-        <AddPaymentDrawer open={paymentDrawerOpen} handleClose={() => setPaymentDrawerOpen(false)} invoice={invoice} />
+        <AddPaymentDrawer
+          open={paymentDrawerOpen}
+          handleClose={() => setPaymentDrawerOpen(false)}
+          invoice={invoice}
+          refreshInvoice={refreshInvoice}
+        />
         <SendInvoiceDrawer open={sendDrawerOpen} handleClose={() => setSendDrawerOpen(false)} />
         <div className='mt-6'>
           <PaymentsList payments={payments} invoice={invoice} services={services} t={t} />

@@ -6,11 +6,6 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Alert from '@mui/material/Alert'
-import Collapse from '@mui/material/Collapse'
-import Dialog from '@mui/material/Dialog'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogActions from '@mui/material/DialogActions'
-import Button from '@mui/material/Button'
 
 // Component Imports
 import PaymentForm from './PaymentForm'
@@ -21,9 +16,10 @@ type Props = {
   open: boolean
   handleClose: () => void
   invoice?: any
+  refreshInvoice?: () => void
 }
 
-const AddPaymentDrawer = ({ open, handleClose, invoice }: Props) => {
+const AddPaymentDrawer = ({ open, handleClose, invoice, refreshInvoice }: Props) => {
   // Add payments and balance calculation
   const payments = Array.isArray(invoice?.payment_applications) ? invoice.payment_applications : []
 
@@ -43,16 +39,6 @@ const AddPaymentDrawer = ({ open, handleClose, invoice }: Props) => {
       .then(res => res.json())
       .then(setServices)
   }, [refreshPayments])
-
-  // Helper to get service name by invoice_line_id
-  const getServiceNameByLineId = (invoice_line_id: number) => {
-    const line = Array.isArray(invoice?.lines) ? invoice.lines.find((l: any) => l.id === invoice_line_id) : null
-
-    if (!line) return ''
-    const service = services.find((s: any) => s.id === line.service_id)
-
-    return service ? service.name : ''
-  }
 
   const handleFormSubmit = async (formData: any) => {
     if (!invoice) return handleClose()
@@ -77,6 +63,7 @@ const AddPaymentDrawer = ({ open, handleClose, invoice }: Props) => {
         setSuccess('Payment added successfully!')
         setError(null)
         timeoutId = setTimeout(() => setSuccess(null), 3000)
+        if (refreshInvoice) await refreshInvoice()
         handleClose()
       } else {
         setError('Failed to add payment.')

@@ -25,7 +25,9 @@ import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
-const EditCard = ({ invoice }: { invoice: any }) => {
+type EditCardProps = { invoice: any; refreshInvoice?: () => void }
+
+const EditCard = ({ invoice }: EditCardProps) => {
   // States
   const [open, setOpen] = useState(false)
 
