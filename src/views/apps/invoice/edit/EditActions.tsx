@@ -27,7 +27,7 @@ import CustomTextField from '@core/components/mui/TextField'
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
 
-const EditActions = ({ invoiceId }: { invoiceId: string }) => {
+const EditActions = ({ invoice }: { invoice: any }) => {
   // States
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false)
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false)
@@ -57,7 +57,7 @@ const EditActions = ({ invoiceId }: { invoiceId: string }) => {
                 color='secondary'
                 variant='tonal'
                 className='capitalize'
-                href={getLocalizedUrl(`/apps/invoice/preview/${invoiceId}`, locale as Locale)}
+                href={getLocalizedUrl(`/apps/invoice/preview/${invoice.id}`, locale as Locale)}
               >
                 Preview
               </Button>
@@ -77,7 +77,7 @@ const EditActions = ({ invoiceId }: { invoiceId: string }) => {
             </Button>
           </CardContent>
         </Card>
-        <AddPaymentDrawer open={paymentDrawerOpen} handleClose={() => setPaymentDrawerOpen(false)} />
+        <AddPaymentDrawer open={paymentDrawerOpen} handleClose={() => setPaymentDrawerOpen(false)} invoice={invoice} />
         <SendInvoiceDrawer open={sendDrawerOpen} handleClose={() => setSendDrawerOpen(false)} />
       </Grid>
 

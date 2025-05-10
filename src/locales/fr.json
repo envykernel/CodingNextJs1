@@ -100,6 +100,18 @@
         "itemDescription": "Description de l'article",
         "total": "Total",
         "createInvoice": "Créer une facture",
-        "dateCreation": "Date de création :"
+        "dateCreation": "Date de création :",
+        "addPayment": "Ajouter un paiement",
+        "balance": "Solde de la facture",
+        "paymentAmount": "Montant du paiement",
+        "paymentDate": "Date du paiement",
+        "paymentMethod": "Méthode de paiement",
+        "selectPaymentMethod": "Sélectionner une méthode de paiement",
+        "cash": "Espèces",
+        "bankTransfer": "Virement bancaire",
+        "credit": "Crédit",
+        "debit": "Débit",
+        "paypal": "Paypal",
+        "internalPaymentNote": "Note de paiement interne"
     }
 }

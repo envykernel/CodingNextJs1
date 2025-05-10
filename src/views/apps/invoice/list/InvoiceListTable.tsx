@@ -238,7 +238,9 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
       columnHelper.accessor('balance', {
         header: 'Balance',
         cell: ({ row }) => {
-          return row.original.balance === 0 ? (
+          const isPaid = typeof row.original.balance === 'string' && row.original.balance.replace(/\s/g, '') === '€0.00'
+
+          return isPaid ? (
             <Chip label='Paid' color='success' size='small' variant='tonal' />
           ) : (
             <Typography color='text.primary'>{row.original.balance}</Typography>

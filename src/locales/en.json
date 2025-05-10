@@ -101,6 +101,18 @@
         "total": "Total",
         "createInvoice": "Create Invoice",
         "dateCreation": "Date Creation:",
-        "date": "Date:"
+        "date": "Date:",
+        "addPayment": "Add Payment",
+        "balance": "Invoice Balance",
+        "paymentAmount": "Payment Amount",
+        "paymentDate": "Payment Date",
+        "paymentMethod": "Payment Method",
+        "selectPaymentMethod": "Select Payment Method",
+        "cash": "Cash",
+        "bankTransfer": "Bank Transfer",
+        "credit": "Credit",
+        "debit": "Debit",
+        "paypal": "Paypal",
+        "internalPaymentNote": "Internal Payment Note"
     }
 }

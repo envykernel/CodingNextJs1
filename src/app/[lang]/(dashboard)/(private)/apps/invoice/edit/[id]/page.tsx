@@ -1,41 +1,29 @@
-// MUI Imports
-import Grid from '@mui/material/Grid2'
+import { Grid } from '@mui/material'
 
-// Component Imports
 import EditCard from '@views/apps/invoice/edit/EditCard'
 import EditActions from '@views/apps/invoice/edit/EditActions'
 
-/**
- * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
- * ! `.env` file found at root of your project and also update the API endpoints like `/apps/invoice` in below example.
- * ! Also, remove the above server action import and the action itself from the `src/app/server/actions.ts` file to clean up unused code
- * ! because we've used the server action for getting our static data.
- */
+async function getInvoice(id: string) {
+  const res = await fetch(`${process.env.API_URL}/apps/invoice?id=${id}`, { cache: 'no-store' })
 
-/* const getInvoiceData = async () => {
-  // Vars
-  const res = await fetch(`${process.env.API_URL}/apps/invoice`)
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch invoice data')
-  }
+  if (!res.ok) return null
 
   return res.json()
-} */
+}
 
-const EditPage = async (props: { params: Promise<{ id: string }> }) => {
-  const params = await props.params
+export default async function InvoiceEditPage({ params }: { params: { id: string } }) {
+  const invoice = await getInvoice(params.id)
+
+  if (!invoice) return <div>Invoice not found</div>
 
   return (
     <Grid container spacing={6}>
-      <Grid size={{ xs: 12, md: 9 }}>
-        <EditCard invoiceId={params.id} />
+      <Grid item xs={12} md={9}>
+        <EditCard invoice={invoice} />
       </Grid>
-      <Grid size={{ xs: 12, md: 3 }}>
-        <EditActions invoiceId={params.id} />
+      <Grid item xs={12} md={3}>
+        <EditActions invoice={invoice} />
       </Grid>
     </Grid>
   )
 }
-
-export default EditPage

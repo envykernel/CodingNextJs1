@@ -25,69 +25,35 @@ import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
-const EditCard = ({ invoiceId }: { invoiceId: string }) => {
+const EditCard = ({ invoice }: { invoice: any }) => {
   // States
   const [open, setOpen] = useState(false)
-  const [issuedDate, setIssuedDate] = useState<Date | null | undefined>(null)
+
+  const [issuedDate] = useState<Date | null | undefined>(
+    invoice?.invoice_date ? new Date(invoice.invoice_date) : new Date()
+  )
+
   const t = useTranslation()
-  const [invoiceNumber, setInvoiceNumber] = useState('')
+  const [invoiceNumber] = useState(invoice?.invoice_number || '')
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [services, setServices] = useState<any[]>([])
-  const [items, setItems] = useState([{ service_id: '', description: '', quantity: 1, unit_price: 0, line_total: 0 }])
-  const [invoice, setInvoice] = useState<any>(null)
-  const [visit, setVisit] = useState<any>(null)
-  const [visitError, setVisitError] = useState<string | null>(null)
-  const [invoiceLoading, setInvoiceLoading] = useState(true)
+
+  const [items, setItems] = useState(
+    Array.isArray(invoice?.lines)
+      ? invoice.lines.map((line: any) => ({
+          service_id: line.service_id,
+          description: line.description || '',
+          quantity: line.quantity,
+          unit_price: Number(line.unit_price),
+          line_total: Number(line.line_total)
+        }))
+      : [{ service_id: '', description: '', quantity: 1, unit_price: 0, line_total: 0 }]
+  )
 
   const isBelowSmScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
   const router = useRouter()
-
-  // Fetch invoice data
-  useEffect(() => {
-    if (!invoiceId) {
-      setVisitError('Missing invoiceId in URL')
-      setInvoiceLoading(false)
-
-      return
-    }
-
-    setInvoiceLoading(true)
-    fetch(`/api/apps/invoice?id=${invoiceId}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.id) {
-          setInvoice(data)
-          setInvoiceNumber(data.invoice_number || '')
-          setIssuedDate(data.invoice_date ? new Date(data.invoice_date) : new Date())
-          setVisit(data.visit || null)
-
-          // Map lines to items
-          if (Array.isArray(data.lines)) {
-            setItems(
-              data.lines.map((line: any) => ({
-                service_id: line.service_id,
-                description: line.description || '',
-                quantity: line.quantity,
-                unit_price: Number(line.unit_price),
-                line_total: Number(line.line_total)
-              }))
-            )
-          }
-
-          setVisitError(null)
-        } else {
-          setVisitError('Invoice not found')
-        }
-
-        setInvoiceLoading(false)
-      })
-      .catch(() => {
-        setVisitError('Error fetching invoice')
-        setInvoiceLoading(false)
-      })
-  }, [invoiceId])
 
   // Fetch services
   useEffect(() => {
@@ -98,7 +64,7 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
 
   // Helper to update an item
   const updateItem = (idx: number, field: string, value: any) => {
-    setItems(prev => {
+    setItems((prev: any[]) => {
       const updated = [...prev]
       const item = { ...updated[idx], [field]: value }
 
@@ -119,14 +85,14 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
   }
 
   const addItem = () => {
-    setItems(prev => [...prev, { service_id: '', description: '', quantity: 1, unit_price: 0, line_total: 0 }])
+    setItems((prev: any[]) => [...prev, { service_id: '', description: '', quantity: 1, unit_price: 0, line_total: 0 }])
   }
 
   const removeItem = (idx: number) => {
-    setItems(prev => prev.filter((_, i) => i !== idx))
+    setItems((prev: any[]) => prev.filter((_: any, i: number) => i !== idx))
   }
 
-  const invoiceTotal = items.reduce((sum, item) => sum + (item.line_total || 0), 0)
+  const invoiceTotal = items.reduce((sum: number, item: any) => sum + (item.line_total || 0), 0)
 
   const handleSubmitInvoice = async () => {
     setLoading(true)
@@ -140,7 +106,7 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
       visit_id: invoice?.visit_id,
       due_date: null, // or remove if not needed
       lines: items,
-      id: invoiceId // Pass the invoice ID for update
+      id: invoice?.id // Pass the invoice ID for update
     }
 
     try {
@@ -162,20 +128,8 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
     }
   }
 
-  if (!invoiceId) {
+  if (!invoice?.id) {
     return <div style={{ color: 'red', padding: 32 }}>Missing invoiceId in URL</div>
-  }
-
-  if (invoiceLoading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
-        <CircularProgress />
-      </div>
-    )
-  }
-
-  if (visitError) {
-    return <div style={{ color: 'red', padding: 32 }}>{visitError}</div>
   }
 
   if (!t || !t.invoice) {
@@ -274,7 +228,7 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
                         Visit Date:
                       </Typography>
                       <Typography color='text.secondary'>
-                        {visit?.start_time ? new Date(visit.start_time).toLocaleString('en-US') : '-'}
+                        {invoice?.visit?.start_time ? new Date(invoice.visit.start_time).toLocaleString('en-US') : '-'}
                       </Typography>
                     </div>
                   </div>
@@ -285,7 +239,7 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
               <Divider className='border-dashed' />
             </Grid>
             <Grid size={{ xs: 12 }}>
-              {items.map((item, idx) => (
+              {items.map((item: any, idx: number) => (
                 <div
                   key={idx}
                   className={classnames('repeater-item flex relative mbe-4 border rounded', {

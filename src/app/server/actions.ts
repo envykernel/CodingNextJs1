@@ -46,6 +46,15 @@ export const getInvoiceData = async () => {
     const totalPaid = inv.payment_applications.reduce((sum, p) => sum + Number(p.amount_applied), 0)
     const balance = Number(inv.total_amount) - totalPaid
 
+    // Debug log for backend calculation
+    console.log('[DEBUG] Invoice:', {
+      id: inv.id,
+      total_amount: inv.total_amount,
+      payment_applications: inv.payment_applications,
+      totalPaid,
+      balance
+    })
+
     return {
       id: inv.id.toString(),
       name: inv.patient?.name || '',
@@ -59,7 +68,7 @@ export const getInvoiceData = async () => {
       contact: inv.patient?.phone_number || '',
       avatarColor: 'primary', // Or any logic you want
       companyEmail: inv.patient?.email || '',
-      balance: balance === 0 ? 0 : `$${balance}`,
+      balance: (balance ?? 0).toLocaleString('en-US', { style: 'currency', currency: 'EUR' }),
       invoiceStatus: inv.status || 'PENDING',
       invoice_date: inv.invoice_date ? inv.invoice_date.toISOString().split('T')[0] : '',
       invoice_number: inv.invoice_number

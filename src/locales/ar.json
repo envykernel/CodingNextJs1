@@ -101,6 +101,18 @@
         "total": "الإجمالي",
         "createInvoice": "إنشاء فاتورة",
         "dateCreation": "تاريخ الإنشاء:",
-        "date": "التاريخ:"
+        "date": "التاريخ:",
+        "addPayment": "إضافة دفعة",
+        "balance": "رصيد الفاتورة",
+        "paymentAmount": "مبلغ الدفعة",
+        "paymentDate": "تاريخ الدفعة",
+        "paymentMethod": "طريقة الدفع",
+        "selectPaymentMethod": "اختر طريقة الدفع",
+        "cash": "نقدًا",
+        "bankTransfer": "تحويل بنكي",
+        "credit": "ائتمان",
+        "debit": "خصم",
+        "paypal": "باي بال",
+        "internalPaymentNote": "ملاحظة دفع داخلية"
     }
 }
