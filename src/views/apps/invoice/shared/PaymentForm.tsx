@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { FormEvent } from 'react'
 
 import MenuItem from '@mui/material/MenuItem'
@@ -22,18 +22,27 @@ export type PaymentFormData = {
   paymentMethod: string
   paymentAmount: number
   paymentNote: string
+  itemId: string
 }
 
 const initialData: PaymentFormData = {
   paymentDate: new Date(),
   paymentMethod: 'select-method',
   paymentAmount: 0,
-  paymentNote: ''
+  paymentNote: '',
+  itemId: ''
 }
 
-const PaymentForm = ({ invoiceBalance, onSubmit }: PaymentFormProps) => {
+const PaymentForm = ({ invoiceBalance, onSubmit, invoice }: PaymentFormProps) => {
   const [formData, setFormData] = useState<PaymentFormData>(initialData)
+  const [services, setServices] = useState<any[]>([])
   const t = useTranslation()
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then(res => res.json())
+      .then(setServices)
+  }, [])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -41,10 +50,44 @@ const PaymentForm = ({ invoiceBalance, onSubmit }: PaymentFormProps) => {
     setFormData(initialData)
   }
 
+  // Get invoice items/lines
+  const invoiceItems = Array.isArray(invoice?.lines) ? invoice.lines : []
+
+  // Helper to get service name by id
+  const getServiceName = (serviceId: string) => {
+    const service = services.find((s: any) => s.id === serviceId)
+
+    return service ? service.name : ''
+  }
+
   return (
     <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
       <Typography variant='h6'>{t.invoice?.addPayment || 'Add Payment'}</Typography>
       <Divider />
+      {/* Item selection dropdown */}
+      <CustomTextField
+        select
+        required
+        fullWidth
+        id='payment-item-select'
+        label={t.invoice?.selectItemForPayment || 'Select Item for Payment'}
+        value={formData.itemId}
+        onChange={e => setFormData({ ...formData, itemId: e.target.value })}
+      >
+        <MenuItem value='' disabled>
+          {t.invoice?.selectItemForPayment || 'Select Item for Payment'}
+        </MenuItem>
+        {invoiceItems.map((item: any, idx: number) => {
+          const serviceName = getServiceName(item.service_id)
+          const total = (item.quantity ?? 1) * (item.unit_price ?? 0)
+
+          return (
+            <MenuItem key={item.service_id || idx} value={item.service_id || String(idx)}>
+              {`${serviceName || item.description || t.invoice?.item || 'Item'} (Total: ${total.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })})`}
+            </MenuItem>
+          )
+        })}
+      </CustomTextField>
       <CustomTextField
         fullWidth
         id='invoice-balance'
