@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 
+import { useRouter } from 'next/navigation'
+
 import Grid from '@mui/material/Grid2'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -14,8 +16,8 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import type { Theme } from '@mui/material/styles'
 import CircularProgress from '@mui/material/CircularProgress'
 import Autocomplete from '@mui/material/Autocomplete'
-import Alert from '@mui/material/Alert'
 import classnames from 'classnames'
+import Alert from '@mui/material/Alert'
 
 import { useTranslation } from '@/contexts/translationContext'
 import AddCustomerDrawer from '../add/AddCustomerDrawer'
@@ -34,11 +36,13 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
   const [error, setError] = useState('')
   const [services, setServices] = useState<any[]>([])
   const [items, setItems] = useState([{ service_id: '', description: '', quantity: 1, unit_price: 0, line_total: 0 }])
+  const [invoice, setInvoice] = useState<any>(null)
   const [visit, setVisit] = useState<any>(null)
   const [visitError, setVisitError] = useState<string | null>(null)
   const [invoiceLoading, setInvoiceLoading] = useState(true)
 
   const isBelowSmScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
+  const router = useRouter()
 
   // Fetch invoice data
   useEffect(() => {
@@ -54,6 +58,7 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
       .then(res => res.json())
       .then(data => {
         if (data && data.id) {
+          setInvoice(data)
           setInvoiceNumber(data.invoice_number || '')
           setIssuedDate(data.invoice_date ? new Date(data.invoice_date) : new Date())
           setVisit(data.visit || null)
@@ -130,9 +135,9 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
 
     const payload = {
       invoice_number: invoiceNumber,
-      organisation_id: visit?.organisation_id,
-      patient_id: visit?.patient?.id || visit?.patient_id,
-      visit_id: visit?.id,
+      organisation_id: invoice?.organisation_id,
+      patient_id: invoice?.patient_id,
+      visit_id: invoice?.visit_id,
       due_date: null, // or remove if not needed
       lines: items,
       id: invoiceId // Pass the invoice ID for update
@@ -201,11 +206,22 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
                     <div className='flex items-center gap-2.5'>
                       <Logo />
                     </div>
-                    <div>
-                      <Typography color='text.primary'>Office 149, 450 South Brand Brooklyn</Typography>
-                      <Typography color='text.primary'>San Diego County, CA 91905, USA</Typography>
-                      <Typography color='text.primary'>+1 (123) 456 7891, +44 (876) 543 2198</Typography>
-                    </div>
+                    {invoice?.organisation && (
+                      <div>
+                        <Typography color='text.primary' fontWeight={600}>
+                          {invoice.organisation.name}
+                        </Typography>
+                        {invoice.organisation.address && (
+                          <Typography color='text.primary'>{invoice.organisation.address}</Typography>
+                        )}
+                        {invoice.organisation.phone_number && (
+                          <Typography color='text.primary'>{invoice.organisation.phone_number}</Typography>
+                        )}
+                        {invoice.organisation.email && (
+                          <Typography color='text.primary'>{invoice.organisation.email}</Typography>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div className='flex flex-col gap-2'>
                     <div className='flex items-center gap-4'>
@@ -232,8 +248,9 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
                         selected={issuedDate}
                         placeholderText='YYYY-MM-DD'
                         dateFormat={'yyyy-MM-dd'}
-                        onChange={(date: Date | null) => setIssuedDate(date)}
-                        customInput={<CustomTextField fullWidth />}
+                        onChange={() => {}}
+                        disabled
+                        customInput={<CustomTextField fullWidth disabled />}
                       />
                     </div>
                   </div>
@@ -247,7 +264,7 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
                     <Typography className='font-medium' color='text.primary'>
                       Invoice To:
                     </Typography>
-                    <Typography color='text.primary'>{visit?.patient?.name || '-'}</Typography>
+                    <Typography color='text.primary'>{invoice?.patient?.name || '-'}</Typography>
                   </div>
                 </div>
                 <div className='flex flex-col gap-4'>
@@ -354,20 +371,25 @@ const EditCard = ({ invoiceId }: { invoiceId: string }) => {
             <Grid size={{ xs: 12 }}>
               <Divider className='border-dashed' />
             </Grid>
-            {success && (
-              <Alert severity='success' sx={{ mb: 4 }}>
-                {t.invoice?.confirmation || 'Invoice updated successfully!'}
-              </Alert>
-            )}
-            {error && (
-              <Alert severity='error' sx={{ mb: 4 }}>
-                {error}
-              </Alert>
-            )}
             <Grid size={{ xs: 12 }}>
-              <Button variant='contained' color='primary' onClick={handleSubmitInvoice} disabled={loading}>
-                {loading ? t.invoice?.saving || 'Saving...' : t.invoice?.updateInvoice || 'Update Invoice'}
-              </Button>
+              <div className='flex flex-row items-center gap-4'>
+                <Button variant='contained' color='primary' onClick={handleSubmitInvoice} disabled={loading}>
+                  {loading ? t.invoice?.saving || 'Saving...' : t.invoice?.updateInvoice || 'Update Invoice'}
+                </Button>
+                <Button variant='outlined' color='secondary' onClick={() => router.push('/fr/apps/invoice/list')}>
+                  {t.invoice?.cancel || 'Cancel'}
+                </Button>
+                {success && (
+                  <Alert severity='success' sx={{ m: 0, p: '4px 16px' }}>
+                    {t.invoice?.confirmation || 'Invoice updated successfully!'}
+                  </Alert>
+                )}
+                {error && (
+                  <Alert severity='error' sx={{ m: 0, p: '4px 16px' }}>
+                    {error}
+                  </Alert>
+                )}
+              </div>
             </Grid>
           </Grid>
         </CardContent>
