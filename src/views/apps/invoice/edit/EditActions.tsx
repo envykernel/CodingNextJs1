@@ -3,26 +3,19 @@
 // React Imports
 import { useState, useEffect } from 'react'
 
-// Next Imports
-import Link from 'next/link'
-import { useParams } from 'next/navigation'
-
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid2'
-
-// Type Imports
-import type { Locale } from '@configs/i18n'
+import LinearProgress from '@mui/material/LinearProgress'
+import Typography from '@mui/material/Typography'
 
 // Component Imports
 import AddPaymentDrawer from '@views/apps/invoice/shared/AddPaymentDrawer'
 import SendInvoiceDrawer from '@views/apps/invoice/shared/SendInvoiceDrawer'
 import PaymentsList from '../shared/PaymentsList'
-
-// Util Imports
-import { getLocalizedUrl } from '@/utils/i18n'
+import PaymentProgress from './PaymentProgress'
 
 type EditActionsProps = { invoice: any; refreshInvoice?: () => void }
 
@@ -33,8 +26,6 @@ const EditActions = ({ invoice, refreshInvoice }: EditActionsProps) => {
   const [services, setServices] = useState<any[]>([])
 
   // Hooks
-  const params = useParams() as Record<string, string>
-  const locale = params && typeof params['lang'] === 'string' ? params['lang'] : 'en'
   const t = require('@/contexts/translationContext').useTranslation()
 
   useEffect(() => {
@@ -50,30 +41,7 @@ const EditActions = ({ invoice, refreshInvoice }: EditActionsProps) => {
       <Grid size={{ xs: 12 }}>
         <Card>
           <CardContent className='flex flex-col gap-4'>
-            <Button
-              fullWidth
-              variant='contained'
-              className='capitalize'
-              startIcon={<i className='tabler-send' />}
-              onClick={() => setSendDrawerOpen(true)}
-            >
-              Send Invoice
-            </Button>
-            <div className='flex items-center gap-4'>
-              <Button
-                fullWidth
-                component={Link}
-                color='secondary'
-                variant='tonal'
-                className='capitalize'
-                href={getLocalizedUrl(`/apps/invoice/preview/${invoice.id}`, locale as Locale)}
-              >
-                Preview
-              </Button>
-              <Button fullWidth color='secondary' variant='tonal' className='capitalize'>
-                Save
-              </Button>
-            </div>
+            <PaymentProgress invoice={invoice} t={t} />
             <Button
               fullWidth
               color='success'
