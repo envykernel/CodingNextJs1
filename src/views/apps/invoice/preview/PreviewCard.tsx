@@ -5,9 +5,6 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid2'
 import Divider from '@mui/material/Divider'
 
-// Type Imports
-import type { InvoiceType } from '@/types/apps/invoiceTypes'
-
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
 
@@ -15,39 +12,42 @@ import Logo from '@components/layout/shared/Logo'
 import tableStyles from '@core/styles/table.module.css'
 import './print.css'
 
-// Vars
-const data = [
-  {
-    Item: 'Premium Branding Package',
-    Description: 'Branding & Promotion',
-    Hours: 48,
-    Qty: 1,
-    Total: '$32'
-  },
-  {
-    Item: 'Social Media',
-    Description: 'Social media templates',
-    Hours: 42,
-    Qty: 1,
-    Total: '$28'
-  },
-  {
-    Item: 'Web Design',
-    Description: 'Web designing package',
-    Hours: 46,
-    Qty: 1,
-    Total: '$24'
-  },
-  {
-    Item: 'SEO',
-    Description: 'Search engine optimization',
-    Hours: 40,
-    Qty: 1,
-    Total: '$22'
-  }
-]
+const splitServiceName = (name: string) => {
+  if (!name) return ''
+  if (name.length <= 100) return name
+  const idx = name.lastIndexOf(' ', 100)
 
-const PreviewCard = ({ invoiceData, id }: { invoiceData?: InvoiceType; id: string }) => {
+  if (idx === -1) {
+    // No space before 100, try after
+    const nextSpace = name.indexOf(' ', 100)
+
+    if (nextSpace === -1) return name // No space at all
+
+    return (
+      <>
+        {name.slice(0, nextSpace)}
+        <br />
+        {name.slice(nextSpace + 1)}
+      </>
+    )
+  }
+
+  return (
+    <>
+      {name.slice(0, idx)}
+      <br />
+      {name.slice(idx + 1)}
+    </>
+  )
+}
+
+const PreviewCard = ({ invoiceData, id }: { invoiceData: any; id: string }) => {
+  // Calculate totals
+  const subtotal = invoiceData.lines.reduce((sum: number, line: any) => sum + Number(line.line_total), 0)
+  const discount = Number(invoiceData.discount || 0)
+  const tax = Number(invoiceData.tax || 0)
+  const total = subtotal - discount + tax
+
   return (
     <Card className='previewCard'>
       <CardContent className='sm:!p-12'>
@@ -60,16 +60,24 @@ const PreviewCard = ({ invoiceData, id }: { invoiceData?: InvoiceType; id: strin
                     <Logo />
                   </div>
                   <div>
-                    <Typography color='text.primary'>Office 149, 450 South Brand Brooklyn</Typography>
-                    <Typography color='text.primary'>San Diego County, CA 91905, USA</Typography>
-                    <Typography color='text.primary'>+1 (123) 456 7891, +44 (876) 543 2198</Typography>
+                    <div className='flex items-center gap-2 mb-1'>
+                      <i className='tabler-building text-lg text-gray-500' />
+                      <Typography color='text.primary'>{invoiceData.organisation?.name || ''}</Typography>
+                    </div>
+                    <div className='flex items-center gap-2 mb-1'>
+                      <i className='tabler-map-pin text-lg text-gray-500' />
+                      <Typography color='text.primary'>{invoiceData.organisation?.address || ''}</Typography>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                      <i className='tabler-phone text-lg text-gray-500' />
+                      <Typography color='text.primary'>{invoiceData.organisation?.phone_number || ''}</Typography>
+                    </div>
                   </div>
                 </div>
                 <div className='flex flex-col gap-6'>
-                  <Typography variant='h5'>{`Invoice #${id}`}</Typography>
+                  <Typography variant='h5'>{`Invoice #${invoiceData.invoice_number || id}`}</Typography>
                   <div className='flex flex-col gap-1'>
-                    <Typography color='text.primary'>{`Date Issued: ${invoiceData?.issuedDate}`}</Typography>
-                    <Typography color='text.primary'>{`Date Due: ${invoiceData?.dueDate}`}</Typography>
+                    <Typography color='text.primary'>{`Date : ${invoiceData.invoice_date ? invoiceData.invoice_date.toString().split('T')[0] : ''}`}</Typography>
                   </div>
                 </div>
               </div>
@@ -80,44 +88,8 @@ const PreviewCard = ({ invoiceData, id }: { invoiceData?: InvoiceType; id: strin
               <Grid size={{ xs: 12, sm: 6 }}>
                 <div className='flex flex-col gap-4'>
                   <Typography className='font-medium' color='text.primary'>
-                    Invoice To:
+                    Invoice To: <strong>{invoiceData.patient?.name}</strong>
                   </Typography>
-                  <div>
-                    <Typography>{invoiceData?.name}</Typography>
-                    <Typography>{invoiceData?.company}</Typography>
-                    <Typography>{invoiceData?.address}</Typography>
-                    <Typography>{invoiceData?.contact}</Typography>
-                    <Typography>{invoiceData?.companyEmail}</Typography>
-                  </div>
-                </div>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <div className='flex flex-col gap-4'>
-                  <Typography className='font-medium' color='text.primary'>
-                    Bill To:
-                  </Typography>
-                  <div>
-                    <div className='flex items-center gap-4'>
-                      <Typography className='min-is-[100px]'>Total Due:</Typography>
-                      <Typography>$12,110.55</Typography>
-                    </div>
-                    <div className='flex items-center gap-4'>
-                      <Typography className='min-is-[100px]'>Bank name:</Typography>
-                      <Typography>American Bank</Typography>
-                    </div>
-                    <div className='flex items-center gap-4'>
-                      <Typography className='min-is-[100px]'>Country:</Typography>
-                      <Typography>United States</Typography>
-                    </div>
-                    <div className='flex items-center gap-4'>
-                      <Typography className='min-is-[100px]'>IBAN:</Typography>
-                      <Typography>ETD95476213874685</Typography>
-                    </div>
-                    <div className='flex items-center gap-4'>
-                      <Typography className='min-is-[100px]'>SWIFT code:</Typography>
-                      <Typography>BR91905</Typography>
-                    </div>
-                  </div>
                 </div>
               </Grid>
             </Grid>
@@ -128,29 +100,29 @@ const PreviewCard = ({ invoiceData, id }: { invoiceData?: InvoiceType; id: strin
                 <thead className='border-bs-0'>
                   <tr>
                     <th className='!bg-transparent'>Item</th>
-                    <th className='!bg-transparent'>Description</th>
-                    <th className='!bg-transparent'>Hours</th>
                     <th className='!bg-transparent'>Qty</th>
+                    <th className='!bg-transparent'>Unit Price</th>
                     <th className='!bg-transparent'>Total</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.map((item, index) => (
+                  {invoiceData.lines.map((line: any, index: number) => (
                     <tr key={index}>
                       <td>
-                        <Typography color='text.primary'>{item.Item}</Typography>
+                        <Typography color='text.primary'>{splitServiceName(line.service?.name || '-')}</Typography>
                       </td>
                       <td>
-                        <Typography color='text.primary'>{item.Description}</Typography>
+                        <Typography color='text.primary'>{line.quantity}</Typography>
                       </td>
                       <td>
-                        <Typography color='text.primary'>{item.Hours}</Typography>
+                        <Typography color='text.primary'>
+                          {Number(line.unit_price).toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
+                        </Typography>
                       </td>
                       <td>
-                        <Typography color='text.primary'>{item.Qty}</Typography>
-                      </td>
-                      <td>
-                        <Typography color='text.primary'>{item.Total}</Typography>
+                        <Typography color='text.primary'>
+                          {Number(line.line_total).toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
+                        </Typography>
                       </td>
                     </tr>
                   ))}
@@ -159,56 +131,22 @@ const PreviewCard = ({ invoiceData, id }: { invoiceData?: InvoiceType; id: strin
             </div>
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <div className='flex justify-between flex-col gap-y-4 sm:flex-row'>
-              <div className='flex flex-col gap-1 order-2 sm:order-[unset]'>
-                <div className='flex items-center gap-2'>
-                  <Typography className='font-medium' color='text.primary'>
-                    Salesperson:
-                  </Typography>
-                  <Typography>Tommy Shelby</Typography>
-                </div>
-                <Typography>Thanks for your business</Typography>
+            <div className='min-is-[200px] ml-auto'>
+              <div className='flex items-center justify-end' id='total-row'>
+                <Typography className='font-medium text-right' color='text.primary' style={{ marginRight: 8 }}>
+                  Total:
+                </Typography>
+                <Typography className='font-medium text-right' color='text.primary' style={{ minWidth: 120 }}>
+                  {total.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
+                </Typography>
               </div>
-              <div className='min-is-[200px]'>
-                <div className='flex items-center justify-between'>
-                  <Typography>Subtotal:</Typography>
-                  <Typography className='font-medium' color='text.primary'>
-                    $1800
-                  </Typography>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <Typography>Discount:</Typography>
-                  <Typography className='font-medium' color='text.primary'>
-                    $28
-                  </Typography>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <Typography>Tax:</Typography>
-                  <Typography className='font-medium' color='text.primary'>
-                    21%
-                  </Typography>
-                </div>
-                <Divider className='mlb-2' />
-                <div className='flex items-center justify-between'>
-                  <Typography>Total:</Typography>
-                  <Typography className='font-medium' color='text.primary'>
-                    $1690
-                  </Typography>
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                <hr style={{ width: '100%', border: 0, borderTop: '2px solid #ccc', marginTop: 4, marginBottom: 0 }} />
               </div>
             </div>
           </Grid>
           <Grid size={{ xs: 12 }}>
             <Divider className='border-dashed' />
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <Typography>
-              <Typography component='span' className='font-medium' color='text.primary'>
-                Note:
-              </Typography>{' '}
-              It was a pleasure working with you and your team. We hope you will keep us in mind for future freelance
-              projects. Thank You!
-            </Typography>
           </Grid>
         </Grid>
       </CardContent>
