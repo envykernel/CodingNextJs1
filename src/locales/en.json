@@ -113,6 +113,11 @@
         "credit": "Credit",
         "debit": "Debit",
         "paypal": "Paypal",
-        "internalPaymentNote": "Internal Payment Note"
+        "insurance": "Insurance",
+        "cheque": "Cheque",
+        "mobileMoney": "Mobile Money",
+        "paymentSuccess": "Payment added successfully!",
+        "paymentError": "Failed to add payment.",
+        "payments": "Payments"
     }
 }

@@ -112,6 +112,11 @@
         "credit": "Crédit",
         "debit": "Débit",
         "paypal": "Paypal",
-        "internalPaymentNote": "Note de paiement interne"
+        "insurance": "Assurance",
+        "cheque": "Chèque",
+        "mobileMoney": "Mobile Money",
+        "paymentSuccess": "Paiement ajouté avec succès !",
+        "paymentError": "Échec de l'ajout du paiement.",
+        "payments": "Paiements"
     }
 }

@@ -113,6 +113,12 @@
         "credit": "ائتمان",
         "debit": "خصم",
         "paypal": "باي بال",
-        "internalPaymentNote": "ملاحظة دفع داخلية"
+        "internalPaymentNote": "ملاحظة دفع داخلية",
+        "insurance": "تأمين",
+        "cheque": "شيك",
+        "mobileMoney": "أموال الجوال",
+        "paymentSuccess": "تمت إضافة الدفعة بنجاح!",
+        "paymentError": "فشل في إضافة الدفعة.",
+        "payments": "الدفعات"
     }
 }

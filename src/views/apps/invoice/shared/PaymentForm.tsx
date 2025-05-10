@@ -82,7 +82,7 @@ const PaymentForm = ({ invoiceBalance, onSubmit, invoice }: PaymentFormProps) =>
           const total = (item.quantity ?? 1) * (item.unit_price ?? 0)
 
           return (
-            <MenuItem key={item.service_id || idx} value={item.service_id || String(idx)}>
+            <MenuItem key={item.id || idx} value={item.id || String(idx)}>
               {`${serviceName || item.description || t.invoice?.item || 'Item'} (Total: ${total.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })})`}
             </MenuItem>
           )
@@ -124,6 +124,9 @@ const PaymentForm = ({ invoiceBalance, onSubmit, invoice }: PaymentFormProps) =>
         <MenuItem value='credit'>{t.invoice?.credit || 'Credit'}</MenuItem>
         <MenuItem value='debit'>{t.invoice?.debit || 'Debit'}</MenuItem>
         <MenuItem value='paypal'>{t.invoice?.paypal || 'Paypal'}</MenuItem>
+        <MenuItem value='insurance'>{t.invoice?.insurance || 'Insurance'}</MenuItem>
+        <MenuItem value='cheque'>{t.invoice?.cheque || 'Cheque'}</MenuItem>
+        <MenuItem value='mobile-money'>{t.invoice?.mobileMoney || 'Mobile Money'}</MenuItem>
       </CustomTextField>
       <CustomTextField
         rows={4}
