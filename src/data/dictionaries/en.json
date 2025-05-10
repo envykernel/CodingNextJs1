@@ -152,7 +152,10 @@
     "addNewPatient": "Add New Patient",
     "enabled": "Enabled",
     "clinicalExam": "Clinical Exam",
-    "doctorSignature": "Doctor Signature"
+    "doctorSignature": "Doctor Signature",
+    "totalAmount": "Total Amount",
+    "paid": "Paid",
+    "remaining": "Remaining"
   },
   "form": {
     "name": "Name",
@@ -261,6 +264,9 @@
     "lineTotal": "Line Total",
     "addItem": "Add Item",
     "itemDescription": "Item Description",
+    "total": "Total",
+    "doctorSignature": "Doctor Signature",
     "total": "Total"
-  }
+  },
+  "cannotDeleteItemWithPayments": "This item cannot be deleted because it has one or more payments linked. Please remove all payments from this item before deleting."
 }

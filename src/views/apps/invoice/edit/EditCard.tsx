@@ -18,6 +18,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Autocomplete from '@mui/material/Autocomplete'
 import classnames from 'classnames'
 import Alert from '@mui/material/Alert'
+import Tooltip from '@mui/material/Tooltip'
 
 import { useTranslation } from '@/contexts/translationContext'
 import AddCustomerDrawer from '../add/AddCustomerDrawer'
@@ -242,70 +243,92 @@ const EditCard = ({ invoice }: EditCardProps) => {
               <Divider className='border-dashed' />
             </Grid>
             <Grid size={{ xs: 12 }}>
-              {items.map((item: any, idx: number) => (
-                <div
-                  key={idx}
-                  className={classnames('repeater-item flex relative mbe-4 border rounded', {
-                    'mbs-8': !isBelowSmScreen,
-                    '!mbs-14': idx !== 0 && !isBelowSmScreen,
-                    'gap-5': isBelowSmScreen
-                  })}
-                >
-                  <Grid container spacing={5} className='m-0 p-5'>
-                    <Grid size={{ xs: 12, md: 5, lg: 6 }}>
-                      <Typography className='font-medium md:absolute md:-top-8' color='text.primary'>
-                        {t.invoice.item}
-                      </Typography>
-                      <Autocomplete
-                        fullWidth
-                        options={services}
-                        getOptionLabel={option => option?.name || ''}
-                        value={services.find(s => s.id === item.service_id) || null}
-                        onChange={(_, newValue) => {
-                          updateItem(idx, 'service_id', newValue ? newValue.id : '')
-                        }}
-                        renderInput={params => (
-                          <CustomTextField {...params} placeholder={t.invoice.selectService} className='mbe-5' />
-                        )}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                      />
-                      <CustomTextField
-                        rows={2}
-                        fullWidth
-                        multiline
-                        value={item.description}
-                        onChange={e => updateItem(idx, 'description', e.target.value)}
-                        placeholder={t.invoice.itemDescription}
-                      />
+              {items.map((item: any, idx: number) => {
+                const hasPayments = Array.isArray(invoice?.payment_applications)
+                  ? invoice.payment_applications.some((pa: any) => pa.invoice_line_id === item.id)
+                  : false
+
+                return (
+                  <div
+                    key={idx}
+                    className={classnames('repeater-item flex relative mbe-4 border rounded', {
+                      'mbs-8': !isBelowSmScreen,
+                      '!mbs-14': idx !== 0 && !isBelowSmScreen,
+                      'gap-5': isBelowSmScreen
+                    })}
+                  >
+                    <Grid container spacing={5} className='m-0 p-5'>
+                      <Grid size={{ xs: 12, md: 5, lg: 6 }}>
+                        <Typography className='font-medium md:absolute md:-top-8' color='text.primary'>
+                          {t.invoice.item}
+                        </Typography>
+                        <Autocomplete
+                          fullWidth
+                          options={services}
+                          getOptionLabel={option => option?.name || ''}
+                          value={services.find(s => s.id === item.service_id) || null}
+                          onChange={(_, newValue) => {
+                            updateItem(idx, 'service_id', newValue ? newValue.id : '')
+                          }}
+                          renderInput={params => (
+                            <CustomTextField {...params} placeholder={t.invoice.selectService} className='mbe-5' />
+                          )}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
+                        />
+                        <CustomTextField
+                          rows={2}
+                          fullWidth
+                          multiline
+                          value={item.description}
+                          onChange={e => updateItem(idx, 'description', e.target.value)}
+                          placeholder={t.invoice.itemDescription}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 3, lg: 2 }}>
+                        <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.unitPrice}</Typography>
+                        <CustomTextField fullWidth type='number' value={item.unit_price} disabled className='mbe-5' />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 2 }}>
+                        <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.quantity}</Typography>
+                        <CustomTextField
+                          fullWidth
+                          type='number'
+                          value={item.quantity}
+                          onChange={e => updateItem(idx, 'quantity', Number(e.target.value))}
+                          inputProps={{ min: 1 }}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 2 }}>
+                        <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.lineTotal}</Typography>
+                        <Typography>
+                          {item.line_total.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                    <Grid size={{ xs: 12, md: 3, lg: 2 }}>
-                      <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.unitPrice}</Typography>
-                      <CustomTextField fullWidth type='number' value={item.unit_price} disabled className='mbe-5' />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 2 }}>
-                      <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.quantity}</Typography>
-                      <CustomTextField
-                        fullWidth
-                        type='number'
-                        value={item.quantity}
-                        onChange={e => updateItem(idx, 'quantity', Number(e.target.value))}
-                        inputProps={{ min: 1 }}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 2 }}>
-                      <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.lineTotal}</Typography>
-                      <Typography>
-                        {item.line_total.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                  <div className='flex flex-col justify-start border-is'>
-                    <IconButton size='small' onClick={() => removeItem(idx)}>
-                      <i className='tabler-x text-2xl text-actionActive' />
-                    </IconButton>
+                    <div className='flex flex-col justify-start border-is'>
+                      {!hasPayments ? (
+                        <IconButton size='small' onClick={() => removeItem(idx)}>
+                          <i className='tabler-x text-2xl text-actionActive' />
+                        </IconButton>
+                      ) : (
+                        <Tooltip
+                          title={
+                            t.invoice?.cannotDeleteItemWithPayments ||
+                            'Cannot delete invoice items with payments applied. Please delete all payments linked to this item before deleting it.'
+                          }
+                        >
+                          <span style={{ display: 'inline-flex', alignItems: 'center', margin: 4 }}>
+                            <i
+                              className='tabler-lock text-2xl text-gray-400'
+                              style={{ cursor: 'not-allowed', padding: 8, margin: 0 }}
+                            />
+                          </span>
+                        </Tooltip>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
               <Grid size={{ xs: 12 }}>
                 <Button size='small' variant='contained' onClick={addItem} startIcon={<i className='tabler-plus' />}>
                   {t.invoice.addItem}

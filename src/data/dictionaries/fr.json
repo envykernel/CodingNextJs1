@@ -150,7 +150,10 @@
     "cancel": "Annuler",
     "patients": "Patients",
     "addNewPatient": "Ajouter un patient",
-    "doctorSignature": "Signature du médecin"
+    "doctorSignature": "Signature du médecin",
+    "totalAmount": "Montant total",
+    "paid": "Payé",
+    "remaining": "Restant"
   },
   "form": {
     "name": "Nom",
@@ -259,6 +262,8 @@
     "lineTotal": "Total de la ligne",
     "addItem": "Ajouter un article",
     "itemDescription": "Description de l'article",
-    "total": "Total"
+    "total": "Total",
+    "doctorSignature": "Signature du médecin",
+    "cannotDeleteItemWithPayments": "Cet élément ne peut pas être supprimé car un ou plusieurs paiements y sont liés. Veuillez d'abord supprimer tous les paiements associés à cet élément avant de le supprimer."
   }
 }

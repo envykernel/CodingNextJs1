@@ -151,7 +151,10 @@
     "cancel": "إلغاء",
     "patients": "المرضى",
     "addNewPatient": "إضافة مريض جديد",
-    "doctorSignature": "توقيع الطبيب"
+    "doctorSignature": "توقيع الطبيب",
+    "totalAmount": "المبلغ الإجمالي",
+    "paid": "مدفوع",
+    "remaining": "المتبقي"
   },
   "form": {
     "name": "الاسم",
@@ -260,6 +263,8 @@
     "lineTotal": "إجمالي السطر",
     "addItem": "إضافة عنصر",
     "itemDescription": "وصف العنصر",
-    "total": "الإجمالي"
+    "total": "الإجمالي",
+    "doctorSignature": "توقيع الطبيب",
+    "cannotDeleteItemWithPayments": "لا يمكن حذف هذا العنصر لأنه مرتبط بمدفوعات واحدة أو أكثر. يرجى إزالة جميع المدفوعات من هذا العنصر قبل حذفه."
   }
 }
