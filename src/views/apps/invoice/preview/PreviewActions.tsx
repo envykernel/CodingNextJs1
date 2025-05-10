@@ -20,7 +20,17 @@ import SendInvoiceDrawer from '@views/apps/invoice/shared/SendInvoiceDrawer'
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
 
-const PreviewActions = ({ id, onButtonClick }: { id: string; onButtonClick: () => void }) => {
+const PreviewActions = ({
+  id,
+  invoice,
+  refreshInvoice,
+  onButtonClick
+}: {
+  id: string
+  invoice: any
+  refreshInvoice?: () => void
+  onButtonClick: () => void
+}) => {
   // States
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false)
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false)
@@ -71,7 +81,12 @@ const PreviewActions = ({ id, onButtonClick }: { id: string; onButtonClick: () =
           </Button>
         </CardContent>
       </Card>
-      <AddPaymentDrawer open={paymentDrawerOpen} handleClose={() => setPaymentDrawerOpen(false)} />
+      <AddPaymentDrawer
+        open={paymentDrawerOpen}
+        handleClose={() => setPaymentDrawerOpen(false)}
+        invoice={invoice}
+        refreshInvoice={refreshInvoice}
+      />
       <SendInvoiceDrawer open={sendDrawerOpen} handleClose={() => setSendDrawerOpen(false)} />
     </>
   )
