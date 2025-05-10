@@ -7,6 +7,14 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogActions from '@mui/material/DialogActions'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Tooltip from '@mui/material/Tooltip'
+import Paper from '@mui/material/Paper'
 
 const PaymentsList = ({ payments, invoice, services, t, onPaymentDeleted }: any) => {
   const [showPayments, setShowPayments] = useState(true)
@@ -58,32 +66,56 @@ const PaymentsList = ({ payments, invoice, services, t, onPaymentDeleted }: any)
         </IconButton>
       </div>
       <Collapse in={showPayments}>
-        <div>
-          {payments.map((p: any, idx: number) => (
-            <div key={idx} className='flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-1 sm:gap-0'>
-              <Typography variant='body2' className='min-w-[90px]'>
-                {Number(p.amount_applied).toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
-              </Typography>
-              <Typography variant='body2' className='flex-1 truncate min-w-[120px]'>
-                {getServiceNameByLineId(p.invoice_line_id) || t.invoice?.item || 'Item'}
-              </Typography>
-              <Typography variant='body2' className='min-w-[90px]'>
-                {t.invoice?.[p.payment?.payment_method?.toLowerCase()] || p.payment?.payment_method || 'Payment'}
-              </Typography>
-              <IconButton
-                size='small'
-                color='error'
-                aria-label={t.invoice?.deletePayment || 'Delete Payment'}
-                onClick={() => {
-                  setDeletingPaymentId(p.id)
-                  setDeleteDialogOpen(true)
-                }}
-              >
-                <i className='tabler-trash' />
-              </IconButton>
-            </div>
-          ))}
-        </div>
+        <TableContainer component={Paper} className='shadow-none border border-divider rounded-lg'>
+          <Table size='small'>
+            <TableHead>
+              <TableRow>
+                <TableCell className='font-bold'>{t.invoice?.amount || 'Amount'}</TableCell>
+                <TableCell className='font-bold'>{t.invoice?.item || 'Service'}</TableCell>
+                <TableCell className='font-bold'>{t.invoice?.method || 'Method'}</TableCell>
+                <TableCell className='font-bold'>{t.invoice?.date || 'Date'}</TableCell>
+                <TableCell className='font-bold' align='center'></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {payments.map((p: any, idx: number) => (
+                <TableRow key={idx}>
+                  <TableCell>
+                    {Number(p.amount_applied).toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip title={getServiceNameByLineId(p.invoice_line_id) || t.invoice?.item || 'Item'}>
+                      <span className='truncate block max-w-[120px]'>
+                        {getServiceNameByLineId(p.invoice_line_id) || t.invoice?.item || 'Item'}
+                      </span>
+                    </Tooltip>
+                  </TableCell>
+                  <TableCell>
+                    {t.invoice?.[p.payment?.payment_method?.toLowerCase()] || p.payment?.payment_method || 'Payment'}
+                  </TableCell>
+                  <TableCell>
+                    {p.payment?.payment_date ? new Date(p.payment.payment_date).toLocaleDateString() : '-'}
+                  </TableCell>
+                  <TableCell align='center'>
+                    <Tooltip title={t.invoice?.deletePayment || 'Delete Payment'}>
+                      <IconButton
+                        size='small'
+                        color='error'
+                        aria-label={t.invoice?.deletePayment || 'Delete Payment'}
+                        onClick={() => {
+                          setDeletingPaymentId(p.id)
+                          setDeleteDialogOpen(true)
+                        }}
+                      >
+                        <i className='tabler-trash' />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Collapse>
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>{t.invoice?.confirmDeletePayment || 'Are you sure you want to delete this payment?'}</DialogTitle>
