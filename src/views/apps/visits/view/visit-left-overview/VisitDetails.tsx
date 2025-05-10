@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import { useRouter } from 'next/navigation'
 
 import Card from '@mui/material/Card'
@@ -15,6 +17,31 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
   const t = useTranslation()
   const router = useRouter()
   const patient = visitData.patient || {}
+  const [invoice, setInvoice] = useState<any>(null)
+  const [loadingInvoice, setLoadingInvoice] = useState(true)
+
+  useEffect(() => {
+    if (!visitData?.id) return
+    setLoadingInvoice(true)
+    fetch(`/api/apps/invoice?visitId=${visitData.id}`)
+      .then(res => res.json())
+      .then(data => {
+        // If API returns an array, find the invoice for this visit
+        if (Array.isArray(data)) {
+          setInvoice(data.find((inv: any) => inv.visit_id === visitData.id) || null)
+        } else if (data && data.visit_id === visitData.id) {
+          setInvoice(data)
+        } else {
+          setInvoice(null)
+        }
+
+        setLoadingInvoice(false)
+      })
+      .catch(() => {
+        setInvoice(null)
+        setLoadingInvoice(false)
+      })
+  }, [visitData?.id])
 
   return (
     <Card>
@@ -156,16 +183,27 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
           {t.patient?.label || 'Patient Profile'}
         </Button>
       </div>
-      {/* Create Invoice Button */}
+      {/* Invoice Button */}
       <div className='w-full flex justify-center pb-4'>
-        <Button
-          variant='outlined'
-          color='secondary'
-          onClick={() => router.push(`/fr/apps/invoice/add?visitId=${visitData.id}`)}
-          disabled={!visitData?.id}
-        >
-          {t.invoice?.createInvoice || 'Create Invoice'}
-        </Button>
+        {loadingInvoice ? null : invoice ? (
+          <Button
+            variant='outlined'
+            color='secondary'
+            onClick={() => router.push(`/fr/apps/invoice/edit/${invoice.id}`)}
+            disabled={!invoice.id}
+          >
+            {t.invoice?.editInvoice || 'Edit Invoice'}
+          </Button>
+        ) : (
+          <Button
+            variant='outlined'
+            color='secondary'
+            onClick={() => router.push(`/fr/apps/invoice/add?visitId=${visitData.id}`)}
+            disabled={!visitData?.id}
+          >
+            {t.invoice?.createInvoice || 'Create Invoice'}
+          </Button>
+        )}
       </div>
     </Card>
   )

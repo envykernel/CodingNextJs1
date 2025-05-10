@@ -27,13 +27,14 @@ import CustomTextField from '@core/components/mui/TextField'
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
 
-const EditActions = ({ id }: { id: string }) => {
+const EditActions = ({ invoiceId }: { invoiceId: string }) => {
   // States
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false)
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false)
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams() as Record<string, string>
+  const locale = params && typeof params['lang'] === 'string' ? params['lang'] : 'en'
 
   return (
     <Grid container spacing={6}>
@@ -56,7 +57,7 @@ const EditActions = ({ id }: { id: string }) => {
                 color='secondary'
                 variant='tonal'
                 className='capitalize'
-                href={getLocalizedUrl(`/apps/invoice/preview/${id}`, locale as Locale)}
+                href={getLocalizedUrl(`/apps/invoice/preview/${invoiceId}`, locale as Locale)}
               >
                 Preview
               </Button>

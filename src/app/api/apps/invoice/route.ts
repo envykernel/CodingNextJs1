@@ -14,7 +14,32 @@ import { NextResponse } from 'next/server'
 import { db } from '@/fake-db/apps/invoice'
 import { prisma } from '@/prisma/prisma'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
+  const visitId = searchParams.get('visitId')
+  const id = searchParams.get('id')
+
+  if (id) {
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: Number(id) },
+      include: { lines: true, visit: true }
+    })
+
+    if (!invoice) return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
+
+    return NextResponse.json(invoice)
+  }
+
+  if (visitId) {
+    // Query the database for invoice(s) with this visit_id
+    const invoices = await prisma.invoice.findMany({
+      where: { visit_id: Number(visitId) },
+      include: { lines: true }
+    })
+
+    return NextResponse.json(invoices)
+  }
+
   return NextResponse.json(db)
 }
 
@@ -53,12 +78,12 @@ export async function POST(req: NextRequest) {
     total_amount += line_total
 
     return {
-      organisation_id,
-      service_id: line.service_id,
+      service: { connect: { id: line.service_id } },
       description: line.description,
       quantity,
       unit_price,
-      line_total
+      line_total,
+      organisation: { connect: { id: organisation_id } }
     }
   })
 
@@ -79,4 +104,69 @@ export async function POST(req: NextRequest) {
   })
 
   return NextResponse.json(invoice)
+}
+
+export async function PUT(req: NextRequest) {
+  const data = await req.json()
+  const { id, organisation_id, patient_id, visit_id, due_date, lines, invoice_number } = data
+
+  if (!id) {
+    return NextResponse.json({ error: 'Missing invoice id' }, { status: 400 })
+  }
+
+  if (!Array.isArray(lines)) {
+    return NextResponse.json({ error: 'Missing or invalid invoice lines' }, { status: 400 })
+  }
+
+  // Fetch all services for the lines
+  const serviceIds = lines.map((line: any) => line.service_id)
+
+  const services = await prisma.service.findMany({
+    where: { id: { in: serviceIds } },
+    select: { id: true, amount: true }
+  })
+
+  const serviceMap = Object.fromEntries(services.map((s: any) => [s.id, s.amount]))
+
+  // Prepare invoice lines
+  let total_amount = 0
+
+  const invoiceLines = lines.map((line: any) => {
+    const unit_price = Number(serviceMap[line.service_id] || 0)
+    const quantity = Number(line.quantity)
+    const line_total = unit_price * quantity
+
+    total_amount += line_total
+
+    return {
+      service: { connect: { id: line.service_id } },
+      description: line.description,
+      quantity,
+      unit_price,
+      line_total,
+      organisation: { connect: { id: organisation_id } }
+    }
+  })
+
+  // Delete existing lines
+  await prisma.invoice_line.deleteMany({ where: { invoice_id: Number(id) } })
+
+  // Update invoice and create new lines
+  const updatedInvoice = await prisma.invoice.update({
+    where: { id: Number(id) },
+    data: {
+      invoice_number,
+      organisation: { connect: { id: organisation_id } },
+      patient: { connect: { id: patient_id } },
+      visit: visit_id ? { connect: { id: visit_id } } : undefined,
+      due_date: due_date ? new Date(due_date) : undefined,
+      total_amount,
+      lines: {
+        create: invoiceLines
+      }
+    },
+    include: { lines: true, visit: true }
+  })
+
+  return NextResponse.json(updatedInvoice)
 }
