@@ -57,3 +57,42 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
+  const paymentApplicationId = searchParams.get('payment_application_id')
+
+  if (!paymentApplicationId) {
+    return NextResponse.json({ success: false, error: 'Missing payment_application_id' }, { status: 400 })
+  }
+
+  try {
+    // Find the payment_application to get the payment_id
+    const paymentApp = await prisma.payment_application.findUnique({
+      where: { id: Number(paymentApplicationId) }
+    })
+
+    if (!paymentApp) {
+      return NextResponse.json({ success: false, error: 'Payment application not found' }, { status: 404 })
+    }
+
+    // Delete the payment_application
+    await prisma.payment_application.delete({
+      where: { id: Number(paymentApplicationId) }
+    })
+
+    // Delete the related payment
+    await prisma.payment.delete({
+      where: { id: paymentApp.payment_id }
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error(error)
+
+    return NextResponse.json(
+      { success: false, error: error instanceof Error ? error.message : String(error) },
+      { status: 500 }
+    )
+  }
+}
