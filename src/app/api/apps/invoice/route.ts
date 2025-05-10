@@ -80,22 +80,13 @@ export async function POST(req: NextRequest) {
   // Prepare invoice lines
   let total_amount = 0
 
-  const invoiceLines = lines.map((line: any) => {
+  for (const line of lines) {
     const unit_price = Number(serviceMap[line.service_id] || 0)
     const quantity = Number(line.quantity)
     const line_total = unit_price * quantity
 
     total_amount += line_total
-
-    return {
-      service: { connect: { id: line.service_id } },
-      description: line.description,
-      quantity,
-      unit_price,
-      line_total,
-      organisation: { connect: { id: organisation_id } }
-    }
-  })
+  }
 
   // Create invoice and lines
   const invoice = await prisma.invoice.create({
@@ -107,7 +98,14 @@ export async function POST(req: NextRequest) {
       due_date: due_date ? new Date(due_date) : undefined,
       total_amount,
       lines: {
-        create: invoiceLines
+        create: lines.map((line: any) => ({
+          service: { connect: { id: line.service_id } },
+          description: line.description,
+          quantity: Number(line.quantity),
+          unit_price: Number(serviceMap[line.service_id] || 0),
+          line_total: Number(serviceMap[line.service_id] || 0) * Number(line.quantity),
+          organisation: { connect: { id: organisation_id } }
+        }))
       }
     },
     include: { lines: true }
@@ -141,27 +139,89 @@ export async function PUT(req: NextRequest) {
   // Prepare invoice lines
   let total_amount = 0
 
-  const invoiceLines = lines.map((line: any) => {
+  for (const line of lines) {
     const unit_price = Number(serviceMap[line.service_id] || 0)
     const quantity = Number(line.quantity)
     const line_total = unit_price * quantity
 
     total_amount += line_total
+  }
 
-    return {
-      service: { connect: { id: line.service_id } },
-      description: line.description,
-      quantity,
-      unit_price,
-      line_total,
-      organisation: { connect: { id: organisation_id } }
-    }
+  // --- NEW LOGIC: Prevent deletion of lines with payment applications ---
+  // 1. Get all current invoice lines
+  const existingLines = await prisma.invoice_line.findMany({
+    where: { invoice_id: Number(id) },
+    select: { id: true }
   })
 
-  // Delete existing lines
-  await prisma.invoice_line.deleteMany({ where: { invoice_id: Number(id) } })
+  const existingLineIds = existingLines.map(l => l.id)
 
-  // Update invoice and create new lines
+  // 2. Get the IDs of lines that should remain (from the request)
+  //    (Assume that if a line has an id, it's an existing line to keep)
+  const requestLineIds = lines.filter((l: any) => l.id).map((l: any) => l.id)
+
+  // 3. Find lines that are going to be deleted
+  const linesToDelete = existingLineIds.filter(lineId => !requestLineIds.includes(lineId))
+
+  if (linesToDelete.length > 0) {
+    // 4. Check if any of these lines have payment applications
+    const paymentApps = await prisma.payment_application.findMany({
+      where: { invoice_line_id: { in: linesToDelete } },
+      select: { invoice_line_id: true }
+    })
+
+    if (paymentApps.length > 0) {
+      return NextResponse.json(
+        {
+          error: 'Cannot delete invoice lines that have payments applied.',
+          lines_with_payments: paymentApps.map(pa => pa.invoice_line_id)
+        },
+        { status: 400 }
+      )
+    }
+
+    // 5. Safe to delete lines without payments
+    await prisma.invoice_line.deleteMany({ where: { id: { in: linesToDelete } } })
+  }
+
+  // --- END NEW LOGIC ---
+
+  // Update invoice and create/update lines
+  // For simplicity, delete and recreate all lines that are not kept, and upsert the rest
+  // (You may want to optimize this further for production)
+
+  // Upsert (update or create) lines from the request
+  for (const line of lines) {
+    if (typeof line.id === 'number' && !isNaN(line.id)) {
+      // Update existing line
+      await prisma.invoice_line.update({
+        where: { id: line.id },
+        data: {
+          service: { connect: { id: line.service_id } },
+          description: line.description,
+          quantity: Number(line.quantity),
+          unit_price: Number(serviceMap[line.service_id] || 0),
+          line_total: Number(serviceMap[line.service_id] || 0) * Number(line.quantity),
+          organisation: { connect: { id: organisation_id } }
+        }
+      })
+    } else {
+      // Create new line
+      await prisma.invoice_line.create({
+        data: {
+          invoice: { connect: { id: Number(id) } },
+          service: { connect: { id: line.service_id } },
+          description: line.description,
+          quantity: Number(line.quantity),
+          unit_price: Number(serviceMap[line.service_id] || 0),
+          line_total: Number(serviceMap[line.service_id] || 0) * Number(line.quantity),
+          organisation: { connect: { id: organisation_id } }
+        }
+      })
+    }
+  }
+
+  // Update invoice fields
   const updatedInvoice = await prisma.invoice.update({
     where: { id: Number(id) },
     data: {
@@ -170,12 +230,19 @@ export async function PUT(req: NextRequest) {
       patient: { connect: { id: patient_id } },
       visit: visit_id ? { connect: { id: visit_id } } : undefined,
       due_date: due_date ? new Date(due_date) : undefined,
-      total_amount,
-      lines: {
-        create: invoiceLines
-      }
+      total_amount
     },
-    include: { lines: true, visit: true }
+    include: {
+      lines: true,
+      visit: true,
+      organisation: true,
+      patient: true,
+      payment_applications: {
+        include: {
+          payment: true
+        }
+      }
+    }
   })
 
   return NextResponse.json(updatedInvoice)

@@ -45,6 +45,7 @@ const EditCard = ({ invoice }: EditCardProps) => {
   const [items, setItems] = useState(
     Array.isArray(invoice?.lines)
       ? invoice.lines.map((line: any) => ({
+          id: line.id,
           service_id: line.service_id,
           description: line.description || '',
           quantity: line.quantity,
