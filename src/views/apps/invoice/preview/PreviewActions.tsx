@@ -1,5 +1,5 @@
 // React Imports
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // Next Imports
 import Link from 'next/link'
@@ -16,6 +16,8 @@ import type { Locale } from '@configs/i18n'
 // Component Imports
 import AddPaymentDrawer from '@views/apps/invoice/shared/AddPaymentDrawer'
 import SendInvoiceDrawer from '@views/apps/invoice/shared/SendInvoiceDrawer'
+import PaymentProgress from '@views/apps/invoice/edit/PaymentProgress'
+import PaymentsList from '../shared/PaymentsList'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
@@ -34,26 +36,28 @@ const PreviewActions = ({
   // States
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false)
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false)
+  const [services, setServices] = useState<any[]>([])
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams() as Record<string, string | string[]> | null
+  const locale = params && typeof params === 'object' && 'lang' in params ? params['lang'] : 'en'
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then(res => res.json())
+      .then(setServices)
+  }, [])
+
+  const payments = Array.isArray(invoice?.payment_applications) ? invoice.payment_applications : []
 
   return (
     <>
       <Card>
         <CardContent className='flex flex-col gap-4'>
-          <Button
-            fullWidth
-            variant='contained'
-            className='capitalize'
-            startIcon={<i className='tabler-send' />}
-            onClick={() => setSendDrawerOpen(true)}
-          >
-            Send Invoice
-          </Button>
-          <Button fullWidth color='secondary' variant='tonal' className='capitalize'>
-            Download
-          </Button>
+          <PaymentProgress
+            invoice={invoice}
+            t={{ invoice: { totalAmount: 'Total', paid: 'Paid', remaining: 'Remaining' } }}
+          />
           <div className='flex items-center gap-4'>
             <Button fullWidth color='secondary' variant='tonal' className='capitalize' onClick={onButtonClick}>
               Print
@@ -88,6 +92,23 @@ const PreviewActions = ({
         refreshInvoice={refreshInvoice}
       />
       <SendInvoiceDrawer open={sendDrawerOpen} handleClose={() => setSendDrawerOpen(false)} />
+      <div className='mt-6'>
+        <PaymentsList
+          payments={payments}
+          invoice={invoice}
+          services={services}
+          t={{
+            invoice: {
+              payments: 'Payments',
+              item: 'Item',
+              deletePayment: 'Delete Payment',
+              confirmDeletePayment: 'Are you sure you want to delete this payment?',
+              cancel: 'Cancel',
+              delete: 'Delete'
+            }
+          }}
+        />
+      </div>
     </>
   )
 }
