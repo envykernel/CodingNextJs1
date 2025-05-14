@@ -239,6 +239,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
           doctors={doctors}
           patients={patients}
           dictionary={dictionary}
+          onAppointmentCreated={() => router.refresh()}
         />
       </TranslationProvider>
     </Card>

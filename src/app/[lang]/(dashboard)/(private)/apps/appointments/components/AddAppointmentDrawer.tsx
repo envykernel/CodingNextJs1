@@ -38,12 +38,20 @@ type Props = {
   doctors: { id: string | number; name: string }[]
   patients: PatientType[]
   dictionary: any
+  onAppointmentCreated?: () => void
 }
 
 // Replace APPOINTMENT_TYPE_OPTIONS with keys for translation
 const APPOINTMENT_TYPE_OPTION_KEYS = ['Consultation', 'Medical Check', 'Clinical Procedure', 'Other']
 
-const AddAppointmentDrawer = ({ open, handleClose, doctors, patients: initialPatients, dictionary }: Props) => {
+const AddAppointmentDrawer = ({
+  open,
+  handleClose,
+  doctors,
+  patients: initialPatients,
+  dictionary,
+  onAppointmentCreated
+}: Props) => {
   const { data: session } = useSession()
 
   const {
@@ -123,6 +131,7 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients: initialPat
       if (result.ok) {
         handleClose()
         reset()
+        if (typeof onAppointmentCreated === 'function') onAppointmentCreated()
       } else {
         let errorMsg = 'Failed to create appointment'
 
