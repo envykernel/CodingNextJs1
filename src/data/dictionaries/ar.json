@@ -154,7 +154,9 @@
     "doctorSignature": "توقيع الطبيب",
     "totalAmount": "المبلغ الإجمالي",
     "paid": "مدفوع",
-    "remaining": "المتبقي"
+    "remaining": "المتبقي",
+    "save": "حفظ",
+    "editPatient": "تعديل المريض"
   },
   "form": {
     "name": "الاسم",

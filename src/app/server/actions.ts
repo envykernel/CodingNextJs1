@@ -129,3 +129,69 @@ export const getPatientData = async () => {
     }
   ]
 }
+
+export async function updatePatientAction(patientId: number, data: any) {
+  try {
+    await prisma.patient.update({
+      where: { id: patientId },
+      data: {
+        name: data.name,
+        birthdate: data.birthdate ? new Date(data.birthdate) : undefined,
+        gender: data.gender,
+        doctor: data.doctor,
+        status: data.status,
+        avatar: data.avatar,
+        address: data.address,
+        city: data.city,
+        phone_number: data.phone_number,
+        email: data.email,
+        emergency_contact_name: data.emergency_contact_name,
+        emergency_contact_phone: data.emergency_contact_phone,
+        emergency_contact_email: data.emergency_contact_email,
+        updated_at: new Date()
+      }
+    })
+
+    // Fetch the updated patient with related data
+    const patientWithRelations = await prisma.patient.findUnique({
+      where: { id: patientId },
+      include: {
+        patient_measurements: true,
+        patient_medical: true,
+        patient_medical_history: true
+      }
+    })
+
+    if (!patientWithRelations) {
+      throw new Error('Patient not found after update')
+    }
+
+    // Map null string fields to undefined and handle decimal types
+    return {
+      ...patientWithRelations,
+      doctor: patientWithRelations.doctor ?? undefined,
+      status: patientWithRelations.status ?? undefined,
+      avatar: patientWithRelations.avatar ?? undefined,
+      address: patientWithRelations.address ?? undefined,
+      city: patientWithRelations.city ?? undefined,
+      phone_number: patientWithRelations.phone_number ?? undefined,
+      email: patientWithRelations.email ?? undefined,
+      birthdate: patientWithRelations.birthdate ?? undefined,
+      emergency_contact_name: patientWithRelations.emergency_contact_name ?? undefined,
+      emergency_contact_phone: patientWithRelations.emergency_contact_phone ?? undefined,
+      emergency_contact_email: patientWithRelations.emergency_contact_email ?? undefined,
+      created_at: patientWithRelations.created_at ?? undefined,
+      updated_at: patientWithRelations.updated_at ?? undefined,
+      patient_measurements: patientWithRelations.patient_measurements.map(m => ({
+        ...m,
+        weight_kg: typeof m.weight_kg === 'object' && m.weight_kg !== null ? Number(m.weight_kg) : m.weight_kg,
+        height_cm: typeof m.height_cm === 'object' && m.height_cm !== null ? Number(m.height_cm) : m.height_cm,
+        temperature_c:
+          typeof m.temperature_c === 'object' && m.temperature_c !== null ? Number(m.temperature_c) : m.temperature_c
+      }))
+    }
+  } catch (error) {
+    console.error('Error updating patient:', error)
+    throw error
+  }
+}

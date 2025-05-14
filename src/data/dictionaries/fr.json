@@ -153,7 +153,10 @@
     "doctorSignature": "Signature du médecin",
     "totalAmount": "Montant total",
     "paid": "Payé",
-    "remaining": "Restant"
+    "remaining": "Restant",
+    "save": "Enregistrer",
+    "editPatient": "Modifier le patient",
+    "addNewPatient": "Ajouter un nouveau patient"
   },
   "form": {
     "name": "Nom",

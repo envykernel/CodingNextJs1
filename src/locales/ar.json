@@ -1,7 +1,15 @@
 {
     "patients": "المرضى",
-    "list": "قائمة",
+    "list": "القائمة",
     "view": "عرض",
+    "navigation": {
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "edit": "تعديل",
+        "editPatient": "تعديل المريض",
+        "add": "إضافة",
+        "addNewPatient": "إضافة مريض جديد"
+    },
     "patient": {
         "birthdate": "تاريخ الميلاد",
         "gender": "الجنس",

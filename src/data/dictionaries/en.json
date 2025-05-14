@@ -155,7 +155,8 @@
     "doctorSignature": "Doctor Signature",
     "totalAmount": "Total Amount",
     "paid": "Paid",
-    "remaining": "Remaining"
+    "remaining": "Remaining",
+    "save": "Save"
   },
   "form": {
     "name": "Name",

@@ -2,6 +2,14 @@
     "patients": "Patients",
     "list": "List",
     "view": "View",
+    "navigation": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "editPatient": "Edit Patient",
+        "add": "Add",
+        "addNewPatient": "Add New Patient"
+    },
     "patient": {
         "birthdate": "Birthdate",
         "gender": "Gender",
