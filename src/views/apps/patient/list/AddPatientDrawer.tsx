@@ -1,5 +1,6 @@
 // React Imports
 // import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // MUI Imports
 import Button from '@mui/material/Button'
@@ -75,10 +76,23 @@ const AddUserDrawer = (props: Props) => {
   console.log('dictionary.form:', dictionary.form)
   console.log('dictionary.form.birthdate:', dictionary.form?.birthdate)
 
+  // Add local state for doctors
+  const [doctors, setDoctors] = useState<{ id: string | number; name: string }[]>([])
+
+  // Fetch doctors when drawer opens
+  useEffect(() => {
+    if (props.open) {
+      fetch('/api/doctors')
+        .then(res => res.json())
+        .then(data => setDoctors(data.map((d: any) => ({ id: String(d.id), name: d.name }))))
+        .catch(() => setDoctors([]))
+    }
+  }, [props.open])
+
   // Hooks
   const {
     control,
-    reset: resetForm,
+    reset,
     handleSubmit,
     formState: { errors }
   } = useForm<FormValidateType>({
@@ -86,9 +100,9 @@ const AddUserDrawer = (props: Props) => {
     defaultValues: {
       name: '',
       birthdate: '',
-      gender: '',
-      doctor: '',
-      status: '',
+      gender: 'Female',
+      doctor: doctors && doctors.length > 0 ? String(doctors[0].id) : '',
+      status: 'enabled',
       avatar: '',
       address: '',
       city: '',
@@ -99,6 +113,27 @@ const AddUserDrawer = (props: Props) => {
       emergency_contact_email: ''
     }
   })
+
+  // Ensure default values are set when drawer opens or doctors change
+  useEffect(() => {
+    if (open) {
+      reset({
+        name: '',
+        birthdate: '',
+        gender: 'Female',
+        doctor: doctors && doctors.length > 0 ? String(doctors[0].id) : '',
+        status: 'enabled',
+        avatar: '',
+        address: '',
+        city: '',
+        phone_number: '',
+        email: '',
+        emergency_contact_name: '',
+        emergency_contact_phone: '',
+        emergency_contact_email: ''
+      })
+    }
+  }, [open, doctors, reset])
 
   const onSubmit = async (data: FormValidateType) => {
     try {
@@ -126,7 +161,6 @@ const AddUserDrawer = (props: Props) => {
         }
 
         handleClose()
-        resetForm()
       } else {
         // TODO: Show error to user (e.g., toast, alert, etc.)
         // alert(result?.error || 'Failed to save patient')
@@ -242,11 +276,20 @@ const AddUserDrawer = (props: Props) => {
               control={control}
               render={({ field }) => (
                 <CustomTextField
-                  {...field}
+                  select
                   fullWidth
                   label={dictionary.form.doctor}
-                  placeholder={dictionary.form.doctorPlaceholder}
-                />
+                  error={!!errors.doctor}
+                  helperText={!!errors.doctor ? dictionary.form.required : ''}
+                  {...field}
+                >
+                  {doctors &&
+                    doctors.map(opt => (
+                      <MenuItem key={opt.id} value={opt.id}>
+                        {opt.name}
+                      </MenuItem>
+                    ))}
+                </CustomTextField>
               )}
             />
             <Controller
