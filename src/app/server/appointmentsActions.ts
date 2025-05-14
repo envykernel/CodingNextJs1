@@ -218,22 +218,23 @@ export async function getOrganisationAvailability(organisation_id: number, start
     const availableSlots: string[] = []
 
     for (const slot of slotsPerDay) {
-      // Construct the slot as a local datetime (not UTC)
+      // Construct the slot as a UTC datetime
       const [hour, minute] = slot.split(':')
-      const slotDate = new Date(d)
 
-      slotDate.setHours(Number(hour), Number(minute), 0, 0)
+      const slotDate = new Date(
+        Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), Number(hour), Number(minute), 0, 0)
+      )
 
-      // Check if this slot is booked (compare local time)
+      // Check if this slot is booked (compare in UTC)
       const isBooked = appointments.some(appt => {
         const apptDate = new Date(appt.appointment_date)
 
         return (
-          apptDate.getFullYear() === slotDate.getFullYear() &&
-          apptDate.getMonth() === slotDate.getMonth() &&
-          apptDate.getDate() === slotDate.getDate() &&
-          apptDate.getHours() === slotDate.getHours() &&
-          apptDate.getMinutes() === slotDate.getMinutes()
+          apptDate.getUTCFullYear() === slotDate.getUTCFullYear() &&
+          apptDate.getUTCMonth() === slotDate.getUTCMonth() &&
+          apptDate.getUTCDate() === slotDate.getUTCDate() &&
+          apptDate.getUTCHours() === slotDate.getUTCHours() &&
+          apptDate.getUTCMinutes() === slotDate.getUTCMinutes()
         )
       })
 

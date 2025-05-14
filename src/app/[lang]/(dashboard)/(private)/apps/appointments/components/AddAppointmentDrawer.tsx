@@ -44,6 +44,18 @@ type Props = {
 // Replace APPOINTMENT_TYPE_OPTIONS with keys for translation
 const APPOINTMENT_TYPE_OPTION_KEYS = ['Consultation', 'Medical Check', 'Clinical Procedure', 'Other']
 
+// Helper to convert local date+time to UTC slot string (HH:mm)
+function toUTCSlot(localDateStr: string, slot: string): string {
+  // localDateStr: 'YYYY-MM-DD', slot: 'HH:mm'
+  const [year, month, day] = localDateStr.split('-').map(Number)
+  const [hour, minute] = slot.split(':').map(Number)
+  const localDate = new Date(year, month - 1, day, hour, minute)
+  const utcHour = localDate.getUTCHours().toString().padStart(2, '0')
+  const utcMinute = localDate.getUTCMinutes().toString().padStart(2, '0')
+
+  return `${utcHour}:${utcMinute}`
+}
+
 const AddAppointmentDrawer = ({
   open,
   handleClose,
@@ -153,7 +165,11 @@ const AddAppointmentDrawer = ({
     // Compose local datetime string for the input (YYYY-MM-DDTHH:mm)
     const localDateTime = `${dayIso}T${slot}`
 
-    setValue('appointment_date', localDateTime)
+    // Convert to UTC ISO string for backend
+    const localDate = new Date(localDateTime)
+    const utcISOString = localDate.toISOString()
+
+    setValue('appointment_date', utcISOString)
     setSelectedSlot({ day: dayIso, time: slot })
   }
 
@@ -162,40 +178,45 @@ const AddAppointmentDrawer = ({
 
   useEffect(() => {
     if (appointmentDateValue) {
-      const [date, time] = appointmentDateValue.split('T')
+      // Convert UTC ISO string to local date and time
+      const utcDate = new Date(appointmentDateValue)
+      const localYear = utcDate.getFullYear()
+      const localMonth = (utcDate.getMonth() + 1).toString().padStart(2, '0')
+      const localDay = utcDate.getDate().toString().padStart(2, '0')
+      const localHour = utcDate.getHours().toString().padStart(2, '0')
+      const localMinute = utcDate.getMinutes().toString().padStart(2, '0')
+      const localDateStr = `${localYear}-${localMonth}-${localDay}`
+      const localTimeStr = `${localHour}:${localMinute}`
 
-      if (date && time) {
-        const slot = time.slice(0, 5) // HH:mm
+      setSelectedSlot({ day: localDateStr, time: localTimeStr })
 
-        setSelectedSlot({ day: date, time: slot })
+      // Check if the selected date/time is available
+      const dayAvailability = availability.find(day => day.date === localDateStr)
+      let isAvailable = false
 
-        // Check if the selected date/time is available
-        const dayAvailability = availability.find(day => day.date === date)
-        let isAvailable = false
+      if (dayAvailability) {
+        // Check if slot is in available slots and not in the past (if today)
+        // Convert local slot to UTC slot for comparison
+        const utcSlot = toUTCSlot(localDateStr, localTimeStr)
 
-        if (dayAvailability) {
-          // Check if slot is in available slots and not in the past (if today)
-          isAvailable = dayAvailability.slots.includes(slot)
+        isAvailable = dayAvailability.slots.includes(utcSlot)
 
-          if (date === new Date().toISOString().slice(0, 10)) {
-            const now = new Date()
-            const [slotHour, slotMinute] = slot.split(':').map(Number)
+        if (localDateStr === new Date().toISOString().slice(0, 10)) {
+          const now = new Date()
+          const [slotHour, slotMinute] = localTimeStr.split(':').map(Number)
 
-            if (now.getHours() > slotHour || (now.getHours() === slotHour && now.getMinutes() >= slotMinute)) {
-              isAvailable = false
-            }
+          if (now.getHours() > slotHour || (now.getHours() === slotHour && now.getMinutes() >= slotMinute)) {
+            isAvailable = false
           }
         }
+      }
 
-        if (!isAvailable) {
-          setUnavailableWarning(
-            dictionary.appointments?.unavailableWarning ||
-              dictionary.unavailableWarning ||
-              'The selected date and time is unavailable.'
-          )
-        } else {
-          setUnavailableWarning(null)
-        }
+      if (!isAvailable) {
+        setUnavailableWarning(
+          dictionary.appointments?.unavailableWarning ||
+            dictionary.unavailableWarning ||
+            'The selected date and time is unavailable.'
+        )
       } else {
         setUnavailableWarning(null)
       }
@@ -299,17 +320,39 @@ const AddAppointmentDrawer = ({
             <Controller
               name='appointment_date'
               control={control}
-              render={({ field }) => (
-                <CustomTextField
-                  type='datetime-local'
-                  fullWidth
-                  label={dictionary.date || 'Date'}
-                  {...field}
-                  error={!!errors.appointment_date}
-                  helperText={errors.appointment_date ? dictionary.form?.required || 'Required' : ''}
-                  InputLabelProps={{ shrink: true }}
-                />
-              )}
+              render={({ field }) => {
+                // Convert UTC ISO string to local datetime-local string
+                let localValue = field.value
+
+                if (field.value) {
+                  const utcDate = new Date(field.value)
+                  const year = utcDate.getFullYear()
+                  const month = (utcDate.getMonth() + 1).toString().padStart(2, '0')
+                  const day = utcDate.getDate().toString().padStart(2, '0')
+                  const hour = utcDate.getHours().toString().padStart(2, '0')
+                  const minute = utcDate.getMinutes().toString().padStart(2, '0')
+
+                  localValue = `${year}-${month}-${day}T${hour}:${minute}`
+                }
+
+                return (
+                  <CustomTextField
+                    type='datetime-local'
+                    fullWidth
+                    label={dictionary.date || 'Date'}
+                    value={localValue}
+                    onChange={e => {
+                      // Convert local datetime-local string to UTC ISO string
+                      const localDate = new Date(e.target.value)
+
+                      field.onChange(localDate.toISOString())
+                    }}
+                    error={!!errors.appointment_date}
+                    helperText={errors.appointment_date ? dictionary.form?.required || 'Required' : ''}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                )
+              }}
             />
             {/* Type input */}
             <Controller
@@ -448,9 +491,11 @@ const AddAppointmentDrawer = ({
                             ]
 
                             return allSlots.map(slot => {
-                              let isAvailable = day.slots.includes(slot)
+                              // Convert local slot to UTC slot for comparison
+                              const utcSlot = toUTCSlot(day.date, slot)
+                              let isAvailable = day.slots.includes(utcSlot)
 
-                              // Mark passed times for today as unavailable
+                              // Mark passed times for today as unavailable (in local time)
                               if (day.date === new Date().toISOString().slice(0, 10)) {
                                 const now = new Date()
                                 const [slotHour, slotMinute] = slot.split(':').map(Number)
