@@ -222,7 +222,7 @@ model patient_appointment {
 }
 
 model UserInternal {
-  userId         String        @id @default(uuid())
+  id             Int           @id @default(autoincrement())
   name           String
   email          String        @unique
   isApproved     Boolean       @default(false)

@@ -174,7 +174,7 @@ CREATE TABLE "patient_appointment" (
 
 -- CreateTable
 CREATE TABLE "UserInternal" (
-    "userId" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "isApproved" BOOLEAN NOT NULL DEFAULT false,
@@ -182,7 +182,7 @@ CREATE TABLE "UserInternal" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "UserInternal_pkey" PRIMARY KEY ("userId")
+    CONSTRAINT "UserInternal_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
