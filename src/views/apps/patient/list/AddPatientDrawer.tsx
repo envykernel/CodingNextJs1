@@ -101,7 +101,7 @@ const AddUserDrawer = (props: Props) => {
       name: '',
       birthdate: '',
       gender: 'Female',
-      doctor: doctors && doctors.length > 0 ? String(doctors[0].id) : '',
+      doctor: doctors && doctors.length > 0 ? doctors[0].name : '',
       status: 'enabled',
       avatar: '',
       address: '',
@@ -121,7 +121,7 @@ const AddUserDrawer = (props: Props) => {
         name: '',
         birthdate: '',
         gender: 'Female',
-        doctor: doctors && doctors.length > 0 ? String(doctors[0].id) : '',
+        doctor: doctors && doctors.length > 0 ? doctors[0].name : '',
         status: 'enabled',
         avatar: '',
         address: '',
@@ -285,7 +285,7 @@ const AddUserDrawer = (props: Props) => {
                 >
                   {doctors &&
                     doctors.map(opt => (
-                      <MenuItem key={opt.id} value={opt.id}>
+                      <MenuItem key={opt.id} value={opt.name}>
                         {opt.name}
                       </MenuItem>
                     ))}

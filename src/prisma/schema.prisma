@@ -61,7 +61,7 @@ model patient {
   name                    String                    @db.VarChar(100)
   birthdate               DateTime                  @db.Date
   gender                  String                    @db.VarChar(20)
-  doctor                  String?                   @db.VarChar(100)
+  doctor_id               Int?                      // Changed from doctor String? to doctor_id Int?
   status                  String?                   @db.VarChar(50)
   avatar                  String?                   @db.VarChar(255)
   address                 String?                   @db.VarChar(255)
@@ -76,6 +76,7 @@ model patient {
   organisation_id         Int
   lab_test_orders         lab_test_order[]
   organisation            organisation              @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  doctor                  doctor?                   @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction) // Added relation to doctor
   patient_appointments    patient_appointment[]     @relation("patient_appointment_patient_id")
   patient_measurements    patient_measurements[]
   patient_medical         patient_medical[]
@@ -86,6 +87,7 @@ model patient {
   payments                payment[]
 
   @@index([organisation_id], map: "idx_patient_organisation_id")
+  @@index([doctor_id], map: "idx_patient_doctor_id") // Added index for doctor_id
 }
 
 model patient_measurements {
@@ -158,6 +160,7 @@ model doctor {
   patient_appointment patient_appointment[]
   patient_visits      patient_visit[]
   prescriptions       prescription[]
+  patients            patient[]             // Added relation to patients
 
   @@index([organisation_id], map: "idx_doctor_organisation_id")
 }

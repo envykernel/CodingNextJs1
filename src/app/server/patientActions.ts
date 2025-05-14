@@ -13,7 +13,7 @@ const patientSchema = z.object({
   gender: z.string().min(1),
   status: z.string().min(1),
   birthdate: z.string().min(1),
-  doctor: z.string().optional(),
+  doctor_id: z.number().optional(),
   avatar: z.string().optional(),
   address: z.string().optional(),
   city: z.string().optional(),
@@ -127,7 +127,7 @@ export async function createPatient(data: any) {
       gender,
       status,
       phone_number,
-      doctor,
+      doctor_id,
       avatar,
       address,
       city,
@@ -139,7 +139,7 @@ export async function createPatient(data: any) {
 
     const data: any = { name, birthdate: new Date(birthdate), gender, status, phone_number }
 
-    if (doctor !== undefined) data.doctor = doctor
+    if (doctor_id !== undefined) data.doctor_id = doctor_id
     if (avatar !== undefined) data.avatar = avatar
     if (address !== undefined) data.address = address
     if (city !== undefined) data.city = city
@@ -164,7 +164,16 @@ export async function getPatientById(id: number) {
     include: {
       patient_measurements: true,
       patient_medical: true,
-      patient_medical_history: true
+      patient_medical_history: true,
+      doctor: {
+        select: {
+          id: true,
+          name: true,
+          specialty: true,
+          email: true,
+          phone_number: true
+        }
+      }
     }
   })
 
@@ -172,7 +181,6 @@ export async function getPatientById(id: number) {
 
   return {
     ...patient,
-    doctor: patient.doctor ?? undefined,
     status: patient.status ?? undefined,
     avatar: patient.avatar ?? undefined,
     address: patient.address ?? undefined,
@@ -264,7 +272,7 @@ export async function updatePatient(patientId: number, data: any) {
       name: data.name,
       birthdate: data.birthdate ? new Date(data.birthdate) : undefined,
       gender: data.gender,
-      doctor: data.doctor,
+      doctor_id: data.doctor_id,
       status: data.status,
       avatar: data.avatar,
       address: data.address,
@@ -284,7 +292,16 @@ export async function updatePatient(patientId: number, data: any) {
     include: {
       patient_measurements: true,
       patient_medical: true,
-      patient_medical_history: true
+      patient_medical_history: true,
+      doctor: {
+        select: {
+          id: true,
+          name: true,
+          specialty: true,
+          email: true,
+          phone_number: true
+        }
+      }
     }
   })
 
@@ -292,10 +309,8 @@ export async function updatePatient(patientId: number, data: any) {
     throw new Error('Patient not found after update')
   }
 
-  // Map null string fields to undefined and serialize measurements
   return {
     ...patientWithRelations,
-    doctor: patientWithRelations.doctor ?? undefined,
     status: patientWithRelations.status ?? undefined,
     avatar: patientWithRelations.avatar ?? undefined,
     address: patientWithRelations.address ?? undefined,

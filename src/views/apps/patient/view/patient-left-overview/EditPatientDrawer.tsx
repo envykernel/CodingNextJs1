@@ -266,7 +266,7 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                 >
                   {doctors &&
                     doctors.map(opt => (
-                      <MenuItem key={opt.id} value={opt.id}>
+                      <MenuItem key={opt.id} value={opt.name}>
                         {opt.name}
                       </MenuItem>
                     ))}
