@@ -11,7 +11,8 @@
         "city": "City",
         "medicalData": "Medical Data",
         "newPatientHighlight": "New patient created!",
-        "newLabel": "new"
+        "newLabel": "new",
+        "addNewPatient": "Add new patient"
     },
     "appointments": {
         "typeOptions": {

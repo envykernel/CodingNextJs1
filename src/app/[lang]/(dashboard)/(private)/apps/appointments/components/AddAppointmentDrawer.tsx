@@ -15,6 +15,9 @@ import Card from '@mui/material/Card'
 import { useSession } from 'next-auth/react'
 import Alert from '@mui/material/Alert'
 
+import AddPatientDrawer from '@/views/apps/patient/list/AddPatientDrawer'
+import type { PatientType } from '@/views/apps/patient/list/PatientListTable'
+
 import CustomTextField from '@core/components/mui/TextField'
 import { APPOINTMENT_STATUS_OPTIONS } from '../constants'
 
@@ -29,20 +32,18 @@ const appointmentSchema = z.object({
 
 type AppointmentFormType = z.infer<typeof appointmentSchema>
 
-type PatientOption = { id: string | number; name: string; phone?: string }
-
 type Props = {
   open: boolean
   handleClose: () => void
   doctors: { id: string | number; name: string }[]
-  patients: PatientOption[]
+  patients: PatientType[]
   dictionary: any
 }
 
 // Replace APPOINTMENT_TYPE_OPTIONS with keys for translation
 const APPOINTMENT_TYPE_OPTION_KEYS = ['Consultation', 'Medical Check', 'Clinical Procedure', 'Other']
 
-const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary }: Props) => {
+const AddAppointmentDrawer = ({ open, handleClose, doctors, patients: initialPatients, dictionary }: Props) => {
   const { data: session } = useSession()
 
   const {
@@ -68,6 +69,8 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
   const [selectedSlot, setSelectedSlot] = useState<{ day: string; time: string } | null>(null)
   const [availability, setAvailability] = useState<{ date: string; slots: string[] }[]>([])
   const [unavailableWarning, setUnavailableWarning] = useState<string | null>(null)
+  const [patients, setPatients] = useState<PatientType[]>(initialPatients)
+  const [addPatientOpen, setAddPatientOpen] = useState(false)
 
   // Reset form to default values every time the drawer is opened
   useEffect(() => {
@@ -192,6 +195,12 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
     }
   }, [appointmentDateValue, availability, dictionary])
 
+  // Add new patient option
+  const patientOptions: (PatientType | { id: string; name: string })[] = [
+    ...patients,
+    { id: '__add_new__', name: dictionary.patient?.addNewPatient || 'Add new patient' }
+  ]
+
   return (
     <Drawer
       open={open}
@@ -221,11 +230,17 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
                 render={({ field }) => (
                   <>
                     <Autocomplete
-                      options={patients}
+                      options={patientOptions}
                       getOptionLabel={option => option.name}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      onChange={(_, value) => field.onChange(value ? value.id : '')}
-                      value={patients.find(p => p.id === field.value) || null}
+                      isOptionEqualToValue={(option, value) => String(option.id) === String(value.id)}
+                      onChange={(_, value) => {
+                        if (value && value.id === '__add_new__') {
+                          setAddPatientOpen(true)
+                        } else {
+                          field.onChange(value ? value.id : '')
+                        }
+                      }}
+                      value={patients.find(p => String(p.id) === String(field.value)) || null}
                       renderInput={params => (
                         <CustomTextField
                           {...params}
@@ -235,21 +250,16 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
                           helperText={errors.patient_id ? dictionary.form?.required || 'Required' : ''}
                         />
                       )}
+                      renderOption={(props, option) => (
+                        <li
+                          {...props}
+                          key={option.id}
+                          style={option.id === '__add_new__' ? { fontWeight: 600, color: '#1976d2' } : {}}
+                        >
+                          {option.name}
+                        </li>
+                      )}
                     />
-                    {/* Show phone number if patient is selected */}
-                    {(() => {
-                      const selected = patients.find(p => p.id === field.value)
-
-                      if (selected && selected.phone) {
-                        return (
-                          <Typography variant='body2' color='text.secondary' className='mt-1'>
-                            {(dictionary.patient?.phone || 'Phone') + ': ' + selected.phone}
-                          </Typography>
-                        )
-                      }
-
-                      return null
-                    })()}
                   </>
                 )}
               />
@@ -490,6 +500,17 @@ const AddAppointmentDrawer = ({ open, handleClose, doctors, patients, dictionary
           </div>
         </form>
       </div>
+      <AddPatientDrawer
+        open={addPatientOpen}
+        handleClose={() => setAddPatientOpen(false)}
+        patientData={patients}
+        setData={setPatients}
+        onPatientCreated={(patient: PatientType) => {
+          setPatients(prev => [patient, ...prev])
+          setAddPatientOpen(false)
+          setValue('patient_id', String(patient.id))
+        }}
+      />
     </Drawer>
   )
 }

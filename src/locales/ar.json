@@ -11,7 +11,8 @@
         "city": "المدينة",
         "medicalData": "البيانات الطبية",
         "newPatientHighlight": "تم إنشاء مريض جديد!",
-        "newLabel": "جديد"
+        "newLabel": "جديد",
+        "addNewPatient": "إضافة مريض جديد"
     },
     "appointments": {
         "typeOptions": {

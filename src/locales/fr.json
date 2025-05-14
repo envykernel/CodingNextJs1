@@ -11,7 +11,8 @@
         "city": "Ville",
         "medicalData": "Données médicales",
         "newPatientHighlight": "Nouveau patient créé !",
-        "newLabel": "nouveau"
+        "newLabel": "nouveau",
+        "addNewPatient": "Ajouter un nouveau patient"
     },
     "appointments": {
         "typeOptions": {
