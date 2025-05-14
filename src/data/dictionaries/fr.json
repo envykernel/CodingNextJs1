@@ -193,7 +193,8 @@
     "enabled": "Activé",
     "disabled": "Désactivé",
     "blocked": "Bloqué",
-    "pending": "En attente"
+    "pending": "En attente",
+    "birthdate": "Date de naissance"
   },
   "patient": {
     "birthdate": "Date de naissance",

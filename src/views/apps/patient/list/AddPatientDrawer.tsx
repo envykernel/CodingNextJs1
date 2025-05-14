@@ -71,6 +71,10 @@ const AddUserDrawer = (props: Props) => {
   const dictionary = useTranslation()
   const { data: session } = useSession()
 
+  // Debug translation loading
+  console.log('dictionary.form:', dictionary.form)
+  console.log('dictionary.form.birthdate:', dictionary.form?.birthdate)
+
   // Hooks
   const {
     control,
@@ -207,7 +211,7 @@ const AddUserDrawer = (props: Props) => {
                   {...field}
                   type='date'
                   fullWidth
-                  label={dictionary.form.birthdate}
+                  label={dictionary.form.birthdate || 'Date of Birth'}
                   InputLabelProps={{ shrink: true }}
                   error={!!errors.birthdate}
                   helperText={errors.birthdate ? dictionary.form.required : ''}

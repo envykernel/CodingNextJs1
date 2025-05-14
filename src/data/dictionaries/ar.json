@@ -194,7 +194,8 @@
     "enabled": "مفعل",
     "disabled": "معطل",
     "blocked": "محظور",
-    "pending": "قيد الانتظار"
+    "pending": "قيد الانتظار",
+    "birthdate": "تاريخ الميلاد"
   },
   "patient": {
     "birthdate": "تاريخ الميلاد",
