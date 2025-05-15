@@ -61,7 +61,7 @@ model patient {
   name                    String                    @db.VarChar(100)
   birthdate               DateTime                  @db.Date
   gender                  String                    @db.VarChar(20)
-  doctor_id               Int?                      // Changed from doctor String? to doctor_id Int?
+  doctor_id               Int?
   status                  String?                   @db.VarChar(50)
   avatar                  String?                   @db.VarChar(255)
   address                 String?                   @db.VarChar(255)
@@ -74,20 +74,20 @@ model patient {
   created_at              DateTime?                 @default(now()) @db.Timestamptz(6)
   updated_at              DateTime?                 @default(now()) @db.Timestamptz(6)
   organisation_id         Int
+  invoices                invoice[]
   lab_test_orders         lab_test_order[]
+  doctor                  doctor?                   @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   organisation            organisation              @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  doctor                  doctor?                   @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction) // Added relation to doctor
   patient_appointments    patient_appointment[]     @relation("patient_appointment_patient_id")
   patient_measurements    patient_measurements[]
   patient_medical         patient_medical[]
   patient_medical_history patient_medical_history[]
   patient_visits          patient_visit[]
-  prescriptions           prescription[]
-  invoices                invoice[]
   payments                payment[]
+  prescriptions           prescription[]
 
   @@index([organisation_id], map: "idx_patient_organisation_id")
-  @@index([doctor_id], map: "idx_patient_doctor_id") // Added index for doctor_id
+  @@index([doctor_id], map: "idx_patient_doctor_id")
 }
 
 model patient_measurements {
@@ -157,10 +157,10 @@ model doctor {
   clinical_exams      clinical_exam[]
   organisation        organisation          @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   lab_test_orders     lab_test_order[]
+  patients            patient[]
   patient_appointment patient_appointment[]
   patient_visits      patient_visit[]
   prescriptions       prescription[]
-  patients            patient[]             // Added relation to patients
 
   @@index([organisation_id], map: "idx_doctor_organisation_id")
 }
@@ -184,6 +184,8 @@ model organisation {
   userInternals           UserInternal[]
   clinical_exams          clinical_exam[]
   doctor                  doctor[]
+  invoices                invoice[]
+  invoice_lines           invoice_line[]
   lab_test_orders         lab_test_order[]
   medications             medication[]
   patient                 patient[]
@@ -192,12 +194,10 @@ model organisation {
   patient_medical         patient_medical[]
   patient_medical_history patient_medical_history[]
   patient_visits          patient_visit[]
-  prescriptions           prescription[]
-  services                service[]
-  invoices                invoice[]
-  invoice_lines           invoice_line[]
   payments                payment[]
   payment_applications    payment_application[]
+  prescriptions           prescription[]
+  services                service[]
 }
 
 model patient_appointment {
@@ -245,6 +245,7 @@ model patient_visit {
   notes               String?
   created_at          DateTime?             @default(now()) @db.Timestamp(6)
   clinical_exams      clinical_exam[]
+  invoices            invoice[]
   lab_test_orders     lab_test_order[]
   patient_measurement patient_measurements?
   appointment         patient_appointment?  @relation(fields: [appointment_id], references: [id])
@@ -252,7 +253,6 @@ model patient_visit {
   organisation        organisation          @relation(fields: [organisation_id], references: [id])
   patient             patient               @relation(fields: [patient_id], references: [id])
   prescriptions       prescription[]
-  invoices            invoice[]
 
   @@index([patient_id])
   @@index([doctor_id])
@@ -372,43 +372,40 @@ model lab_test_order {
 }
 
 model service {
-  id               Int           @id @default(autoincrement())
-  organisation_id  Int
-  code             String        @unique @db.VarChar(20)  // Code court pour identification
-  name             String        @db.VarChar(100)
-  description      String?
-  amount           Decimal       @db.Decimal(10,2)
-  is_active        Boolean       @default(true)          // Pour désactiver sans supprimer
-  created_at       DateTime      @default(now())
-  updated_at       DateTime      @updatedAt
+  id              Int            @id @default(autoincrement())
+  organisation_id Int
+  code            String         @unique @db.VarChar(20)
+  name            String         @db.VarChar(100)
+  description     String?
+  amount          Decimal        @db.Decimal(10, 2)
+  is_active       Boolean        @default(true)
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
+  invoice_lines   invoice_line[]
+  organisation    organisation   @relation(fields: [organisation_id], references: [id])
 
-  organisation     organisation  @relation(fields: [organisation_id], references: [id])
-  invoice_lines    invoice_line[]
-
+  @@unique([organisation_id, code])
   @@index([organisation_id])
-  @@unique([organisation_id, code])  // Code unique par organisation
 }
 
 model invoice {
-  id               Int           @id @default(autoincrement())
+  id               Int                   @id @default(autoincrement())
   organisation_id  Int
   patient_id       Int
   visit_id         Int?
-  invoice_number   String        @unique @db.VarChar(30) // Numéro de facture unique
-  invoice_date     DateTime      @default(now())
-  due_date         DateTime?                            // Date d'échéance
-  status           InvoiceStatus @default(PENDING)      // PENDING, PAID, PARTIAL, CANCELLED
-  total_amount     Decimal       @db.Decimal(12,2)
+  invoice_number   String                @unique @db.VarChar(30)
+  invoice_date     DateTime              @default(now())
+  due_date         DateTime?
+  status           InvoiceStatus         @default(PENDING)
+  total_amount     Decimal               @db.Decimal(12, 2)
   notes            String?
-  created_at       DateTime      @default(now())
-  updated_at       DateTime      @updatedAt
-
-  organisation     organisation  @relation(fields: [organisation_id], references: [id])
-  patient          patient       @relation(fields: [patient_id], references: [id])
-  visit            patient_visit? @relation(fields: [visit_id], references: [id])
+  created_at       DateTime              @default(now())
+  updated_at       DateTime              @updatedAt
+  organisation     organisation          @relation(fields: [organisation_id], references: [id])
+  patient          patient               @relation(fields: [patient_id], references: [id])
+  visit            patient_visit?        @relation(fields: [visit_id], references: [id])
   lines            invoice_line[]
-  payments         payment_application[] @relation("InvoicePayments")
-  payment_applications payment_application[] @relation("InvoicePaymentApplications")
+  payment_apps     payment_application[] @relation("InvoicePaymentApps")
 
   @@index([organisation_id])
   @@index([patient_id])
@@ -417,21 +414,19 @@ model invoice {
 }
 
 model invoice_line {
-  id               Int           @id @default(autoincrement())
-  organisation_id  Int
-  invoice_id       Int
-  service_id       Int
-  description      String?
-  quantity         Int           @default(1)
-  unit_price       Decimal       @db.Decimal(10,2)
-  line_total       Decimal       @db.Decimal(12,2)
-  created_at       DateTime      @default(now())
-
-  organisation     organisation  @relation(fields: [organisation_id], references: [id])
-  invoice          invoice       @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
-  service          service       @relation(fields: [service_id], references: [id])
-  payment_apps     payment_application[] @relation("InvoiceLinePaymentApps")
-  payment_applications payment_application[] @relation("InvoiceLinePaymentApplications")
+  id              Int                   @id @default(autoincrement())
+  organisation_id Int
+  invoice_id      Int
+  service_id      Int
+  description     String?
+  quantity        Int                   @default(1)
+  unit_price      Decimal               @db.Decimal(10, 2)
+  line_total      Decimal               @db.Decimal(12, 2)
+  created_at      DateTime              @default(now())
+  invoice         invoice               @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  organisation    organisation          @relation(fields: [organisation_id], references: [id])
+  service         service               @relation(fields: [service_id], references: [id])
+  payment_apps    payment_application[] @relation("InvoiceLinePaymentApps")
 
   @@index([organisation_id])
   @@index([invoice_id])
@@ -439,21 +434,20 @@ model invoice_line {
 }
 
 model payment {
-  id               Int           @id @default(autoincrement())
-  organisation_id  Int
-  patient_id       Int
-  receipt_number   String        @unique @db.VarChar(30) // Numéro de reçu
-  amount           Decimal       @db.Decimal(12,2)
-  payment_date     DateTime      @default(now())
-  payment_method   PaymentMethod @default(CASH)         // CASH, CARD, BANK_TRANSFER, etc.
-  transaction_id   String?       @db.VarChar(100)       // Référence transaction
-  notes            String?
-  created_at       DateTime      @default(now())
-  updated_at       DateTime      @updatedAt
-
-  organisation     organisation  @relation(fields: [organisation_id], references: [id])
-  patient          patient       @relation(fields: [patient_id], references: [id])
-  applications     payment_application[]
+  id              Int                   @id @default(autoincrement())
+  organisation_id Int
+  patient_id      Int
+  receipt_number  String                @unique @db.VarChar(30)
+  amount          Decimal               @db.Decimal(12, 2)
+  payment_date    DateTime              @default(now())
+  payment_method  PaymentMethod         @default(CASH)
+  transaction_id  String?               @db.VarChar(100)
+  notes           String?
+  created_at      DateTime              @default(now())
+  updated_at      DateTime              @updatedAt
+  organisation    organisation          @relation(fields: [organisation_id], references: [id])
+  patient         patient               @relation(fields: [patient_id], references: [id])
+  applications    payment_application[]
 
   @@index([organisation_id])
   @@index([patient_id])
@@ -466,15 +460,12 @@ model payment_application {
   payment_id       Int
   invoice_id       Int
   invoice_line_id  Int?
-  amount_applied   Decimal       @db.Decimal(10,2)
+  amount_applied   Decimal       @db.Decimal(10, 2)
   applied_date     DateTime      @default(now())
-
+  invoice_line     invoice_line? @relation("InvoiceLinePaymentApps", fields: [invoice_line_id], references: [id], onDelete: Cascade)
+  invoice          invoice       @relation("InvoicePaymentApps", fields: [invoice_id], references: [id])
   organisation     organisation  @relation(fields: [organisation_id], references: [id])
   payment          payment       @relation(fields: [payment_id], references: [id], onDelete: Cascade)
-  invoice          invoice       @relation("InvoicePayments", fields: [invoice_id], references: [id], map: "payment_application_invoice_payments_fkey")
-  invoice_payment_application invoice @relation("InvoicePaymentApplications", fields: [invoice_id], references: [id], map: "payment_application_invoice_payment_applications_fkey")
-  invoice_line     invoice_line? @relation("InvoiceLinePaymentApps", fields: [invoice_line_id], references: [id], onDelete: Cascade, map: "payment_application_invoice_line_apps_fkey")
-  invoice_line_payment_applications invoice_line? @relation("InvoiceLinePaymentApplications", fields: [invoice_line_id], references: [id], onDelete: Cascade, map: "payment_application_invoice_line_payment_applications_fkey")
 
   @@index([organisation_id])
   @@index([payment_id])
