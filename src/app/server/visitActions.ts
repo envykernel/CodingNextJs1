@@ -4,13 +4,29 @@ import type { PrescriptionFormValues } from '@/components/prescriptions/Prescrip
 
 export async function getVisitsByAppointmentIds(appointmentIds: number[]) {
   const visits = await prisma.patient_visit.findMany({
-    where: { appointment_id: { in: appointmentIds } }
+    where: { appointment_id: { in: appointmentIds } },
+    select: {
+      id: true,
+      appointment_id: true,
+      visit_date: true,
+      start_time: true,
+      end_time: true,
+      status: true,
+      notes: true,
+      created_at: true
+    }
   })
 
   const map: Record<number, any> = {}
 
   visits.forEach(v => {
-    if (v.appointment_id) map[v.appointment_id] = v
+    if (v.appointment_id) {
+      map[v.appointment_id] = {
+        ...v,
+        visit_date: v.visit_date ? v.visit_date.toISOString().split('T')[0] : null,
+        created_at: v.created_at ? v.created_at.toISOString() : null
+      }
+    }
   })
 
   return map
@@ -34,7 +50,18 @@ export async function getVisitById(id: number) {
     }
   })
 
-  return prismaDecimalToNumber(visit)
+  if (!visit) return null
+
+  // Convert dates to ISO strings and handle decimal values
+  const serializedVisit = {
+    ...visit,
+    visit_date: visit.visit_date ? visit.visit_date.toISOString().split('T')[0] : null,
+    start_time: visit.start_time, // Already a string in HH:mm format
+    end_time: visit.end_time, // Already a string in HH:mm format
+    created_at: visit.created_at ? visit.created_at.toISOString() : null
+  }
+
+  return prismaDecimalToNumber(serializedVisit)
 }
 
 export async function savePrescriptionForVisit(visitId: number, data: PrescriptionFormValues) {

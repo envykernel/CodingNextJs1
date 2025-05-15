@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
     const visitDate = appointmentDate.toISOString().split('T')[0] // YYYY-MM-DD
     const startTime = appointmentDate.toTimeString().slice(0, 5) // HH:mm
 
+    // Calculate end time by adding 30 minutes to start time
     const endTime = new Date(new Date(appointmentDate).getTime() + 30 * 60 * 1000).toTimeString().slice(0, 5) // HH:mm
 
     const visit = await prisma.patient_visit.create({
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
         visit_date: new Date(visitDate),
         start_time: startTime,
         end_time: endTime,
-        status: 'completed',
+        status: 'scheduled',
         notes: appointment.notes || null
       }
     })
@@ -70,10 +71,10 @@ export async function GET(req: NextRequest) {
     // Serialize all date fields to ISO strings and return relevant patient/doctor fields
     const serializedVisit = {
       ...visit,
-      arrival_time: visit.arrival_time ? new Date(visit.arrival_time).toISOString() : null,
-      start_time: visit.start_time ? new Date(visit.start_time).toISOString() : null,
-      end_time: visit.end_time ? new Date(visit.end_time).toISOString() : null,
-      created_at: visit.created_at ? new Date(visit.created_at).toISOString() : null,
+      visit_date: visit.visit_date ? visit.visit_date.toISOString().split('T')[0] : null,
+      start_time: visit.start_time, // Already a string in HH:mm format
+      end_time: visit.end_time, // Already a string in HH:mm format
+      created_at: visit.created_at ? visit.created_at.toISOString() : null,
       patient: visit.patient
         ? {
             name: visit.patient.name,
