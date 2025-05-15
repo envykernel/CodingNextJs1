@@ -22,9 +22,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Appointment not found' }, { status: 404 })
     }
 
-    // Set start_time to appointment_date, end_time to 30 minutes after
-    const startTime = appointment.appointment_date
-    const endTime = new Date(new Date(startTime).getTime() + 30 * 60 * 1000)
+    // Extract date and time from appointment_date
+    const appointmentDate = appointment.appointment_date
+    const visitDate = appointmentDate.toISOString().split('T')[0] // YYYY-MM-DD
+    const startTime = appointmentDate.toTimeString().slice(0, 5) // HH:mm
+
+    const endTime = new Date(new Date(appointmentDate).getTime() + 30 * 60 * 1000).toTimeString().slice(0, 5) // HH:mm
 
     const visit = await prisma.patient_visit.create({
       data: {
@@ -32,7 +35,7 @@ export async function POST(req: NextRequest) {
         patient: { connect: { id: appointment.patient_id } },
         doctor: appointment.doctor_id ? { connect: { id: appointment.doctor_id } } : undefined,
         organisation: { connect: { id: appointment.organisation_id } },
-        arrival_time: new Date(),
+        visit_date: new Date(visitDate),
         start_time: startTime,
         end_time: endTime,
         status: 'completed',

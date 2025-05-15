@@ -239,9 +239,9 @@ model patient_visit {
   patient_id          Int
   doctor_id           Int?
   organisation_id     Int
-  arrival_time        DateTime?
-  start_time          DateTime?
-  end_time            DateTime?
+  visit_date          DateTime              @db.Date
+  start_time          String                @db.VarChar(5)  // Format: "HH:mm"
+  end_time            String                @db.VarChar(5)  // Format: "HH:mm"
   status              String?               @default("completed") @db.VarChar(50)
   notes               String?
   created_at          DateTime?             @default(now()) @db.Timestamp(6)
