@@ -163,7 +163,7 @@ export default function PrescriptionForm({
     setValue('medications', [
       ...currentMedications,
       {
-        id: currentMedications.length + 1,
+        id: Date.now(),
         name: '',
         dosage: '',
         frequency: '',

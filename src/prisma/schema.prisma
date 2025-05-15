@@ -242,7 +242,7 @@ model patient_visit {
   visit_date          DateTime              @db.Date
   start_time          String                @db.VarChar(5)  // Format: "HH:mm"
   end_time            String                @db.VarChar(5)  // Format: "HH:mm"
-  status              String?               @default("completed") @db.VarChar(50)
+  status              String                @default("scheduled") // possible values: scheduled, in_progress, completed, cancelled, no_show
   notes               String?
   created_at          DateTime?             @default(now()) @db.Timestamp(6)
   clinical_exams      clinical_exam[]
