@@ -12,6 +12,7 @@ interface ClinicalExamFormProps {
   visitId: number
   dictionary: any
   initialValues?: any
+  onVisitUpdate?: (updatedVisit: any) => void
 }
 
 const initialState = {
@@ -55,11 +56,21 @@ const sectionKeys = [
   'plan'
 ]
 
-const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary, initialValues }) => {
+const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary, initialValues, onVisitUpdate }) => {
   const t = dictionary.clinicalExamForm
   const tSections = t.sections
 
   const [selectedSections, setSelectedSections] = useState<string[]>(generalSectionKeys)
+
+  // Update form when initialValues change
+  useEffect(() => {
+    if (initialValues) {
+      setForm({
+        ...initialState,
+        ...Object.fromEntries(Object.entries(initialValues).map(([k, v]) => [k, v == null ? '' : v]))
+      })
+    }
+  }, [initialValues])
 
   const [form, setForm] = useState(() => {
     if (initialValues) {
@@ -85,7 +96,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
   }, [success])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -101,11 +112,22 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
         body: JSON.stringify({ ...form, visit_id: visitId })
       })
 
+      const data = await res.json()
+
       if (res.ok) {
         setSuccess(true)
-      } else {
-        const data = await res.json()
 
+        // Fetch updated visit data and update parent
+        if (onVisitUpdate) {
+          const visitRes = await fetch(`/api/visits/${visitId}`)
+
+          if (visitRes.ok) {
+            const { visit } = await visitRes.json()
+
+            onVisitUpdate(visit)
+          }
+        }
+      } else {
         setError(data.error || 'Error')
       }
     } catch (err: any) {
@@ -130,11 +152,6 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             fullWidth
           />
         </div>
-        {success && (
-          <Alert icon={<CheckCircleIcon fontSize='inherit' />} severity='success' sx={{ mb: 2 }}>
-            {t.savedSuccessfully}
-          </Alert>
-        )}
         <Typography variant='h6' className='mb-4'>
           {t.title}
         </Typography>
@@ -310,16 +327,25 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
               </Grid>
             )}
           </Grid>
-          <div className='flex gap-4 mt-4'>
-            <Button type='submit' variant='contained' color='primary' disabled={loading}>
-              {loading ? t.saving : t.save}
-            </Button>
-            {error && (
-              <Typography color='error.main' sx={{ ml: 2 }}>
-                {error}
-              </Typography>
+          <Grid container spacing={2} alignItems='center' justifyContent='flex-end' className='mt-4'>
+            {success && (
+              <Grid item>
+                <Alert icon={<CheckCircleIcon fontSize='inherit' />} severity='success'>
+                  {t.savedSuccessfully}
+                </Alert>
+              </Grid>
             )}
-          </div>
+            <Grid item>
+              <Button type='submit' variant='contained' color='primary' disabled={loading}>
+                {loading ? t.saving : t.save}
+              </Button>
+            </Grid>
+            {error && (
+              <Grid item>
+                <Typography color='error.main'>{error}</Typography>
+              </Grid>
+            )}
+          </Grid>
         </form>
       </CardContent>
     </Card>

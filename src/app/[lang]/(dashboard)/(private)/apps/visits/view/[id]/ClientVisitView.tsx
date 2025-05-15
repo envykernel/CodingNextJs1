@@ -121,7 +121,12 @@ export default function ClientVisitView({ data: initialData }: ClientVisitViewPr
       />
     ),
     clinicalExam: (
-      <ClinicalExamForm visitId={visitData.id} dictionary={dictionary} initialValues={visitData.clinicalExam} />
+      <ClinicalExamForm
+        visitId={visitData.id}
+        dictionary={dictionary}
+        initialValues={visitData.clinical_exams?.[0]}
+        onVisitUpdate={handleVisitUpdate}
+      />
     ),
     prescriptions: (
       <PrescriptionForm
