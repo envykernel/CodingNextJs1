@@ -72,7 +72,7 @@ export type PatientType = {
   name: string
   birthdate: string | Date
   gender: string
-  doctor?: string
+  doctor?: { id: number; name: string; specialty?: string; email?: string; phone_number?: string } | null
   status?: string
   avatar?: string
   address?: string
@@ -173,28 +173,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
   const [newPatientId, setNewPatientId] = useState<number | null>(null)
 
   // Use mock data if tableData is not provided
-  const [data, setData] = useState<PatientType[]>(
-    tableData || [
-      {
-        id: 1,
-        name: 'John Doe',
-        birthdate: '1980-01-01',
-        gender: 'Male',
-        doctor: 'Dr. Smith',
-        status: 'admitted',
-        avatar: ''
-      },
-      {
-        id: 2,
-        name: 'Jane Smith',
-        birthdate: '1965-05-15',
-        gender: 'Female',
-        doctor: 'Dr. Brown',
-        status: 'underObservation',
-        avatar: ''
-      }
-    ]
-  )
+  const [data, setData] = useState<PatientType[]>(tableData || [])
 
   const [filteredData, setFilteredData] = useState(data)
   const [globalFilter, setGlobalFilter] = useState('')
@@ -279,6 +258,11 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
       columnHelper.accessor('gender', {
         header: 'Gender',
         cell: ({ row }) => <Typography>{row.original.gender || '-'}</Typography>
+      }),
+      columnHelper.display({
+        id: 'doctor',
+        header: dictionary.form.doctor,
+        cell: ({ row }) => <Typography>{row.original.doctor?.name || '-'}</Typography>
       }),
       columnHelper.accessor('status', {
         header: 'Status',

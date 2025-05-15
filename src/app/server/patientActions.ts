@@ -79,7 +79,16 @@ export async function getPatientList(
       include: {
         patient_measurements: true,
         patient_medical: true,
-        patient_medical_history: true
+        patient_medical_history: true,
+        doctor: {
+          select: {
+            id: true,
+            name: true,
+            specialty: true,
+            email: true,
+            phone_number: true
+          }
+        }
       }
     }),
     prisma.patient.count({ where })

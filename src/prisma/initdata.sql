@@ -600,6 +600,10 @@ VALUES
   (1, 'BIOPSIE_ECHO', 'Biopsie échoguidée', 'Biopsie sous contrôle échographique', 250.00, true, NOW(), NOW()),
   (1, 'DRAINAGE_ECHO', 'Drainage échoguidé', 'Drainage de collection sous échographie', 300.00, true, NOW(), NOW());
 
+-- Insert UserInternal data
+INSERT INTO "UserInternal" (name, email, "isApproved", "organisationId", "createdAt", "updatedAt") VALUES
+  ('Mohammed Ben Said', 'bensaidmaroc@gmail.com', true, 1, NOW(), NOW());
+
 -- After inserting all patients
 SELECT setval('patient_id_seq', (SELECT MAX(id) FROM patient));
 COMMIT;
