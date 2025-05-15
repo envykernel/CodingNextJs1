@@ -1,12 +1,14 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import Tooltip from '@mui/material/Tooltip'
 
 import { useTranslation } from '@/contexts/translationContext'
 
@@ -18,6 +20,10 @@ interface Appointment {
   notes?: string
   doctor?: {
     name?: string
+  }
+  visit?: {
+    id: number
+    status: string
   }
 }
 
@@ -90,11 +96,13 @@ const AppointmentCard = ({
   appointment: Appointment
   t: any
   onEdit?: (appointment: Appointment) => void
-}) => (
-  <Card variant='outlined' className='mb-4 shadow-sm'>
-    <CardContent className='flex flex-col gap-2 p-4'>
-      <div className='flex flex-row items-center mb-1 w-full'>
-        <div className='flex flex-row gap-6 flex-1'>
+}) => {
+  const router = useRouter()
+
+  return (
+    <Card variant='outlined' className='mb-4 shadow-sm'>
+      <CardContent className='flex flex-col gap-2 p-4'>
+        <div className='flex flex-row gap-6'>
           <div className='flex flex-col'>
             <Typography variant='caption' color='text.secondary' className='uppercase tracking-wide'>
               {t.patient.date || t.navigation.date || 'Date'}
@@ -112,32 +120,50 @@ const AppointmentCard = ({
             </Typography>
           </div>
         </div>
-        <Button
-          size='small'
-          variant='outlined'
-          color='inherit'
-          aria-label={t.navigation.edit || 'Edit'}
-          onClick={() => onEdit && onEdit(appointment)}
-          style={{ minWidth: 0, padding: 6 }}
-          className='ml-2 hover:border-primary hover:text-primary'
-        >
-          <EditOutlinedIcon fontSize='small' />
-        </Button>
+        <div className='flex flex-row items-center gap-2'>
+          <Typography variant='caption' color='text.secondary' className='uppercase tracking-wide'>
+            {t.patient.doctor || t.navigation.doctor || 'Doctor'}
+          </Typography>
+          <Typography variant='body2' className='font-semibold'>
+            {appointment.doctor?.name || '-'}
+          </Typography>
+        </div>
+        <div className='flex justify-start items-center'>
+          <Chip label={appointment.status || '-'} size='small' color={getStatusColor(appointment.status)} />
+        </div>
+      </CardContent>
+      <Divider />
+      <div className='flex justify-end gap-2 p-2'>
+        {appointment.visit?.id && (
+          <Tooltip title={t.goToVisit || 'Go to Visit'}>
+            <Button
+              size='small'
+              variant='outlined'
+              color='success'
+              onClick={() => router.push(`/fr/apps/visits/view/${appointment.visit!.id}`)}
+              className='hover:text-success hover:border-success'
+              startIcon={<i className='tabler-clipboard-check text-lg' />}
+            >
+              {t.goToVisit || 'Visit'}
+            </Button>
+          </Tooltip>
+        )}
+        <Tooltip title={t.navigation.edit || 'Edit'}>
+          <Button
+            size='small'
+            variant='outlined'
+            color='inherit'
+            onClick={() => onEdit && onEdit(appointment)}
+            className='hover:text-primary hover:border-primary'
+            startIcon={<i className='tabler-edit text-lg' />}
+          >
+            {t.navigation.edit || 'Edit'}
+          </Button>
+        </Tooltip>
       </div>
-      <div className='flex flex-row items-center gap-2 mb-1'>
-        <Typography variant='caption' color='text.secondary' className='uppercase tracking-wide'>
-          {t.patient.doctor || t.navigation.doctor || 'Doctor'}
-        </Typography>
-        <Typography variant='body2' className='font-semibold'>
-          {appointment.doctor?.name || '-'}
-        </Typography>
-      </div>
-      <div className='flex justify-start items-center gap-2 mt-4'>
-        <Chip label={appointment.status || '-'} size='small' color={getStatusColor(appointment.status)} />
-      </div>
-    </CardContent>
-  </Card>
-)
+    </Card>
+  )
+}
 
 const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
   const t = useTranslation()

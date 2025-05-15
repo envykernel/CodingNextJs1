@@ -212,12 +212,27 @@ export async function getAppointmentsByPatientId(patient_id: number) {
     where: { patient_id },
     include: {
       doctor: true,
-      organisation: true
+      organisation: true,
+      patient_visits: {
+        select: {
+          id: true,
+          status: true
+        },
+        take: 1,
+        orderBy: {
+          created_at: 'desc'
+        }
+      }
     },
     orderBy: { appointment_date: 'desc' }
   })
 
-  return appointments
+  // Map the appointments to include visit information
+  return appointments.map(appointment => ({
+    ...appointment,
+    visit: appointment.patient_visits[0] || undefined,
+    patient_visits: undefined // Remove the array since we only need the latest visit
+  }))
 }
 
 // Fetch paginated appointments for the appointments list
