@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     let measurement
 
     if (existing) {
-      // Update existing
+      // Update existing measurement
       measurement = await prisma.patient_measurements.update({
         where: { visit_id: visit_id },
         data: {
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Invalid visit_id' }, { status: 400 })
       }
 
-      // Create new
+      // Create new measurement
       measurement = await prisma.patient_measurements.create({
         data: {
           visit_id,
@@ -76,6 +76,25 @@ export async function POST(req: NextRequest) {
         }
       })
     }
+
+    return NextResponse.json({ measurement }, { status: 200 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url)
+    const visitId = searchParams.get('visit_id')
+
+    if (!visitId) {
+      return NextResponse.json({ error: 'Missing visit_id' }, { status: 400 })
+    }
+
+    const measurement = await prisma.patient_measurements.findFirst({
+      where: { visit_id: Number(visitId) }
+    })
 
     return NextResponse.json({ measurement }, { status: 200 })
   } catch (error: any) {

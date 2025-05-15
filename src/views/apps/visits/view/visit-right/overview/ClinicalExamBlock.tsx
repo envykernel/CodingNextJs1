@@ -21,7 +21,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
   if (!exam) return null
 
   return (
-    <Accordion sx={{ mt: 2 }}>
+    <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <div className='flex items-center gap-3'>
           <i className='tabler-clipboard-text text-xl text-primary' />
@@ -29,7 +29,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
         </div>
       </AccordionSummary>
       <AccordionDetails>
-        <div className='flex flex-col gap-4'>
+        <div className='flex flex-col gap-3'>
           {/* Chief Complaint */}
           {isFilled(exam.chief_complaint) && (
             <Accordion>

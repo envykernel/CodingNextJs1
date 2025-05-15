@@ -35,7 +35,7 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
   const endTimeLabel = isVisitEnded ? t.endTime || 'End Time' : t.estimatedEndTime || 'Estimated End Time'
 
   return (
-    <Grid container spacing={6}>
+    <Grid container spacing={3}>
       {/* Visit Details Block */}
       <Grid item xs={12}>
         <Card>
@@ -110,17 +110,31 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
 
       {/* Other Blocks */}
       <Grid item xs={12}>
-        {visitData.patient_measurement && <PatientMeasurementBlock measurement={visitData.patient_measurement} />}
-      </Grid>
-
-      <Grid item xs={12}>
-        {visitData.clinical_exams && visitData.clinical_exams.length > 0 && (
-          <ClinicalExamBlock exam={visitData.clinical_exams[0]} />
+        {visitData.patient_measurement ? (
+          <PatientMeasurementBlock measurement={visitData.patient_measurement} />
+        ) : (
+          <Card>
+            <CardContent>
+              <Typography color='text.secondary'>{t.noMeasurements || 'No measurements recorded'}</Typography>
+            </CardContent>
+          </Card>
         )}
       </Grid>
 
       <Grid item xs={12}>
-        {visitData.prescriptions && visitData.prescriptions.length > 0 && (
+        {visitData.clinical_exams && visitData.clinical_exams.length > 0 ? (
+          <ClinicalExamBlock exam={visitData.clinical_exams[0]} />
+        ) : (
+          <Card>
+            <CardContent>
+              <Typography color='text.secondary'>{t.noClinicalExam || 'No clinical exam recorded'}</Typography>
+            </CardContent>
+          </Card>
+        )}
+      </Grid>
+
+      <Grid item xs={12}>
+        {visitData.prescriptions && visitData.prescriptions.length > 0 ? (
           <PrescriptionBlock
             prescription={{
               id: visitData.prescriptions[0].id,
@@ -138,6 +152,12 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
             }}
             dictionary={dictionary}
           />
+        ) : (
+          <Card>
+            <CardContent>
+              <Typography color='text.secondary'>{t.noPrescriptions || 'No prescriptions recorded'}</Typography>
+            </CardContent>
+          </Card>
         )}
       </Grid>
 

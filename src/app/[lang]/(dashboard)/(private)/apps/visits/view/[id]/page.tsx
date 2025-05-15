@@ -11,7 +11,8 @@ interface VisitPageProps {
 }
 
 export default async function VisitPage({ params }: VisitPageProps) {
-  const { id, lang } = params
+  const paramsPromise = Promise.resolve(params)
+  const { id, lang } = await paramsPromise
   const visitId = parseInt(id)
 
   const [visitData, dictionary] = await Promise.all([getVisitById(visitId), getDictionary(lang)])

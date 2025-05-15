@@ -10,6 +10,7 @@ interface PatientMeasurementsFormProps {
   visitId: number
   dictionary: any
   initialValues?: any
+  onVisitUpdate?: (updatedVisit: any) => void
 }
 
 const initialState = {
@@ -24,7 +25,12 @@ const initialState = {
   notes: ''
 }
 
-const PatientMeasurementsForm: React.FC<PatientMeasurementsFormProps> = ({ visitId, dictionary, initialValues }) => {
+const PatientMeasurementsForm: React.FC<PatientMeasurementsFormProps> = ({
+  visitId,
+  dictionary,
+  initialValues,
+  onVisitUpdate
+}) => {
   const t = dictionary.patientMeasurementsForm
 
   const [form, setForm] = useState(() => {
@@ -50,6 +56,30 @@ const PatientMeasurementsForm: React.FC<PatientMeasurementsFormProps> = ({ visit
     }
   }, [success])
 
+  useEffect(() => {
+    // Fetch measurement when component mounts
+    const fetchMeasurement = async () => {
+      try {
+        const res = await fetch(`/api/patient-measurements?visit_id=${visitId}`)
+
+        if (res.ok) {
+          const data = await res.json()
+
+          if (data.measurement) {
+            setForm({
+              ...initialState,
+              ...Object.fromEntries(Object.entries(data.measurement).map(([k, v]) => [k, v == null ? '' : v]))
+            })
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching measurement:', err)
+      }
+    }
+
+    fetchMeasurement()
+  }, [visitId])
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
@@ -69,6 +99,17 @@ const PatientMeasurementsForm: React.FC<PatientMeasurementsFormProps> = ({ visit
 
       if (res.ok) {
         setSuccess(true)
+
+        // Fetch updated visit data and update parent
+        if (onVisitUpdate) {
+          const visitRes = await fetch(`/api/visits/${visitId}`)
+
+          if (visitRes.ok) {
+            const { visit } = await visitRes.json()
+
+            onVisitUpdate(visit)
+          }
+        }
       } else {
         const data = await res.json()
 
@@ -84,14 +125,15 @@ const PatientMeasurementsForm: React.FC<PatientMeasurementsFormProps> = ({ visit
   return (
     <Card className='mt-6'>
       <CardContent>
-        {success && (
-          <Alert icon={<CheckCircleIcon fontSize='inherit' />} severity='success' sx={{ mb: 2 }}>
-            {t.savedSuccessfully}
+        {error && (
+          <Alert severity='error' sx={{ mb: 2 }}>
+            {error}
           </Alert>
         )}
         <Typography variant='h6' className='mb-4'>
           {t.title}
         </Typography>
+
         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
           <Grid container spacing={2}>
             <Grid item xs={6}>
@@ -190,15 +232,21 @@ const PatientMeasurementsForm: React.FC<PatientMeasurementsFormProps> = ({ visit
               />
             </Grid>
           </Grid>
-          <div className='flex gap-4 mt-4'>
-            <Button type='submit' variant='contained' color='primary' disabled={loading}>
-              {loading ? t.saving : t.save}
-            </Button>
-            {error && (
-              <Typography color='error.main' sx={{ ml: 2 }}>
-                {error}
-              </Typography>
-            )}
+          <div className='flex justify-end mt-4'>
+            <Grid container spacing={2} alignItems='center' justifyContent='flex-end'>
+              {success && (
+                <Grid item>
+                  <Alert icon={<CheckCircleIcon fontSize='inherit' />} severity='success'>
+                    {t.savedSuccessfully}
+                  </Alert>
+                </Grid>
+              )}
+              <Grid item>
+                <Button type='submit' variant='contained' disabled={loading}>
+                  {loading ? t.saving || 'Saving...' : t.save || 'Save'}
+                </Button>
+              </Grid>
+            </Grid>
           </div>
         </form>
       </CardContent>

@@ -37,7 +37,7 @@ const PatientMeasurementBlock: React.FC<PatientMeasurementBlockProps> = ({ measu
   ]
 
   return (
-    <Accordion sx={{ mt: 2 }}>
+    <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <div className='flex items-center gap-3'>
           <i className='tabler-activity text-xl text-primary' />
