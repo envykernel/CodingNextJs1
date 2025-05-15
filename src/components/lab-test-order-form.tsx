@@ -13,9 +13,9 @@ import {
   ListItemText,
   Alert,
   Grid,
-  Box
+  Box,
+  CircularProgress
 } from '@mui/material'
-import CircularProgress from '@mui/material/CircularProgress'
 
 interface LabTestType {
   id: number
@@ -50,9 +50,12 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
   const [success, setSuccess] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
 
   const fetchAndPrefillOrders = useCallback(() => {
-    fetch(`/api/lab-test-orders-by-visit?visitId=${visitId}`)
+    setInitialLoading(true)
+
+    return fetch(`/api/lab-test-orders-by-visit?visitId=${visitId}`)
       .then(res => res.json())
       .then(orders => {
         if (!Array.isArray(orders)) return
@@ -80,17 +83,18 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
           return details
         })
       })
+      .finally(() => setInitialLoading(false))
   }, [visitId])
 
+  // Only fetch data when component mounts
   useEffect(() => {
-    fetchAndPrefillOrders()
-  }, [fetchAndPrefillOrders])
-
-  useEffect(() => {
-    fetch('/api/lab-test-types')
-      .then(res => res.json())
-      .then(setTestTypes)
-  }, [])
+    Promise.all([
+      fetchAndPrefillOrders(),
+      fetch('/api/lab-test-types')
+        .then(res => res.json())
+        .then(setTestTypes)
+    ]).finally(() => setInitialLoading(false))
+  }, []) // Remove fetchAndPrefillOrders from dependencies
 
   // Reset details for removed tests
   useEffect(() => {
@@ -155,7 +159,8 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
 
       if (res.ok) {
         setSuccess(dictionary?.testForm?.savedSuccessfully || 'Test order saved successfully!')
-        fetchAndPrefillOrders()
+
+        // Don't reload the data, just update the success message
       } else {
         setError(dictionary?.testForm?.error || 'Error saving lab test orders')
       }
@@ -170,17 +175,12 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
     <Card>
       <CardHeader title={title} />
       <CardContent>
-        {loading ? (
+        {initialLoading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
             <CircularProgress />
           </Box>
         ) : (
           <>
-            {success && (
-              <Alert severity='success' sx={{ mb: 4 }}>
-                {success}
-              </Alert>
-            )}
             {error && (
               <Alert severity='error' sx={{ mb: 2 }}>
                 {error}
@@ -249,7 +249,23 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
                   ))}
                 </List>
               )}
-              <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
+                {success && (
+                  <Alert
+                    severity='success'
+                    sx={{
+                      flex: 1,
+                      mb: 0,
+                      '& .MuiAlert-message': {
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }
+                    }}
+                  >
+                    {success}
+                  </Alert>
+                )}
                 <Button
                   type='button'
                   variant='outlined'
@@ -259,7 +275,13 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
                 >
                   {dictionary?.navigation?.cancel || 'Cancel'}
                 </Button>
-                <Button type='submit' variant='contained' color='primary' disabled={loading}>
+                <Button
+                  type='submit'
+                  variant='contained'
+                  color='primary'
+                  disabled={loading}
+                  startIcon={loading ? <i className='tabler-loader animate-spin' /> : undefined}
+                >
                   {loading ? dictionary?.testForm?.saving || 'Saving...' : submitButtonText}
                 </Button>
               </Box>

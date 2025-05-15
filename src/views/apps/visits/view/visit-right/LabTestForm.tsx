@@ -230,7 +230,13 @@ const LabTestForm: React.FC<LabTestFormProps> = ({ visitId, dictionary, initialV
             minRows={2}
           />
           <div className='flex gap-4 mt-4'>
-            <Button type='submit' variant='contained' color='primary' disabled={loading}>
+            <Button
+              type='submit'
+              variant='contained'
+              color='primary'
+              disabled={loading}
+              startIcon={loading ? <i className='tabler-loader animate-spin' /> : undefined}
+            >
               {loading ? t.saving || 'Saving...' : t.save || 'Save'}
             </Button>
             {error && (
