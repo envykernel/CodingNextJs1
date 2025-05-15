@@ -9,14 +9,15 @@ import PatientViewClient from './PatientViewClient'
 import type { Locale } from '@configs/i18n'
 
 interface PatientViewTabProps {
-  params: { id: string; lang: Locale }
+  params: Promise<{ id: string; lang: Locale }>
 }
 
 const PatientViewTab = async ({ params }: PatientViewTabProps) => {
-  const patientId = Number(params.id)
+  const resolvedParams = await params
+  const patientId = Number(resolvedParams.id)
   const patientData = await getPatientById(patientId)
   const appointments = await getAppointmentsByPatientId(patientId)
-  const dictionary = await getDictionary(params.lang)
+  const dictionary = await getDictionary(resolvedParams.lang)
 
   return (
     <TranslationProvider dictionary={dictionary}>

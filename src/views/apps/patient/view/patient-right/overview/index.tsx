@@ -95,7 +95,10 @@ const OverViewTab = ({ patientData }: OverViewTabProps) => {
               <div className='flex items-center gap-2'>
                 <i className='tabler-stethoscope text-lg' />
                 <Typography>
-                  <b>Doctor:</b> {patientData.doctor || '-'}
+                  <b>Doctor:</b>{' '}
+                  {typeof patientData.doctor === 'object' && patientData.doctor
+                    ? patientData.doctor.name
+                    : patientData.doctor || '-'}
                 </Typography>
               </div>
               <div className='flex items-center gap-2'>

@@ -43,7 +43,7 @@
     "permissions": "أذونات",
     "medical": "طبي",
     "pages": "الصفحات",
-    "userProfile": "ملف تعريفي للمستخدم",
+    "userProfile": "الملف الشخصي للمريض",
     "accountSettings": "إعدادت الحساب",
     "faq": "التعليمات",
     "miscellaneous": "متفرقات",
@@ -156,7 +156,8 @@
     "paid": "مدفوع",
     "remaining": "المتبقي",
     "save": "حفظ",
-    "editPatient": "تعديل المريض"
+    "editPatient": "تعديل المريض",
+    "emergencyContact": "جهة الاتصال في حالات الطوارئ"
   },
   "form": {
     "name": "الاسم",

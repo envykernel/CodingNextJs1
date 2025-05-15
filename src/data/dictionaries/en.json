@@ -156,7 +156,8 @@
     "totalAmount": "Total Amount",
     "paid": "Paid",
     "remaining": "Remaining",
-    "save": "Save"
+    "save": "Save",
+    "emergencyContact": "Emergency Contact"
   },
   "form": {
     "name": "Name",

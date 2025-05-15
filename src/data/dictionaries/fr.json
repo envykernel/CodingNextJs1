@@ -43,7 +43,7 @@
     "permissions": "Autorisations",
     "medical": "Médical",
     "pages": "Pages",
-    "userProfile": "Profil de l'utilisateur",
+    "userProfile": "Profil du patient",
     "accountSettings": "Paramètres du compte",
     "faq": "FAQ",
     "miscellaneous": "Divers",
@@ -156,7 +156,8 @@
     "remaining": "Restant",
     "save": "Enregistrer",
     "editPatient": "Modifier le patient",
-    "addNewPatient": "Ajouter un nouveau patient"
+    "addNewPatient": "Ajouter un nouveau patient",
+    "emergencyContact": "Contact d'urgence"
   },
   "form": {
     "name": "Nom",
