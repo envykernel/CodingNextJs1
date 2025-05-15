@@ -19,9 +19,10 @@ import Alert from '@mui/material/Alert'
 interface LabTestRecapBlockProps {
   visitId: number
   dictionary: any
+  showOnlyIfTestsExist?: boolean
 }
 
-const LabTestRecapBlock: React.FC<LabTestRecapBlockProps> = ({ visitId, dictionary }) => {
+const LabTestRecapBlock: React.FC<LabTestRecapBlockProps> = ({ visitId, dictionary, showOnlyIfTestsExist = false }) => {
   const [orders, setOrders] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -44,6 +45,7 @@ const LabTestRecapBlock: React.FC<LabTestRecapBlockProps> = ({ visitId, dictiona
 
   if (loading) return <Typography>{t.loading || 'Loading...'}</Typography>
   if (error) return <Alert severity='error'>{error}</Alert>
+  if (showOnlyIfTestsExist && orders.length === 0) return null
 
   // Sort orders by category (case-insensitive, empty string if missing)
   const sortedOrders = [...orders].sort((a, b) => {

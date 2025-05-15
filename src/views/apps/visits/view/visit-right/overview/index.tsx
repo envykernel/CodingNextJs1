@@ -142,7 +142,7 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
       </Grid>
 
       <Grid item xs={12}>
-        <LabTestRecapBlock visitId={visitData.id} dictionary={dictionary} />
+        <LabTestRecapBlock visitId={visitData.id} dictionary={dictionary} showOnlyIfTestsExist={true} />
       </Grid>
     </Grid>
   )
