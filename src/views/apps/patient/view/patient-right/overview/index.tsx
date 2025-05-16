@@ -1,7 +1,7 @@
 'use client'
 
 // MUI Imports
-import Grid from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Divider from '@mui/material/Divider'
@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 
 // Component Imports
 import PatientLabTests from '../dashboard/PatientLabTests'
+import PatientMeasurementsChart from '../dashboard/PatientMeasurementsChart'
 
 /**
  * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
@@ -42,7 +43,7 @@ const formatDate = (dateString: string | null | undefined) => {
 const OverViewTab = ({ patientData }: OverViewTabProps) => {
   return (
     <Grid container spacing={6}>
-      <Grid size={{ xs: 12 }}>
+      <Grid item xs={12}>
         <Card>
           <CardContent>
             <div className='flex items-center gap-3 mb-4'>
@@ -67,7 +68,10 @@ const OverViewTab = ({ patientData }: OverViewTabProps) => {
           </CardContent>
         </Card>
       </Grid>
-      <Grid size={{ xs: 12 }}>
+      <Grid item xs={12}>
+        <PatientMeasurementsChart patientId={patientData.id} dictionary={patientData.dictionary} />
+      </Grid>
+      <Grid item xs={12}>
         <PatientLabTests patientId={patientData.id} dictionary={patientData.dictionary} />
       </Grid>
     </Grid>
