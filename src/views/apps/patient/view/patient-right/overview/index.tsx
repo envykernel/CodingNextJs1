@@ -7,6 +7,9 @@ import CardContent from '@mui/material/CardContent'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 
+// Component Imports
+import PatientLabTests from '../dashboard/PatientLabTests'
+
 /**
  * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
  * ! `.env` file found at root of your project and also update the API endpoints like `/apps/invoice` in below example.
@@ -28,11 +31,12 @@ interface OverViewTabProps {
   patientData: any
 }
 
-// Helper for SSR-safe date formatting
 const formatDate = (dateString: string | null | undefined) => {
   if (!dateString) return '-'
+  const date = new Date(dateString)
 
-  return new Date(dateString).toISOString().slice(0, 10)
+  // Use ISO format (YYYY-MM-DD) for consistent server/client rendering
+  return date.toISOString().split('T')[0]
 }
 
 const OverViewTab = ({ patientData }: OverViewTabProps) => {
@@ -62,6 +66,9 @@ const OverViewTab = ({ patientData }: OverViewTabProps) => {
             </div>
           </CardContent>
         </Card>
+      </Grid>
+      <Grid size={{ xs: 12 }}>
+        <PatientLabTests patientId={patientData.id} dictionary={patientData.dictionary} />
       </Grid>
     </Grid>
   )
