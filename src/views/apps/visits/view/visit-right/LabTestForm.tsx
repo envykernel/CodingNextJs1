@@ -35,7 +35,7 @@ const initialState = {
   notes: ''
 }
 
-const LabTestForm: React.FC<LabTestFormProps> = ({ visitId, dictionary, initialValues, onUpdate }) => {
+const LabTestForm: React.FC<LabTestFormProps> = ({ visitId, dictionary, initialValues, onUpdate }): JSX.Element => {
   const t = dictionary?.labTestForm || {}
 
   const [form, setForm] = useState(() => {
@@ -84,8 +84,30 @@ const LabTestForm: React.FC<LabTestFormProps> = ({ visitId, dictionary, initialV
 
   const handleTestChange = (index: number, field: keyof LabTest, value: any) => {
     const newTests = [...form.tests]
+    const test = { ...newTests[index] }
 
-    newTests[index] = { ...newTests[index], [field]: value }
+    // Update the field value first
+    test[field] = value
+
+    // Then handle status updates based on the result field
+    if (field === 'result') {
+      // If result has a non-empty value, set status to completed
+      if (value && value.trim() !== '') {
+        test.status = 'completed'
+      }
+
+      // If result is empty or cleared, set status to pending
+      else {
+        test.status = 'pending'
+      }
+    }
+
+    // If status is being manually changed, respect that change
+    else if (field === 'status') {
+      test.status = value
+    }
+
+    newTests[index] = test
     setForm({ ...form, tests: newTests })
   }
 
@@ -109,13 +131,28 @@ const LabTestForm: React.FC<LabTestFormProps> = ({ visitId, dictionary, initialV
     setSuccess(false)
 
     try {
-      const res = await fetch('/api/lab-test-orders', {
+      // Get the visit data to include required fields
+      const visitRes = await fetch(`/api/visits/${visitId}`)
+
+      if (!visitRes.ok) throw new Error('Failed to fetch visit data')
+      const visitData = await visitRes.json()
+
+      const res = await fetch('/api/lab-test-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          visit_id: visitId,
-          tests: form.tests,
-          notes: form.notes
+          visitId: visitId,
+          patientId: visitData.visit.patient_id,
+          doctorId: visitData.visit.doctor?.id,
+          organisationId: visitData.visit.organisation_id,
+          tests: form.tests.map((test: LabTest) => ({
+            id: test.test_type_id,
+            result_value: test.result,
+            result_unit: test.test_type?.unit || '',
+            reference_range: test.test_type?.reference_range || '',
+            notes: test.notes || '',
+            status: test.result && test.result.trim() !== '' ? 'completed' : 'pending'
+          }))
         })
       })
 
@@ -196,7 +233,6 @@ const LabTestForm: React.FC<LabTestFormProps> = ({ visitId, dictionary, initialV
                           value={test.result}
                           onChange={e => handleTestChange(index, 'result', e.target.value)}
                           fullWidth
-                          disabled={test.status !== 'completed'}
                         />
                       </Grid>
                       <Grid item xs={12}>

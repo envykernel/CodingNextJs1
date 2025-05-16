@@ -22,9 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         })
 
-        const isModification = !!existing
-
-        const status = isModification && test.result_value ? 'completed' : 'pending'
+        // Set status based on whether there's a result value
+        const status = test.result_value && test.result_value.trim() !== '' ? 'completed' : 'pending'
 
         if (existing) {
           // Update
@@ -60,6 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.status(200).json({ success: true, results })
   } catch (error) {
+    console.error('Error saving lab test orders:', error)
     res.status(500).json({ error: 'Failed to save lab test orders' })
   }
 }
