@@ -8,10 +8,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { visitId, patientId, doctorId, organisationId, tests } = req.body
 
-    if (!visitId || !patientId || !organisationId || !Array.isArray(tests) || tests.length === 0) {
+    if (!visitId || !patientId || !organisationId || !Array.isArray(tests)) {
       return res.status(400).json({ error: 'Missing required fields' })
     }
 
+    // Get all existing tests for this visit
+    const existingTests = await prisma.lab_test_order.findMany({
+      where: {
+        visit_id: visitId
+      },
+      select: {
+        id: true,
+        test_type_id: true
+      }
+    })
+
+    // Create a map of submitted test type IDs
+    const submittedTestTypeIds = new Set(tests.map(test => test.id))
+
+    // Find tests to delete (exist in database but not in submitted tests)
+    const testsToDelete = existingTests.filter(test => !submittedTestTypeIds.has(test.test_type_id))
+
+    // Delete tests that are no longer present
+    if (testsToDelete.length > 0) {
+      await prisma.lab_test_order.deleteMany({
+        where: {
+          id: {
+            in: testsToDelete.map(test => test.id)
+          }
+        }
+      })
+    }
+
+    // Process the submitted tests (create or update)
     const results = await Promise.all(
       tests.map(async (test: any) => {
         // Check if a lab_test_order already exists for this visit/test_type
