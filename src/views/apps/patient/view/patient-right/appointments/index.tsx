@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { useRouter } from 'next/navigation'
 
 import Card from '@mui/material/Card'
@@ -9,6 +11,11 @@ import Divider from '@mui/material/Divider'
 import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContentText from '@mui/material/DialogContentText'
 
 import { useTranslation } from '@/contexts/translationContext'
 
@@ -91,11 +98,11 @@ const getStatusColor = (status: string | undefined): 'default' | 'info' | 'succe
 const AppointmentCard = ({
   appointment,
   t,
-  onEdit
+  onCancel
 }: {
   appointment: Appointment
   t: any
-  onEdit?: (appointment: Appointment) => void
+  onCancel?: (appointment: Appointment) => void
 }) => {
   const router = useRouter()
 
@@ -133,8 +140,8 @@ const AppointmentCard = ({
         </div>
       </CardContent>
       <Divider />
-      <div className='flex justify-end gap-2 p-2'>
-        {appointment.visit?.id && (
+      <div className='flex justify-center p-2'>
+        {appointment.visit?.id ? (
           <Tooltip title={t.goToVisit || 'Go to Visit'}>
             <Button
               size='small'
@@ -147,19 +154,20 @@ const AppointmentCard = ({
               {t.goToVisit || 'Visit'}
             </Button>
           </Tooltip>
-        )}
-        <Tooltip title={t.navigation.edit || 'Edit'}>
-          <Button
-            size='small'
-            variant='outlined'
-            color='inherit'
-            onClick={() => onEdit && onEdit(appointment)}
-            className='hover:text-primary hover:border-primary'
-            startIcon={<i className='tabler-edit text-lg' />}
-          >
-            {t.navigation.edit || 'Edit'}
-          </Button>
-        </Tooltip>
+        ) : appointment.status === 'scheduled' ? (
+          <Tooltip title={t.cancelAppointment || 'Cancel Appointment'}>
+            <Button
+              size='small'
+              variant='outlined'
+              color='error'
+              onClick={() => onCancel && onCancel(appointment)}
+              className='hover:text-error hover:border-error'
+              startIcon={<i className='tabler-x text-lg' />}
+            >
+              {t.cancelAppointment || 'Cancel'}
+            </Button>
+          </Tooltip>
+        ) : null}
       </div>
     </Card>
   )
@@ -167,11 +175,46 @@ const AppointmentCard = ({
 
 const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
   const t = useTranslation()
+  const router = useRouter()
   const { past, thisMonth, next } = groupAppointments(appointments)
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
+  const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment | null>(null)
+  const [isCancelling, setIsCancelling] = useState(false)
 
-  const handleEdit = (appointment: Appointment) => {
-    // Placeholder for edit logic
-    alert(`${t.navigation.edit || 'Edit'}: #${appointment.id}`)
+  const handleCancelClick = (appointment: Appointment) => {
+    setAppointmentToCancel(appointment)
+    setCancelDialogOpen(true)
+  }
+
+  const handleCancelConfirm = async () => {
+    if (!appointmentToCancel) return
+
+    setIsCancelling(true)
+
+    try {
+      const res = await fetch(`/api/appointments/${appointmentToCancel.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'cancelled' })
+      })
+
+      if (res.ok) {
+        router.refresh()
+      } else {
+        console.error('Failed to cancel appointment')
+      }
+    } catch (error) {
+      console.error('Error cancelling appointment:', error)
+    } finally {
+      setIsCancelling(false)
+      setCancelDialogOpen(false)
+      setAppointmentToCancel(null)
+    }
+  }
+
+  const handleCancelClose = () => {
+    setCancelDialogOpen(false)
+    setAppointmentToCancel(null)
   }
 
   const renderCards = (data: Appointment[]) =>
@@ -182,41 +225,61 @@ const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
     ) : (
       <div className='flex flex-col gap-2'>
         {data.map((a: Appointment) => (
-          <AppointmentCard key={a.id} appointment={a} t={t} onEdit={handleEdit} />
+          <AppointmentCard key={a.id} appointment={a} t={t} onCancel={handleCancelClick} />
         ))}
       </div>
     )
 
   return (
-    <Card>
-      <CardContent>
-        <div className='flex items-center gap-3 mb-4'>
-          <i className='tabler-calendar-event text-xl text-primary' />
-          <Typography variant='h6'>{t.patient.appointments || t.navigation.appointments || 'Appointments'}</Typography>
-        </div>
-        <Divider className='mb-4' />
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-          <div>
-            <Typography variant='subtitle1' className='mb-2 text-center'>
-              {t.navigation.past || 'Past'}
+    <>
+      <Card>
+        <CardContent>
+          <div className='flex items-center gap-3 mb-4'>
+            <i className='tabler-calendar-event text-xl text-primary' />
+            <Typography variant='h6'>
+              {t.patient.appointments || t.navigation.appointments || 'Appointments'}
             </Typography>
-            {renderCards(past)}
           </div>
-          <div>
-            <Typography variant='subtitle1' className='mb-2 text-center'>
-              {t.navigation.thisMonth || 'This Month'}
-            </Typography>
-            {renderCards(thisMonth)}
+          <Divider className='mb-4' />
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+            <div>
+              <Typography variant='subtitle1' className='mb-2 text-center'>
+                {t.navigation.past || 'Past'}
+              </Typography>
+              {renderCards(past)}
+            </div>
+            <div>
+              <Typography variant='subtitle1' className='mb-2 text-center'>
+                {t.navigation.thisMonth || 'This Month'}
+              </Typography>
+              {renderCards(thisMonth)}
+            </div>
+            <div>
+              <Typography variant='subtitle1' className='mb-2 text-center'>
+                {t.navigation.next || 'Next'}
+              </Typography>
+              {renderCards(next)}
+            </div>
           </div>
-          <div>
-            <Typography variant='subtitle1' className='mb-2 text-center'>
-              {t.navigation.next || 'Next'}
-            </Typography>
-            {renderCards(next)}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+      <Dialog open={cancelDialogOpen} onClose={handleCancelClose}>
+        <DialogTitle>{t.confirmCancellation || 'Confirm Cancellation'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t.cancelAppointmentConfirmation || 'Are you sure you want to cancel this appointment?'}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelClose} disabled={isCancelling}>
+            {t.common?.cancel || 'Cancel'}
+          </Button>
+          <Button onClick={handleCancelConfirm} color='error' disabled={isCancelling}>
+            {isCancelling ? t.loading || 'Loading...' : t.confirm || 'Confirm'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
 
