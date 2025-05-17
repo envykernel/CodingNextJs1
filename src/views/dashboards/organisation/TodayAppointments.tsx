@@ -16,14 +16,13 @@ import Tooltip from '@mui/material/Tooltip'
 import Paper from '@mui/material/Paper'
 
 // Types
-type AppointmentType = 'consultation' | 'follow-up' | 'emergency' | 'routine-check' | 'specialist'
+type AppointmentType = 'consultation' | 'follow-up' | 'emergency' | 'routine-check' | 'specialist' | 'other'
 
 type Appointment = {
   id: string
   patientName: string
   type: AppointmentType
   time: string
-  date: string
   duration: number // in minutes
   doctorName: string
   status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled'
@@ -41,13 +40,21 @@ const TodayAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Appointment type configurations
+  // Appointment type configurations with fallback
   const appointmentTypes: Record<AppointmentType, { label: string; color: string; icon: string }> = {
     consultation: { label: 'Consultation', color: theme.palette.primary.main, icon: 'tabler-stethoscope' },
     'follow-up': { label: 'Follow-up', color: theme.palette.success.main, icon: 'tabler-refresh' },
     emergency: { label: 'Emergency', color: theme.palette.error.main, icon: 'tabler-ambulance' },
     'routine-check': { label: 'Routine Check', color: theme.palette.info.main, icon: 'tabler-clipboard-check' },
-    specialist: { label: 'Specialist', color: theme.palette.warning.main, icon: 'tabler-user-md' }
+    specialist: { label: 'Specialist', color: theme.palette.warning.main, icon: 'tabler-user-md' },
+    other: { label: 'Other', color: theme.palette.grey[500], icon: 'tabler-calendar' }
+  }
+
+  // Helper function to get appointment type config with fallback
+  const getAppointmentTypeConfig = (type: string) => {
+    const normalizedType = type.toLowerCase() as AppointmentType
+
+    return appointmentTypes[normalizedType] || appointmentTypes.other
   }
 
   // Status column configurations
@@ -99,20 +106,15 @@ const TodayAppointments = () => {
             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
           })
 
-          // Format date in user's local timezone
-          const date = appointmentDate.toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-          })
+          // Normalize appointment type
+          const normalizedType = apt.type.toLowerCase() as AppointmentType
+          const type = Object.keys(appointmentTypes).includes(normalizedType) ? normalizedType : 'other'
 
           return {
             id: apt.id.toString(),
             patientName: apt.patientName,
-            type: apt.type.toLowerCase() as AppointmentType,
+            type,
             time,
-            date,
             duration: 30,
             doctorName: apt.doctorName,
             status: apt.status.toLowerCase() as Appointment['status']
@@ -290,7 +292,7 @@ const TodayAppointments = () => {
                   }}
                 >
                   {columnAppointments.map(appointment => {
-                    const typeConfig = appointmentTypes[appointment.type]
+                    const typeConfig = getAppointmentTypeConfig(appointment.type)
 
                     return (
                       <Paper
@@ -338,14 +340,9 @@ const TodayAppointments = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <i className='tabler-clock text-base' style={{ color: theme.palette.text.secondary }} />
-                            <Box>
-                              <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-                                {appointment.time}
-                              </Typography>
-                              <Typography variant='caption' sx={{ color: 'text.secondary', display: 'block' }}>
-                                {appointment.date}
-                              </Typography>
-                            </Box>
+                            <Typography variant='body2' sx={{ color: 'text.secondary' }}>
+                              {appointment.time}
+                            </Typography>
                             <Typography variant='caption' sx={{ color: 'text.secondary' }}>
                               ({appointment.duration} min)
                             </Typography>
