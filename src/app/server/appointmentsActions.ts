@@ -8,8 +8,10 @@ import {
 
 function getTodayRange() {
   const now = new Date()
-  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0))
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999))
+
+  // Use local timezone
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
 
   return { start, end }
 }
@@ -18,18 +20,14 @@ function getWeekRange() {
   const now = new Date()
 
   // Get the day of week (0=Sunday, 1=Monday, ...)
-  const day = now.getUTCDay()
+  const day = now.getDay()
 
   // Calculate how many days to subtract to get to Monday of the current week
   const diffToMonday = (day === 0 ? -6 : 1) - day
 
-  const monday = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + diffToMonday, 0, 0, 0, 0)
-  )
+  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diffToMonday, 0, 0, 0, 0)
 
-  const saturday = new Date(
-    Date.UTC(monday.getUTCFullYear(), monday.getUTCMonth(), monday.getUTCDate() + 5, 23, 59, 59, 999)
-  )
+  const saturday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 5, 23, 59, 59, 999)
 
   return { start: monday, end: saturday }
 }

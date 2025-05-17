@@ -23,6 +23,7 @@ type Appointment = {
   patientName: string
   type: AppointmentType
   time: string
+  date: string
   duration: number // in minutes
   doctorName: string
   status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled'
@@ -80,58 +81,46 @@ const TodayAppointments = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        // TODO: Replace with actual API call
-        // This is mock data for demonstration
-        const mockAppointments: Appointment[] = [
-          {
-            id: '1',
-            patientName: 'John Doe',
-            type: 'consultation',
-            time: '09:00',
+        const response = await fetch('/api/appointments?filter=today')
+
+        if (!response.ok) throw new Error('Failed to fetch appointments')
+
+        const data = await response.json()
+
+        // Transform the appointments to match our component's format
+        const transformedAppointments: Appointment[] = data.appointments.map((apt: any) => {
+          const appointmentDate = new Date(apt.appointmentDate)
+
+          // Format time in user's local timezone
+          const time = appointmentDate.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+          })
+
+          // Format date in user's local timezone
+          const date = appointmentDate.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+          })
+
+          return {
+            id: apt.id.toString(),
+            patientName: apt.patientName,
+            type: apt.type.toLowerCase() as AppointmentType,
+            time,
+            date,
             duration: 30,
-            doctorName: 'Dr. Smith',
-            status: 'scheduled'
-          },
-          {
-            id: '2',
-            patientName: 'Jane Smith',
-            type: 'follow-up',
-            time: '09:30',
-            duration: 20,
-            doctorName: 'Dr. Johnson',
-            status: 'scheduled'
-          },
-          {
-            id: '3',
-            patientName: 'Mike Wilson',
-            type: 'emergency',
-            time: '10:00',
-            duration: 45,
-            doctorName: 'Dr. Brown',
-            status: 'in-progress'
-          },
-          {
-            id: '4',
-            patientName: 'Sarah Davis',
-            type: 'routine-check',
-            time: '11:00',
-            duration: 30,
-            doctorName: 'Dr. Wilson',
-            status: 'scheduled'
-          },
-          {
-            id: '5',
-            patientName: 'Robert Taylor',
-            type: 'specialist',
-            time: '11:30',
-            duration: 60,
-            doctorName: 'Dr. Anderson',
-            status: 'scheduled'
+            doctorName: apt.doctorName,
+            status: apt.status.toLowerCase() as Appointment['status']
           }
-        ]
+        })
 
         // Sort appointments by time
-        const sortedAppointments = mockAppointments.sort((a, b) => a.time.localeCompare(b.time))
+        const sortedAppointments = transformedAppointments.sort((a, b) => a.time.localeCompare(b.time))
 
         setAppointments(sortedAppointments)
       } catch (error) {
@@ -183,8 +172,13 @@ const TodayAppointments = () => {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
-                  day: 'numeric'
+                  day: 'numeric',
+                  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
                 })}
+                {' • '}
+                <Typography component='span' variant='caption' sx={{ color: 'text.secondary' }}>
+                  {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                </Typography>
               </Typography>
             </Box>
           </Box>
@@ -344,9 +338,14 @@ const TodayAppointments = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <i className='tabler-clock text-base' style={{ color: theme.palette.text.secondary }} />
-                            <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-                              {appointment.time}
-                            </Typography>
+                            <Box>
+                              <Typography variant='body2' sx={{ color: 'text.secondary' }}>
+                                {appointment.time}
+                              </Typography>
+                              <Typography variant='caption' sx={{ color: 'text.secondary', display: 'block' }}>
+                                {appointment.date}
+                              </Typography>
+                            </Box>
                             <Typography variant='caption' sx={{ color: 'text.secondary' }}>
                               ({appointment.duration} min)
                             </Typography>
