@@ -39,13 +39,17 @@ export async function getAppointments({
   pageSize = 10,
   filter,
   status,
-  type
+  type,
+  startDate,
+  endDate
 }: {
   page?: number
   pageSize?: number
   filter?: string
   status?: string
   type?: string
+  startDate?: string
+  endDate?: string
 }) {
   const skip = (page - 1) * pageSize
 
@@ -59,6 +63,16 @@ export async function getAppointments({
     dateWhere.appointment_date = { gte: start, lte: end }
   } else if (filter === 'week') {
     const { start, end } = getWeekRange()
+
+    where.appointment_date = { gte: start, lte: end }
+    dateWhere.appointment_date = { gte: start, lte: end }
+  } else if (startDate && endDate) {
+    // Handle custom date range
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+
+    // Set end date to end of day
+    end.setHours(23, 59, 59, 999)
 
     where.appointment_date = { gte: start, lte: end }
     dateWhere.appointment_date = { gte: start, lte: end }

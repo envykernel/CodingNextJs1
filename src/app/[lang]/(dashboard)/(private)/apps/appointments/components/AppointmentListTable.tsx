@@ -25,9 +25,14 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  DialogContentText
+  DialogContentText,
+  IconButton,
+  Tooltip
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 
 import { useTranslation, TranslationProvider } from '@/contexts/translationContext'
 import AddAppointmentDrawer from './AddAppointmentDrawer'
@@ -79,14 +84,50 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   const filter = searchParams?.get('filter') || ''
   const status = searchParams?.get('status') || ''
   const type = searchParams?.get('type') || ''
+  const startDateParam = searchParams?.get('startDate') || ''
+  const endDateParam = searchParams?.get('endDate') || ''
   const t = useTranslation()
   const [addOpen, setAddOpen] = useState(false)
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const [appointmentToCancel, setAppointmentToCancel] = useState<number | null>(null)
   const [isCancelling, setIsCancelling] = useState(false)
 
+  // State for date pickers
+  const [startDate, setStartDate] = useState<Date | null>(startDateParam ? new Date(startDateParam) : null)
+  const [endDate, setEndDate] = useState<Date | null>(endDateParam ? new Date(endDateParam) : null)
+
+  const handleDateRangeChange = (newStartDate: Date | null, newEndDate: Date | null) => {
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
+
+    // Clear the filter if we're using date range
+    params.delete('filter')
+
+    // If only start date is selected, set end date to the same date
+    if (newStartDate && !newEndDate) {
+      newEndDate = newStartDate
+      setEndDate(newStartDate)
+    }
+
+    if (newStartDate && newEndDate) {
+      params.set('startDate', newStartDate.toISOString().split('T')[0])
+      params.set('endDate', newEndDate.toISOString().split('T')[0])
+    } else {
+      params.delete('startDate')
+      params.delete('endDate')
+    }
+
+    params.set('page', '1') // Reset to first page on filter change
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
   const handleFilter = (newFilter: string) => {
     const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
+
+    // Clear date range if using preset filters
+    params.delete('startDate')
+    params.delete('endDate')
+    setStartDate(null)
+    setEndDate(null)
 
     if (newFilter) {
       params.set('filter', newFilter)
@@ -94,7 +135,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
       params.delete('filter')
     }
 
-    params.set('page', '1') // Reset to first page on filter change
+    params.set('page', '1')
     router.push(`${pathname}?${params.toString()}`)
   }
 
@@ -162,6 +203,17 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     setAppointmentToCancel(null)
   }
 
+  const handleClearDateRange = () => {
+    setStartDate(null)
+    setEndDate(null)
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
+
+    params.delete('startDate')
+    params.delete('endDate')
+    params.set('page', '1')
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
   return (
     <Card>
       <div className='flex items-center justify-between px-6 pt-6'>
@@ -173,10 +225,11 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
         </Button>
       </div>
       <Divider className='my-4' />
-      <div className='mb-4 flex flex-wrap items-center justify-between px-6 gap-2'>
-        {/* Left side: Status/Type filters */}
-        <div className='flex gap-2 order-1'>
-          <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%', mr: 2 }}>
+      <div className='mb-4 flex flex-wrap items-center gap-4 px-6'>
+        {/* Filters container */}
+        <div className='flex flex-wrap items-center gap-4 flex-1'>
+          {/* Status/Type filters */}
+          <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%' }}>
             <InputLabel shrink>Status</InputLabel>
             <Select value={status} label='Status' onChange={handleStatusChange} displayEmpty>
               <MenuItem value=''>All Statuses</MenuItem>
@@ -187,7 +240,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
               ))}
             </Select>
           </FormControl>
-          <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%', mr: 2 }}>
+          <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%' }}>
             <InputLabel shrink>Type</InputLabel>
             <Select value={type} label='Type' onChange={handleTypeChange} displayEmpty>
               <MenuItem value=''>All Types</MenuItem>
@@ -198,9 +251,49 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
               ))}
             </Select>
           </FormControl>
+
+          {/* Date Range Pickers with Clear Button */}
+          <div className='flex items-center gap-2'>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label='Start Date'
+                value={startDate}
+                onChange={newValue => {
+                  setStartDate(newValue)
+                  handleDateRangeChange(newValue, endDate)
+                }}
+                slotProps={{ textField: { size: 'small', sx: { width: 160 } } }}
+              />
+              <DatePicker
+                label='End Date'
+                value={endDate}
+                onChange={newValue => {
+                  setEndDate(newValue)
+                  handleDateRangeChange(startDate, newValue)
+                }}
+                slotProps={{ textField: { size: 'small', sx: { width: 160 } } }}
+                minDate={startDate || undefined}
+              />
+            </LocalizationProvider>
+            {(startDate || endDate) && (
+              <Tooltip title={t.clearDateRange || 'Clear date range'}>
+                <IconButton
+                  size='small'
+                  onClick={handleClearDateRange}
+                  sx={{
+                    color: 'text.secondary',
+                    '&:hover': { color: 'error.main' }
+                  }}
+                >
+                  <i className='tabler-x text-lg' />
+                </IconButton>
+              </Tooltip>
+            )}
+          </div>
         </div>
-        {/* Right side: Today/This Week buttons */}
-        <div className='flex gap-2 order-2'>
+
+        {/* Today/This Week buttons */}
+        <div className='flex gap-2'>
           <Button
             variant={filter === 'today' ? 'contained' : 'outlined'}
             color={filter === 'today' ? 'primary' : 'inherit'}

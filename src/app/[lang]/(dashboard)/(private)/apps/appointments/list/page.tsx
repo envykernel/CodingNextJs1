@@ -45,7 +45,28 @@ const AppointmentsListApp = async ({
       : resolvedSearchParams.type
     : undefined
 
-  const appointmentData = await getAppointments({ page, pageSize, filter, status, type })
+  const startDate = resolvedSearchParams?.startDate
+    ? Array.isArray(resolvedSearchParams.startDate)
+      ? resolvedSearchParams.startDate[0]
+      : resolvedSearchParams.startDate
+    : undefined
+
+  const endDate = resolvedSearchParams?.endDate
+    ? Array.isArray(resolvedSearchParams.endDate)
+      ? resolvedSearchParams.endDate[0]
+      : resolvedSearchParams.endDate
+    : undefined
+
+  const appointmentData = await getAppointments({
+    page,
+    pageSize,
+    filter,
+    status,
+    type,
+    startDate,
+    endDate
+  })
+
   const dictionary = await getDictionary(lang)
   const appointmentIds = appointmentData.appointments.map((a: any) => a.id)
   const visitsByAppointmentId = await getVisitsByAppointmentIds(appointmentIds)
