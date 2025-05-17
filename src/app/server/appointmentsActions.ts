@@ -20,18 +20,18 @@ function getWeekRange() {
   // Get the day of week (0=Sunday, 1=Monday, ...)
   const day = now.getUTCDay()
 
-  // Calculate how many days to subtract to get to Monday
+  // Calculate how many days to subtract to get to Monday of the current week
   const diffToMonday = (day === 0 ? -6 : 1) - day
 
   const monday = new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + diffToMonday, 0, 0, 0, 0)
   )
 
-  const sunday = new Date(
-    Date.UTC(monday.getUTCFullYear(), monday.getUTCMonth(), monday.getUTCDate() + 6, 23, 59, 59, 999)
+  const saturday = new Date(
+    Date.UTC(monday.getUTCFullYear(), monday.getUTCMonth(), monday.getUTCDate() + 5, 23, 59, 59, 999)
   )
 
-  return { start: monday, end: sunday }
+  return { start: monday, end: saturday }
 }
 
 export async function getAppointments({
@@ -188,9 +188,28 @@ export async function createAppointment(data: any) {
  * Excludes slots already booked in patient_appointment for any doctor in the organisation.
  */
 export async function getOrganisationAvailability(organisation_id: number, startDate?: string, endDate?: string) {
-  // Default: next 7 days
-  const start = startDate ? new Date(startDate) : new Date()
-  const end = endDate ? new Date(endDate) : new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000)
+  // Parse dates in local timezone
+  const parseLocalDate = (dateStr: string) => {
+    const [year, month, day] = dateStr.split('-').map(Number)
+    const date = new Date(year, month - 1, day) // month is 0-based in JS Date
+
+    return date
+  }
+
+  // Use provided dates or default to current week
+  const start = startDate ? parseLocalDate(startDate) : new Date()
+  const end = endDate ? parseLocalDate(endDate) : new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000)
+
+  // Set start to beginning of day and end to end of day
+  start.setHours(0, 0, 0, 0)
+  end.setHours(23, 59, 59, 999)
+
+  // For debugging
+  console.log('Server - Input dates:', { startDate, endDate })
+  console.log('Server - Parsed dates:', {
+    start: start.toLocaleDateString(),
+    end: end.toLocaleDateString()
+  })
 
   // Fetch organisation working hours
   const organisation = await prisma.organisation.findUnique({
@@ -216,7 +235,7 @@ export async function getOrganisationAvailability(organisation_id: number, start
 
   // Generate all slots for each day based on working hours
   const slotsPerDay: string[] = []
-  const workingDays = organisation.working_days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+  const workingDays = organisation.working_days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
   // Generate slots from work start to work end, excluding break time
   for (let hour = workStartHour; hour <= workEndHour; hour++) {
@@ -246,8 +265,8 @@ export async function getOrganisationAvailability(organisation_id: number, start
     where: {
       organisation_id: Number(organisation_id),
       appointment_date: {
-        gte: new Date(start.setHours(0, 0, 0, 0)),
-        lte: new Date(end.setHours(23, 59, 59, 999))
+        gte: start,
+        lte: end
       },
       status: { not: 'cancelled' }
     },
@@ -258,7 +277,7 @@ export async function getOrganisationAvailability(organisation_id: number, start
   const booked: Record<string, Set<string>> = {}
 
   appointments.forEach(appt => {
-    const date = appt.appointment_date.toISOString().split('T')[0]
+    const date = appt.appointment_date.toLocaleDateString('en-CA') // Use local date string
 
     // Convert appointment time to local time (HH:mm)
     const appointmentDate = new Date(appt.appointment_date)
@@ -271,39 +290,55 @@ export async function getOrganisationAvailability(organisation_id: number, start
   // Build availability
   const days: { date: string; slots: string[] }[] = []
 
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+  // Create a new date object to avoid modifying the original
+  const currentDate = new Date(start)
+  const today = new Date()
+
+  today.setHours(0, 0, 0, 0)
+
+  while (currentDate <= end) {
     // Check if the day is a working day
-    const dayName = d.toLocaleDateString('en-US', { weekday: 'long' })
+    const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' })
+    const currentDateCopy = new Date(currentDate)
 
-    if (!workingDays.includes(dayName)) continue
+    currentDateCopy.setHours(0, 0, 0, 0)
 
-    const dateStr = d.toISOString().split('T')[0]
-    const availableSlots: string[] = []
+    // Only process if it's a working day and not in the past
+    if (workingDays.includes(dayName) && currentDateCopy >= today) {
+      const dateStr = currentDate.toLocaleDateString('en-CA') // Use local date string
+      const availableSlots: string[] = []
 
-    // For each slot, check if it's available
-    for (const slot of slotsPerDay) {
-      // Check if this slot is booked
-      const isBooked = booked[dateStr]?.has(slot) || false
+      // For each slot, check if it's available
+      for (const slot of slotsPerDay) {
+        // Check if this slot is booked
+        const isBooked = booked[dateStr]?.has(slot) || false
 
-      // For today, also check if the slot is in the past
-      if (dateStr === new Date().toISOString().split('T')[0]) {
-        const [slotHour, slotMinute] = slot.split(':').map(Number)
-        const now = new Date()
+        // For today, also check if the slot is in the past
+        if (dateStr === today.toLocaleDateString('en-CA')) {
+          const [slotHour, slotMinute] = slot.split(':').map(Number)
+          const now = new Date()
 
-        if (now.getHours() > slotHour || (now.getHours() === slotHour && now.getMinutes() >= slotMinute)) {
-          continue // Skip past slots
+          if (now.getHours() > slotHour || (now.getHours() === slotHour && now.getMinutes() >= slotMinute)) {
+            continue // Skip past slots
+          }
+        }
+
+        if (!isBooked) {
+          availableSlots.push(slot)
         }
       }
 
-      if (!isBooked) {
-        availableSlots.push(slot)
+      if (availableSlots.length > 0) {
+        days.push({ date: dateStr, slots: availableSlots })
       }
     }
 
-    if (availableSlots.length > 0) {
-      days.push({ date: dateStr, slots: availableSlots })
-    }
+    // Move to next day
+    currentDate.setDate(currentDate.getDate() + 1)
   }
+
+  // For debugging
+  console.log('Server - Available days:', days)
 
   return days
 }
