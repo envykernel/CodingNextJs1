@@ -169,6 +169,8 @@ function ClientBirthdateCell({ birthdate }: { birthdate: string | Date }) {
 const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: PatientListTableProps) => {
   // States
   const [addPatientOpen, setAddPatientOpen] = useState(false)
+  const [editPatientOpen, setEditPatientOpen] = useState(false)
+  const [selectedPatient, setSelectedPatient] = useState<PatientType | null>(null)
   const [rowSelection, setRowSelection] = useState({})
   const [newPatientId, setNewPatientId] = useState<number | null>(null)
 
@@ -191,6 +193,22 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const dictionary = useTranslation()
+
+  const handleEditClick = (patient: PatientType) => {
+    setSelectedPatient(patient)
+    setEditPatientOpen(true)
+  }
+
+  const handleEditClose = () => {
+    setEditPatientOpen(false)
+    setSelectedPatient(null)
+  }
+
+  const handlePatientUpdate = (updatedPatient: PatientType) => {
+    if (data) {
+      setData(data.map(patient => (patient.id === updatedPatient.id ? updatedPatient : patient)))
+    }
+  }
 
   const columns = useMemo<ColumnDef<PatientTypeWithAction, any>[]>(() => {
     return [
@@ -300,7 +318,10 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
                 {
                   text: 'Edit',
                   icon: 'tabler-edit',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
+                  menuItemProps: {
+                    className: 'flex items-center gap-2 text-textSecondary',
+                    onClick: () => handleEditClick(row.original)
+                  }
                 }
               ]}
             />
@@ -309,7 +330,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
         enableSorting: false
       })
     ]
-  }, [data, filteredData, dictionary])
+  }, [data, filteredData, dictionary, locale])
 
   const table = useReactTable({
     data: filteredData as PatientType[],
@@ -496,6 +517,15 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
         setData={setData}
         onPatientCreated={handleAddPatient}
       />
+      {selectedPatient && (
+        <AddPatientDrawer
+          open={editPatientOpen}
+          handleClose={handleEditClose}
+          editMode={true}
+          editPatient={selectedPatient}
+          onPatientUpdated={handlePatientUpdate}
+        />
+      )}
     </>
   )
 }
