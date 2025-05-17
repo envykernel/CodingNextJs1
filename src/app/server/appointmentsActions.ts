@@ -335,8 +335,5 @@ export async function getOrganisationAvailability(organisation_id: number, start
     currentDate.setDate(currentDate.getDate() + 1)
   }
 
-  // For debugging
-  console.log('Server - Available days:', days)
-
   return days
 }
