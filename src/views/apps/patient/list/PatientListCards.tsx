@@ -47,7 +47,7 @@ const PatientListCards = () => {
             avatarIcon: 'tabler-user-off',
             avatarColor: 'error',
             trend: data.disabledPatients.monthly.trend,
-            trendNumber: `${Math.abs(Math.round(data.disabledPatients.monthly.percentageChange))}%`,
+            trendNumber: `${Math.abs(Math.round(Math.abs(data.disabledPatients.monthly.percentageChange)))}%`,
             subtitle: 'This month vs last month'
           },
           {
@@ -56,7 +56,7 @@ const PatientListCards = () => {
             avatarIcon: 'tabler-user-off',
             avatarColor: 'error',
             trend: data.disabledPatients.yearly.trend,
-            trendNumber: `${Math.abs(Math.round(data.disabledPatients.yearly.percentageChange))}%`,
+            trendNumber: `${Math.abs(Math.round(Math.abs(data.disabledPatients.yearly.percentageChange)))}%`,
             subtitle: 'This year vs last year'
           }
         ])

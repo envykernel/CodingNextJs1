@@ -136,7 +136,11 @@ export async function getPatientStatistics(organisationId: number): Promise<Pati
 
   // Calculate percentage changes
   const calculatePercentageChange = (current: number, previous: number) => {
-    if (previous === 0) return current > 0 ? 100 : 0
+    if (previous === 0) {
+      // If previous was 0 and current is positive, return 100 to indicate increase
+      // If previous was 0 and current is 0, return 0 to indicate no change
+      return current > 0 ? 100 : 0
+    }
 
     return ((current - previous) / previous) * 100
   }
@@ -160,6 +164,18 @@ export async function getPatientStatistics(organisationId: number): Promise<Pati
     disabledPatientsPreviousYear
   )
 
+  // Helper function to determine trend for disabled patients
+  const getDisabledPatientsTrend = (current: number, previous: number) => {
+    // If current is greater than previous, it's a negative trend (red)
+    if (current > previous) return 'negative'
+
+    // If current is less than previous, it's a positive trend (green)
+    if (current < previous) return 'positive'
+
+    // If they're equal, it's a positive trend (green)
+    return 'positive'
+  }
+
   return {
     newPatients: {
       monthly: {
@@ -177,12 +193,12 @@ export async function getPatientStatistics(organisationId: number): Promise<Pati
       monthly: {
         count: disabledPatientsCurrentMonth,
         percentageChange: disabledPatientsMonthlyPercentageChange,
-        trend: disabledPatientsMonthlyPercentageChange >= 0 ? 'positive' : 'negative'
+        trend: getDisabledPatientsTrend(disabledPatientsCurrentMonth, disabledPatientsPreviousMonth)
       },
       yearly: {
         count: disabledPatientsCurrentYear,
         percentageChange: disabledPatientsYearlyPercentageChange,
-        trend: disabledPatientsYearlyPercentageChange >= 0 ? 'positive' : 'negative'
+        trend: getDisabledPatientsTrend(disabledPatientsCurrentYear, disabledPatientsPreviousYear)
       }
     }
   }
