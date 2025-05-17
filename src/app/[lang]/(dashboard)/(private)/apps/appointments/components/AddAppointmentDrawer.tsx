@@ -91,6 +91,15 @@ const AddAppointmentDrawer = ({
   const [unavailableWarning, setUnavailableWarning] = useState<string | null>(null)
   const [patients, setPatients] = useState<PatientType[]>(initialPatients)
   const [addPatientOpen, setAddPatientOpen] = useState(false)
+  const [availabilityStartDate, setAvailabilityStartDate] = useState<Date | null>(new Date())
+
+  const [availabilityEndDate, setAvailabilityEndDate] = useState<Date | null>(() => {
+    const date = new Date()
+
+    date.setDate(date.getDate() + 6) // Default to 7 days from now
+
+    return date as Date
+  })
 
   // Reset form to default values every time the drawer is opened
   useEffect(() => {
@@ -106,19 +115,24 @@ const AddAppointmentDrawer = ({
     }
   }, [open, reset])
 
-  // Fetch availability when drawer opens or organisation changes
+  // Update availability fetching to use date range
   useEffect(() => {
     const organisationId = session?.user?.organisationId
 
-    if (open && organisationId) {
-      fetch(`/api/appointments/availability?organisation_id=${organisationId}`)
+    if (open && organisationId && availabilityStartDate && availabilityEndDate) {
+      const startDate = availabilityStartDate.toISOString().split('T')[0]
+      const endDate = availabilityEndDate.toISOString().split('T')[0]
+
+      fetch(
+        `/api/appointments/availability?organisation_id=${organisationId}&startDate=${startDate}&endDate=${endDate}`
+      )
         .then(res => res.json())
         .then(data => setAvailability(data))
         .catch(() => setAvailability([]))
     } else if (!open) {
       setAvailability([])
     }
-  }, [open, session?.user?.organisationId])
+  }, [open, session?.user?.organisationId, availabilityStartDate, availabilityEndDate])
 
   const onSubmit = async (data: AppointmentFormType) => {
     setSubmitError(null)
@@ -230,6 +244,45 @@ const AddAppointmentDrawer = ({
     ...patients,
     { id: '__add_new__', name: dictionary.patient?.addNewPatient || 'Add new patient' }
   ]
+
+  // Function to get start and end of a week from a given date
+  const getWeekRange = (date: Date) => {
+    const start = new Date(date)
+    const day = start.getDay()
+    const diff = start.getDate() - day + (day === 0 ? -6 : 1) // Adjust when day is Sunday
+
+    start.setDate(diff)
+
+    const end = new Date(start)
+
+    end.setDate(start.getDate() + 6)
+
+    return { start, end }
+  }
+
+  // Function to navigate weeks
+  const navigateWeek = (direction: 'prev' | 'next') => {
+    if (!availabilityStartDate || !availabilityEndDate) return
+
+    const currentStart = new Date(availabilityStartDate)
+    const daysToAdd = direction === 'next' ? 7 : -7
+
+    currentStart.setDate(currentStart.getDate() + daysToAdd)
+
+    const { start, end } = getWeekRange(currentStart)
+
+    setAvailabilityStartDate(start)
+    setAvailabilityEndDate(end)
+  }
+
+  // Format date range for display
+  const formatWeekRange = (start: Date, end: Date) => {
+    const formatDate = (date: Date) => {
+      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+    }
+
+    return `${formatDate(start)} - ${formatDate(end)}`
+  }
 
   return (
     <Drawer
@@ -421,9 +474,44 @@ const AddAppointmentDrawer = ({
           {/* Disponibility Section */}
           <Box mt={6}>
             <Card variant='outlined' className='p-4'>
-              <Typography variant='subtitle1' className='mb-2 font-semibold'>
+              <Typography variant='subtitle1' className='mb-4 font-semibold'>
                 {dictionary.appointments?.availabilityTitle || dictionary.availabilityTitle || 'Availability'}
               </Typography>
+
+              {/* Week Navigation */}
+              <Box className='flex items-center justify-between mb-4'>
+                <Box className='flex items-center gap-2'>
+                  <IconButton
+                    size='small'
+                    onClick={() => navigateWeek('prev')}
+                    disabled={!availabilityStartDate || new Date(availabilityStartDate) <= new Date()}
+                  >
+                    <i className='tabler-chevron-left text-xl' />
+                  </IconButton>
+                  <Typography variant='subtitle2' className='min-w-[200px] text-center'>
+                    {availabilityStartDate && availabilityEndDate
+                      ? formatWeekRange(availabilityStartDate, availabilityEndDate)
+                      : ''}
+                  </Typography>
+                  <IconButton size='small' onClick={() => navigateWeek('next')}>
+                    <i className='tabler-chevron-right text-xl' />
+                  </IconButton>
+                </Box>
+                <Button
+                  variant='outlined'
+                  size='small'
+                  onClick={() => {
+                    const { start, end } = getWeekRange(new Date())
+
+                    setAvailabilityStartDate(start)
+                    setAvailabilityEndDate(end)
+                  }}
+                >
+                  {dictionary.appointments?.thisWeek || 'This Week'}
+                </Button>
+              </Box>
+
+              {/* Remove the old date pickers since we're using week navigation now */}
               <Box className='flex gap-2 mb-2'>
                 <Box className='flex items-center gap-1'>
                   <Box className='w-3 h-3 rounded-full bg-green-400' />
