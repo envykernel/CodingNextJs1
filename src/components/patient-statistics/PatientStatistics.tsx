@@ -15,40 +15,40 @@ type PatientStatisticsProps = {
 // Default data if none provided
 const defaultData: UserDataType[] = [
   {
-    title: 'Session',
-    stats: '21,459',
-    avatarIcon: 'tabler-users',
-    avatarColor: 'primary',
+    title: 'New Patients',
+    stats: '0',
+    avatarIcon: 'tabler-user-plus',
+    avatarColor: 'success',
     trend: 'positive',
-    trendNumber: '29%',
-    subtitle: 'Total User'
+    trendNumber: '0%',
+    subtitle: 'This month vs last month'
   },
   {
-    title: 'Paid Users',
-    stats: '4,567',
+    title: 'New Patients',
+    stats: '0',
     avatarIcon: 'tabler-user-plus',
+    avatarColor: 'success',
+    trend: 'positive',
+    trendNumber: '0%',
+    subtitle: 'This year vs last year'
+  },
+  {
+    title: 'Disabled Patients',
+    stats: '0',
+    avatarIcon: 'tabler-user-off',
     avatarColor: 'error',
     trend: 'positive',
-    trendNumber: '18%',
-    subtitle: 'Last week analytics'
+    trendNumber: '0%',
+    subtitle: 'This month vs last month'
   },
   {
-    title: 'Active Users',
-    stats: '19,860',
-    avatarIcon: 'tabler-user-check',
-    avatarColor: 'success',
-    trend: 'negative',
-    trendNumber: '14%',
-    subtitle: 'Last week analytics'
-  },
-  {
-    title: 'Pending Users',
-    stats: '237',
-    avatarIcon: 'tabler-user-search',
-    avatarColor: 'warning',
+    title: 'Disabled Patients',
+    stats: '0',
+    avatarIcon: 'tabler-user-off',
+    avatarColor: 'error',
     trend: 'positive',
-    trendNumber: '42%',
-    subtitle: 'Last week analytics'
+    trendNumber: '0%',
+    subtitle: 'This year vs last year'
   }
 ]
 
