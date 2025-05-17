@@ -192,12 +192,53 @@ export async function getOrganisationAvailability(organisation_id: number, start
   const start = startDate ? new Date(startDate) : new Date()
   const end = endDate ? new Date(endDate) : new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000)
 
-  // Generate all slots for each day (09:00 to 18:00, every 30 min)
-  const slotsPerDay: string[] = []
+  // Fetch organisation working hours
+  const organisation = await prisma.organisation.findUnique({
+    where: { id: organisation_id },
+    select: {
+      work_start_time: true,
+      work_end_time: true,
+      break_start_time: true,
+      break_end_time: true,
+      working_days: true
+    }
+  })
 
-  for (let hour = 9; hour < 18; hour++) {
-    slotsPerDay.push(`${hour.toString().padStart(2, '0')}:00`)
-    slotsPerDay.push(`${hour.toString().padStart(2, '0')}:30`)
+  if (!organisation) {
+    throw new Error('Organisation not found')
+  }
+
+  // Parse working hours (these are in the organisation's local time)
+  const [workStartHour, workStartMinute] = (organisation.work_start_time || '08:30').split(':').map(Number)
+  const [workEndHour, workEndMinute] = (organisation.work_end_time || '18:00').split(':').map(Number)
+  const [breakStartHour, breakStartMinute] = (organisation.break_start_time || '12:00').split(':').map(Number)
+  const [breakEndHour, breakEndMinute] = (organisation.break_end_time || '13:30').split(':').map(Number)
+
+  // Generate all slots for each day based on working hours
+  const slotsPerDay: string[] = []
+  const workingDays = organisation.working_days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+
+  // Generate slots from work start to work end, excluding break time
+  for (let hour = workStartHour; hour <= workEndHour; hour++) {
+    for (const minute of [0, 30]) {
+      // Skip if we're before work start time
+      if (hour === workStartHour && minute < workStartMinute) continue
+
+      // Skip if we're after work end time
+      if (hour === workEndHour && minute > workEndMinute) continue
+
+      // Skip if we're in break time
+      if (
+        (hour > breakStartHour || (hour === breakStartHour && minute >= breakStartMinute)) &&
+        (hour < breakEndHour || (hour === breakEndHour && minute <= breakEndMinute))
+      )
+        continue
+
+      // Format the slot time (HH:mm)
+      const slot = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+
+      slotsPerDay.push(slot)
+    }
   }
 
   // Get all appointments for the organisation in the range
@@ -218,7 +259,10 @@ export async function getOrganisationAvailability(organisation_id: number, start
 
   appointments.forEach(appt => {
     const date = appt.appointment_date.toISOString().split('T')[0]
-    const time = appt.appointment_date.toISOString().split('T')[1]?.slice(0, 5)
+
+    // Convert appointment time to local time (HH:mm)
+    const appointmentDate = new Date(appt.appointment_date)
+    const time = `${appointmentDate.getHours().toString().padStart(2, '0')}:${appointmentDate.getMinutes().toString().padStart(2, '0')}`
 
     if (!booked[date]) booked[date] = new Set()
     if (time) booked[date].add(time)
@@ -228,36 +272,37 @@ export async function getOrganisationAvailability(organisation_id: number, start
   const days: { date: string; slots: string[] }[] = []
 
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    // Check if the day is a working day
+    const dayName = d.toLocaleDateString('en-US', { weekday: 'long' })
+
+    if (!workingDays.includes(dayName)) continue
+
     const dateStr = d.toISOString().split('T')[0]
     const availableSlots: string[] = []
 
+    // For each slot, check if it's available
     for (const slot of slotsPerDay) {
-      // Construct the slot as a UTC datetime
-      const [hour, minute] = slot.split(':')
+      // Check if this slot is booked
+      const isBooked = booked[dateStr]?.has(slot) || false
 
-      const slotDate = new Date(
-        Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), Number(hour), Number(minute), 0, 0)
-      )
+      // For today, also check if the slot is in the past
+      if (dateStr === new Date().toISOString().split('T')[0]) {
+        const [slotHour, slotMinute] = slot.split(':').map(Number)
+        const now = new Date()
 
-      // Check if this slot is booked (compare in UTC)
-      const isBooked = appointments.some(appt => {
-        const apptDate = new Date(appt.appointment_date)
-
-        return (
-          apptDate.getUTCFullYear() === slotDate.getUTCFullYear() &&
-          apptDate.getUTCMonth() === slotDate.getUTCMonth() &&
-          apptDate.getUTCDate() === slotDate.getUTCDate() &&
-          apptDate.getUTCHours() === slotDate.getUTCHours() &&
-          apptDate.getUTCMinutes() === slotDate.getUTCMinutes()
-        )
-      })
+        if (now.getHours() > slotHour || (now.getHours() === slotHour && now.getMinutes() >= slotMinute)) {
+          continue // Skip past slots
+        }
+      }
 
       if (!isBooked) {
         availableSlots.push(slot)
       }
     }
 
-    days.push({ date: dateStr, slots: availableSlots })
+    if (availableSlots.length > 0) {
+      days.push({ date: dateStr, slots: availableSlots })
+    }
   }
 
   return days

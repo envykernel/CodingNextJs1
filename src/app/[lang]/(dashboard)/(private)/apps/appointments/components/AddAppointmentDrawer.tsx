@@ -44,18 +44,6 @@ type Props = {
 // Replace APPOINTMENT_TYPE_OPTIONS with keys for translation
 const APPOINTMENT_TYPE_OPTION_KEYS = ['Consultation', 'Medical Check', 'Clinical Procedure', 'Other']
 
-// Helper to convert local date+time to UTC slot string (HH:mm)
-function toUTCSlot(localDateStr: string, slot: string): string {
-  // localDateStr: 'YYYY-MM-DD', slot: 'HH:mm'
-  const [year, month, day] = localDateStr.split('-').map(Number)
-  const [hour, minute] = slot.split(':').map(Number)
-  const localDate = new Date(year, month - 1, day, hour, minute)
-  const utcHour = localDate.getUTCHours().toString().padStart(2, '0')
-  const utcMinute = localDate.getUTCMinutes().toString().padStart(2, '0')
-
-  return `${utcHour}:${utcMinute}`
-}
-
 const AddAppointmentDrawer = ({
   open,
   handleClose,
@@ -176,14 +164,13 @@ const AddAppointmentDrawer = ({
 
   // When a slot is clicked, update the form and highlight
   const handleSlotClick = (dayIso: string, slot: string) => {
-    // Compose local datetime string for the input (YYYY-MM-DDTHH:mm)
+    // Create a date string in local time (YYYY-MM-DDTHH:mm)
     const localDateTime = `${dayIso}T${slot}`
 
-    // Convert to UTC ISO string for backend
+    // Create a Date object from the local time
     const localDate = new Date(localDateTime)
-    const utcISOString = localDate.toISOString()
 
-    setValue('appointment_date', utcISOString)
+    setValue('appointment_date', localDate.toISOString())
     setSelectedSlot({ day: dayIso, time: slot })
   }
 
@@ -192,13 +179,13 @@ const AddAppointmentDrawer = ({
 
   useEffect(() => {
     if (appointmentDateValue) {
-      // Convert UTC ISO string to local date and time
-      const utcDate = new Date(appointmentDateValue)
-      const localYear = utcDate.getFullYear()
-      const localMonth = (utcDate.getMonth() + 1).toString().padStart(2, '0')
-      const localDay = utcDate.getDate().toString().padStart(2, '0')
-      const localHour = utcDate.getHours().toString().padStart(2, '0')
-      const localMinute = utcDate.getMinutes().toString().padStart(2, '0')
+      // Convert ISO string to local date and time
+      const date = new Date(appointmentDateValue)
+      const localYear = date.getFullYear()
+      const localMonth = (date.getMonth() + 1).toString().padStart(2, '0')
+      const localDay = date.getDate().toString().padStart(2, '0')
+      const localHour = date.getHours().toString().padStart(2, '0')
+      const localMinute = date.getMinutes().toString().padStart(2, '0')
       const localDateStr = `${localYear}-${localMonth}-${localDay}`
       const localTimeStr = `${localHour}:${localMinute}`
 
@@ -210,10 +197,7 @@ const AddAppointmentDrawer = ({
 
       if (dayAvailability) {
         // Check if slot is in available slots and not in the past (if today)
-        // Convert local slot to UTC slot for comparison
-        const utcSlot = toUTCSlot(localDateStr, localTimeStr)
-
-        isAvailable = dayAvailability.slots.includes(utcSlot)
+        isAvailable = dayAvailability.slots.includes(localTimeStr)
 
         if (localDateStr === new Date().toISOString().slice(0, 10)) {
           const now = new Date()
@@ -557,70 +541,31 @@ const AddAppointmentDrawer = ({
                         </Typography>
                         <Box className='flex flex-wrap gap-2'>
                           {(() => {
-                            const allSlots = [
-                              '09:00',
-                              '09:30',
-                              '10:00',
-                              '10:30',
-                              '11:00',
-                              '11:30',
-                              '12:00',
-                              '12:30',
-                              '13:00',
-                              '13:30',
-                              '14:00',
-                              '14:30',
-                              '15:00',
-                              '15:30',
-                              '16:00',
-                              '16:30',
-                              '17:00',
-                              '17:30'
-                            ]
+                            // Use the slots returned from the server for this day
+                            const daySlots = day.slots.sort((a, b) => {
+                              const [aHour, aMinute] = a.split(':').map(Number)
+                              const [bHour, bMinute] = b.split(':').map(Number)
 
-                            return allSlots.map(slot => {
-                              // Convert local slot to UTC slot for comparison
-                              const utcSlot = toUTCSlot(day.date, slot)
-                              let isAvailable = day.slots.includes(utcSlot)
+                              return aHour === bHour ? aMinute - bMinute : aHour - bHour
+                            })
 
-                              // Mark passed times for today as unavailable (in local time)
-                              if (day.date === new Date().toISOString().slice(0, 10)) {
-                                const now = new Date()
-                                const [slotHour, slotMinute] = slot.split(':').map(Number)
-
-                                if (
-                                  now.getHours() > slotHour ||
-                                  (now.getHours() === slotHour && now.getMinutes() >= slotMinute)
-                                ) {
-                                  isAvailable = false
-                                }
-                              }
+                            return daySlots.map(slot => {
+                              // Use the slot time directly without any conversion
+                              const displaySlot = slot // The slot is already in the correct format (HH:mm)
 
                               const isSelected =
-                                isAvailable &&
-                                selectedSlot &&
-                                selectedSlot.day === day.date &&
-                                selectedSlot.time === slot
+                                selectedSlot && selectedSlot.day === day.date && selectedSlot.time === displaySlot
 
                               return (
                                 <Button
                                   key={slot}
                                   variant='contained'
-                                  color={isSelected ? 'primary' : isAvailable ? 'success' : 'inherit'}
+                                  color={isSelected ? 'primary' : 'success'}
                                   size='small'
-                                  disabled={!isAvailable}
-                                  onClick={isAvailable ? () => handleSlotClick(day.date, slot) : undefined}
-                                  sx={[
-                                    isSelected ? { border: '2px solid #1976d2' } : {},
-                                    !isAvailable ? { backgroundColor: '#e0e0e0', color: '#888' } : {}
-                                  ]}
+                                  onClick={() => handleSlotClick(day.date, displaySlot)}
+                                  sx={[isSelected ? { border: '2px solid #1976d2' } : {}]}
                                 >
-                                  {slot}
-                                  {!isAvailable && (
-                                    <span style={{ fontSize: 10, marginLeft: 4 }}>
-                                      {dictionary.appointments?.unavailable || dictionary.unavailable || 'Unavailable'}
-                                    </span>
-                                  )}
+                                  {displaySlot}
                                 </Button>
                               )
                             })
