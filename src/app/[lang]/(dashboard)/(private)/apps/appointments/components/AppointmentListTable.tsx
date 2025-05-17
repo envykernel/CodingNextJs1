@@ -251,8 +251,13 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                   />
                 </TableCell>
                 <TableCell>
-                  <Button variant='text' onClick={() => router.push(`/fr/apps/appointments/details?id=${row.id}`)}>
-                    View Details
+                  <Button
+                    variant='outlined'
+                    size='small'
+                    onClick={() => router.push(`/fr/apps/appointments/details?id=${row.id}`)}
+                    startIcon={<i className='tabler-eye text-lg' />}
+                  >
+                    {t.viewDetails || 'View Details'}
                   </Button>
                   {!visitsByAppointmentId[row.id] && row.status === 'scheduled' && (
                     <Button

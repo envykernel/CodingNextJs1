@@ -22,8 +22,10 @@ const VisitActionButton: React.FC<VisitActionButtonProps> = ({ appointmentId, vi
       <Button
         variant='outlined'
         color='success'
+        size='small'
         className='ml-2'
         onClick={() => router.push(`/${lang}/apps/visits/view/${visit.id}`)}
+        startIcon={<i className='tabler-clipboard-check text-lg' />}
       >
         {t.goToVisit || 'Go to Visit'}
       </Button>
@@ -33,7 +35,8 @@ const VisitActionButton: React.FC<VisitActionButtonProps> = ({ appointmentId, vi
   return (
     <Button
       variant='outlined'
-      color='secondary'
+      color='primary'
+      size='small'
       className='ml-2'
       onClick={async () => {
         setLoading(true)
@@ -63,6 +66,7 @@ const VisitActionButton: React.FC<VisitActionButtonProps> = ({ appointmentId, vi
         }
       }}
       disabled={loading}
+      startIcon={<i className='tabler-plus text-lg' />}
     >
       {loading ? t.loading || 'Loading...' : t.createVisit || 'Create Visit'}
     </Button>
