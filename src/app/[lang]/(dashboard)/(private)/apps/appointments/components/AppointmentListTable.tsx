@@ -16,7 +16,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
   Divider,
   Select,
   MenuItem,
@@ -266,9 +265,6 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                       {t.cancelAppointment || 'Cancel Appointment'}
                     </Button>
                   )}
-                  <IconButton>
-                    <i className='tabler-trash text-textSecondary' />
-                  </IconButton>
                   <VisitActionButton appointmentId={row.id} visit={visitsByAppointmentId[row.id]} t={t} lang={lang} />
                 </TableCell>
               </TableRow>
