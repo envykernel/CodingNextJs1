@@ -25,7 +25,7 @@ type Appointment = {
   time: string
   duration: number // in minutes
   doctorName: string
-  status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled'
+  status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled'
 }
 
 type StatusColumn = {
@@ -66,7 +66,7 @@ const TodayAppointments = () => {
       color: theme.palette.info.main
     },
     {
-      id: 'in-progress',
+      id: 'in_progress',
       label: 'In Progress',
       icon: 'tabler-loader-2',
       color: theme.palette.warning.main

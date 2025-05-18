@@ -30,21 +30,31 @@ export async function POST(req: NextRequest) {
     // Calculate end time by adding 30 minutes to start time
     const endTime = new Date(new Date(appointmentDate).getTime() + 30 * 60 * 1000).toTimeString().slice(0, 5) // HH:mm
 
-    const visit = await prisma.patient_visit.create({
-      data: {
-        appointment: { connect: { id: appointment.id } },
-        patient: { connect: { id: appointment.patient_id } },
-        doctor: appointment.doctor_id ? { connect: { id: appointment.doctor_id } } : undefined,
-        organisation: { connect: { id: appointment.organisation_id } },
-        visit_date: new Date(visitDate),
-        start_time: startTime,
-        end_time: endTime,
-        status: 'scheduled',
-        notes: appointment.notes || null
-      }
-    })
+    // Create visit and update appointment status in a transaction
+    const [visit, updatedAppointment] = await prisma.$transaction([
+      // Create the visit
+      prisma.patient_visit.create({
+        data: {
+          appointment: { connect: { id: appointment.id } },
+          patient: { connect: { id: appointment.patient_id } },
+          doctor: appointment.doctor_id ? { connect: { id: appointment.doctor_id } } : undefined,
+          organisation: { connect: { id: appointment.organisation_id } },
+          visit_date: new Date(visitDate),
+          start_time: startTime,
+          end_time: endTime,
+          status: 'scheduled',
+          notes: appointment.notes || null
+        }
+      }),
 
-    return NextResponse.json({ visit }, { status: 201 })
+      // Update the appointment status
+      prisma.patient_appointment.update({
+        where: { id: appointment_id },
+        data: { status: 'in_progress' }
+      })
+    ])
+
+    return NextResponse.json({ visit, appointment: updatedAppointment }, { status: 201 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
