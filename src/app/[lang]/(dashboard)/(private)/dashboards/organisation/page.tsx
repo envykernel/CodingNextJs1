@@ -10,6 +10,7 @@ import Grid from '@mui/material/Grid'
 import PatientStatistics from '@components/patient-statistics/PatientStatistics'
 import PatientStatusOverview from '@/views/dashboards/organisation/PatientStatusOverview'
 import TodayAppointments from '@/views/dashboards/organisation/TodayAppointments'
+import ThisWeekPayments from '@/views/dashboards/organisation/ThisWeekPayments'
 
 // Type Imports
 import type { UserDataType } from '@components/card-statistics/HorizontalWithSubtitle'
@@ -90,6 +91,11 @@ const OrganisationDashboard = () => {
       {/* Today's Appointments */}
       <Grid item xs={12}>
         <TodayAppointments />
+      </Grid>
+
+      {/* This Week's Payments and Patient Status Overview */}
+      <Grid item xs={12} md={6}>
+        <ThisWeekPayments />
       </Grid>
 
       {/* Patient Status Overview */}
