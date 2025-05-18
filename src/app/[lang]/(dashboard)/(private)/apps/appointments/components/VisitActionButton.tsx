@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
-import { Button } from '@mui/material'
+import { Button, CircularProgress } from '@mui/material'
 import type { patient_visit } from '@prisma/client'
 
 interface VisitActionButtonProps {
@@ -78,7 +78,7 @@ const VisitActionButton: React.FC<VisitActionButtonProps> = ({
         }
       }}
       disabled={loading}
-      startIcon={<i className='tabler-plus text-lg' />}
+      startIcon={loading ? <CircularProgress size={20} color='inherit' /> : <i className='tabler-plus text-lg' />}
     >
       {loading ? t.loading || 'Loading...' : t.createVisit || 'Create Visit'}
     </Button>

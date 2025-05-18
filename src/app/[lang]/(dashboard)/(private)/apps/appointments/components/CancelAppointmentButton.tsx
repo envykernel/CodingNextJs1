@@ -2,7 +2,15 @@ import React, { useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText } from '@mui/material'
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+  CircularProgress
+} from '@mui/material'
 
 interface CancelAppointmentButtonProps {
   appointmentId: number
@@ -66,7 +74,7 @@ const CancelAppointmentButton: React.FC<CancelAppointmentButtonProps> = ({
         className={className}
         onClick={handleCancelClick}
         disabled={loading}
-        startIcon={<i className='tabler-x text-lg' />}
+        startIcon={loading ? <CircularProgress size={20} color='inherit' /> : <i className='tabler-x text-lg' />}
       >
         {loading ? t.loading || 'Loading...' : t.cancel || 'Cancel'}
       </Button>
@@ -82,8 +90,13 @@ const CancelAppointmentButton: React.FC<CancelAppointmentButtonProps> = ({
           <Button onClick={handleCancelClose} disabled={loading}>
             {t.cancel || 'Cancel'}
           </Button>
-          <Button onClick={handleCancelConfirm} color='error' disabled={loading}>
-            {t.confirm || 'Confirm'}
+          <Button
+            onClick={handleCancelConfirm}
+            color='error'
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={20} color='inherit' /> : undefined}
+          >
+            {loading ? t.loading || 'Loading...' : t.confirm || 'Confirm'}
           </Button>
         </DialogActions>
       </Dialog>
