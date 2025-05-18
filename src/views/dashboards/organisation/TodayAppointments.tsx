@@ -178,7 +178,7 @@ const TodayAppointments = () => {
   }
 
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card>
       <CardHeader
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -222,7 +222,7 @@ const TodayAppointments = () => {
               sx={{ backgroundColor: alpha(theme.palette.primary.main, 0.1), color: 'primary.main' }}
             />
             <Tooltip title='Refresh'>
-              <IconButton>
+              <IconButton onClick={fetchAppointments}>
                 <i className='tabler-refresh' />
               </IconButton>
             </Tooltip>
@@ -235,8 +235,6 @@ const TodayAppointments = () => {
             display: 'flex',
             gap: 2,
             p: 2,
-            height: 'calc(100vh - 300px)',
-            minHeight: 500,
             overflowX: 'auto',
             width: '100%',
             '&::-webkit-scrollbar': {
@@ -299,145 +297,152 @@ const TodayAppointments = () => {
                 {/* Column Content */}
                 <Box
                   sx={{
-                    flex: 1,
                     p: 1,
-                    overflowY: 'auto',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: 1,
-                    '&::-webkit-scrollbar': {
-                      width: '6px'
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: 'transparent'
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
-                      borderRadius: '3px',
-                      '&:hover': {
-                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.3)
-                      }
-                    }
+                    minHeight: 100
                   }}
                 >
-                  {columnAppointments.map(appointment => {
-                    const typeConfig = getAppointmentTypeConfig(appointment.type)
-                    const visit = visitsByAppointmentId[parseInt(appointment.id)]
-                    const isNavigating = navigatingVisitId === appointment.visit?.id
+                  {columnAppointments.length === 0 ? (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: 100,
+                        color: 'text.secondary',
+                        border: theme => `1px dashed ${alpha(theme.palette.divider, 0.5)}`,
+                        borderRadius: 1,
+                        backgroundColor: theme => alpha(theme.palette.background.default, 0.4)
+                      }}
+                    >
+                      <Typography variant='body2' sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <i className='tabler-calendar-off text-lg' />
+                        {t.noAppointmentsInStatus?.replace('{status}', column.label.toLowerCase()) ||
+                          `No ${column.label.toLowerCase()} appointments`}
+                      </Typography>
+                    </Box>
+                  ) : (
+                    columnAppointments.map(appointment => {
+                      const typeConfig = getAppointmentTypeConfig(appointment.type)
+                      const visit = visitsByAppointmentId[parseInt(appointment.id)]
+                      const isNavigating = navigatingVisitId === appointment.visit?.id
 
-                    return (
-                      <Paper
-                        key={appointment.id}
-                        elevation={0}
-                        sx={{
-                          p: 2,
-                          backgroundColor: 'background.paper',
-                          border: theme => `1px solid ${alpha(theme.palette.divider, 0.5)}`,
-                          borderRadius: 1,
-                          transition: 'all 0.2s ease-in-out',
-                          '&:hover': {
-                            borderColor: typeConfig.color,
-                            backgroundColor: alpha(typeConfig.color, 0.02),
-                            transform: 'translateY(-2px)',
-                            boxShadow: theme => theme.shadows[1]
-                          }
-                        }}
-                      >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              width: 32,
-                              height: 32,
-                              borderRadius: '50%',
-                              backgroundColor: alpha(typeConfig.color, 0.1),
-                              color: typeConfig.color
-                            }}
-                          >
-                            <i className={`${typeConfig.icon} text-lg`} />
-                          </Box>
-                          <Box sx={{ flex: 1 }}>
-                            <Typography variant='subtitle2' sx={{ fontWeight: 600 }}>
-                              {appointment.patientName}
-                            </Typography>
-                            <Typography variant='caption' sx={{ color: 'text.secondary' }}>
-                              {appointment.doctorName}
-                            </Typography>
-                          </Box>
-                        </Box>
-
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <i className='tabler-clock text-base' style={{ color: theme.palette.text.secondary }} />
-                            <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-                              {appointment.time}
-                            </Typography>
-                            <Typography variant='caption' sx={{ color: 'text.secondary' }}>
-                              ({appointment.duration} min)
-                            </Typography>
-                          </Box>
-                          <Chip
-                            label={appointment.type}
-                            size='small'
-                            sx={{
-                              backgroundColor: alpha(typeConfig.color, 0.1),
-                              color: typeConfig.color,
-                              textTransform: 'capitalize',
-                              height: 24
-                            }}
-                          />
-                        </Box>
-
-                        {/* Add Visit Action Button and Cancel Button for scheduled appointments */}
-                        <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                          {appointment.visit?.id ? (
-                            <Button
-                              variant='contained'
-                              color='success'
-                              size='small'
-                              fullWidth
-                              onClick={() => handleVisitClick(appointment.visit!.id)}
-                              disabled={isNavigating}
-                              startIcon={
-                                isNavigating ? (
-                                  <CircularProgress size={20} color='inherit' />
-                                ) : (
-                                  <i className='tabler-clipboard-check text-lg' />
-                                )
-                              }
+                      return (
+                        <Paper
+                          key={appointment.id}
+                          elevation={0}
+                          sx={{
+                            p: 2,
+                            backgroundColor: 'background.paper',
+                            border: theme => `1px solid ${alpha(theme.palette.divider, 0.5)}`,
+                            borderRadius: 1,
+                            transition: 'all 0.2s ease-in-out',
+                            '&:hover': {
+                              borderColor: typeConfig.color,
+                              backgroundColor: alpha(typeConfig.color, 0.02),
+                              transform: 'translateY(-2px)',
+                              boxShadow: theme => theme.shadows[1]
+                            }
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: 32,
+                                height: 32,
+                                borderRadius: '50%',
+                                backgroundColor: alpha(typeConfig.color, 0.1),
+                                color: typeConfig.color
+                              }}
                             >
-                              {isNavigating ? t.loading || 'Loading...' : t.goToVisit || 'Go to Visit'}
-                            </Button>
-                          ) : (
-                            appointment.status === 'scheduled' && (
-                              <Box sx={{ display: 'flex', gap: 1 }}>
-                                <VisitActionButton
-                                  appointmentId={parseInt(appointment.id)}
-                                  visit={visit}
-                                  t={t}
-                                  lang='fr'
-                                  size='small'
-                                  variant='contained'
-                                  className='flex-1'
-                                  onVisitCreated={handleAppointmentCancelled}
-                                />
-                                <CancelAppointmentButton
-                                  appointmentId={parseInt(appointment.id)}
-                                  t={t}
-                                  size='small'
-                                  variant='outlined'
-                                  className='flex-1'
-                                  onAppointmentCancelled={handleAppointmentCancelled}
-                                />
-                              </Box>
-                            )
-                          )}
-                        </Box>
-                      </Paper>
-                    )
-                  })}
+                              <i className={`${typeConfig.icon} text-lg`} />
+                            </Box>
+                            <Box sx={{ flex: 1 }}>
+                              <Typography variant='subtitle2' sx={{ fontWeight: 600 }}>
+                                {appointment.patientName}
+                              </Typography>
+                              <Typography variant='caption' sx={{ color: 'text.secondary' }}>
+                                {appointment.doctorName}
+                              </Typography>
+                            </Box>
+                          </Box>
+
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <i className='tabler-clock text-base' style={{ color: theme.palette.text.secondary }} />
+                              <Typography variant='body2' sx={{ color: 'text.secondary' }}>
+                                {appointment.time}
+                              </Typography>
+                              <Typography variant='caption' sx={{ color: 'text.secondary' }}>
+                                ({appointment.duration} min)
+                              </Typography>
+                            </Box>
+                            <Chip
+                              label={appointment.type}
+                              size='small'
+                              sx={{
+                                backgroundColor: alpha(typeConfig.color, 0.1),
+                                color: typeConfig.color,
+                                textTransform: 'capitalize',
+                                height: 24
+                              }}
+                            />
+                          </Box>
+
+                          {/* Add Visit Action Button and Cancel Button for scheduled appointments */}
+                          <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            {appointment.visit?.id ? (
+                              <Button
+                                variant='contained'
+                                color='success'
+                                size='small'
+                                fullWidth
+                                onClick={() => handleVisitClick(appointment.visit!.id)}
+                                disabled={isNavigating}
+                                startIcon={
+                                  isNavigating ? (
+                                    <CircularProgress size={20} color='inherit' />
+                                  ) : (
+                                    <i className='tabler-clipboard-check text-lg' />
+                                  )
+                                }
+                              >
+                                {isNavigating ? t.loading || 'Loading...' : t.goToVisit || 'Go to Visit'}
+                              </Button>
+                            ) : (
+                              appointment.status === 'scheduled' && (
+                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                  <VisitActionButton
+                                    appointmentId={parseInt(appointment.id)}
+                                    visit={visit}
+                                    t={t}
+                                    lang='fr'
+                                    size='small'
+                                    variant='contained'
+                                    className='flex-1'
+                                    onVisitCreated={handleAppointmentCancelled}
+                                  />
+                                  <CancelAppointmentButton
+                                    appointmentId={parseInt(appointment.id)}
+                                    t={t}
+                                    size='small'
+                                    variant='outlined'
+                                    className='flex-1'
+                                    onAppointmentCancelled={handleAppointmentCancelled}
+                                  />
+                                </Box>
+                              )
+                            )}
+                          </Box>
+                        </Paper>
+                      )
+                    })
+                  )}
                 </Box>
               </Paper>
             )
