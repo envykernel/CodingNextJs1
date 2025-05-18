@@ -8,9 +8,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const { status, action } = await req.json()
     const visitId = parseInt(params.id)
 
-    // Get the current visit
+    // Get the current visit with its appointment
     const visit = await prisma.patient_visit.findUnique({
-      where: { id: visitId }
+      where: { id: visitId },
+      include: {
+        appointment: true
+      }
     })
 
     if (!visit) {
@@ -43,23 +46,32 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
       }
 
-      // Prepare update data
-      const updateData: any = { status }
+      // Prepare update data for visit
+      const visitUpdateData: any = { status }
 
       // If completing the visit, update end time to current time
       if (status === 'completed') {
         const now = new Date()
 
-        updateData.end_time = now.toTimeString().slice(0, 5) // HH:mm format
+        visitUpdateData.end_time = now.toTimeString().slice(0, 5) // HH:mm format
       }
 
-      // Update the visit
-      const updatedVisit = await prisma.patient_visit.update({
-        where: { id: visitId },
-        data: updateData
-      })
+      // Update both visit and appointment in a transaction
+      const [updatedVisit, updatedAppointment] = await prisma.$transaction([
+        // Update the visit
+        prisma.patient_visit.update({
+          where: { id: visitId },
+          data: visitUpdateData
+        }),
 
-      return NextResponse.json({ visit: updatedVisit })
+        // Update the appointment status to match the visit status
+        prisma.patient_appointment.update({
+          where: { id: visit.appointment_id! },
+          data: { status }
+        })
+      ])
+
+      return NextResponse.json({ visit: updatedVisit, appointment: updatedAppointment })
     }
 
     return NextResponse.json({ error: 'Invalid action or status' }, { status: 400 })
