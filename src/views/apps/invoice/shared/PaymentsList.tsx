@@ -128,7 +128,7 @@ const PaymentsList = ({ payments, invoice, services, t, onPaymentDeleted }: any)
                       </Tooltip>
                     </div>
                     <Typography variant='caption' color='text.disabled'>
-                      {p.payment?.payment_date ? new Date(p.payment.payment_date).toLocaleDateString() : '-'}
+                      {p.payment?.payment_date ? new Date(p.payment.payment_date).toISOString().split('T')[0] : '-'}
                     </Typography>
                   </div>
                 </TimelineContent>

@@ -50,7 +50,33 @@ const PreviewPage = async (props: { params: Promise<{ id: string }> }) => {
       },
       patient: true,
       organisation: true,
-      payment_apps: true
+      payment_apps: {
+        include: {
+          payment: {
+            select: {
+              id: true,
+              payment_date: true,
+              receipt_number: true,
+              payment_method: true,
+              amount: true,
+              notes: true,
+              transaction_id: true,
+              created_at: true,
+              updated_at: true
+            }
+          },
+          invoice_line: {
+            select: {
+              id: true,
+              service_id: true,
+              description: true,
+              quantity: true,
+              unit_price: true,
+              line_total: true
+            }
+          }
+        }
+      }
     }
   })
 
@@ -75,7 +101,20 @@ const PreviewPage = async (props: { params: Promise<{ id: string }> }) => {
     })),
     payment_apps: invoice.payment_apps.map(app => ({
       ...app,
-      amount_applied: Number(app.amount_applied)
+      amount_applied: Number(app.amount_applied),
+      payment: app.payment
+        ? {
+            ...app.payment,
+            amount: Number(app.payment.amount)
+          }
+        : null,
+      invoice_line: app.invoice_line
+        ? {
+            ...app.invoice_line,
+            unit_price: Number(app.invoice_line.unit_price),
+            line_total: Number(app.invoice_line.line_total)
+          }
+        : null
     }))
   }
 

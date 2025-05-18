@@ -48,7 +48,7 @@ const PreviewActions = ({
       .then(setServices)
   }, [])
 
-  const payments = Array.isArray(invoice?.payment_applications) ? invoice.payment_applications : []
+  const payments = Array.isArray(invoice?.payment_apps) ? invoice.payment_apps : []
 
   return (
     <>

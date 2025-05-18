@@ -244,8 +244,8 @@ const EditCard = ({ invoice }: EditCardProps) => {
             </Grid>
             <Grid size={{ xs: 12 }}>
               {items.map((item: any, idx: number) => {
-                const hasPayments = Array.isArray(invoice?.payment_applications)
-                  ? invoice.payment_applications.some((pa: any) => pa.invoice_line_id === item.id)
+                const hasPayments = Array.isArray(invoice?.payment_apps)
+                  ? invoice.payment_apps.some((pa: any) => pa.invoice_line_id === item.id)
                   : false
 
                 return (

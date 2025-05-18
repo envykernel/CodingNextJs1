@@ -4,9 +4,7 @@ import Typography from '@mui/material/Typography'
 const PaymentProgress = ({ invoice, t }: { invoice: any; t: any }) => {
   const total = Number(invoice?.total_amount || 0)
 
-  const paid = Number(
-    invoice?.payment_applications?.reduce((sum: number, p: any) => sum + Number(p.amount_applied), 0) || 0
-  )
+  const paid = Number(invoice?.payment_apps?.reduce((sum: number, p: any) => sum + Number(p.amount_applied), 0) || 0)
 
   const remaining = total - paid
   const percent = total ? Math.min(100, (paid / total) * 100) : 0

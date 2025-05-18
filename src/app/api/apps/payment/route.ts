@@ -22,6 +22,34 @@ export async function POST(req: NextRequest) {
 
     const mappedPaymentMethod = paymentMethodMap[payment_method] || 'OTHER'
 
+    // Get the invoice and its existing payments
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoice_id },
+      include: {
+        payment_apps: true
+      }
+    })
+
+    if (!invoice) {
+      return NextResponse.json({ success: false, error: 'Invoice not found' }, { status: 404 })
+    }
+
+    // Calculate total amount paid so far
+    const totalPaid = invoice.payment_apps.reduce((sum, app) => sum + Number(app.amount_applied), 0)
+    const remainingBalance = Number(invoice.total_amount) - totalPaid
+
+    // Check if the new payment would exceed the remaining balance
+    if (Number(amount) > remainingBalance) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Payment amount (${amount}) exceeds remaining balance (${remainingBalance})`,
+          remainingBalance
+        },
+        { status: 400 }
+      )
+    }
+
     // 1. Create payment
     const payment = await prisma.payment.create({
       data: {
@@ -45,6 +73,16 @@ export async function POST(req: NextRequest) {
         amount_applied: amount,
         applied_date: new Date(payment_date)
       }
+    })
+
+    // 3. Update invoice status based on new total paid
+    const newTotalPaid = totalPaid + Number(amount)
+
+    const newStatus = newTotalPaid >= Number(invoice.total_amount) ? 'PAID' : newTotalPaid > 0 ? 'PARTIAL' : 'PENDING'
+
+    await prisma.invoice.update({
+      where: { id: invoice_id },
+      data: { status: newStatus }
     })
 
     return NextResponse.json({ success: true })
