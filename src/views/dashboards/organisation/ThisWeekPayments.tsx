@@ -17,7 +17,9 @@ import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import { useTheme } from '@mui/material/styles'
+import { useTheme, alpha } from '@mui/material/styles'
+import TableFooter from '@mui/material/TableFooter'
+import Paper from '@mui/material/Paper'
 
 // Type Imports
 import type { PaymentMethod } from '@prisma/client'
@@ -118,80 +120,214 @@ const ThisWeekPayments = () => {
   const totalAmount = payments.reduce((sum, payment) => sum + Number(payment.amount), 0)
 
   return (
-    <Card>
+    <Card
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        '& .MuiCardContent-root': {
+          flex: 1,
+          p: 0
+        }
+      }}
+    >
       <CardHeader
         title={
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: 40,
-                height: 40,
+                width: 42,
+                height: 42,
                 borderRadius: '50%',
-                backgroundColor: theme.palette.primary.light,
-                color: theme.palette.primary.main
+                backgroundColor: alpha(theme.palette.primary.main, 0.12),
+                color: theme.palette.primary.main,
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                  transform: 'scale(1.05)'
+                }
               }}
             >
-              <i className='tabler-cash text-xl' />
+              <i className='tabler-cash text-2xl' />
             </Box>
             <Box>
-              <Typography variant='h5'>This Week&apos;s Payments</Typography>
-              <Typography variant='subtitle2' color='text.secondary'>
+              <Typography variant='h5' sx={{ mb: 0.5, fontWeight: 500 }}>
+                This Week&apos;s Payments
+              </Typography>
+              <Typography
+                variant='subtitle2'
+                sx={{
+                  color: 'text.secondary',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1
+                }}
+              >
+                <i className='tabler-currency-dollar text-lg' />
                 Total: {formatAmount(totalAmount)}
               </Typography>
             </Box>
           </Box>
         }
+        sx={{
+          pb: 2,
+          '& .MuiCardHeader-content': {
+            overflow: 'hidden'
+          }
+        }}
       />
       <CardContent>
-        <TableContainer>
+        <TableContainer
+          component={Paper}
+          sx={{
+            boxShadow: 'none',
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 1,
+            '& .MuiTable-root': {
+              borderCollapse: 'separate',
+              borderSpacing: 0
+            }
+          }}
+        >
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Receipt #</TableCell>
-                <TableCell>Patient</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Method</TableCell>
-                <TableCell align='right'>Amount</TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 600,
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                    py: 2.5
+                  }}
+                >
+                  Receipt #
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 600,
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                    py: 2.5
+                  }}
+                >
+                  Patient
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 600,
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                    py: 2.5
+                  }}
+                >
+                  Date
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: 600,
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                    py: 2.5
+                  }}
+                >
+                  Method
+                </TableCell>
+                <TableCell
+                  align='right'
+                  sx={{
+                    fontWeight: 600,
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                    py: 2.5
+                  }}
+                >
+                  Amount
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {payments.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} align='center'>
-                    No payments found for this week
+                  <TableCell colSpan={5} align='center' sx={{ py: 8 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                      <i className='tabler-cash-off text-4xl' style={{ color: theme.palette.text.disabled }} />
+                      <Typography color='text.secondary'>No payments found for this week</Typography>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ) : (
                 <>
                   {payments.map(payment => (
-                    <TableRow key={payment.id}>
-                      <TableCell>{payment.receipt_number}</TableCell>
-                      <TableCell>{payment.patient.name}</TableCell>
-                      <TableCell>{formatDate(payment.payment_date)}</TableCell>
-                      <TableCell>
+                    <TableRow
+                      key={payment.id}
+                      sx={{
+                        '&:hover': {
+                          backgroundColor: theme => alpha(theme.palette.primary.main, 0.04)
+                        },
+                        '&:last-child td': { borderBottom: 0 }
+                      }}
+                    >
+                      <TableCell sx={{ py: 2.5 }}>{payment.receipt_number}</TableCell>
+                      <TableCell sx={{ py: 2.5 }}>{payment.patient.name}</TableCell>
+                      <TableCell sx={{ py: 2.5 }}>{formatDate(payment.payment_date)}</TableCell>
+                      <TableCell sx={{ py: 2.5 }}>
                         <Chip
                           label={payment.payment_method.replace('_', ' ')}
                           color={getPaymentMethodColor(payment.payment_method)}
                           size='small'
+                          sx={{
+                            fontWeight: 500,
+                            '& .MuiChip-label': { px: 1.5 }
+                          }}
                         />
                       </TableCell>
-                      <TableCell align='right'>{formatAmount(payment.amount)}</TableCell>
+                      <TableCell align='right' sx={{ py: 2.5, fontWeight: 500 }}>
+                        {formatAmount(payment.amount)}
+                      </TableCell>
                     </TableRow>
                   ))}
-                  <TableRow>
-                    <TableCell colSpan={4} align='right' sx={{ fontWeight: 'bold' }}>
-                      Total
-                    </TableCell>
-                    <TableCell align='right' sx={{ fontWeight: 'bold' }}>
-                      {formatAmount(totalAmount)}
-                    </TableCell>
-                  </TableRow>
                 </>
               )}
             </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  align='right'
+                  sx={{
+                    py: 2.5,
+                    fontWeight: 600,
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                    borderTop: '1px solid',
+                    borderColor: 'divider'
+                  }}
+                >
+                  Total
+                </TableCell>
+                <TableCell
+                  align='right'
+                  sx={{
+                    py: 2.5,
+                    fontWeight: 600,
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                    borderTop: '1px solid',
+                    borderColor: 'divider',
+                    color: 'primary.main'
+                  }}
+                >
+                  {formatAmount(totalAmount)}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
           </Table>
         </TableContainer>
       </CardContent>
