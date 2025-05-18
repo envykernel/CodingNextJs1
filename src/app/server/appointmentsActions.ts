@@ -93,7 +93,17 @@ export async function getAppointments({
       where,
       include: {
         patient: true,
-        doctor: true
+        doctor: true,
+        patient_visits: {
+          select: {
+            id: true,
+            status: true
+          },
+          take: 1,
+          orderBy: {
+            created_at: 'desc'
+          }
+        }
       }
     }),
     prisma.patient_appointment.count({ where })
@@ -106,7 +116,8 @@ export async function getAppointments({
     appointmentDate: appt.appointment_date.toISOString(),
     type: appt.appointment_type || '',
     status: appt.status || '',
-    doctorName: appt.doctor?.name || ''
+    doctorName: appt.doctor?.name || '',
+    visit: appt.patient_visits[0] || undefined
   }))
 
   // Static options

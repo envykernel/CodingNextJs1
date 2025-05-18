@@ -3,6 +3,8 @@
 // React Imports
 import { useEffect, useState } from 'react'
 
+import { useRouter } from 'next/navigation'
+
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
@@ -14,6 +16,8 @@ import { useTheme, alpha } from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import Paper from '@mui/material/Paper'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 
 // Contexts
 import { useTranslation } from '@/contexts/translationContext'
@@ -50,6 +54,8 @@ const TodayAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [visitsByAppointmentId, setVisitsByAppointmentId] = useState<Record<number, any>>({})
+  const [navigatingVisitId, setNavigatingVisitId] = useState<number | null>(null)
+  const router = useRouter()
 
   // Appointment type configurations with fallback
   const appointmentTypes: Record<AppointmentType, { label: string; color: string; icon: string }> = {
@@ -151,6 +157,11 @@ const TodayAppointments = () => {
   const handleAppointmentCancelled = () => {
     // Refresh the appointments list
     fetchAppointments()
+  }
+
+  const handleVisitClick = (visitId: number) => {
+    setNavigatingVisitId(visitId)
+    router.push(`/fr/apps/visits/view/${visitId}`)
   }
 
   if (loading) {
@@ -312,6 +323,7 @@ const TodayAppointments = () => {
                   {columnAppointments.map(appointment => {
                     const typeConfig = getAppointmentTypeConfig(appointment.type)
                     const visit = visitsByAppointmentId[parseInt(appointment.id)]
+                    const isNavigating = navigatingVisitId === appointment.visit?.id
 
                     return (
                       <Paper
@@ -379,30 +391,50 @@ const TodayAppointments = () => {
                         </Box>
 
                         {/* Add Visit Action Button and Cancel Button for scheduled appointments */}
-                        {appointment.status === 'scheduled' && (
-                          <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                            <Box sx={{ display: 'flex', gap: 1 }}>
-                              <VisitActionButton
-                                appointmentId={parseInt(appointment.id)}
-                                visit={visit}
-                                t={t}
-                                lang='fr'
-                                size='small'
-                                variant='contained'
-                                className='flex-1'
-                                onVisitCreated={handleAppointmentCancelled}
-                              />
-                              <CancelAppointmentButton
-                                appointmentId={parseInt(appointment.id)}
-                                t={t}
-                                size='small'
-                                variant='outlined'
-                                className='flex-1'
-                                onAppointmentCancelled={handleAppointmentCancelled}
-                              />
-                            </Box>
-                          </Box>
-                        )}
+                        <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                          {appointment.visit?.id ? (
+                            <Button
+                              variant='contained'
+                              color='success'
+                              size='small'
+                              fullWidth
+                              onClick={() => handleVisitClick(appointment.visit!.id)}
+                              disabled={isNavigating}
+                              startIcon={
+                                isNavigating ? (
+                                  <CircularProgress size={20} color='inherit' />
+                                ) : (
+                                  <i className='tabler-clipboard-check text-lg' />
+                                )
+                              }
+                            >
+                              {isNavigating ? t.loading || 'Loading...' : t.goToVisit || 'Go to Visit'}
+                            </Button>
+                          ) : (
+                            appointment.status === 'scheduled' && (
+                              <Box sx={{ display: 'flex', gap: 1 }}>
+                                <VisitActionButton
+                                  appointmentId={parseInt(appointment.id)}
+                                  visit={visit}
+                                  t={t}
+                                  lang='fr'
+                                  size='small'
+                                  variant='contained'
+                                  className='flex-1'
+                                  onVisitCreated={handleAppointmentCancelled}
+                                />
+                                <CancelAppointmentButton
+                                  appointmentId={parseInt(appointment.id)}
+                                  t={t}
+                                  size='small'
+                                  variant='outlined'
+                                  className='flex-1'
+                                  onAppointmentCancelled={handleAppointmentCancelled}
+                                />
+                              </Box>
+                            )
+                          )}
+                        </Box>
                       </Paper>
                     )
                   })}
