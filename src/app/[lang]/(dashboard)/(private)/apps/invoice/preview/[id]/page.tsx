@@ -25,17 +25,32 @@ import { prisma } from '@/prisma/prisma'
   return res.json()
 } */
 
-const PreviewPage = async (props: { params: { id: string } }) => {
-  const { id } = props.params
+const PreviewPage = async (props: { params: Promise<{ id: string }> }) => {
+  const { id } = await props.params
 
   // Fetch the invoice by ID from the database
   const invoice = await prisma.invoice.findUnique({
     where: { id: Number(id) },
     include: {
-      lines: { include: { service: true } },
+      lines: {
+        include: {
+          service: {
+            select: {
+              id: true,
+              code: true,
+              name: true,
+              description: true,
+              amount: true,
+              is_active: true,
+              created_at: true,
+              updated_at: true
+            }
+          }
+        }
+      },
       patient: true,
       organisation: true,
-      payment_applications: true
+      payment_apps: true
     }
   })
 
@@ -43,7 +58,28 @@ const PreviewPage = async (props: { params: { id: string } }) => {
     redirect('/not-found')
   }
 
-  return <Preview invoiceData={invoice} id={id} />
+  // Convert Decimal values to numbers for client component
+  const serializedInvoice = {
+    ...invoice,
+    total_amount: Number(invoice.total_amount),
+    lines: invoice.lines.map(line => ({
+      ...line,
+      unit_price: Number(line.unit_price),
+      line_total: Number(line.line_total),
+      service: line.service
+        ? {
+            ...line.service,
+            amount: Number(line.service.amount)
+          }
+        : null
+    })),
+    payment_apps: invoice.payment_apps.map(app => ({
+      ...app,
+      amount_applied: Number(app.amount_applied)
+    }))
+  }
+
+  return <Preview invoiceData={serializedInvoice} id={id} />
 }
 
 export default PreviewPage

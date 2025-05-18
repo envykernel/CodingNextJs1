@@ -21,13 +21,12 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  IconButton,
-  Tooltip
+  IconButton
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+
+import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
+import CustomTextField from '@core/components/mui/TextField'
 
 import { useTranslation, TranslationProvider } from '@/contexts/translationContext'
 import AddAppointmentDrawer from './AddAppointmentDrawer'
@@ -208,43 +207,30 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
               ))}
             </Select>
           </FormControl>
-
-          {/* Date Range Pickers with Clear Button */}
           <div className='flex items-center gap-2'>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label='Start Date'
-                value={startDate}
-                onChange={newValue => {
-                  setStartDate(newValue)
-                  handleDateRangeChange(newValue, endDate)
-                }}
-                slotProps={{ textField: { size: 'small', sx: { width: 160 } } }}
-              />
-              <DatePicker
-                label='End Date'
-                value={endDate}
-                onChange={newValue => {
-                  setEndDate(newValue)
-                  handleDateRangeChange(startDate, newValue)
-                }}
-                slotProps={{ textField: { size: 'small', sx: { width: 160 } } }}
-                minDate={startDate || undefined}
-              />
-            </LocalizationProvider>
+            <AppReactDatepicker
+              selected={startDate}
+              onChange={(date: Date | null) => handleDateRangeChange(date, endDate)}
+              selectsStart
+              startDate={startDate || undefined}
+              endDate={endDate || undefined}
+              placeholderText='Start Date'
+              customInput={<CustomTextField fullWidth size='small' />}
+            />
+            <AppReactDatepicker
+              selected={endDate}
+              onChange={(date: Date | null) => handleDateRangeChange(startDate, date)}
+              selectsEnd
+              startDate={startDate || undefined}
+              endDate={endDate || undefined}
+              minDate={startDate || undefined}
+              placeholderText='End Date'
+              customInput={<CustomTextField fullWidth size='small' />}
+            />
             {(startDate || endDate) && (
-              <Tooltip title={t.clearDateRange || 'Clear date range'}>
-                <IconButton
-                  size='small'
-                  onClick={handleClearDateRange}
-                  sx={{
-                    color: 'text.secondary',
-                    '&:hover': { color: 'error.main' }
-                  }}
-                >
-                  <i className='tabler-x text-lg' />
-                </IconButton>
-              </Tooltip>
+              <IconButton onClick={handleClearDateRange} size='small'>
+                <i className='tabler-x' />
+              </IconButton>
             )}
           </div>
         </div>

@@ -35,7 +35,7 @@ export const getInvoiceData = async () => {
       patient: true,
       organisation: true,
       lines: { include: { service: true } },
-      payment_applications: true
+      payment_apps: true
     },
     orderBy: { id: 'desc' }
   })
@@ -43,14 +43,14 @@ export const getInvoiceData = async () => {
   // Map Prisma results to InvoiceType expected by the UI
   return invoices.map(inv => {
     const firstLine = inv.lines[0] || {}
-    const totalPaid = inv.payment_applications.reduce((sum, p) => sum + Number(p.amount_applied), 0)
+    const totalPaid = inv.payment_apps.reduce((sum, p) => sum + Number(p.amount_applied), 0)
     const balance = Number(inv.total_amount) - totalPaid
 
     // Debug log for backend calculation
     console.log('[DEBUG] Invoice:', {
       id: inv.id,
       total_amount: inv.total_amount,
-      payment_applications: inv.payment_applications,
+      payment_apps: inv.payment_apps,
       totalPaid,
       balance
     })

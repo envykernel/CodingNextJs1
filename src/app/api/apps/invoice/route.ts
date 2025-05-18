@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
         visit: true,
         organisation: true,
         patient: true,
-        payment_applications: {
+        payment_apps: {
           include: {
             payment: true
           }
@@ -237,7 +237,7 @@ export async function PUT(req: NextRequest) {
       visit: true,
       organisation: true,
       patient: true,
-      payment_applications: {
+      payment_apps: {
         include: {
           payment: true
         }
