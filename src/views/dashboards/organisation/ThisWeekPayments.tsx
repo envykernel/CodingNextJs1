@@ -165,21 +165,31 @@ const ThisWeekPayments = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                payments.map(payment => (
-                  <TableRow key={payment.id}>
-                    <TableCell>{payment.receipt_number}</TableCell>
-                    <TableCell>{payment.patient.name}</TableCell>
-                    <TableCell>{formatDate(payment.payment_date)}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={payment.payment_method.replace('_', ' ')}
-                        color={getPaymentMethodColor(payment.payment_method)}
-                        size='small'
-                      />
+                <>
+                  {payments.map(payment => (
+                    <TableRow key={payment.id}>
+                      <TableCell>{payment.receipt_number}</TableCell>
+                      <TableCell>{payment.patient.name}</TableCell>
+                      <TableCell>{formatDate(payment.payment_date)}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={payment.payment_method.replace('_', ' ')}
+                          color={getPaymentMethodColor(payment.payment_method)}
+                          size='small'
+                        />
+                      </TableCell>
+                      <TableCell align='right'>{formatAmount(payment.amount)}</TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow>
+                    <TableCell colSpan={4} align='right' sx={{ fontWeight: 'bold' }}>
+                      Total
                     </TableCell>
-                    <TableCell align='right'>{formatAmount(payment.amount)}</TableCell>
+                    <TableCell align='right' sx={{ fontWeight: 'bold' }}>
+                      {formatAmount(totalAmount)}
+                    </TableCell>
                   </TableRow>
-                ))
+                </>
               )}
             </TableBody>
           </Table>
