@@ -21,11 +21,6 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
   IconButton,
   Tooltip
 } from '@mui/material'
@@ -38,6 +33,7 @@ import { useTranslation, TranslationProvider } from '@/contexts/translationConte
 import AddAppointmentDrawer from './AddAppointmentDrawer'
 import { LocalDate, LocalTime } from '@/components/LocalTime'
 import VisitActionButton from './VisitActionButton'
+import CancelAppointmentButton from './CancelAppointmentButton'
 import type { PatientType } from '@/views/apps/patient/list/PatientListTable'
 
 interface AppointmentListTableProps {
@@ -88,9 +84,6 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   const endDateParam = searchParams?.get('endDate') || ''
   const t = useTranslation()
   const [addOpen, setAddOpen] = useState(false)
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
-  const [appointmentToCancel, setAppointmentToCancel] = useState<number | null>(null)
-  const [isCancelling, setIsCancelling] = useState(false)
 
   // State for date pickers
   const [startDate, setStartDate] = useState<Date | null>(startDateParam ? new Date(startDateParam) : null)
@@ -165,42 +158,6 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
 
     params.set('page', '1')
     router.push(`${pathname}?${params.toString()}`)
-  }
-
-  const handleCancelClick = (appointmentId: number) => {
-    setAppointmentToCancel(appointmentId)
-    setCancelDialogOpen(true)
-  }
-
-  const handleCancelConfirm = async () => {
-    if (!appointmentToCancel) return
-
-    setIsCancelling(true)
-
-    try {
-      const res = await fetch(`/api/appointments/${appointmentToCancel}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'Cancelled' })
-      })
-
-      if (res.ok) {
-        router.refresh()
-      } else {
-        console.error('Failed to cancel appointment')
-      }
-    } catch (error) {
-      console.error('Error cancelling appointment:', error)
-    } finally {
-      setIsCancelling(false)
-      setCancelDialogOpen(false)
-      setAppointmentToCancel(null)
-    }
-  }
-
-  const handleCancelClose = () => {
-    setCancelDialogOpen(false)
-    setAppointmentToCancel(null)
   }
 
   const handleClearDateRange = () => {
@@ -344,26 +301,36 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                   />
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant='outlined'
-                    size='small'
-                    onClick={() => router.push(`/fr/apps/appointments/details?id=${row.id}`)}
-                    startIcon={<i className='tabler-eye text-lg' />}
-                  >
-                    {t.viewDetails || 'View Details'}
-                  </Button>
-                  {!visitsByAppointmentId[row.id] && row.status === 'scheduled' && (
+                  <div className='flex items-center gap-2'>
                     <Button
                       variant='outlined'
-                      color='error'
                       size='small'
-                      className='ml-2'
-                      onClick={() => handleCancelClick(row.id)}
+                      onClick={() => router.push(`/fr/apps/appointments/details?id=${row.id}`)}
+                      startIcon={<i className='tabler-eye text-lg' />}
                     >
-                      {t.cancelAppointment || 'Cancel Appointment'}
+                      {t.viewDetails || 'View Details'}
                     </Button>
-                  )}
-                  <VisitActionButton appointmentId={row.id} visit={visitsByAppointmentId[row.id]} t={t} lang={lang} />
+                    {row.status === 'scheduled' && (
+                      <>
+                        <VisitActionButton
+                          appointmentId={row.id}
+                          visit={visitsByAppointmentId[row.id]}
+                          t={t}
+                          lang={lang}
+                          size='small'
+                          variant='contained'
+                          onVisitCreated={() => router.refresh()}
+                        />
+                        <CancelAppointmentButton
+                          appointmentId={row.id}
+                          t={t}
+                          size='small'
+                          variant='outlined'
+                          onAppointmentCancelled={() => router.refresh()}
+                        />
+                      </>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -389,22 +356,6 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
           onAppointmentCreated={() => router.refresh()}
         />
       </TranslationProvider>
-      <Dialog open={cancelDialogOpen} onClose={handleCancelClose}>
-        <DialogTitle>{t.confirmCancellation || 'Confirm Cancellation'}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {t.cancelAppointmentConfirmation || 'Are you sure you want to cancel this appointment?'}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelClose} disabled={isCancelling}>
-            {t.common?.cancel || 'Cancel'}
-          </Button>
-          <Button onClick={handleCancelConfirm} color='error' disabled={isCancelling}>
-            {isCancelling ? t.loading || 'Loading...' : t.confirm || 'Confirm'}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Card>
   )
 }

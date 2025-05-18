@@ -11,19 +11,31 @@ interface VisitActionButtonProps {
   t: any
   lang: string
   onVisitCreated?: () => void
+  size?: 'small' | 'medium' | 'large'
+  variant?: 'text' | 'outlined' | 'contained'
+  className?: string
 }
 
-const VisitActionButton: React.FC<VisitActionButtonProps> = ({ appointmentId, visit, t, lang, onVisitCreated }) => {
+const VisitActionButton: React.FC<VisitActionButtonProps> = ({
+  appointmentId,
+  visit,
+  t,
+  lang,
+  onVisitCreated,
+  size = 'small',
+  variant = 'outlined',
+  className = ''
+}) => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
   if (visit) {
     return (
       <Button
-        variant='outlined'
+        variant={variant}
         color='success'
-        size='small'
-        className='ml-2'
+        size={size}
+        className={`ml-2 ${className}`}
         onClick={() => router.push(`/${lang}/apps/visits/view/${visit.id}`)}
         startIcon={<i className='tabler-clipboard-check text-lg' />}
       >
@@ -34,10 +46,10 @@ const VisitActionButton: React.FC<VisitActionButtonProps> = ({ appointmentId, vi
 
   return (
     <Button
-      variant='outlined'
+      variant={variant}
       color='primary'
-      size='small'
-      className='ml-2'
+      size={size}
+      className={`ml-2 ${className}`}
       onClick={async () => {
         setLoading(true)
 

@@ -15,6 +15,11 @@ import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import Paper from '@mui/material/Paper'
 
+// Contexts
+import { useTranslation } from '@/contexts/translationContext'
+import VisitActionButton from '@/app/[lang]/(dashboard)/(private)/apps/appointments/components/VisitActionButton'
+import CancelAppointmentButton from '@/app/[lang]/(dashboard)/(private)/apps/appointments/components/CancelAppointmentButton'
+
 // Types
 type AppointmentType = 'consultation' | 'follow-up' | 'emergency' | 'routine-check' | 'specialist' | 'other'
 
@@ -26,6 +31,10 @@ type Appointment = {
   duration: number // in minutes
   doctorName: string
   status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled'
+  visit?: {
+    id: number
+    status: string
+  }
 }
 
 type StatusColumn = {
@@ -37,8 +46,10 @@ type StatusColumn = {
 
 const TodayAppointments = () => {
   const theme = useTheme()
+  const t = useTranslation()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
+  const [visitsByAppointmentId, setVisitsByAppointmentId] = useState<Record<number, any>>({})
 
   // Appointment type configurations with fallback
   const appointmentTypes: Record<AppointmentType, { label: string; color: string; icon: string }> = {
@@ -85,55 +96,62 @@ const TodayAppointments = () => {
     }
   ]
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const response = await fetch('/api/appointments?filter=today')
+  const fetchAppointments = async () => {
+    try {
+      const response = await fetch('/api/appointments?filter=today')
 
-        if (!response.ok) throw new Error('Failed to fetch appointments')
+      if (!response.ok) throw new Error('Failed to fetch appointments')
 
-        const data = await response.json()
+      const data = await response.json()
 
-        // Transform the appointments to match our component's format
-        const transformedAppointments: Appointment[] = data.appointments.map((apt: any) => {
-          const appointmentDate = new Date(apt.appointmentDate)
+      // Transform the appointments to match our component's format
+      const transformedAppointments: Appointment[] = data.appointments.map((apt: any) => {
+        const appointmentDate = new Date(apt.appointmentDate)
 
-          // Format time in user's local timezone
-          const time = appointmentDate.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-          })
-
-          // Normalize appointment type
-          const normalizedType = apt.type.toLowerCase() as AppointmentType
-          const type = Object.keys(appointmentTypes).includes(normalizedType) ? normalizedType : 'other'
-
-          return {
-            id: apt.id.toString(),
-            patientName: apt.patientName,
-            type,
-            time,
-            duration: 30,
-            doctorName: apt.doctorName,
-            status: apt.status.toLowerCase() as Appointment['status']
-          }
+        // Format time in user's local timezone
+        const time = appointmentDate.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
         })
 
-        // Sort appointments by time
-        const sortedAppointments = transformedAppointments.sort((a, b) => a.time.localeCompare(b.time))
+        // Normalize appointment type
+        const normalizedType = apt.type.toLowerCase() as AppointmentType
+        const type = Object.keys(appointmentTypes).includes(normalizedType) ? normalizedType : 'other'
 
-        setAppointments(sortedAppointments)
-      } catch (error) {
-        console.error('Error fetching appointments:', error)
-      } finally {
-        setLoading(false)
-      }
+        return {
+          id: apt.id.toString(),
+          patientName: apt.patientName,
+          type,
+          time,
+          duration: 30,
+          doctorName: apt.doctorName,
+          status: apt.status.toLowerCase() as Appointment['status'],
+          visit: apt.visit
+        }
+      })
+
+      // Sort appointments by time
+      const sortedAppointments = transformedAppointments.sort((a, b) => a.time.localeCompare(b.time))
+
+      setAppointments(sortedAppointments)
+      setVisitsByAppointmentId(data.visitsByAppointmentId || {})
+    } catch (error) {
+      console.error('Error fetching appointments:', error)
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchAppointments()
   }, [])
+
+  const handleAppointmentCancelled = () => {
+    // Refresh the appointments list
+    fetchAppointments()
+  }
 
   if (loading) {
     return (
@@ -293,6 +311,7 @@ const TodayAppointments = () => {
                 >
                   {columnAppointments.map(appointment => {
                     const typeConfig = getAppointmentTypeConfig(appointment.type)
+                    const visit = visitsByAppointmentId[parseInt(appointment.id)]
 
                     return (
                       <Paper
@@ -358,6 +377,32 @@ const TodayAppointments = () => {
                             }}
                           />
                         </Box>
+
+                        {/* Add Visit Action Button and Cancel Button for scheduled appointments */}
+                        {appointment.status === 'scheduled' && (
+                          <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                              <VisitActionButton
+                                appointmentId={parseInt(appointment.id)}
+                                visit={visit}
+                                t={t}
+                                lang='fr'
+                                size='small'
+                                variant='contained'
+                                className='flex-1'
+                                onVisitCreated={handleAppointmentCancelled}
+                              />
+                              <CancelAppointmentButton
+                                appointmentId={parseInt(appointment.id)}
+                                t={t}
+                                size='small'
+                                variant='outlined'
+                                className='flex-1'
+                                onAppointmentCancelled={handleAppointmentCancelled}
+                              />
+                            </Box>
+                          </Box>
+                        )}
                       </Paper>
                     )
                   })}
