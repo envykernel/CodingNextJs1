@@ -17,6 +17,7 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
+import Divider from '@mui/material/Divider'
 import { useTheme } from '@mui/material/styles'
 
 // Third Party Imports
@@ -42,6 +43,13 @@ interface Payment {
       total_amount: number
       status: string
     }
+    invoice_line?: {
+      service: {
+        id: number
+        name: string
+        amount: number
+      }
+    }
   }>
 }
 
@@ -54,6 +62,11 @@ interface DailyStats {
 
 interface MethodStats {
   method: string
+  amount: number
+}
+
+interface ServiceStats {
+  service: string
   amount: number
 }
 
@@ -232,8 +245,49 @@ const PaymentStatistics = () => {
       .sort((a, b) => b.amount - a.amount)
   }
 
+  const getServiceStats = (): ServiceStats[] => {
+    if (!Array.isArray(payments)) {
+      console.error('Invalid payments data:', payments)
+
+      return []
+    }
+
+    const serviceTotals = new Map<string, number>()
+
+    payments.forEach(payment => {
+      if (!Array.isArray(payment.applications)) {
+        console.warn('Skipping payment with invalid applications:', payment)
+
+        return
+      }
+
+      try {
+        payment.applications.forEach(app => {
+          if (!app?.invoice_line?.service) {
+            console.warn('Skipping application without service:', app)
+
+            return
+          }
+
+          const service = app.invoice_line.service
+          const current = serviceTotals.get(service.name) || 0
+          const amount = Number(app.amount_applied) || 0
+
+          serviceTotals.set(service.name, current + amount)
+        })
+      } catch (err) {
+        console.error('Error processing service:', err, payment)
+      }
+    })
+
+    return Array.from(serviceTotals.entries())
+      .map(([service, amount]) => ({ service, amount }))
+      .sort((a, b) => b.amount - a.amount)
+  }
+
   const dailyStats = getDailyStats(payments)
   const methodStats = getMethodStats()
+  const serviceStats = getServiceStats()
 
   const barOptions: ApexOptions = {
     chart: {
@@ -428,42 +482,81 @@ const PaymentStatistics = () => {
     },
     {
       name: 'Balance',
-      data: dailyStats.map(day => day.remaining) // No need for negative values when stacked
+      data: dailyStats.map(day => day.remaining)
     }
   ]
 
-  const pieOptions: ApexOptions = {
+  const donutOptions: ApexOptions = {
     chart: {
       parentHeightOffset: 0,
       toolbar: { show: false }
     },
-    labels: methodStats.map(stat => stat?.method || ''),
+    stroke: {
+      width: 0
+    },
     colors: [
-      'var(--mui-palette-primary-main)',
       'var(--mui-palette-success-main)',
-      'var(--mui-palette-warning-main)',
-      'var(--mui-palette-error-main)',
-      'var(--mui-palette-info-main)',
-      'var(--mui-palette-secondary-main)'
+      'rgba(var(--mui-palette-success-mainChannel) / 0.8)',
+      'rgba(var(--mui-palette-success-mainChannel) / 0.6)',
+      'rgba(var(--mui-palette-success-mainChannel) / 0.4)'
     ],
     legend: {
-      position: 'right',
-      fontSize: '13px',
-      labels: { colors: 'var(--mui-palette-text-secondary)' },
+      show: true,
+      position: 'bottom',
+      offsetY: 10,
       markers: {
-        width: 12,
-        height: 12,
-        offsetX: -4
+        width: 8,
+        height: 8,
+        offsetY: 1,
+        offsetX: theme.direction === 'rtl' ? 8 : -4
       },
-      itemMargin: { horizontal: 9, vertical: 4 }
+      itemMargin: {
+        horizontal: 15,
+        vertical: 5
+      },
+      fontSize: '13px',
+      fontWeight: 400,
+      labels: {
+        colors: 'var(--mui-palette-text-secondary)',
+        useSeriesColors: false
+      }
+    },
+    grid: {
+      padding: {
+        top: 15
+      }
+    },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '75%',
+          labels: {
+            show: true,
+            value: {
+              fontSize: '24px',
+              color: 'var(--mui-palette-text-primary)',
+              fontWeight: 500,
+              offsetY: -20,
+              formatter: (val: string) => formatAmount(Number(val))
+            },
+            name: {
+              offsetY: 20,
+              color: 'var(--mui-palette-text-secondary)'
+            },
+            total: {
+              show: true,
+              fontSize: '0.9375rem',
+              fontWeight: 400,
+              label: 'Total Amount',
+              color: 'var(--mui-palette-text-secondary)',
+              formatter: (w: any) => formatAmount(w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0))
+            }
+          }
+        }
+      }
     },
     dataLabels: {
-      enabled: true,
-      formatter: (val: number) => `${val.toFixed(1)}%`,
-      style: {
-        fontSize: '13px',
-        colors: ['var(--mui-palette-common-white)']
-      }
+      enabled: false
     },
     tooltip: {
       y: {
@@ -547,9 +640,9 @@ const PaymentStatistics = () => {
         }
       />
       <CardContent>
-        <Grid container spacing={6}>
-          <Grid item xs={12} md={8}>
-            <Box className='flex flex-col gap-4'>
+        <Grid container spacing={0}>
+          <Grid item xs={12} md={7.2}>
+            <Box className='flex flex-col gap-4' sx={{ pr: 3 }}>
               <Box className='flex items-center justify-between'>
                 <Typography variant='subtitle1'>Daily Payment Totals</Typography>
                 <Box className='flex items-center gap-4'>
@@ -564,21 +657,41 @@ const PaymentStatistics = () => {
               <AppReactApexCharts type='bar' height={400} width='100%' series={barSeries} options={barOptions} />
             </Box>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Box className='flex flex-col gap-4'>
-              <Box className='flex items-center justify-between'>
-                <Typography variant='subtitle1'>Payment Methods</Typography>
-                <Typography variant='subtitle2' color='text.secondary'>
-                  Total: {formatAmount(methodStats.reduce((sum, method) => sum + method.amount, 0))}
+          <Grid item xs={12} md={0.1} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Divider orientation='vertical' flexItem sx={{ height: '100%', my: 2 }} />
+          </Grid>
+          <Grid item xs={12} md={4.7}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pl: 3 }}>
+              <Box>
+                <Typography variant='subtitle1' sx={{ mb: 2 }}>
+                  Payment Methods
                 </Typography>
+                <AppReactApexCharts
+                  type='donut'
+                  height={250}
+                  width='100%'
+                  series={methodStats.map(stat => stat.amount)}
+                  options={{
+                    ...donutOptions,
+                    labels: methodStats.map(stat => stat.method)
+                  }}
+                />
               </Box>
-              <AppReactApexCharts
-                type='pie'
-                height={400}
-                width='100%'
-                series={methodStats.map(stat => stat.amount)}
-                options={pieOptions}
-              />
+              <Box>
+                <Typography variant='subtitle1' sx={{ mb: 2 }}>
+                  Services
+                </Typography>
+                <AppReactApexCharts
+                  type='donut'
+                  height={250}
+                  width='100%'
+                  series={serviceStats.map(stat => stat.amount)}
+                  options={{
+                    ...donutOptions,
+                    labels: serviceStats.map(stat => stat.service)
+                  }}
+                />
+              </Box>
             </Box>
           </Grid>
         </Grid>

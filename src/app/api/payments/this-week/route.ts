@@ -96,6 +96,17 @@ export async function GET() {
                 total_amount: true,
                 status: true
               }
+            },
+            invoice_line: {
+              include: {
+                service: {
+                  select: {
+                    id: true,
+                    name: true,
+                    amount: true
+                  }
+                }
+              }
             }
           }
         }
