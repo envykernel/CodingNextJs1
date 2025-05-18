@@ -11,6 +11,7 @@ import PatientStatistics from '@components/patient-statistics/PatientStatistics'
 import PatientStatusOverview from '@/views/dashboards/organisation/PatientStatusOverview'
 import TodayAppointments from '@/views/dashboards/organisation/TodayAppointments'
 import ThisWeekPayments from '@/views/dashboards/organisation/ThisWeekPayments'
+import PaymentStatistics from '@/views/dashboards/organisation/PaymentStatistics'
 
 // Type Imports
 import type { UserDataType } from '@components/card-statistics/HorizontalWithSubtitle'
@@ -101,6 +102,11 @@ const OrganisationDashboard = () => {
       {/* Patient Status Overview */}
       <Grid item xs={12} md={6}>
         <PatientStatusOverview />
+      </Grid>
+
+      {/* Payment Statistics */}
+      <Grid item xs={12}>
+        <PaymentStatistics />
       </Grid>
     </Grid>
   )
