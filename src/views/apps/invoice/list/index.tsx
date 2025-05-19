@@ -6,13 +6,13 @@ import type { InvoiceType } from '@/types/apps/invoiceTypes'
 
 // Component Imports
 import InvoiceListTable from './InvoiceListTable'
-import InvoiceCard from './InvoiceCard'
+import InvoiceStats from './InvoiceStats'
 
 const InvoiceList = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
   return (
     <Grid container spacing={6}>
       <Grid size={{ xs: 12 }}>
-        <InvoiceCard />
+        <InvoiceStats />
       </Grid>
       <Grid size={{ xs: 12 }}>
         <InvoiceListTable invoiceData={invoiceData} />
