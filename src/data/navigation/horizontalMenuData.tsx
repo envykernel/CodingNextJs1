@@ -33,6 +33,11 @@ const horizontalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>
         label: dictionary['navigation'].logistics,
         icon: 'tabler-truck',
         href: '/dashboards/logistics'
+      },
+      {
+        label: dictionary['navigation'].organization,
+        icon: 'tabler-building',
+        href: '/dashboards/organization'
       }
     ]
   },

@@ -8,16 +8,16 @@ import Grid from '@mui/material/Grid'
 
 // Component Imports
 import PatientStatistics from '@components/patient-statistics/PatientStatistics'
-import PatientStatusOverview from '@/views/dashboards/organisation/PatientStatusOverview'
-import TodayAppointments from '@/views/dashboards/organisation/TodayAppointments'
-import ThisWeekPayments from '@/views/dashboards/organisation/ThisWeekPayments'
-import PaymentStatistics from '@/views/dashboards/organisation/PaymentStatistics'
+import PatientStatusOverview from '@/views/dashboards/organization/PatientStatusOverview'
+import TodayAppointments from '@/views/dashboards/organization/TodayAppointments'
+import ThisWeekPayments from '@/views/dashboards/organization/ThisWeekPayments'
+import PaymentStatistics from '@/views/dashboards/organization/PaymentStatistics'
 
 // Type Imports
 import type { UserDataType } from '@components/card-statistics/HorizontalWithSubtitle'
 import type { PatientStatisticsType } from '@/app/server/patientStatisticsActions'
 
-const OrganisationDashboard = () => {
+const OrganizationDashboard = () => {
   const [statistics, setStatistics] = useState<UserDataType[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -112,4 +112,4 @@ const OrganisationDashboard = () => {
   )
 }
 
-export default OrganisationDashboard
+export default OrganizationDashboard

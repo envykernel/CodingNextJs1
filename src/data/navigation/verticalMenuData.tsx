@@ -115,6 +115,7 @@ type Dictionary = {
     allPrescriptions: string
     createPrescription: string
     patients: string
+    organization: string
   }
 }
 
@@ -123,7 +124,7 @@ const verticalMenuData = (dictionary: Dictionary): VerticalMenuDataType[] => [
   {
     label: dictionary.navigation.dashboards,
     suffix: {
-      label: '5',
+      label: '6',
       color: 'error'
     },
     icon: 'tabler-smart-home',
@@ -153,6 +154,11 @@ const verticalMenuData = (dictionary: Dictionary): VerticalMenuDataType[] => [
         label: dictionary.navigation.logistics,
         icon: 'tabler-circle',
         href: '/dashboards/logistics'
+      },
+      {
+        label: dictionary.navigation.organization,
+        icon: 'tabler-building',
+        href: '/dashboards/organization'
       }
     ]
   },
