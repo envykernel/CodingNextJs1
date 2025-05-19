@@ -1,4 +1,8 @@
+'use client'
+
 // Third-party Imports
+import { useEffect, useState } from 'react'
+
 import classnames from 'classnames'
 
 // Type Imports
@@ -18,45 +22,6 @@ import UserDropdown from '@components/layout/shared/UserDropdown'
 import { verticalLayoutClasses } from '@layouts/utils/layoutClasses'
 
 // Vars
-const shortcuts: ShortcutsType[] = [
-  {
-    url: '/apps/calendar',
-    icon: 'tabler-calendar',
-    title: 'Calendar',
-    subtitle: 'Appointments'
-  },
-  {
-    url: '/apps/invoice/list',
-    icon: 'tabler-file-dollar',
-    title: 'Invoice App',
-    subtitle: 'Manage Accounts'
-  },
-  {
-    url: '/apps/user/list',
-    icon: 'tabler-user',
-    title: 'Users',
-    subtitle: 'Manage Users'
-  },
-  {
-    url: '/apps/roles',
-    icon: 'tabler-users-group',
-    title: 'Role Management',
-    subtitle: 'Permissions'
-  },
-  {
-    url: '/',
-    icon: 'tabler-device-desktop-analytics',
-    title: 'Dashboard',
-    subtitle: 'User Dashboard'
-  },
-  {
-    url: '/pages/account-settings',
-    icon: 'tabler-settings',
-    title: 'Settings',
-    subtitle: 'Account Settings'
-  }
-]
-
 const notifications: NotificationsType[] = [
   {
     avatarImage: '/images/avatars/8.png',
@@ -106,6 +71,49 @@ const notifications: NotificationsType[] = [
 ]
 
 const NavbarContent = () => {
+  const [shortcuts, setShortcuts] = useState<ShortcutsType[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchShortcuts = async () => {
+      try {
+        const response = await fetch('/api/shortcuts')
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch shortcuts: ${response.status} ${response.statusText}`)
+        }
+
+        const data = await response.json()
+
+        setShortcuts(data)
+        setError(null)
+      } catch (error) {
+        setError(error instanceof Error ? error.message : 'Failed to fetch shortcuts')
+
+        // Set default shortcuts if fetch fails
+        setShortcuts([
+          {
+            url: '/',
+            icon: 'tabler-device-desktop-analytics',
+            title: 'Dashboard',
+            subtitle: 'User Dashboard'
+          },
+          {
+            url: '/pages/account-settings',
+            icon: 'tabler-settings',
+            title: 'Settings',
+            subtitle: 'Account Settings'
+          }
+        ])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchShortcuts()
+  }, [])
+
   return (
     <div className={classnames(verticalLayoutClasses.navbarContent, 'flex items-center justify-between gap-4 is-full')}>
       <div className='flex items-center gap-4'>
@@ -115,7 +123,7 @@ const NavbarContent = () => {
       <div className='flex items-center'>
         <LanguageDropdown />
         <ModeDropdown />
-        <ShortcutsDropdown shortcuts={shortcuts} />
+        {!loading && !error && <ShortcutsDropdown shortcuts={shortcuts} />}
         <NotificationsDropdown notifications={notifications} />
         <UserDropdown />
       </div>

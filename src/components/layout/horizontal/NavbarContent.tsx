@@ -1,4 +1,6 @@
 // Next Imports
+import { useEffect, useState } from 'react'
+
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 
@@ -28,45 +30,6 @@ import { horizontalLayoutClasses } from '@layouts/utils/layoutClasses'
 import { getLocalizedUrl } from '@/utils/i18n'
 
 // Vars
-const shortcuts: ShortcutsType[] = [
-  {
-    url: '/apps/calendar',
-    icon: 'tabler-calendar',
-    title: 'Calendar',
-    subtitle: 'Appointments'
-  },
-  {
-    url: '/apps/invoice/list',
-    icon: 'tabler-file-dollar',
-    title: 'Invoice App',
-    subtitle: 'Manage Accounts'
-  },
-  {
-    url: '/apps/user/list',
-    icon: 'tabler-user',
-    title: 'Users',
-    subtitle: 'Manage Users'
-  },
-  {
-    url: '/apps/roles',
-    icon: 'tabler-users-group',
-    title: 'Role Management',
-    subtitle: 'Permissions'
-  },
-  {
-    url: '/',
-    icon: 'tabler-device-desktop-analytics',
-    title: 'Dashboard',
-    subtitle: 'User Dashboard'
-  },
-  {
-    url: '/pages/account-settings',
-    icon: 'tabler-settings',
-    title: 'Settings',
-    subtitle: 'Account Settings'
-  }
-]
-
 const notifications: NotificationsType[] = [
   {
     avatarImage: '/images/avatars/8.png',
@@ -116,9 +79,50 @@ const notifications: NotificationsType[] = [
 ]
 
 const NavbarContent = () => {
+  // States
+  const [shortcuts, setShortcuts] = useState<ShortcutsType[]>([])
+  const [loading, setLoading] = useState(true)
+
   // Hooks
   const { isBreakpointReached } = useHorizontalNav()
-  const { lang: locale } = useParams()
+  const params = useParams()
+  const locale = (params?.lang as Locale) || 'en'
+
+  useEffect(() => {
+    const fetchShortcuts = async () => {
+      try {
+        const response = await fetch('/api/shortcuts')
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch shortcuts')
+        }
+
+        const data = await response.json()
+
+        setShortcuts(data)
+      } catch (error) {
+        // Set default shortcuts if fetch fails
+        setShortcuts([
+          {
+            url: '/',
+            icon: 'tabler-device-desktop-analytics',
+            title: 'Dashboard',
+            subtitle: 'User Dashboard'
+          },
+          {
+            url: '/pages/account-settings',
+            icon: 'tabler-settings',
+            title: 'Settings',
+            subtitle: 'Account Settings'
+          }
+        ])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchShortcuts()
+  }, [])
 
   return (
     <div
@@ -128,7 +132,7 @@ const NavbarContent = () => {
         <NavToggle />
         {/* Hide Logo on Smaller screens */}
         {!isBreakpointReached && (
-          <Link href={getLocalizedUrl('/', locale as Locale)}>
+          <Link href={getLocalizedUrl('/', locale)}>
             <Logo />
           </Link>
         )}
@@ -138,7 +142,7 @@ const NavbarContent = () => {
         <NavSearch />
         <LanguageDropdown />
         <ModeDropdown />
-        <ShortcutsDropdown shortcuts={shortcuts} />
+        {!loading && <ShortcutsDropdown shortcuts={shortcuts} />}
         <NotificationsDropdown notifications={notifications} />
         <UserDropdown />
         {/* Language Dropdown, Notification Dropdown, quick access menu dropdown, user dropdown will be placed here */}
