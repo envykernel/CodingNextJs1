@@ -25,6 +25,8 @@ import {
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
 
+import { addDays, isAfter, isBefore } from 'date-fns'
+
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 import CustomTextField from '@core/components/mui/TextField'
 
@@ -170,6 +172,13 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     router.push(`${pathname}?${params.toString()}`)
   }
 
+  const isAppointmentWithinLastWeek = (appointmentDate: string) => {
+    const appointmentDateTime = new Date(appointmentDate)
+    const oneWeekAgo = addDays(new Date(), -7)
+
+    return isAfter(appointmentDateTime, oneWeekAgo) || isBefore(appointmentDateTime, new Date())
+  }
+
   return (
     <Card>
       <div className='flex items-center justify-between px-6 pt-6'>
@@ -296,7 +305,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                     >
                       {t.viewDetails || 'View Details'}
                     </Button>
-                    {row.status === 'scheduled' && (
+                    {row.status === 'scheduled' && isAppointmentWithinLastWeek(row.appointmentDate) && (
                       <>
                         <VisitActionButton
                           appointmentId={row.id}
