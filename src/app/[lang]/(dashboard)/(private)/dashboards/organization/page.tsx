@@ -12,6 +12,7 @@ import PatientStatusOverview from '@/views/dashboards/organization/PatientStatus
 import TodayAppointments from '@/views/dashboards/organization/TodayAppointments'
 import ThisWeekPayments from '@/views/dashboards/organization/ThisWeekPayments'
 import PaymentStatistics from '@/views/dashboards/organization/PaymentStatistics'
+import AppointmentDayStats from '@/views/dashboards/organization/AppointmentDayStats'
 
 // Type Imports
 import type { UserDataType } from '@components/card-statistics/HorizontalWithSubtitle'
@@ -92,6 +93,24 @@ const OrganizationDashboard = () => {
       {/* Today's Appointments */}
       <Grid item xs={12}>
         <TodayAppointments />
+      </Grid>
+
+      {/* Current Week's Appointment Distribution */}
+      <Grid item xs={12} md={6}>
+        <AppointmentDayStats
+          title="This Week's Appointments"
+          subtitle='Distribution of appointments for the current week'
+          dateRange='week'
+        />
+      </Grid>
+
+      {/* Year-to-Date Appointment Distribution */}
+      <Grid item xs={12} md={6}>
+        <AppointmentDayStats
+          title='Year-to-Date Appointments'
+          subtitle='Distribution of appointments from the start of the year'
+          dateRange='year'
+        />
       </Grid>
 
       {/* This Week's Payments and Patient Status Overview */}
