@@ -6,6 +6,10 @@ import InvoiceList from '@views/apps/invoice/list'
 
 // Data Imports
 import { getInvoiceData } from '@/app/server/actions'
+import { getDictionary } from '@/utils/getDictionary'
+import { TranslationProvider } from '@/contexts/translationContext'
+import type { Locale } from '@configs/i18n'
+import type { InvoiceType } from '@/types/apps/invoiceTypes'
 
 /**
  * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
@@ -25,16 +29,26 @@ import { getInvoiceData } from '@/app/server/actions'
   return res.json()
 } */
 
-const InvoiceApp = async () => {
+const InvoiceApp = async ({ params }: { params: Promise<{ lang: Locale }> }) => {
   // Vars
+  const resolvedParams = await params
   const data = await getInvoiceData()
+  const dictionary = await getDictionary(resolvedParams.lang)
+
+  // Transform data to match InvoiceType
+  const transformedData: InvoiceType[] = data.map((invoice: any) => ({
+    ...invoice,
+    issuedDate: invoice.invoice_date // Map invoice_date to issuedDate
+  }))
 
   return (
-    <Grid container>
-      <Grid size={{ xs: 12 }}>
-        <InvoiceList invoiceData={data} />
+    <TranslationProvider dictionary={dictionary}>
+      <Grid container>
+        <Grid size={{ xs: 12 }}>
+          <InvoiceList invoiceData={transformedData} />
+        </Grid>
       </Grid>
-    </Grid>
+    </TranslationProvider>
   )
 }
 

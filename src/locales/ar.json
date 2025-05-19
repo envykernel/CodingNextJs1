@@ -128,6 +128,14 @@
         "mobileMoney": "أموال الجوال",
         "paymentSuccess": "تمت إضافة الدفعة بنجاح!",
         "paymentError": "فشل في إضافة الدفعة.",
-        "payments": "الدفعات"
+        "payments": "الدفعات",
+        "totalInvoices": "المجموع",
+        "invoices": "فواتير",
+        "allInvoicesTracked": "جميع الفواتير يتم تتبعها وإدارتها",
+        "paid": "مدفوع",
+        "unpaid": "غير مدفوع",
+        "totalPaid": "المبلغ المدفوع",
+        "totalUnpaid": "المبلغ غير المدفوع",
+        "unpaidInvoices": "الفواتير غير المدفوعة"
     }
 }

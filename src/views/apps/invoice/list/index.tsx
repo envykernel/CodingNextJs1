@@ -12,7 +12,7 @@ const InvoiceList = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
   return (
     <Grid container spacing={6}>
       <Grid size={{ xs: 12 }}>
-        <InvoiceStats />
+        <InvoiceStats invoiceData={invoiceData} />
       </Grid>
       <Grid size={{ xs: 12 }}>
         <InvoiceListTable invoiceData={invoiceData} />

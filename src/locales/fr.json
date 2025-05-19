@@ -126,6 +126,14 @@
         "mobileMoney": "Mobile Money",
         "paymentSuccess": "Paiement ajouté avec succès !",
         "paymentError": "Échec de l'ajout du paiement.",
-        "payments": "Paiements"
+        "payments": "Paiements",
+        "totalInvoices": "Total",
+        "invoices": "factures",
+        "allInvoicesTracked": "Toutes les factures sont suivies et gérées",
+        "paid": "Payé",
+        "unpaid": "Non payé",
+        "totalPaid": "Total payé",
+        "totalUnpaid": "Total non payé",
+        "unpaidInvoices": "Factures impayées"
     }
 }
