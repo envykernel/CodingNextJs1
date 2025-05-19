@@ -236,6 +236,7 @@ model UserInternal {
   updatedAt      DateTime      @updatedAt
   organisation   organisation? @relation(fields: [organisationId], references: [id])
   doctor         doctor?       // Simple relation without fields
+  shortcuts      UserShortcut[]
 }
 
 model patient_visit {
@@ -506,4 +507,35 @@ enum UserRole {
   LAB_TECHNICIAN
   PHARMACIST
   USER
+}
+
+model ShortcutReference {
+  id          Int           @id @default(autoincrement())
+  url         String        @db.VarChar(255)
+  icon        String        @db.VarChar(50)
+  title       String        @db.VarChar(100)
+  subtitle    String        @db.VarChar(255)
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  userShortcuts UserShortcut[]
+
+  @@index([url])
+  @@index([title])
+}
+
+model UserShortcut {
+  id                Int              @id @default(autoincrement())
+  userId            Int              // Changed from String to Int
+  shortcutId        Int
+  displayOrder      Int              @default(0)
+  isActive          Boolean          @default(true)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  user              UserInternal     @relation(fields: [userId], references: [id], onDelete: Cascade) // Changed from User to UserInternal
+  shortcutReference ShortcutReference @relation(fields: [shortcutId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, shortcutId])
+  @@index([userId])
+  @@index([shortcutId])
 }
