@@ -43,6 +43,24 @@ const BadgeContentSpan = styled('span')({
   boxShadow: '0 0 0 2px var(--mui-palette-background-paper)'
 })
 
+// Styled component for admin badge
+const AdminBadgeContentSpan = styled('span')({
+  width: 8,
+  height: 8,
+  borderRadius: '50%',
+  cursor: 'pointer',
+  backgroundColor: 'var(--mui-palette-error-main)',
+  boxShadow: '0 0 0 2px var(--mui-palette-background-paper)'
+})
+
+// Styled component for admin avatar
+const AdminAvatar = styled(Avatar)({
+  border: '2px solid var(--mui-palette-error-main)',
+  '&:hover': {
+    border: '2px solid var(--mui-palette-error-dark)'
+  }
+})
+
 const UserDropdown = () => {
   // States
   const [open, setOpen] = useState(false)
@@ -67,6 +85,8 @@ const UserDropdown = () => {
   const userRole = (session?.user as any)?.role
   const orgLabel = translations[lang || 'en']?.organisation || 'Organisation'
   const roleLabel = translations[lang || 'en']?.role || 'Role'
+
+  const isAdmin = userRole?.toLowerCase() === 'admin'
 
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
@@ -101,17 +121,33 @@ const UserDropdown = () => {
       <Badge
         ref={anchorRef}
         overlap='circular'
-        badgeContent={<BadgeContentSpan onClick={handleDropdownOpen} />}
+        badgeContent={
+          isAdmin ? (
+            <AdminBadgeContentSpan onClick={handleDropdownOpen} />
+          ) : (
+            <BadgeContentSpan onClick={handleDropdownOpen} />
+          )
+        }
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         className='mis-2'
       >
-        <Avatar
-          ref={anchorRef}
-          alt={session?.user?.name || ''}
-          src={session?.user?.image || ''}
-          onClick={handleDropdownOpen}
-          className='cursor-pointer bs-[38px] is-[38px]'
-        />
+        {isAdmin ? (
+          <AdminAvatar
+            ref={anchorRef}
+            alt={session?.user?.name || ''}
+            src={session?.user?.image || ''}
+            onClick={handleDropdownOpen}
+            className='cursor-pointer bs-[38px] is-[38px]'
+          />
+        ) : (
+          <Avatar
+            ref={anchorRef}
+            alt={session?.user?.name || ''}
+            src={session?.user?.image || ''}
+            onClick={handleDropdownOpen}
+            className='cursor-pointer bs-[38px] is-[38px]'
+          />
+        )}
       </Badge>
       <Popper
         open={open}
@@ -132,7 +168,11 @@ const UserDropdown = () => {
               <ClickAwayListener onClickAway={e => handleDropdownClose(e as MouseEvent | TouchEvent)}>
                 <MenuList>
                   <div className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
-                    <Avatar alt={session?.user?.name || ''} src={session?.user?.image || ''} />
+                    {isAdmin ? (
+                      <AdminAvatar alt={session?.user?.name || ''} src={session?.user?.image || ''} />
+                    ) : (
+                      <Avatar alt={session?.user?.name || ''} src={session?.user?.image || ''} />
+                    )}
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
                         {session?.user?.name || ''}
@@ -142,8 +182,13 @@ const UserDropdown = () => {
                         {orgLabel}: {organisationName ? organisationName : 'No Organisation'}
                       </Typography>
                       {userRole && (
-                        <Typography variant='caption' color='text.secondary'>
+                        <Typography
+                          variant='caption'
+                          color={isAdmin ? 'error' : 'text.secondary'}
+                          className={isAdmin ? 'flex items-center gap-1 font-medium' : ''}
+                        >
                           {roleLabel}: {userRole}
+                          {isAdmin && <i className='tabler-crown text-[14px]' />}
                         </Typography>
                       )}
                     </div>
