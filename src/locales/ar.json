@@ -20,7 +20,8 @@
         "medicalData": "البيانات الطبية",
         "newPatientHighlight": "تم إنشاء مريض جديد!",
         "newLabel": "جديد",
-        "addNewPatient": "إضافة مريض جديد"
+        "addNewPatient": "إضافة مريض جديد",
+        "patientName": "اسم المريض"
     },
     "appointments": {
         "typeOptions": {
@@ -47,7 +48,8 @@
         "security": "الأمان",
         "billingPlans": "الفوترة والاشتراكات",
         "notifications": "الإشعارات",
-        "connections": "الاتصالات"
+        "connections": "الاتصالات",
+        "show": "عرض"
     },
     "appointmentsList": "قائمة المواعيد",
     "bookAppointment": "حجز موعد",
@@ -74,7 +76,6 @@
     "dosage": "الجرعة",
     "frequency": "التكرار",
     "duration": "المدة",
-    "patientName": "اسم المريض",
     "additionalNotes": "ملاحظات إضافية",
     "collapseMedications": "طي الأدوية",
     "expandMedications": "توسيع الأدوية",
@@ -110,7 +111,7 @@
         "total": "الإجمالي",
         "createInvoice": "إنشاء فاتورة",
         "dateCreation": "تاريخ الإنشاء:",
-        "date": "التاريخ:",
+        "date": "التاريخ",
         "addPayment": "إضافة دفعة",
         "balance": "رصيد الفاتورة",
         "paymentAmount": "مبلغ الدفعة",
@@ -136,6 +137,16 @@
         "unpaid": "غير مدفوع",
         "totalPaid": "المبلغ المدفوع",
         "totalUnpaid": "المبلغ غير المدفوع",
-        "unpaidInvoices": "الفواتير غير المدفوعة"
+        "unpaidInvoices": "الفواتير غير المدفوعة",
+        "status": "الحالة",
+        "downloaded": "تم التنزيل",
+        "draft": "مسودة",
+        "partial": "دفعة جزئية",
+        "pastDue": "متأخر",
+        "sent": "تم الإرسال",
+        "download": "تنزيل",
+        "duplicate": "تكرار",
+        "searchInvoice": "البحث عن فاتورة",
+        "show": "عرض"
     }
 }

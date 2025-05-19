@@ -23,7 +23,7 @@ const InvoiceStats = ({ invoiceData = [] }: InvoiceStatsProps) => {
   // Hooks
   const theme = useTheme()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
-  const t = useTranslation()
+  const { t } = useTranslation()
 
   // Calculate statistics
   const totalInvoices = invoiceData.length
@@ -89,18 +89,13 @@ const InvoiceStats = ({ invoiceData = [] }: InvoiceStatsProps) => {
               <i className='tabler-currency-euro text-[32px] text-success' />
             </div>
             <Typography className='font-medium' color='text.primary'>
-              {t.invoice?.totalInvoices || 'Total'} {formatNumber(totalInvoices)} {t.invoice?.invoices || 'invoices'}
+              {t('invoice.totalInvoices')} {formatNumber(totalInvoices)} {t('invoice.invoices')}
             </Typography>
-            <Typography>{t.invoice?.allInvoicesTracked || 'All invoices are tracked and managed'}</Typography>
+            <Typography>{t('invoice.allInvoicesTracked')}</Typography>
             <div className='flex items-center gap-2'>
+              <Chip label={`${paidPercentage}% ${t('invoice.paid')}`} variant='tonal' size='small' color='success' />
               <Chip
-                label={`${paidPercentage}% ${t.invoice?.paid || 'Paid'}`}
-                variant='tonal'
-                size='small'
-                color='success'
-              />
-              <Chip
-                label={`${unpaidInvoicesCount} ${t.invoice?.unpaid || 'Unpaid'}`}
+                label={`${unpaidInvoicesCount} ${t('invoice.unpaid')}`}
                 variant='tonal'
                 size='small'
                 color='error'
@@ -111,7 +106,7 @@ const InvoiceStats = ({ invoiceData = [] }: InvoiceStatsProps) => {
           <div className='flex flex-col gap-3 is-full sm:is-6/12'>
             <div className='flex items-center gap-2'>
               <Typography variant='body2' className='text-nowrap'>
-                {t.invoice?.totalPaid || 'Total Paid'}
+                {t('invoice.totalPaid')}
               </Typography>
               <Typography variant='h6' color='success.main' className='is-full text-end'>
                 {totalPaid.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
@@ -119,7 +114,7 @@ const InvoiceStats = ({ invoiceData = [] }: InvoiceStatsProps) => {
             </div>
             <div className='flex items-center gap-2'>
               <Typography variant='body2' className='text-nowrap'>
-                {t.invoice?.totalUnpaid || 'Total Unpaid'}
+                {t('invoice.totalUnpaid')}
               </Typography>
               <Typography variant='h6' color='error.main' className='is-full text-end'>
                 {totalUnpaid.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
@@ -127,7 +122,7 @@ const InvoiceStats = ({ invoiceData = [] }: InvoiceStatsProps) => {
             </div>
             <div className='flex items-center gap-2'>
               <Typography variant='body2' className='text-nowrap'>
-                {t.invoice?.unpaidInvoices || 'Unpaid Invoices'}
+                {t('invoice.unpaidInvoices')}
               </Typography>
               <Typography variant='h6' color='error.main' className='is-full text-end'>
                 {formatNumber(unpaidInvoicesCount)}

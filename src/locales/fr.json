@@ -20,7 +20,8 @@
         "medicalData": "Données médicales",
         "newPatientHighlight": "Nouveau patient créé !",
         "newLabel": "nouveau",
-        "addNewPatient": "Ajouter un nouveau patient"
+        "addNewPatient": "Ajouter un nouveau patient",
+        "patientName": "Nom du patient"
     },
     "appointments": {
         "typeOptions": {
@@ -47,7 +48,8 @@
         "security": "Sécurité",
         "billingPlans": "Facturation & Abonnements",
         "notifications": "Notifications",
-        "connections": "Connexions"
+        "connections": "Connexions",
+        "show": "Afficher"
     },
     "appointmentsList": "Liste des rendez-vous",
     "bookAppointment": "Prendre rendez-vous",
@@ -74,7 +76,6 @@
     "dosage": "Dosage",
     "frequency": "Fréquence",
     "duration": "Durée",
-    "patientName": "Nom du patient",
     "additionalNotes": "Notes supplémentaires",
     "collapseMedications": "Réduire les médicaments",
     "expandMedications": "Développer les médicaments",
@@ -109,6 +110,7 @@
         "itemDescription": "Description de l'article",
         "total": "Total",
         "createInvoice": "Créer une facture",
+        "date": "Date",
         "dateCreation": "Date de création :",
         "addPayment": "Ajouter un paiement",
         "balance": "Solde de la facture",
@@ -134,6 +136,16 @@
         "unpaid": "Non payé",
         "totalPaid": "Total payé",
         "totalUnpaid": "Total non payé",
-        "unpaidInvoices": "Factures impayées"
+        "unpaidInvoices": "Factures impayées",
+        "status": "Statut",
+        "downloaded": "Téléchargé",
+        "draft": "Brouillon",
+        "partial": "Paiement partiel",
+        "pastDue": "En retard",
+        "sent": "Envoyé",
+        "download": "Télécharger",
+        "duplicate": "Dupliquer",
+        "searchInvoice": "Rechercher une facture",
+        "show": "Afficher"
     }
 }

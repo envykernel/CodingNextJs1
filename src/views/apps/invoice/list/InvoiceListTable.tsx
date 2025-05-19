@@ -48,6 +48,7 @@ import OptionMenu from '@core/components/option-menu'
 import CustomAvatar from '@core/components/mui/Avatar'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
+import { useTranslation } from '@/contexts/translationContext'
 
 // Util Imports
 import { getInitials } from '@/utils/getInitials'
@@ -120,12 +121,9 @@ const DebouncedInput = ({
 
 // Vars
 const invoiceStatusObj: InvoiceStatusObj = {
-  Sent: { color: 'secondary', icon: 'tabler-send-2' },
-  Paid: { color: 'success', icon: 'tabler-check' },
-  Draft: { color: 'primary', icon: 'tabler-mail' },
-  'Partial Payment': { color: 'warning', icon: 'tabler-chart-pie-2' },
-  'Past Due': { color: 'error', icon: 'tabler-alert-circle' },
-  Downloaded: { color: 'info', icon: 'tabler-arrow-down' }
+  PAID: { color: 'success', icon: 'tabler-check' },
+  PARTIAL: { color: 'warning', icon: 'tabler-chart-pie-2' },
+  PENDING: { color: 'error', icon: 'tabler-alert-circle' }
 }
 
 // Column Definitions
@@ -140,7 +138,9 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams()
+  const locale = params?.lang as Locale
+  const { t } = useTranslation()
 
   const columns = useMemo<ColumnDef<InvoiceTypeWithAction, any>[]>(
     () => [
@@ -171,7 +171,7 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
         cell: ({ row }) => (
           <Typography
             component={Link}
-            href={getLocalizedUrl(`/apps/invoice/preview/${row.original.id}`, locale as Locale)}
+            href={getLocalizedUrl(`/apps/invoice/preview/${row.original.id}`, locale)}
             color='primary.main'
           >
             {row.original.invoice_number}
@@ -179,7 +179,7 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
         )
       }),
       columnHelper.accessor('invoiceStatus', {
-        header: 'Status',
+        header: t('invoice.status'),
         cell: ({ row }) => {
           const statusObj = invoiceStatusObj[row.original.invoiceStatus] || {
             color: 'default',
@@ -191,30 +191,33 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
               title={
                 <div>
                   <Typography variant='body2' component='span' className='text-inherit'>
-                    {row.original.invoiceStatus}
+                    {t('invoice.balance')}: {row.original.balance}
                   </Typography>
                   <br />
                   <Typography variant='body2' component='span' className='text-inherit'>
-                    Balance:
-                  </Typography>{' '}
-                  {row.original.balance}
-                  <br />
-                  <Typography variant='body2' component='span' className='text-inherit'>
-                    Due Date:
-                  </Typography>{' '}
-                  {row.original.dueDate}
+                    {t('invoice.date')}: {row.original.dueDate}
+                  </Typography>
                 </div>
               }
             >
-              <CustomAvatar skin='light' color={statusObj.color} size={28}>
-                <i className={classnames('bs-4 is-4', statusObj.icon)} />
-              </CustomAvatar>
+              <Chip
+                label={
+                  row.original.invoiceStatus === 'PAID'
+                    ? t('invoice.paid')
+                    : row.original.invoiceStatus === 'PARTIAL'
+                      ? t('invoice.partial')
+                      : t('invoice.unpaid')
+                }
+                color={statusObj.color}
+                size='small'
+                variant='tonal'
+              />
             </Tooltip>
           )
         }
       }),
       columnHelper.accessor('name', {
-        header: 'Client',
+        header: t('patient.patientName'),
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             {getAvatar({ avatar: row.original.avatar, name: row.original.name })}
@@ -228,37 +231,34 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
         )
       }),
       columnHelper.accessor('total', {
-        header: 'Total',
+        header: t('invoice.total'),
         cell: ({ row }) => <Typography>{`$${row.original.total}`}</Typography>
       }),
       columnHelper.accessor('invoice_date', {
-        header: 'Invoice Date',
+        header: t('invoice.date'),
         cell: ({ row }) => <Typography>{row.original.invoice_date}</Typography>
       }),
       columnHelper.accessor('balance', {
-        header: 'Balance',
+        header: t('invoice.balance'),
         cell: ({ row }) => {
           const isPaid = typeof row.original.balance === 'string' && row.original.balance.replace(/\s/g, '') === '€0.00'
 
           return isPaid ? (
-            <Chip label='Paid' color='success' size='small' variant='tonal' />
+            <Chip label={t('invoice.paid')} color='success' size='small' variant='tonal' />
           ) : (
             <Typography color='text.primary'>{row.original.balance}</Typography>
           )
         }
       }),
       columnHelper.accessor('action', {
-        header: 'Action',
+        header: t('navigation.edit'),
         cell: ({ row }) => (
           <div className='flex items-center'>
             <IconButton onClick={() => setData(data?.filter(invoice => invoice.id !== row.original.id))}>
               <i className='tabler-trash text-textSecondary' />
             </IconButton>
             <IconButton>
-              <Link
-                href={getLocalizedUrl(`/apps/invoice/preview/${row.original.id}`, locale as Locale)}
-                className='flex'
-              >
+              <Link href={getLocalizedUrl(`/apps/invoice/preview/${row.original.id}`, locale)} className='flex'>
                 <i className='tabler-eye text-textSecondary' />
               </Link>
             </IconButton>
@@ -267,20 +267,20 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
               iconClassName='text-textSecondary'
               options={[
                 {
-                  text: 'Download',
+                  text: t('invoice.download'),
                   icon: 'tabler-download',
                   menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
                 },
                 {
-                  text: 'Edit',
+                  text: t('navigation.edit'),
                   icon: 'tabler-pencil',
-                  href: getLocalizedUrl(`/apps/invoice/edit/${row.original.id}`, locale as Locale),
+                  href: getLocalizedUrl(`/apps/invoice/edit/${row.original.id}`, locale),
                   linkProps: {
                     className: 'flex items-center is-full plb-2 pli-4 gap-2 text-textSecondary'
                   }
                 },
                 {
-                  text: 'Duplicate',
+                  text: t('invoice.duplicate'),
                   icon: 'tabler-copy',
                   menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
                 }
@@ -291,8 +291,7 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
         enableSorting: false
       })
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, filteredData]
+    [data, filteredData, locale, t]
   )
 
   const table = useReactTable({
@@ -353,7 +352,7 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
       <CardContent className='flex justify-between flex-col items-start md:items-center md:flex-row gap-4'>
         <div className='flex flex-col sm:flex-row items-center justify-between gap-4 is-full sm:is-auto'>
           <div className='flex items-center gap-2 is-full sm:is-auto'>
-            <Typography className='hidden sm:block'>Show</Typography>
+            <Typography className='hidden sm:block'>{t('common.show')}</Typography>
             <CustomTextField
               select
               value={table.getState().pagination.pageSize}
@@ -369,17 +368,17 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
             variant='contained'
             component={Link}
             startIcon={<i className='tabler-plus' />}
-            href={getLocalizedUrl('apps/invoice/add', locale as Locale)}
+            href={getLocalizedUrl('apps/invoice/add', locale)}
             className='max-sm:is-full'
           >
-            Create Invoice
+            {t('invoice.createInvoice')}
           </Button>
         </div>
         <div className='flex max-sm:flex-col max-sm:is-full sm:items-center gap-4'>
           <DebouncedInput
             value={globalFilter ?? ''}
             onChange={value => setGlobalFilter(String(value))}
-            placeholder='Search Invoice'
+            placeholder={t('invoice.searchInvoice')}
             className='max-sm:is-full sm:is-[250px]'
           />
           <CustomTextField
@@ -392,13 +391,13 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
               select: { displayEmpty: true }
             }}
           >
-            <MenuItem value=''>Invoice Status</MenuItem>
-            <MenuItem value='downloaded'>Downloaded</MenuItem>
-            <MenuItem value='draft'>Draft</MenuItem>
-            <MenuItem value='paid'>Paid</MenuItem>
-            <MenuItem value='partial-payment'>Partial Payment</MenuItem>
-            <MenuItem value='past-due'>Past Due</MenuItem>
-            <MenuItem value='sent'>Sent</MenuItem>
+            <MenuItem value=''>{t('invoice.status')}</MenuItem>
+            <MenuItem value='downloaded'>{t('invoice.downloaded')}</MenuItem>
+            <MenuItem value='draft'>{t('invoice.draft')}</MenuItem>
+            <MenuItem value='paid'>{t('invoice.paid')}</MenuItem>
+            <MenuItem value='partial-payment'>{t('invoice.partial')}</MenuItem>
+            <MenuItem value='past-due'>{t('invoice.pastDue')}</MenuItem>
+            <MenuItem value='sent'>{t('invoice.sent')}</MenuItem>
           </CustomTextField>
         </div>
       </CardContent>

@@ -2,12 +2,35 @@
 import type { ReactNode } from 'react'
 import React, { createContext, useContext } from 'react'
 
-// The dictionary type can be improved if you have a type for it
-export const TranslationContext = createContext<any>(null)
+type Dictionary = {
+  [key: string]: string | Dictionary
+}
 
-export const TranslationProvider = ({ dictionary, children }: { dictionary: any; children: ReactNode }) => (
-  <TranslationContext.Provider value={dictionary}>{children}</TranslationContext.Provider>
-)
+type TranslationContextType = {
+  t: (key: string) => string
+  dictionary: Dictionary
+}
+
+export const TranslationContext = createContext<TranslationContextType | null>(null)
+
+export const TranslationProvider = ({ dictionary, children }: { dictionary: Dictionary; children: ReactNode }) => {
+  const t = (key: string): string => {
+    const keys = key.split('.')
+    let value: any = dictionary
+
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k]
+      } else {
+        return key // Return the key if translation is not found
+      }
+    }
+
+    return typeof value === 'string' ? value : key
+  }
+
+  return <TranslationContext.Provider value={{ t, dictionary }}>{children}</TranslationContext.Provider>
+}
 
 export const useTranslation = () => {
   const context = useContext(TranslationContext)

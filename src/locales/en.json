@@ -20,7 +20,8 @@
         "medicalData": "Medical Data",
         "newPatientHighlight": "New patient created!",
         "newLabel": "new",
-        "addNewPatient": "Add new patient"
+        "addNewPatient": "Add new patient",
+        "patientName": "Patient Name"
     },
     "appointments": {
         "typeOptions": {
@@ -47,7 +48,8 @@
         "security": "Security",
         "billingPlans": "Billing & Plans",
         "notifications": "Notifications",
-        "connections": "Connections"
+        "connections": "Connections",
+        "show": "Show"
     },
     "appointmentsList": "Appointments List",
     "bookAppointment": "Book Appointment",
@@ -74,7 +76,6 @@
     "dosage": "Dosage",
     "frequency": "Frequency",
     "duration": "Duration",
-    "patientName": "Patient Name",
     "additionalNotes": "Additional Notes",
     "collapseMedications": "Collapse medications",
     "expandMedications": "Expand medications",
@@ -109,8 +110,8 @@
         "itemDescription": "Item Description",
         "total": "Total",
         "createInvoice": "Create Invoice",
+        "date": "Date",
         "dateCreation": "Date Creation:",
-        "date": "Date:",
         "addPayment": "Add Payment",
         "balance": "Invoice Balance",
         "paymentAmount": "Payment Amount",
@@ -135,6 +136,16 @@
         "unpaid": "Unpaid",
         "totalPaid": "Total Paid",
         "totalUnpaid": "Total Unpaid",
-        "unpaidInvoices": "Unpaid Invoices"
+        "unpaidInvoices": "Unpaid Invoices",
+        "status": "Status",
+        "downloaded": "Downloaded",
+        "draft": "Draft",
+        "partial": "Partial Payment",
+        "pastDue": "Past Due",
+        "sent": "Sent",
+        "download": "Download",
+        "duplicate": "Duplicate",
+        "searchInvoice": "Search Invoice",
+        "show": "Show"
     }
 }
