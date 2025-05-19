@@ -51,10 +51,11 @@ interface AppointmentListTableProps {
 }
 
 const statusColor: { [key: string]: string } = {
-  Scheduled: 'info',
-  Confirmed: 'success',
-  Pending: 'warning',
-  Cancelled: 'error'
+  scheduled: 'warning',
+  completed: 'success',
+  cancelled: 'error',
+  Cancelled: 'error',
+  in_progress: 'info'
 }
 
 const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
