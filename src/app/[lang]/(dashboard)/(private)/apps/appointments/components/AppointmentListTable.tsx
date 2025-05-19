@@ -21,7 +21,10 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  IconButton
+  IconButton,
+  CircularProgress,
+  Box,
+  useTheme
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
 
@@ -42,8 +45,6 @@ interface AppointmentListTableProps {
   page: number
   pageSize: number
   total: number
-  onPageChange?: (event: unknown, newPage: number) => void
-  onPageSizeChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   statusOptions?: string[]
   typeOptions?: string[]
   doctors: { id: string | number; name: string }[]
@@ -64,8 +65,6 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   page,
   pageSize,
   total,
-  onPageChange = () => {},
-  onPageSizeChange = () => {},
   statusOptions = [],
   typeOptions = [],
   doctors = [],
@@ -85,6 +84,8 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   const endDateParam = searchParams?.get('endDate') || ''
   const t = useTranslation()
   const [addOpen, setAddOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const theme = useTheme()
 
   // State for date pickers
   const [startDate, setStartDate] = useState<Date | null>(startDateParam ? new Date(startDateParam) : null)
@@ -179,6 +180,29 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     return isAfter(appointmentDateTime, oneWeekAgo) || isBefore(appointmentDateTime, new Date())
   }
 
+  const handlePageChange = (_event: unknown, newPage: number) => {
+    setIsLoading(true)
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
+
+    params.set('page', String(newPage + 1)) // Convert back to 1-based page number
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
+  const handlePageSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsLoading(true)
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
+    const newPageSize = Number(event.target.value)
+
+    params.set('pageSize', String(newPageSize))
+    params.set('page', '1') // Reset to first page when changing page size
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
+  // Reset loading state when data changes
+  React.useEffect(() => {
+    setIsLoading(false)
+  }, [appointmentData])
+
   return (
     <Card>
       <div className='flex items-center justify-between px-6 pt-6'>
@@ -263,7 +287,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
         </div>
       </div>
       <Divider className='mb-2' />
-      <TableContainer component={Paper} sx={{ backgroundColor: 'transparent' }}>
+      <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', position: 'relative' }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -331,14 +355,49 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
             ))}
           </TableBody>
         </Table>
+        {isLoading && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(2px)',
+              zIndex: 1,
+              color: theme.palette.text.primary
+            }}
+          >
+            <CircularProgress
+              size={40}
+              sx={{
+                mb: 2,
+                color: theme.palette.primary.main
+              }}
+            />
+            <Box
+              sx={{
+                color: theme.palette.text.secondary,
+                fontWeight: 500
+              }}
+            >
+              {t.loading || 'Loading appointments...'}
+            </Box>
+          </Box>
+        )}
       </TableContainer>
       <TablePagination
         component='div'
         count={total}
         page={page}
-        onPageChange={onPageChange}
+        onPageChange={handlePageChange}
         rowsPerPage={pageSize}
-        onRowsPerPageChange={onPageSizeChange}
+        onRowsPerPageChange={handlePageSizeChange}
         rowsPerPageOptions={[10, 25, 50]}
       />
       <TranslationProvider dictionary={dictionary}>
