@@ -43,23 +43,67 @@ const BadgeContentSpan = styled('span')({
   boxShadow: '0 0 0 2px var(--mui-palette-background-paper)'
 })
 
-// Styled component for admin badge
-const AdminBadgeContentSpan = styled('span')({
+// Role-specific badge components
+const RoleBadgeContentSpan = styled('span')<{ color: string }>(({ color }) => ({
   width: 8,
   height: 8,
   borderRadius: '50%',
   cursor: 'pointer',
-  backgroundColor: 'var(--mui-palette-error-main)',
+  backgroundColor: `var(--mui-palette-${color}-main)`,
   boxShadow: '0 0 0 2px var(--mui-palette-background-paper)'
-})
+}))
 
-// Styled component for admin avatar
-const AdminAvatar = styled(Avatar)({
-  border: '2px solid var(--mui-palette-error-main)',
+// Role-specific avatar components
+const RoleAvatar = styled(Avatar)<{ color: string }>(({ color }) => ({
+  border: `2px solid var(--mui-palette-${color}-main)`,
   '&:hover': {
-    border: '2px solid var(--mui-palette-error-dark)'
+    border: `2px solid var(--mui-palette-${color}-dark)`
   }
-})
+}))
+
+// Role configuration
+const roleConfig = {
+  ADMIN: {
+    color: 'error',
+    icon: 'tabler-crown',
+    label: 'Administrator'
+  },
+  DOCTOR: {
+    color: 'primary',
+    icon: 'tabler-stethoscope',
+    label: 'Doctor'
+  },
+  NURSE: {
+    color: 'info',
+    icon: 'tabler-heartbeat',
+    label: 'Nurse'
+  },
+  RECEPTIONIST: {
+    color: 'success',
+    icon: 'tabler-calendar-event',
+    label: 'Receptionist'
+  },
+  ACCOUNTANT: {
+    color: 'warning',
+    icon: 'tabler-calculator',
+    label: 'Accountant'
+  },
+  LAB_TECHNICIAN: {
+    color: 'secondary',
+    icon: 'tabler-microscope',
+    label: 'Lab Technician'
+  },
+  PHARMACIST: {
+    color: 'error',
+    icon: 'tabler-pill',
+    label: 'Pharmacist'
+  },
+  USER: {
+    color: 'success',
+    icon: 'tabler-user',
+    label: 'User'
+  }
+} as const
 
 const UserDropdown = () => {
   // States
@@ -82,11 +126,10 @@ const UserDropdown = () => {
   }
 
   const organisationName = (session?.user as any)?.organisationName
-  const userRole = (session?.user as any)?.role
+  const userRole = (session?.user as any)?.role as keyof typeof roleConfig
+  const roleInfo = userRole ? roleConfig[userRole] : null
   const orgLabel = translations[lang || 'en']?.organisation || 'Organisation'
   const roleLabel = translations[lang || 'en']?.role || 'Role'
-
-  const isAdmin = userRole?.toLowerCase() === 'admin'
 
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
@@ -122,8 +165,8 @@ const UserDropdown = () => {
         ref={anchorRef}
         overlap='circular'
         badgeContent={
-          isAdmin ? (
-            <AdminBadgeContentSpan onClick={handleDropdownOpen} />
+          roleInfo ? (
+            <RoleBadgeContentSpan color={roleInfo.color} onClick={handleDropdownOpen} />
           ) : (
             <BadgeContentSpan onClick={handleDropdownOpen} />
           )
@@ -131,12 +174,13 @@ const UserDropdown = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         className='mis-2'
       >
-        {isAdmin ? (
-          <AdminAvatar
+        {roleInfo ? (
+          <RoleAvatar
             ref={anchorRef}
             alt={session?.user?.name || ''}
             src={session?.user?.image || ''}
             onClick={handleDropdownOpen}
+            color={roleInfo.color}
             className='cursor-pointer bs-[38px] is-[38px]'
           />
         ) : (
@@ -168,27 +212,30 @@ const UserDropdown = () => {
               <ClickAwayListener onClickAway={e => handleDropdownClose(e as MouseEvent | TouchEvent)}>
                 <MenuList>
                   <div className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
-                    {isAdmin ? (
-                      <AdminAvatar alt={session?.user?.name || ''} src={session?.user?.image || ''} />
+                    {roleInfo ? (
+                      <RoleAvatar
+                        alt={session?.user?.name || ''}
+                        src={session?.user?.image || ''}
+                        color={roleInfo.color}
+                      />
                     ) : (
                       <Avatar alt={session?.user?.name || ''} src={session?.user?.image || ''} />
                     )}
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
-                        {session?.user?.name || ''}
+                        {userRole === 'DOCTOR' ? `Dr. ${session?.user?.name || ''}` : session?.user?.name || ''}
                       </Typography>
                       <Typography variant='caption'>{session?.user?.email || ''}</Typography>
                       <Typography variant='caption' color={organisationName ? 'text.secondary' : 'error'}>
                         {orgLabel}: {organisationName ? organisationName : 'No Organisation'}
                       </Typography>
-                      {userRole && (
-                        <Typography
-                          variant='caption'
-                          color={isAdmin ? 'error' : 'text.secondary'}
-                          className={isAdmin ? 'flex items-center gap-1 font-medium' : ''}
-                        >
-                          {roleLabel}: {userRole}
-                          {isAdmin && <i className='tabler-crown text-[14px]' />}
+                      {userRole && roleInfo && (
+                        <Typography variant='caption' color='text.secondary' className='flex items-center gap-1'>
+                          {roleLabel}: {roleInfo.label}
+                          <i
+                            className={`${roleInfo.icon} text-[14px]`}
+                            style={{ color: `var(--mui-palette-${roleInfo.color}-main)` }}
+                          />
                         </Typography>
                       )}
                     </div>
