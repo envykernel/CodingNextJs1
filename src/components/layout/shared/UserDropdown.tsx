@@ -58,13 +58,15 @@ const UserDropdown = () => {
 
   // Translation for organisation label
   const translations: Record<string, Record<string, string>> = {
-    en: { organisation: 'Organisation' },
-    fr: { organisation: 'Organisation' },
-    ar: { organisation: 'المؤسسة' }
+    en: { organisation: 'Organisation', role: 'Role' },
+    fr: { organisation: 'Organisation', role: 'Rôle' },
+    ar: { organisation: 'المؤسسة', role: 'الدور' }
   }
 
   const organisationName = (session?.user as any)?.organisationName
+  const userRole = (session?.user as any)?.role
   const orgLabel = translations[lang || 'en']?.organisation || 'Organisation'
+  const roleLabel = translations[lang || 'en']?.role || 'Role'
 
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
@@ -139,6 +141,11 @@ const UserDropdown = () => {
                       <Typography variant='caption' color={organisationName ? 'text.secondary' : 'error'}>
                         {orgLabel}: {organisationName ? organisationName : 'No Organisation'}
                       </Typography>
+                      {userRole && (
+                        <Typography variant='caption' color='text.secondary'>
+                          {roleLabel}: {userRole}
+                        </Typography>
+                      )}
                     </div>
                   </div>
                   <Divider className='mlb-1' />
