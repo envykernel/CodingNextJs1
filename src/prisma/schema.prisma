@@ -231,6 +231,7 @@ model UserInternal {
   email          String        @unique
   isApproved     Boolean       @default(false)
   organisationId Int?
+  role           UserRole?     // Make role optional by adding ?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   organisation   organisation? @relation(fields: [organisationId], references: [id])
@@ -494,4 +495,15 @@ enum PaymentMethod {
   INSURANCE
   CHEQUE
   OTHER
+}
+
+enum UserRole {
+  ADMIN
+  DOCTOR
+  NURSE
+  RECEPTIONIST
+  ACCOUNTANT
+  LAB_TECHNICIAN
+  PHARMACIST
+  USER
 }
