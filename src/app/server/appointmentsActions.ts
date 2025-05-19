@@ -1,6 +1,8 @@
 import { z } from 'zod'
+import { getServerSession } from 'next-auth'
 
 import { prisma } from '@/prisma/prisma'
+import { authOptions } from '@/libs/auth'
 import {
   APPOINTMENT_STATUS_OPTIONS,
   APPOINTMENT_TYPE_OPTIONS
@@ -49,10 +51,22 @@ export async function getAppointments({
   startDate?: string
   endDate?: string
 }) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user?.organisationId) {
+    throw new Error('User not authenticated or no organization assigned')
+  }
+
+  const organisationId = parseInt(session.user.organisationId)
   const skip = (page - 1) * pageSize
 
-  const where: any = {}
-  const dateWhere: any = {}
+  const where: any = {
+    organisation_id: organisationId
+  }
+
+  const dateWhere: any = {
+    organisation_id: organisationId
+  }
 
   if (filter === 'today') {
     const { start, end } = getTodayRange()

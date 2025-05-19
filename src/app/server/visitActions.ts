@@ -1,10 +1,24 @@
+import { getServerSession } from 'next-auth'
+
 import { prisma } from '@/prisma/prisma'
+import { authOptions } from '@/libs/auth'
 import { prismaDecimalToNumber } from '@/utils/prismaDecimalToNumber'
 import type { PrescriptionFormValues } from '@/components/prescriptions/PrescriptionForm'
 
 export async function getVisitsByAppointmentIds(appointmentIds: number[]) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user?.organisationId) {
+    throw new Error('User not authenticated or no organization assigned')
+  }
+
+  const organisationId = parseInt(session.user.organisationId)
+
   const visits = await prisma.patient_visit.findMany({
-    where: { appointment_id: { in: appointmentIds } },
+    where: {
+      appointment_id: { in: appointmentIds },
+      organisation_id: organisationId
+    },
     select: {
       id: true,
       appointment_id: true,

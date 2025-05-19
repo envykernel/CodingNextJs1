@@ -4,8 +4,10 @@
 // (Optional) import type { PatientType } from '@/views/apps/patient/list/PatientListTable'
 
 import { z } from 'zod'
+import { getServerSession } from 'next-auth'
 
 import { prisma } from '@/prisma/prisma'
+import { authOptions } from '@/libs/auth'
 
 const patientSchema = z.object({
   name: z.string().min(1),
@@ -208,8 +210,19 @@ export async function getPatientById(id: number) {
 
 // Fetch all appointments for a given patient_id
 export async function getAppointmentsByPatientId(patient_id: number) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user?.organisationId) {
+    throw new Error('User not authenticated or no organization assigned')
+  }
+
+  const organisationId = parseInt(session.user.organisationId)
+
   const appointments = await prisma.patient_appointment.findMany({
-    where: { patient_id },
+    where: {
+      patient_id,
+      organisation_id: organisationId
+    },
     include: {
       doctor: true,
       organisation: true,
@@ -247,8 +260,18 @@ export async function getAppointmentsList({
   patientName?: string
   status?: string
 } = {}) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user?.organisationId) {
+    throw new Error('User not authenticated or no organization assigned')
+  }
+
+  const organisationId = parseInt(session.user.organisationId)
   const skip = (page - 1) * pageSize
-  const where: any = {}
+
+  const where: any = {
+    organisation_id: organisationId
+  }
 
   if (patientName) {
     where.patient = { name: { contains: patientName, mode: 'insensitive' } }

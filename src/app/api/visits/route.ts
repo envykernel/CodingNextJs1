@@ -1,10 +1,20 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
+import { getServerSession } from 'next-auth'
+
 import { prisma } from '../../../prisma/prisma'
+import { authOptions } from '@/libs/auth'
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user?.organisationId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const organisationId = parseInt(session.user.organisationId)
     const body = await req.json()
     const { appointment_id } = body
 
@@ -13,8 +23,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Fetch the appointment
-    const appointment = await prisma.patient_appointment.findUnique({
-      where: { id: appointment_id },
+    const appointment = await prisma.patient_appointment.findFirst({
+      where: {
+        id: appointment_id,
+        organisation_id: organisationId
+      },
       include: { patient: true, doctor: true, organisation: true }
     })
 
