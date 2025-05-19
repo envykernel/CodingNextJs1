@@ -54,7 +54,6 @@ const statusColor: { [key: string]: string } = {
   scheduled: 'warning',
   completed: 'success',
   cancelled: 'error',
-  Cancelled: 'error',
   in_progress: 'info'
 }
 

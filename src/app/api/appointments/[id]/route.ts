@@ -44,14 +44,14 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
 
     // Don't allow cancellation if there's a visit
-    if (status === 'Cancelled' && appointment.patient_visits.length > 0) {
+    if (status.toLowerCase() === 'cancelled' && appointment.patient_visits.length > 0) {
       return new NextResponse('Cannot cancel appointment with an associated visit', { status: 400 })
     }
 
     // Update the appointment
     const updatedAppointment = await prisma.patient_appointment.update({
       where: { id: appointmentId },
-      data: { status }
+      data: { status: status.toLowerCase() }
     })
 
     return NextResponse.json(updatedAppointment)
