@@ -154,6 +154,8 @@ model doctor {
   status              String?               @default("enabled") @db.VarChar(50)
   created_at          DateTime?             @default(now()) @db.Timestamp(6)
   updated_at          DateTime?             @default(now()) @db.Timestamp(6)
+  userId              Int?                  @unique
+  user                UserInternal?         @relation(fields: [userId], references: [id])
   clinical_exams      clinical_exam[]
   organisation        organisation          @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   lab_test_orders     lab_test_order[]
@@ -163,6 +165,7 @@ model doctor {
   prescriptions       prescription[]
 
   @@index([organisation_id], map: "idx_doctor_organisation_id")
+  @@index([userId], map: "idx_doctor_user_id")
 }
 
 model organisation {
@@ -231,6 +234,7 @@ model UserInternal {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   organisation   organisation? @relation(fields: [organisationId], references: [id])
+  doctor         doctor?       // Simple relation without fields
 }
 
 model patient_visit {
