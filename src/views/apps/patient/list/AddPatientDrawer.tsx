@@ -160,6 +160,9 @@ const PatientDrawer = ({
   // Reset form when drawer opens or editPatient changes
   useEffect(() => {
     if (open) {
+      // Reset form status when drawer opens
+      setFormStatus({ type: null, message: '' })
+
       // Get the doctor name from the editPatient data
       const editDoctor =
         editMode && editPatient?.doctor
@@ -193,6 +196,9 @@ const PatientDrawer = ({
         emergency_contact_phone: editMode && editPatient ? editPatient.emergency_contact_phone : '',
         emergency_contact_email: editMode && editPatient ? editPatient.emergency_contact_email : ''
       })
+    } else {
+      // Reset form status when drawer closes
+      setFormStatus({ type: null, message: '' })
     }
   }, [open, editMode, editPatient, reset])
 
@@ -225,8 +231,9 @@ const PatientDrawer = ({
             message: t('messages.patientUpdated')
           })
 
-          // Close drawer after a short delay to show the success message
+          // Reset form and close drawer after a short delay to show the success message
           setTimeout(() => {
+            reset() // Reset form to default values
             handleClose()
           }, 1500)
         } else {
@@ -259,8 +266,9 @@ const PatientDrawer = ({
             message: t('messages.patientCreated')
           })
 
-          // Close drawer after a short delay to show the success message
+          // Reset form and close drawer after a short delay to show the success message
           setTimeout(() => {
+            reset() // Reset form to default values
             handleClose()
           }, 1500)
         } else {
@@ -280,6 +288,8 @@ const PatientDrawer = ({
   }
 
   const handleReset = () => {
+    setFormStatus({ type: null, message: '' }) // Reset form status
+    reset() // Reset form to default values
     handleClose()
   }
 
