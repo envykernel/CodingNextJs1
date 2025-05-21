@@ -54,23 +54,6 @@ type FormValidateType = {
   emergency_contact_email?: string
 }
 
-// Zod schema for validation
-const patientSchema = z.object({
-  name: z.string().min(1, 'required'),
-  phone_number: z.string().min(1, 'required'),
-  gender: z.string().min(1, 'required'),
-  status: z.string().min(1, 'required'),
-  birthdate: z.coerce.date({ required_error: 'required', invalid_type_error: 'required' }),
-  doctor: z.string().optional(),
-  avatar: z.string().optional(),
-  address: z.string().optional(),
-  city: z.string().optional(),
-  email: z.string().optional(),
-  emergency_contact_name: z.string().optional(),
-  emergency_contact_phone: z.string().optional(),
-  emergency_contact_email: z.string().optional()
-})
-
 const PatientDrawer = ({
   open,
   handleClose,
@@ -102,6 +85,37 @@ const PatientDrawer = ({
         .catch(() => setDoctors([]))
     }
   }, [open])
+
+  // Create schema inside component to access translations
+  const patientSchema = z.object({
+    name: z
+      .string()
+      .min(1, t('form.validation.required'))
+      .min(4, t('form.validation.name.minLength'))
+      .regex(/^[a-zA-Z\s-']+$/, t('form.validation.name.invalidCharacters')),
+    phone_number: z
+      .string()
+      .min(1, t('form.validation.required'))
+      .regex(/^(?:(?:\+|00)212|0)[5-7]\d{8}$/, t('form.validation.phone.invalidFormat')),
+    gender: z.string().min(1, t('form.validation.required')),
+    status: z.string().min(1, t('form.validation.required')),
+    birthdate: z.coerce.date({
+      required_error: t('form.validation.required'),
+      invalid_type_error: t('form.validation.birthdate.invalid')
+    }),
+    doctor: z.string().optional(),
+    avatar: z.string().optional(),
+    address: z.string().optional(),
+    city: z.string().optional(),
+    email: z.string().email(t('form.validation.email.invalid')).optional().or(z.literal('')),
+    emergency_contact_name: z.string().optional(),
+    emergency_contact_phone: z
+      .string()
+      .regex(/^(?:(?:\+|00)212|0)[5-7]\d{8}$/, t('form.validation.phone.invalidFormat'))
+      .optional()
+      .or(z.literal('')),
+    emergency_contact_email: z.string().email(t('form.validation.email.invalid')).optional().or(z.literal(''))
+  })
 
   // Hooks
   const {
@@ -328,7 +342,13 @@ const PatientDrawer = ({
                     label={t('form.name')}
                     placeholder={t('form.namePlaceholder')}
                     error={!!errors.name}
-                    helperText={errors.name ? t('form.required') : ''}
+                    helperText={
+                      errors.name?.type === 'too_small' && field.value.length > 0
+                        ? t('form.validation.name.minLength')
+                        : errors.name?.type === 'invalid_string'
+                          ? t('form.validation.name.invalidCharacters')
+                          : errors.name?.message
+                    }
                   />
                 )}
               />
@@ -469,7 +489,13 @@ const PatientDrawer = ({
                     label={t('form.phoneNumber')}
                     placeholder={t('form.phoneNumberPlaceholder')}
                     error={!!errors.phone_number}
-                    helperText={errors.phone_number ? t('form.required') : ''}
+                    helperText={
+                      errors.phone_number?.type === 'too_small'
+                        ? t('form.required')
+                        : errors.phone_number?.type === 'invalid_string'
+                          ? t('form.validation.phone.invalidFormat')
+                          : errors.phone_number?.message
+                    }
                   />
                 )}
               />

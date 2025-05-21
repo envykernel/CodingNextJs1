@@ -216,31 +216,28 @@
         "validation": {
             "required": "Ce champ est requis",
             "name": {
-                "min": "Le nom doit contenir au moins 4 caractères",
-                "format": "Le nom ne peut contenir que des lettres, des espaces, des tirets et des apostrophes"
+                "minLength": "Le nom doit contenir au moins 4 caractères",
+                "invalidCharacters": "Le nom ne peut contenir que des lettres, des espaces, des tirets et des apostrophes"
             },
             "phone": {
-                "format": "Veuillez entrer un numéro de téléphone marocain valide (ex: 0612345678)"
+                "required": "Le numéro de téléphone est requis",
+                "invalidFormat": "Veuillez entrer un numéro de téléphone marocain valide (ex: 06XX-XXXXXX)"
+            },
+            "gender": {
+                "required": "Le genre est requis"
+            },
+            "status": {
+                "required": "Le statut est requis"
+            },
+            "birthdate": {
+                "required": "La date de naissance est requise",
+                "invalid": "Veuillez entrer une date valide"
             },
             "email": {
-                "format": "Veuillez entrer une adresse e-mail valide"
-            },
-            "date": {
-                "invalid": "Veuillez entrer une date valide"
+                "invalid": "Veuillez entrer une adresse e-mail valide"
             },
             "url": {
                 "invalid": "Veuillez entrer une URL valide"
-            },
-            "address": {
-                "empty": "L'adresse ne doit pas être vide"
-            },
-            "city": {
-                "empty": "La ville ne doit pas être vide"
-            },
-            "emergencyContact": {
-                "name": {
-                    "empty": "Le nom du contact d'urgence ne doit pas être vide"
-                }
             }
         }
     },

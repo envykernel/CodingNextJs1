@@ -223,31 +223,28 @@
         "validation": {
             "required": "This field is required",
             "name": {
-                "min": "Name must be at least 4 characters",
-                "format": "Name can only contain letters, spaces, hyphens and apostrophes"
+                "minLength": "Name must be at least 4 characters long",
+                "invalidCharacters": "Name can only contain letters, spaces, hyphens and apostrophes"
             },
             "phone": {
-                "format": "Please enter a valid Moroccan phone number (e.g., 0612345678)"
+                "required": "Phone number is required",
+                "invalidFormat": "Please enter a valid Moroccan phone number (e.g., 06XX-XXXXXX)"
+            },
+            "gender": {
+                "required": "Gender is required"
+            },
+            "status": {
+                "required": "Status is required"
+            },
+            "birthdate": {
+                "required": "Birthdate is required",
+                "invalid": "Please enter a valid date"
             },
             "email": {
-                "format": "Please enter a valid email address"
-            },
-            "date": {
-                "invalid": "Please enter a valid date"
+                "invalid": "Please enter a valid email address"
             },
             "url": {
                 "invalid": "Please enter a valid URL"
-            },
-            "address": {
-                "empty": "Address must not be empty"
-            },
-            "city": {
-                "empty": "City must not be empty"
-            },
-            "emergencyContact": {
-                "name": {
-                    "empty": "Emergency contact name must not be empty"
-                }
             }
         }
     },
