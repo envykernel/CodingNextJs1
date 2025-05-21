@@ -37,7 +37,7 @@ const AddAction = () => {
   // States
   const [open, setOpen] = useState(false)
   const [issuedDate, setIssuedDate] = useState<Date | null | undefined>(new Date())
-  const t = useTranslation()
+  const { t } = useTranslation()
   const [invoiceNumber, setInvoiceNumber] = useState('')
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -178,10 +178,10 @@ const AddAction = () => {
       if (res.ok) {
         setSuccess(true)
       } else {
-        setError(t.invoice?.error || 'Error creating invoice!')
+        setError(t('invoice.error') || 'Error creating invoice!')
       }
     } catch (e) {
-      setError(t.invoice?.error || 'Error creating invoice!')
+      setError(t('invoice.error') || 'Error creating invoice!')
     } finally {
       setLoading(false)
     }
@@ -203,7 +203,7 @@ const AddAction = () => {
     return <div style={{ color: 'red', padding: 32 }}>{visitError}</div>
   }
 
-  if (!t || !t.invoice) {
+  if (!t) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
         <CircularProgress />
@@ -256,7 +256,7 @@ const AddAction = () => {
                     </div>
                     <div className='flex items-center'>
                       <Typography className='min-is-[95px] mie-4' color='text.primary'>
-                        {t.invoice.date || 'Date:'}
+                        {t('invoice.date') || 'Date:'}
                       </Typography>
                       <AppReactDatepicker
                         boxProps={{ className: 'is-full' }}
@@ -313,7 +313,7 @@ const AddAction = () => {
                   <Grid container spacing={5} className='m-0 p-5'>
                     <Grid size={{ xs: 12, md: 5, lg: 6 }}>
                       <Typography className='font-medium md:absolute md:-top-8' color='text.primary'>
-                        {t.invoice.item}
+                        {t('invoice.item')}
                       </Typography>
                       <Autocomplete
                         fullWidth
@@ -324,7 +324,7 @@ const AddAction = () => {
                           updateItem(idx, 'service_id', newValue ? newValue.id : '')
                         }}
                         renderInput={params => (
-                          <CustomTextField {...params} placeholder={t.invoice.selectService} className='mbe-5' />
+                          <CustomTextField {...params} placeholder={t('invoice.selectService')} className='mbe-5' />
                         )}
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                       />
@@ -334,15 +334,15 @@ const AddAction = () => {
                         multiline
                         value={item.description}
                         onChange={e => updateItem(idx, 'description', e.target.value)}
-                        placeholder={t.invoice.itemDescription}
+                        placeholder={t('invoice.itemDescription')}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 3, lg: 2 }}>
-                      <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.unitPrice}</Typography>
+                      <Typography className='font-medium md:absolute md:-top-8'>{t('invoice.unitPrice')}</Typography>
                       <CustomTextField fullWidth type='number' value={item.unit_price} disabled className='mbe-5' />
                     </Grid>
                     <Grid size={{ xs: 12, md: 2 }}>
-                      <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.quantity}</Typography>
+                      <Typography className='font-medium md:absolute md:-top-8'>{t('invoice.quantity')}</Typography>
                       <CustomTextField
                         fullWidth
                         type='number'
@@ -352,7 +352,7 @@ const AddAction = () => {
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 2 }}>
-                      <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.lineTotal}</Typography>
+                      <Typography className='font-medium md:absolute md:-top-8'>{t('invoice.lineTotal')}</Typography>
                       <Typography>
                         {item.line_total.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
                       </Typography>
@@ -367,7 +367,7 @@ const AddAction = () => {
               ))}
               <Grid size={{ xs: 12 }}>
                 <Button size='small' variant='contained' onClick={addItem} startIcon={<i className='tabler-plus' />}>
-                  {t.invoice.addItem}
+                  {t('invoice.addItem')}
                 </Button>
               </Grid>
             </Grid>
@@ -389,7 +389,7 @@ const AddAction = () => {
             </Grid>
             {success && (
               <Alert severity='success' sx={{ mb: 4 }}>
-                {t.invoice?.confirmation || 'Invoice created successfully!'}
+                {t('invoice.confirmation') || 'Invoice created successfully!'}
               </Alert>
             )}
             {error && (
@@ -399,7 +399,7 @@ const AddAction = () => {
             )}
             <Grid size={{ xs: 12 }}>
               <Button variant='contained' color='primary' onClick={handleSubmitInvoice} disabled={loading}>
-                {loading ? t.invoice?.saving || 'Saving...' : t.invoice?.createInvoice || 'Create Invoice'}
+                {loading ? t('invoice.saving') || 'Saving...' : t('invoice.createInvoice') || 'Create Invoice'}
               </Button>
             </Grid>
           </Grid>

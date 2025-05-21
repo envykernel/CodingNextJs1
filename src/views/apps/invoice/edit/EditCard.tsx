@@ -36,7 +36,7 @@ const EditCard = ({ invoice }: EditCardProps) => {
     invoice?.invoice_date ? new Date(invoice.invoice_date) : new Date()
   )
 
-  const t = useTranslation()
+  const { t } = useTranslation()
   const [invoiceNumber] = useState(invoice?.invoice_number || '')
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -123,10 +123,10 @@ const EditCard = ({ invoice }: EditCardProps) => {
       if (res.ok) {
         setSuccess(true)
       } else {
-        setError(t.invoice?.error || 'Error updating invoice!')
+        setError(t('invoice.error') || 'Error updating invoice!')
       }
     } catch (e) {
-      setError(t.invoice?.error || 'Error updating invoice!')
+      setError(t('invoice.error') || 'Error updating invoice!')
     } finally {
       setLoading(false)
     }
@@ -136,7 +136,7 @@ const EditCard = ({ invoice }: EditCardProps) => {
     return <div style={{ color: 'red', padding: 32 }}>Missing invoiceId in URL</div>
   }
 
-  if (!t || !t.invoice) {
+  if (!t) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
         <CircularProgress />
@@ -199,7 +199,7 @@ const EditCard = ({ invoice }: EditCardProps) => {
                     </div>
                     <div className='flex items-center'>
                       <Typography className='min-is-[95px] mie-4' color='text.primary'>
-                        {t.invoice.date || 'Date:'}
+                        {t('invoice.date') || 'Date:'}
                       </Typography>
                       <AppReactDatepicker
                         boxProps={{ className: 'is-full' }}
@@ -260,7 +260,7 @@ const EditCard = ({ invoice }: EditCardProps) => {
                     <Grid container spacing={5} className='m-0 p-5'>
                       <Grid size={{ xs: 12, md: 5, lg: 6 }}>
                         <Typography className='font-medium md:absolute md:-top-8' color='text.primary'>
-                          {t.invoice.item}
+                          {t('invoice.item')}
                         </Typography>
                         <Autocomplete
                           fullWidth
@@ -271,7 +271,7 @@ const EditCard = ({ invoice }: EditCardProps) => {
                             updateItem(idx, 'service_id', newValue ? newValue.id : '')
                           }}
                           renderInput={params => (
-                            <CustomTextField {...params} placeholder={t.invoice.selectService} className='mbe-5' />
+                            <CustomTextField {...params} placeholder={t('invoice.selectService')} className='mbe-5' />
                           )}
                           isOptionEqualToValue={(option, value) => option.id === value.id}
                         />
@@ -281,15 +281,15 @@ const EditCard = ({ invoice }: EditCardProps) => {
                           multiline
                           value={item.description}
                           onChange={e => updateItem(idx, 'description', e.target.value)}
-                          placeholder={t.invoice.itemDescription}
+                          placeholder={t('invoice.itemDescription')}
                         />
                       </Grid>
                       <Grid size={{ xs: 12, md: 3, lg: 2 }}>
-                        <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.unitPrice}</Typography>
+                        <Typography className='font-medium md:absolute md:-top-8'>{t('invoice.unitPrice')}</Typography>
                         <CustomTextField fullWidth type='number' value={item.unit_price} disabled className='mbe-5' />
                       </Grid>
                       <Grid size={{ xs: 12, md: 2 }}>
-                        <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.quantity}</Typography>
+                        <Typography className='font-medium md:absolute md:-top-8'>{t('invoice.quantity')}</Typography>
                         <CustomTextField
                           fullWidth
                           type='number'
@@ -299,7 +299,7 @@ const EditCard = ({ invoice }: EditCardProps) => {
                         />
                       </Grid>
                       <Grid size={{ xs: 12, md: 2 }}>
-                        <Typography className='font-medium md:absolute md:-top-8'>{t.invoice.lineTotal}</Typography>
+                        <Typography className='font-medium md:absolute md:-top-8'>{t('invoice.lineTotal')}</Typography>
                         <Typography>
                           {item.line_total.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
                         </Typography>
@@ -313,7 +313,7 @@ const EditCard = ({ invoice }: EditCardProps) => {
                       ) : (
                         <Tooltip
                           title={
-                            t.invoice?.cannotDeleteItemWithPayments ||
+                            t('invoice.cannotDeleteItemWithPayments') ||
                             'Cannot delete invoice items with payments applied. Please delete all payments linked to this item before deleting it.'
                           }
                         >
@@ -331,7 +331,7 @@ const EditCard = ({ invoice }: EditCardProps) => {
               })}
               <Grid size={{ xs: 12 }}>
                 <Button size='small' variant='contained' onClick={addItem} startIcon={<i className='tabler-plus' />}>
-                  {t.invoice.addItem}
+                  {t('invoice.addItem')}
                 </Button>
               </Grid>
             </Grid>
@@ -354,14 +354,14 @@ const EditCard = ({ invoice }: EditCardProps) => {
             <Grid size={{ xs: 12 }}>
               <div className='flex flex-row items-center gap-4'>
                 <Button variant='contained' color='primary' onClick={handleSubmitInvoice} disabled={loading}>
-                  {loading ? t.invoice?.saving || 'Saving...' : t.invoice?.updateInvoice || 'Update Invoice'}
+                  {loading ? t('invoice.saving') || 'Saving...' : t('invoice.updateInvoice') || 'Update Invoice'}
                 </Button>
                 <Button variant='outlined' color='secondary' onClick={() => router.push('/fr/apps/invoice/list')}>
-                  {t.invoice?.cancel || 'Cancel'}
+                  {t('invoice.cancel') || 'Cancel'}
                 </Button>
                 {success && (
                   <Alert severity='success' sx={{ m: 0, p: '4px 16px' }}>
-                    {t.invoice?.confirmation || 'Invoice updated successfully!'}
+                    {t('invoice.confirmation') || 'Invoice updated successfully!'}
                   </Alert>
                 )}
                 {error && (
