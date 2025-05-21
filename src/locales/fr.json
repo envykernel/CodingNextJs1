@@ -138,6 +138,8 @@
         "itemDescription": "Description de l'article",
         "total": "Total",
         "createInvoice": "Créer une facture",
+        "updateInvoice": "Mettre à jour la facture",
+        "cancel": "Annuler",
         "date": "Date",
         "dateCreation": "Date de création :",
         "addPayment": "Ajouter un paiement",

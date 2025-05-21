@@ -145,6 +145,8 @@
         "itemDescription": "Item Description",
         "total": "Total",
         "createInvoice": "Create Invoice",
+        "updateInvoice": "Update Invoice",
+        "cancel": "Cancel",
         "date": "Date",
         "dateCreation": "Date Creation:",
         "addPayment": "Add Payment",

@@ -138,6 +138,8 @@
         "itemDescription": "وصف العنصر",
         "total": "الإجمالي",
         "createInvoice": "إنشاء فاتورة",
+        "updateInvoice": "تحديث الفاتورة",
+        "cancel": "إلغاء",
         "dateCreation": "تاريخ الإنشاء:",
         "date": "التاريخ",
         "addPayment": "إضافة دفعة",
