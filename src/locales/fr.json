@@ -148,6 +148,7 @@
         "cancelInvoice": "Annuler la facture",
         "confirmation": "Facture créée avec succès !",
         "date": "Date",
+        "list": "Liste des factures",
         "dateCreation": "Date de création :",
         "addPayment": "Ajouter un paiement",
         "balance": "Solde de la facture",

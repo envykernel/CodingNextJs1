@@ -154,6 +154,7 @@
         "cancelInvoice": "Cancel Invoice",
         "confirmation": "Invoice created successfully!",
         "date": "Date",
+        "list": "Invoice List",
         "dateCreation": "Date Creation:",
         "addPayment": "Add Payment",
         "balance": "Invoice Balance",

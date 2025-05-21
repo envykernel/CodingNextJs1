@@ -198,7 +198,8 @@
             "active": "نشط",
             "archived": "مؤرشف",
             "deleted": "محذوف"
-        }
+        },
+        "list": "قائمة الفواتير"
     },
     "form": {
         "sectionPersonalInfo": "المعلومات الشخصية",
