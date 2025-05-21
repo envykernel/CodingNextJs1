@@ -35,7 +35,7 @@ interface Appointment {
 }
 
 interface AppointmentsTabProps {
-  appointments: Appointment[]
+  appointments: any[]
 }
 
 const formatDate = (dateString: string | null | undefined) => {
@@ -101,7 +101,7 @@ const AppointmentCard = ({
   onCancel
 }: {
   appointment: Appointment
-  t: any
+  t: (key: string) => string
   onCancel?: (appointment: Appointment) => void
 }) => {
   const router = useRouter()
@@ -112,7 +112,7 @@ const AppointmentCard = ({
         <div className='flex flex-row gap-6'>
           <div className='flex flex-col'>
             <Typography variant='caption' color='text.secondary' className='uppercase tracking-wide'>
-              {t.patient.date || t.navigation.date || 'Date'}
+              {t('date') || 'Date'}
             </Typography>
             <Typography variant='body2' color='text.secondary'>
               {formatDate(appointment.appointment_date)}
@@ -120,7 +120,7 @@ const AppointmentCard = ({
           </div>
           <div className='flex flex-col'>
             <Typography variant='caption' color='text.secondary' className='uppercase tracking-wide'>
-              {t.patient.time || t.navigation.time || 'Time'}
+              {t('time') || 'Time'}
             </Typography>
             <Typography variant='body2' color='text.secondary'>
               {formatTime(appointment.appointment_date)}
@@ -129,7 +129,7 @@ const AppointmentCard = ({
         </div>
         <div className='flex flex-row items-center gap-2'>
           <Typography variant='caption' color='text.secondary' className='uppercase tracking-wide'>
-            {t.patient.doctor || t.navigation.doctor || 'Doctor'}
+            {t('doctor') || 'Doctor'}
           </Typography>
           <Typography variant='body2' className='font-semibold'>
             {appointment.doctor?.name || '-'}
@@ -142,7 +142,7 @@ const AppointmentCard = ({
       <Divider />
       <div className='flex justify-center p-2'>
         {appointment.visit?.id ? (
-          <Tooltip title={t.goToVisit || 'Go to Visit'}>
+          <Tooltip title={t('goToVisit') || 'Go to Visit'}>
             <Button
               size='small'
               variant='outlined'
@@ -151,11 +151,11 @@ const AppointmentCard = ({
               className='hover:text-success hover:border-success'
               startIcon={<i className='tabler-clipboard-check text-lg' />}
             >
-              {t.goToVisit || 'Visit'}
+              {t('goToVisit') || 'Visit'}
             </Button>
           </Tooltip>
         ) : appointment.status === 'scheduled' ? (
-          <Tooltip title={t.cancelAppointment || 'Cancel Appointment'}>
+          <Tooltip title={t('bookAppointment') || 'Cancel Appointment'}>
             <Button
               size='small'
               variant='outlined'
@@ -164,7 +164,7 @@ const AppointmentCard = ({
               className='hover:text-error hover:border-error'
               startIcon={<i className='tabler-x text-lg' />}
             >
-              {t.cancelAppointment || 'Cancel'}
+              {t('bookAppointment') || 'Cancel'}
             </Button>
           </Tooltip>
         ) : null}
@@ -174,12 +174,12 @@ const AppointmentCard = ({
 }
 
 const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
-  const t = useTranslation()
+  const { t } = useTranslation()
   const router = useRouter()
-  const { past, thisMonth, next } = groupAppointments(appointments)
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
-  const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment | null>(null)
   const [isCancelling, setIsCancelling] = useState(false)
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
+  const [appointmentToCancel, setAppointmentToCancel] = useState<any>(null)
+  const { past, thisMonth, next } = groupAppointments(appointments)
 
   const handleCancelClick = (appointment: Appointment) => {
     setAppointmentToCancel(appointment)
@@ -219,9 +219,7 @@ const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
 
   const renderCards = (data: Appointment[]) =>
     data.length === 0 ? (
-      <Typography className='text-center'>
-        {t.patient.noAppointments || t.navigation.noAppointments || 'No appointments available.'}
-      </Typography>
+      <Typography className='text-center'>{t('noAppointments') || 'No appointments available.'}</Typography>
     ) : (
       <div className='flex flex-col gap-2'>
         {data.map((a: Appointment) => (
@@ -236,27 +234,25 @@ const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
         <CardContent>
           <div className='flex items-center gap-3 mb-4'>
             <i className='tabler-calendar-event text-xl text-primary' />
-            <Typography variant='h6'>
-              {t.patient.appointments || t.navigation.appointments || 'Appointments'}
-            </Typography>
+            <Typography variant='h6'>{t('appointmentsList') || 'Appointments'}</Typography>
           </div>
           <Divider className='mb-4' />
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
             <div>
               <Typography variant='subtitle1' className='mb-2 text-center'>
-                {t.navigation.past || 'Past'}
+                {t('common.overview') || 'Past'}
               </Typography>
               {renderCards(past)}
             </div>
             <div>
               <Typography variant='subtitle1' className='mb-2 text-center'>
-                {t.navigation.thisMonth || 'This Month'}
+                {t('availabilityTitle') || 'This Month'}
               </Typography>
               {renderCards(thisMonth)}
             </div>
             <div>
               <Typography variant='subtitle1' className='mb-2 text-center'>
-                {t.navigation.next || 'Next'}
+                {t('common.connections') || 'Next'}
               </Typography>
               {renderCards(next)}
             </div>
@@ -264,18 +260,18 @@ const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
         </CardContent>
       </Card>
       <Dialog open={cancelDialogOpen} onClose={handleCancelClose}>
-        <DialogTitle>{t.confirmCancellation || 'Confirm Cancellation'}</DialogTitle>
+        <DialogTitle>{t('appointmentDetails') || 'Confirm Cancellation'}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {t.cancelAppointmentConfirmation || 'Are you sure you want to cancel this appointment?'}
+            {t('createAppointment') || 'Are you sure you want to cancel this appointment?'}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelClose} disabled={isCancelling}>
-            {t.common?.cancel || 'Cancel'}
+            {t('navigation.cancel') || 'Cancel'}
           </Button>
-          <Button onClick={handleCancelConfirm} color='error' disabled={isCancelling}>
-            {isCancelling ? t.loading || 'Loading...' : t.confirm || 'Confirm'}
+          <Button onClick={handleCancelConfirm} color='error' variant='contained' disabled={isCancelling}>
+            {isCancelling ? t('loading') || 'Loading...' : t('navigation.save') || 'Confirm'}
           </Button>
         </DialogActions>
       </Dialog>

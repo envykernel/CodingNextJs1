@@ -77,7 +77,7 @@ const patientSchema = z.object({
 })
 
 const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Props) => {
-  const dictionary = useTranslation()
+  const context = useTranslation()
   const [doctors, setDoctors] = useState<{ id: string; name: string }[]>([])
 
   // Fetch doctors when drawer opens
@@ -191,7 +191,7 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
       sx={{ '& .MuiDrawer-paper': { width: { xs: '100vw', sm: '50vw', md: '50vw' } } }}
     >
       <div className='flex items-center justify-between plb-5 pli-6'>
-        <Typography variant='h5'>{dictionary.navigation.editPatient}</Typography>
+        <Typography variant='h5'>{context.dictionary.navigation.editPatient}</Typography>
         <IconButton size='small' onClick={handleReset}>
           <i className='tabler-x text-2xl text-textPrimary' />
         </IconButton>
@@ -201,7 +201,7 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
         <form onSubmit={handleSubmit(data => onSubmit(data))}>
           {/* Personal Information Section */}
           <Typography variant='subtitle1' className='mb-2 font-medium'>
-            {dictionary.form.sectionPersonalInfo}
+            {context.dictionary.form.sectionPersonalInfo}
           </Typography>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6'>
             <Controller
@@ -211,10 +211,10 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                 <CustomTextField
                   {...field}
                   fullWidth
-                  label={dictionary.form.name}
-                  placeholder={dictionary.form.namePlaceholder}
+                  label={context.dictionary.form.name}
+                  placeholder={context.dictionary.form.namePlaceholder}
                   error={!!errors.name}
-                  helperText={errors.name ? dictionary.form.required : ''}
+                  helperText={errors.name ? context.dictionary.form.required : ''}
                 />
               )}
             />
@@ -226,10 +226,10 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                   {...field}
                   type='date'
                   fullWidth
-                  label={dictionary.form.birthdate || 'Date of Birth'}
+                  label={context.dictionary.form.birthdate || 'Date of Birth'}
                   InputLabelProps={{ shrink: true }}
                   error={!!errors.birthdate}
-                  helperText={errors.birthdate ? dictionary.form.required : ''}
+                  helperText={errors.birthdate ? context.dictionary.form.required : ''}
                 />
               )}
             />
@@ -240,15 +240,15 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                 <CustomTextField
                   select
                   fullWidth
-                  label={dictionary.form.gender}
+                  label={context.dictionary.form.gender}
                   error={!!errors.gender}
-                  helperText={errors.gender ? dictionary.form.required : ''}
+                  helperText={errors.gender ? context.dictionary.form.required : ''}
                   {...field}
                 >
-                  <MenuItem value=''>{dictionary.form.selectGender}</MenuItem>
-                  <MenuItem value='Male'>{dictionary.form.male}</MenuItem>
-                  <MenuItem value='Female'>{dictionary.form.female}</MenuItem>
-                  <MenuItem value='Other'>{dictionary.form.other}</MenuItem>
+                  <MenuItem value=''>{context.dictionary.form.selectGender}</MenuItem>
+                  <MenuItem value='Male'>{context.dictionary.form.male}</MenuItem>
+                  <MenuItem value='Female'>{context.dictionary.form.female}</MenuItem>
+                  <MenuItem value='Other'>{context.dictionary.form.other}</MenuItem>
                 </CustomTextField>
               )}
             />
@@ -259,9 +259,9 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                 <CustomTextField
                   select
                   fullWidth
-                  label={dictionary.form.doctor}
+                  label={context.dictionary.form.doctor}
                   error={!!errors.doctor}
-                  helperText={!!errors.doctor ? dictionary.form.required : ''}
+                  helperText={!!errors.doctor ? context.dictionary.form.required : ''}
                   {...field}
                 >
                   {doctors &&
@@ -280,16 +280,16 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                 <CustomTextField
                   select
                   fullWidth
-                  label={dictionary.form.status}
+                  label={context.dictionary.form.status}
                   error={!!errors.status}
-                  helperText={errors.status ? dictionary.form.required : ''}
+                  helperText={errors.status ? context.dictionary.form.required : ''}
                   {...field}
                 >
-                  <MenuItem value=''>{dictionary.form.selectStatus}</MenuItem>
-                  <MenuItem value='enabled'>{dictionary.form.enabled}</MenuItem>
-                  <MenuItem value='disabled'>{dictionary.form.disabled}</MenuItem>
-                  <MenuItem value='blocked'>{dictionary.form.blocked}</MenuItem>
-                  <MenuItem value='pending'>{dictionary.form.pending}</MenuItem>
+                  <MenuItem value=''>{context.dictionary.form.selectStatus}</MenuItem>
+                  <MenuItem value='enabled'>{context.dictionary.form.enabled}</MenuItem>
+                  <MenuItem value='disabled'>{context.dictionary.form.disabled}</MenuItem>
+                  <MenuItem value='blocked'>{context.dictionary.form.blocked}</MenuItem>
+                  <MenuItem value='pending'>{context.dictionary.form.pending}</MenuItem>
                 </CustomTextField>
               )}
             />
@@ -300,8 +300,8 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                 <CustomTextField
                   {...field}
                   fullWidth
-                  label={dictionary.form.avatar}
-                  placeholder={dictionary.form.avatarPlaceholder}
+                  label={context.dictionary.form.avatar}
+                  placeholder={context.dictionary.form.avatarPlaceholder}
                 />
               )}
             />
@@ -310,7 +310,7 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
 
           {/* Contact Information Section */}
           <Typography variant='subtitle1' className='mb-2 font-medium'>
-            {dictionary.form.sectionContactInfo}
+            {context.dictionary.form.sectionContactInfo}
           </Typography>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6'>
             <Controller
@@ -320,8 +320,8 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                 <CustomTextField
                   {...field}
                   fullWidth
-                  label={dictionary.form.address}
-                  placeholder={dictionary.form.addressPlaceholder}
+                  label={context.dictionary.form.address}
+                  placeholder={context.dictionary.form.addressPlaceholder}
                 />
               )}
             />
@@ -332,8 +332,8 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                 <CustomTextField
                   {...field}
                   fullWidth
-                  label={dictionary.form.city}
-                  placeholder={dictionary.form.cityPlaceholder}
+                  label={context.dictionary.form.city}
+                  placeholder={context.dictionary.form.cityPlaceholder}
                 />
               )}
             />
@@ -344,10 +344,10 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                 <CustomTextField
                   {...field}
                   fullWidth
-                  label={dictionary.form.phoneNumber}
-                  placeholder={dictionary.form.phoneNumberPlaceholder}
+                  label={context.dictionary.form.phoneNumber}
+                  placeholder={context.dictionary.form.phoneNumberPlaceholder}
                   error={!!errors.phone_number}
-                  helperText={errors.phone_number ? dictionary.form.required : ''}
+                  helperText={errors.phone_number ? context.dictionary.form.required : ''}
                 />
               )}
             />
@@ -359,8 +359,8 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                   {...field}
                   type='email'
                   fullWidth
-                  label={dictionary.form.email}
-                  placeholder={dictionary.form.emailPlaceholder}
+                  label={context.dictionary.form.email}
+                  placeholder={context.dictionary.form.emailPlaceholder}
                 />
               )}
             />
@@ -369,7 +369,7 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
 
           {/* Emergency Contact Section */}
           <Typography variant='subtitle1' className='mb-2 font-medium'>
-            {dictionary.form.sectionEmergencyContact}
+            {context.dictionary.form.sectionEmergencyContact}
           </Typography>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6'>
             <Controller
@@ -379,8 +379,8 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                 <CustomTextField
                   {...field}
                   fullWidth
-                  label={dictionary.form.emergencyContactName}
-                  placeholder={dictionary.form.emergencyContactNamePlaceholder}
+                  label={context.dictionary.form.emergencyContactName}
+                  placeholder={context.dictionary.form.emergencyContactNamePlaceholder}
                 />
               )}
             />
@@ -391,8 +391,8 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                 <CustomTextField
                   {...field}
                   fullWidth
-                  label={dictionary.form.emergencyContactPhone}
-                  placeholder={dictionary.form.emergencyContactPhonePlaceholder}
+                  label={context.dictionary.form.emergencyContactPhone}
+                  placeholder={context.dictionary.form.emergencyContactPhonePlaceholder}
                 />
               )}
             />
@@ -404,18 +404,18 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
                   {...field}
                   type='email'
                   fullWidth
-                  label={dictionary.form.emergencyContactEmail}
-                  placeholder={dictionary.form.emergencyContactEmailPlaceholder}
+                  label={context.dictionary.form.emergencyContactEmail}
+                  placeholder={context.dictionary.form.emergencyContactEmailPlaceholder}
                 />
               )}
             />
           </div>
           <div className='flex items-center gap-4 md:col-span-2 mt-8'>
             <Button variant='contained' type='submit'>
-              {dictionary.navigation.save}
+              {context.dictionary.navigation.save}
             </Button>
             <Button variant='tonal' color='error' type='reset' onClick={() => handleReset()}>
-              {dictionary.navigation.cancel}
+              {context.dictionary.navigation.cancel}
             </Button>
           </div>
         </form>

@@ -44,7 +44,7 @@ const formatDate = (dateString: string | null | undefined) => {
 }
 
 const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
-  const t = useTranslation()
+  const { t } = useTranslation()
   const [editDrawerOpen, setEditDrawerOpen] = useState(false)
 
   const handleEditClick = () => {
@@ -77,7 +77,7 @@ const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
             {patientData?.name || '-'}
           </Typography>
           <Chip
-            label={t.form[patientData?.status || 'unknown'] || '-'}
+            label={t(`form.${patientData?.status || 'unknown'}`) || '-'}
             color={patientStatusObj[String(patientData?.status || 'unknown')]}
             variant='filled'
             className='mb-2 capitalize'
@@ -88,13 +88,13 @@ const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
           <div className='w-full'>
             <Typography variant='subtitle1' className='mb-3 font-medium flex items-center gap-2'>
               <i className='tabler-user text-xl text-primary' />
-              {t.navigation.patientProfile}
+              {t('navigation.patientProfile') || 'Patient Profile'}
             </Typography>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center gap-2'>
                 <i className='tabler-cake text-lg text-textSecondary' />
                 <Typography className='font-medium' color='text.secondary'>
-                  {t.form.birthdate}
+                  {t('form.birthdate') || 'Birthdate'}
                 </Typography>
                 <Typography color='text.primary'>
                   {patientData?.birthdate ? formatDate(patientData.birthdate) : '-'}
@@ -103,7 +103,7 @@ const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
               <div className='flex items-center gap-2'>
                 <i className='tabler-gender-bigender text-lg text-textSecondary' />
                 <Typography className='font-medium' color='text.secondary'>
-                  {t.form.gender}
+                  {t('form.gender') || 'Gender'}
                 </Typography>
                 <Typography color='text.primary'>{patientData?.gender || '-'}</Typography>
               </div>
@@ -116,34 +116,34 @@ const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
           <div className='w-full'>
             <Typography variant='subtitle1' className='mb-3 font-medium flex items-center gap-2'>
               <i className='tabler-address-book text-xl text-primary' />
-              {t.navigation.patientInformation}
+              {t('navigation.patientInformation') || 'Patient Information'}
             </Typography>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center gap-2'>
                 <i className='tabler-phone text-lg text-textSecondary' />
                 <Typography className='font-medium' color='text.secondary'>
-                  {t.form.phoneNumber}
+                  {t('form.phoneNumber') || 'Phone Number'}
                 </Typography>
                 <Typography color='text.primary'>{patientData?.phone_number || '-'}</Typography>
               </div>
               <div className='flex items-center gap-2'>
                 <i className='tabler-mail text-lg text-textSecondary' />
                 <Typography className='font-medium' color='text.secondary'>
-                  {t.form.email}
+                  {t('form.email') || 'Email'}
                 </Typography>
                 <Typography color='text.primary'>{patientData?.email || '-'}</Typography>
               </div>
               <div className='flex items-center gap-2'>
                 <i className='tabler-home text-lg text-textSecondary' />
                 <Typography className='font-medium' color='text.secondary'>
-                  {t.form.address}
+                  {t('form.address') || 'Address'}
                 </Typography>
                 <Typography color='text.primary'>{patientData?.address || '-'}</Typography>
               </div>
               <div className='flex items-center gap-2'>
                 <i className='tabler-building text-lg text-textSecondary' />
                 <Typography className='font-medium' color='text.secondary'>
-                  {t.form.city}
+                  {t('form.city') || 'City'}
                 </Typography>
                 <Typography color='text.primary'>{patientData?.city || '-'}</Typography>
               </div>
@@ -156,7 +156,7 @@ const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
           <div className='w-full'>
             <Typography variant='subtitle1' className='mb-3 font-medium flex items-center gap-2'>
               <i className='tabler-alert-triangle text-xl text-primary' />
-              {t.navigation.emergencyContact}
+              {t('navigation.emergencyContact') || 'Emergency Contact'}
             </Typography>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center gap-2'>
@@ -175,7 +175,7 @@ const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
           </div>
 
           <Button variant='contained' onClick={handleEditClick} className='mt-4'>
-            {t.navigation.edit || 'Edit'}
+            {t('navigation.edit') || 'Edit'}
           </Button>
         </CardContent>
       </Card>

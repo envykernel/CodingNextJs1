@@ -18,7 +18,7 @@ import CustomTabList from '@core/components/mui/TabList'
 const UserRight = ({ tabContentList }: { tabContentList: { [key: string]: ReactElement } }) => {
   // States
   const [activeTab, setActiveTab] = useState('overview')
-  const t = useTranslation()
+  const { t } = useTranslation()
 
   const handleChange = (event: SyntheticEvent, value: string) => {
     setActiveTab(value)
@@ -33,43 +33,43 @@ const UserRight = ({ tabContentList }: { tabContentList: { [key: string]: ReactE
               <Tab
                 icon={<i className='tabler-users' />}
                 value='overview'
-                label={t.navigation.overview || t.navigation.dashboard || 'Overview'}
+                label={t('navigation.overview') || t('navigation.dashboard') || 'Overview'}
                 iconPosition='start'
               />
               <Tab
                 icon={<i className='tabler-heartbeat' />}
                 value='medical'
-                label={t.patient.medicalData || 'Medical Data'}
+                label={t('patient.medicalData') || 'Medical Data'}
                 iconPosition='start'
               />
               <Tab
                 icon={<i className='tabler-calendar-event' />}
                 value='appointments'
-                label={t.patient.appointments || t.navigation.appointments || 'Appointments'}
+                label={t('appointmentsList') || 'Appointments'}
                 iconPosition='start'
               />
               <Tab
                 icon={<i className='tabler-lock' />}
                 value='security'
-                label={t.navigation.security || 'Security'}
+                label={t('navigation.security') || 'Security'}
                 iconPosition='start'
               />
               <Tab
                 icon={<i className='tabler-bookmark' />}
                 value='billing-plans'
-                label={t.navigation.billingPlans || 'Billing & Plans'}
+                label={t('navigation.billingPlans') || 'Billing & Plans'}
                 iconPosition='start'
               />
               <Tab
                 icon={<i className='tabler-bell' />}
                 value='notifications'
-                label={t.navigation.notifications || 'Notifications'}
+                label={t('navigation.notifications') || 'Notifications'}
                 iconPosition='start'
               />
               <Tab
                 icon={<i className='tabler-link' />}
                 value='connections'
-                label={t.navigation.connections || 'Connections'}
+                label={t('navigation.connections') || 'Connections'}
                 iconPosition='start'
               />
             </CustomTabList>
