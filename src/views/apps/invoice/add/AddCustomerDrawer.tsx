@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import Alert from '@mui/material/Alert'
 
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
@@ -16,6 +17,7 @@ import CustomTextField from '@core/components/mui/TextField'
 type Props = {
   open: boolean
   setOpen: (open: boolean) => void
+  onPatientCreated?: (newPatient: any) => void
 }
 
 export type FormDataType = {
@@ -39,14 +41,46 @@ export const initialFormData: FormDataType = {
 
 const countries = ['USA', 'UK', 'Russia', 'Australia', 'Canada']
 
-const AddCustomerDrawer = ({ open, setOpen }: Props) => {
+const AddCustomerDrawer = ({ open, setOpen, onPatientCreated }: Props) => {
   // States
   const [data, setData] = useState<FormDataType>(initialFormData)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setOpen(false)
-    handleReset()
+    setLoading(true)
+    setError('')
+
+    try {
+      const response = await fetch('/api/patient', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          phone_number: data.contactNumber,
+          address: data.address,
+          city: data.country,
+          status: 'active'
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create patient')
+      }
+
+      const newPatient = await response.json()
+
+      onPatientCreated?.(newPatient)
+      setOpen(false)
+      handleReset()
+    } catch (err) {
+      setError('Failed to create patient. Please try again.')
+      console.error('Error creating patient:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleReset = () => {
@@ -64,13 +98,18 @@ const AddCustomerDrawer = ({ open, setOpen }: Props) => {
       sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 400 } } }}
     >
       <div className='flex items-center justify-between plb-5 pli-6'>
-        <Typography variant='h5'>Add New Customer</Typography>
+        <Typography variant='h5'>Add New Patient</Typography>
         <IconButton size='small' onClick={handleReset}>
           <i className='tabler-x text-2xl text-textPrimary' />
         </IconButton>
       </div>
       <Divider />
       <div className='p-6'>
+        {error && (
+          <Alert severity='error' className='mbe-4'>
+            {error}
+          </Alert>
+        )}
         <form onSubmit={e => handleSubmit(e)} className='flex flex-col gap-5'>
           <CustomTextField
             fullWidth
@@ -126,10 +165,10 @@ const AddCustomerDrawer = ({ open, setOpen }: Props) => {
             onChange={e => setData({ ...data, contactNumber: e.target.value })}
           />
           <div className='flex items-center gap-4'>
-            <Button variant='contained' type='submit'>
-              Add
+            <Button variant='contained' type='submit' disabled={loading}>
+              {loading ? 'Adding...' : 'Add Patient'}
             </Button>
-            <Button variant='tonal' color='error' type='reset' onClick={handleReset}>
+            <Button variant='tonal' color='error' type='reset' onClick={handleReset} disabled={loading}>
               Cancel
             </Button>
           </div>

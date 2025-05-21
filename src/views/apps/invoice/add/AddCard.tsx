@@ -35,7 +35,6 @@ import { useTranslation } from '@/contexts/translationContext'
 
 // Component Imports
 import AddCustomerDrawer from './AddCustomerDrawer'
-import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
 
 // Styled Component Imports
@@ -84,7 +83,13 @@ const AddAction = () => {
         .then(res => res.json())
         .then(data => {
           if (data?.user?.organisationId) {
-            setSelectedOrganisation({ id: parseInt(data.user.organisationId) })
+            // Fetch full organization details
+            fetch(`/api/organisation/${data.user.organisationId}`)
+              .then(orgRes => orgRes.json())
+              .then(orgData => {
+                setSelectedOrganisation(orgData.organisation)
+              })
+              .catch(console.error)
           }
         })
         .catch(console.error)
@@ -276,14 +281,34 @@ const AddAction = () => {
                 <div className='p-6 bg-actionHover rounded'>
                   <div className='flex justify-between gap-4 flex-col sm:flex-row'>
                     <div className='flex flex-col gap-6'>
-                      <div className='flex items-center gap-2.5'>
-                        <Logo />
-                      </div>
-                      <div>
-                        <Typography color='text.primary'>Office 149, 450 South Brand Brooklyn</Typography>
-                        <Typography color='text.primary'>San Diego County, CA 91905, USA</Typography>
-                        <Typography color='text.primary'>+1 (123) 456 7891, +44 (876) 543 2198</Typography>
-                      </div>
+                      {selectedOrganisation && (
+                        <div className='flex flex-col gap-2'>
+                          <div className='flex items-center gap-2'>
+                            <i className='tabler-building text-lg text-gray-500' />
+                            <Typography color='text.primary' fontWeight={600}>
+                              {selectedOrganisation.name}
+                            </Typography>
+                          </div>
+                          {selectedOrganisation.address && (
+                            <div className='flex items-center gap-2'>
+                              <i className='tabler-map-pin text-lg text-gray-500' />
+                              <Typography color='text.primary'>{selectedOrganisation.address}</Typography>
+                            </div>
+                          )}
+                          {selectedOrganisation.phone_number && (
+                            <div className='flex items-center gap-2'>
+                              <i className='tabler-phone text-lg text-gray-500' />
+                              <Typography color='text.primary'>{selectedOrganisation.phone_number}</Typography>
+                            </div>
+                          )}
+                          {selectedOrganisation.email && (
+                            <div className='flex items-center gap-2'>
+                              <i className='tabler-mail text-lg text-gray-500' />
+                              <Typography color='text.primary'>{selectedOrganisation.email}</Typography>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className='flex flex-col gap-2'>
                       <div className='flex items-center gap-4'>
