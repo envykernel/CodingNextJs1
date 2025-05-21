@@ -8,14 +8,12 @@ import { useTheme } from '@mui/material/styles'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
 // Type Imports
-import type { getDictionary } from '@/utils/getDictionary'
 import type { VerticalMenuContextProps } from '@menu/components/vertical-menu/Menu'
 
 // Component Imports
 import { Menu, SubMenu, MenuItem, MenuSection } from '@menu/vertical-menu'
 import CustomChip from '@core/components/mui/Chip'
-
-// import { GenerateVerticalMenu } from '@components/GenerateMenu'
+import { useTranslation } from '@/contexts/translationContext'
 
 // Hook Imports
 import useVerticalNav from '@menu/hooks/useVerticalNav'
@@ -27,16 +25,12 @@ import StyledVerticalNavExpandIcon from '@menu/styles/vertical/StyledVerticalNav
 import menuItemStyles from '@core/styles/vertical/menuItemStyles'
 import menuSectionStyles from '@core/styles/vertical/menuSectionStyles'
 
-// Menu Data Imports
-// import menuData from '@/data/navigation/verticalMenuData'
-
 type RenderExpandIconProps = {
   open?: boolean
   transitionDuration?: VerticalMenuContextProps['transitionDuration']
 }
 
 type Props = {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>
   scrollMenu: (container: any, isPerfectScrollbar: boolean) => void
 }
 
@@ -46,21 +40,20 @@ const RenderExpandIcon = ({ open, transitionDuration }: RenderExpandIconProps) =
   </StyledVerticalNavExpandIcon>
 )
 
-const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
+const VerticalMenu = ({ scrollMenu }: Props) => {
   // Hooks
   const theme = useTheme()
   const verticalNavOptions = useVerticalNav()
   const params = useParams()
+  const { t } = useTranslation()
 
   // Vars
   const { isBreakpointReached, transitionDuration } = verticalNavOptions
-  const { lang: locale } = params
+  const locale = (params?.lang as string) || 'en'
 
   const ScrollWrapper = isBreakpointReached ? 'div' : PerfectScrollbar
 
   return (
-    // eslint-disable-next-line lines-around-comment
-    /* Custom scrollbar instead of browser scroll, remove if you want browser scroll only */
     <ScrollWrapper
       {...(isBreakpointReached
         ? {
@@ -72,8 +65,6 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
             onScrollY: container => scrollMenu(container, true)
           })}
     >
-      {/* Incase you also want to scroll NavHeader to scroll with Vertical Menu, remove NavHeader from above and paste it below this comment */}
-      {/* Vertical Menu */}
       <Menu
         popoutMenuOffset={{ mainAxis: 23 }}
         menuItemStyles={menuItemStyles(verticalNavOptions, theme)}
@@ -82,82 +73,80 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
         menuSectionStyles={menuSectionStyles(verticalNavOptions, theme)}
       >
         <SubMenu
-          label={dictionary['navigation'].dashboards}
+          label={t('sidebar.navigation.dashboards')}
           icon={<i className='tabler-smart-home' />}
           suffix={<CustomChip label='6' size='small' color='error' round='true' />}
         >
-          <MenuItem href={`/${locale}/dashboards/crm`}>{dictionary['navigation'].crm}</MenuItem>
-          <MenuItem href={`/${locale}/dashboards/analytics`}>{dictionary['navigation'].analytics}</MenuItem>
-          <MenuItem href={`/${locale}/dashboards/ecommerce`}>{dictionary['navigation'].eCommerce}</MenuItem>
-          <MenuItem href={`/${locale}/dashboards/academy`}>{dictionary['navigation'].academy}</MenuItem>
-          <MenuItem href={`/${locale}/dashboards/logistics`}>{dictionary['navigation'].logistics}</MenuItem>
+          <MenuItem href={`/${locale}/dashboards/crm`}>{t('sidebar.navigation.crm')}</MenuItem>
+          <MenuItem href={`/${locale}/dashboards/analytics`}>{t('sidebar.navigation.analytics')}</MenuItem>
+          <MenuItem href={`/${locale}/dashboards/ecommerce`}>{t('sidebar.navigation.eCommerce')}</MenuItem>
+          <MenuItem href={`/${locale}/dashboards/academy`}>{t('sidebar.navigation.academy')}</MenuItem>
+          <MenuItem href={`/${locale}/dashboards/logistics`}>{t('sidebar.navigation.logistics')}</MenuItem>
           <MenuItem href={`/${locale}/dashboards/organization`} icon={<i className='tabler-building' />}>
-            {dictionary['navigation'].organization}
+            {t('sidebar.navigation.organization')}
           </MenuItem>
         </SubMenu>
-        <SubMenu label={dictionary['navigation'].frontPages} icon={<i className='tabler-files' />}>
+        <SubMenu label={t('sidebar.navigation.frontPages')} icon={<i className='tabler-files' />}>
           <MenuItem href='/front-pages/landing-page' target='_blank'>
-            {dictionary['navigation'].landing}
+            {t('sidebar.navigation.landing')}
           </MenuItem>
           <MenuItem href='/front-pages/pricing' target='_blank'>
-            {dictionary['navigation'].pricing}
+            {t('sidebar.navigation.pricing')}
           </MenuItem>
           <MenuItem href='/front-pages/payment' target='_blank'>
-            {dictionary['navigation'].payment}
+            {t('sidebar.navigation.payment')}
           </MenuItem>
           <MenuItem href='/front-pages/checkout' target='_blank'>
-            {dictionary['navigation'].checkout}
+            {t('sidebar.navigation.checkout')}
           </MenuItem>
           <MenuItem href='/front-pages/help-center' target='_blank'>
-            {dictionary['navigation'].helpCenter}
+            {t('sidebar.navigation.helpCenter')}
           </MenuItem>
         </SubMenu>
-        <MenuSection label={dictionary['navigation'].appsPages}>
-          <SubMenu label={dictionary['navigation'].eCommerce} icon={<i className='tabler-shopping-cart' />}>
-            <MenuItem href={`/${locale}/apps/ecommerce/dashboard`}>{dictionary['navigation'].dashboard}</MenuItem>
-            <SubMenu label={dictionary['navigation'].products}>
-              <MenuItem href={`/${locale}/apps/ecommerce/products/list`}>{dictionary['navigation'].list}</MenuItem>
-              <MenuItem href={`/${locale}/apps/ecommerce/products/add`}>{dictionary['navigation'].add}</MenuItem>
+        <MenuSection label={t('sidebar.navigation.appsPages')}>
+          <SubMenu label={t('sidebar.navigation.eCommerce')} icon={<i className='tabler-shopping-cart' />}>
+            <MenuItem href={`/${locale}/apps/ecommerce/dashboard`}>{t('sidebar.navigation.dashboard')}</MenuItem>
+            <SubMenu label={t('sidebar.navigation.products')}>
+              <MenuItem href={`/${locale}/apps/ecommerce/products/list`}>{t('sidebar.navigation.list')}</MenuItem>
+              <MenuItem href={`/${locale}/apps/ecommerce/products/add`}>{t('sidebar.navigation.add')}</MenuItem>
               <MenuItem href={`/${locale}/apps/ecommerce/products/category`}>
-                {dictionary['navigation'].category}
+                {t('sidebar.navigation.category')}
               </MenuItem>
             </SubMenu>
-            <SubMenu label={dictionary['navigation'].orders}>
-              <MenuItem href={`/${locale}/apps/ecommerce/orders/list`}>{dictionary['navigation'].list}</MenuItem>
+            <SubMenu label={t('sidebar.navigation.orders')}>
+              <MenuItem href={`/${locale}/apps/ecommerce/orders/list`}>{t('sidebar.navigation.list')}</MenuItem>
               <MenuItem
                 href={`/${locale}/apps/ecommerce/orders/details/5434`}
                 exactMatch={false}
                 activeUrl='/apps/ecommerce/orders/details'
               >
-                {dictionary['navigation'].details}
+                {t('sidebar.navigation.details')}
               </MenuItem>
             </SubMenu>
-            <SubMenu label={dictionary['navigation'].customers}>
-              <MenuItem href={`/${locale}/apps/ecommerce/customers/list`}>{dictionary['navigation'].list}</MenuItem>
+            <SubMenu label={t('sidebar.navigation.customers')}>
+              <MenuItem href={`/${locale}/apps/ecommerce/customers/list`}>{t('sidebar.navigation.list')}</MenuItem>
               <MenuItem
                 href={`/${locale}/apps/ecommerce/customers/details/879861`}
                 exactMatch={false}
                 activeUrl='/apps/ecommerce/customers/details'
               >
-                {dictionary['navigation'].details}
+                {t('sidebar.navigation.details')}
               </MenuItem>
             </SubMenu>
             <MenuItem href={`/${locale}/apps/ecommerce/manage-reviews`}>
-              {dictionary['navigation'].manageReviews}
+              {t('sidebar.navigation.manageReviews')}
             </MenuItem>
-            <MenuItem href={`/${locale}/apps/ecommerce/referrals`}>{dictionary['navigation'].referrals}</MenuItem>
-            <MenuItem href={`/${locale}/apps/ecommerce/settings`}>{dictionary['navigation'].settings}</MenuItem>
+            <MenuItem href={`/${locale}/apps/ecommerce/referrals`}>{t('sidebar.navigation.referrals')}</MenuItem>
+            <MenuItem href={`/${locale}/apps/ecommerce/settings`}>{t('sidebar.navigation.settings')}</MenuItem>
           </SubMenu>
-          <SubMenu label={dictionary['navigation'].academy} icon={<i className='tabler-school' />}>
-            <MenuItem href={`/${locale}/apps/academy/dashboard`}>{dictionary['navigation'].dashboard}</MenuItem>
-            <MenuItem href={`/${locale}/apps/academy/my-courses`}>{dictionary['navigation'].myCourses}</MenuItem>
-            <MenuItem href={`/${locale}/apps/academy/course-details`}>
-              {dictionary['navigation'].courseDetails}
-            </MenuItem>
+          <SubMenu label={t('sidebar.navigation.academy')} icon={<i className='tabler-school' />}>
+            <MenuItem href={`/${locale}/apps/academy/dashboard`}>{t('sidebar.navigation.dashboard')}</MenuItem>
+            <MenuItem href={`/${locale}/apps/academy/my-courses`}>{t('sidebar.navigation.myCourses')}</MenuItem>
+            <MenuItem href={`/${locale}/apps/academy/course-details`}>{t('sidebar.navigation.courseDetails')}</MenuItem>
           </SubMenu>
-          <SubMenu label={dictionary['navigation'].logistics} icon={<i className='tabler-truck' />}>
-            <MenuItem href={`/${locale}/apps/logistics/dashboard`}>{dictionary['navigation'].dashboard}</MenuItem>
-            <MenuItem href={`/${locale}/apps/logistics/fleet`}>{dictionary['navigation'].fleet}</MenuItem>
+          <SubMenu label={t('sidebar.navigation.logistics')} icon={<i className='tabler-truck' />}>
+            <MenuItem href={`/${locale}/apps/logistics/dashboard`}>{t('sidebar.navigation.dashboard')}</MenuItem>
+            <MenuItem href={`/${locale}/apps/logistics/fleet`}>{t('sidebar.navigation.fleet')}</MenuItem>
           </SubMenu>
           <MenuItem
             href={`/${locale}/apps/email`}
@@ -165,160 +154,160 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
             exactMatch={false}
             activeUrl='/apps/email'
           >
-            {dictionary['navigation'].email}
+            {t('sidebar.navigation.email')}
           </MenuItem>
           <MenuItem href={`/${locale}/apps/chat`} icon={<i className='tabler-message-circle-2' />}>
-            {dictionary['navigation'].chat}
+            {t('sidebar.navigation.chat')}
           </MenuItem>
           <MenuItem href={`/${locale}/apps/calendar`} icon={<i className='tabler-calendar' />}>
-            {dictionary['navigation'].calendar}
+            {t('sidebar.navigation.calendar')}
           </MenuItem>
           <MenuItem href={`/${locale}/apps/kanban`} icon={<i className='tabler-copy' />}>
-            {dictionary['navigation'].kanban}
+            {t('sidebar.navigation.kanban')}
           </MenuItem>
-          <SubMenu label={dictionary['navigation'].invoice} icon={<i className='tabler-file-description' />}>
-            <MenuItem href={`/${locale}/apps/invoice/list`}>{dictionary['navigation'].list}</MenuItem>
+          <SubMenu label={t('sidebar.navigation.invoice')} icon={<i className='tabler-file-description' />}>
+            <MenuItem href={`/${locale}/apps/invoice/list`}>{t('sidebar.navigation.list')}</MenuItem>
             <MenuItem
               href={`/${locale}/apps/invoice/preview/4987`}
               exactMatch={false}
               activeUrl='/apps/invoice/preview'
             >
-              {dictionary['navigation'].preview}
+              {t('sidebar.navigation.preview')}
             </MenuItem>
             <MenuItem href={`/${locale}/apps/invoice/edit/4987`} exactMatch={false} activeUrl='/apps/invoice/edit'>
-              {dictionary['navigation'].edit}
+              {t('sidebar.navigation.edit')}
             </MenuItem>
-            <MenuItem href={`/${locale}/apps/invoice/add`}>{dictionary['navigation'].add}</MenuItem>
+            <MenuItem href={`/${locale}/apps/invoice/add`}>{t('sidebar.navigation.add')}</MenuItem>
           </SubMenu>
-          <SubMenu label={dictionary['navigation'].user} icon={<i className='tabler-user' />}>
-            <MenuItem href={`/${locale}/apps/user/list`}>{dictionary['navigation'].list}</MenuItem>
-            <MenuItem href={`/${locale}/apps/user/view`}>{dictionary['navigation'].view}</MenuItem>
+          <SubMenu label={t('sidebar.navigation.user')} icon={<i className='tabler-user' />}>
+            <MenuItem href={`/${locale}/apps/user/list`}>{t('sidebar.navigation.list')}</MenuItem>
+            <MenuItem href={`/${locale}/apps/user/view`}>{t('sidebar.navigation.view')}</MenuItem>
           </SubMenu>
-          <SubMenu label={dictionary['navigation'].rolesPermissions} icon={<i className='tabler-lock' />}>
-            <MenuItem href={`/${locale}/apps/roles`}>{dictionary['navigation'].roles}</MenuItem>
-            <MenuItem href={`/${locale}/apps/permissions`}>{dictionary['navigation'].permissions}</MenuItem>
+          <SubMenu label={t('sidebar.navigation.rolesPermissions')} icon={<i className='tabler-lock' />}>
+            <MenuItem href={`/${locale}/apps/roles`}>{t('sidebar.navigation.roles')}</MenuItem>
+            <MenuItem href={`/${locale}/apps/permissions`}>{t('sidebar.navigation.permissions')}</MenuItem>
           </SubMenu>
-          <SubMenu label={dictionary['navigation'].patients} icon={<i className='tabler-users' />}>
-            <MenuItem href={`/${locale}/apps/patient/list`}>{dictionary['navigation'].list}</MenuItem>
+          <SubMenu label={t('sidebar.navigation.patients')} icon={<i className='tabler-users' />}>
+            <MenuItem href={`/${locale}/apps/patient/list`}>{t('sidebar.navigation.list')}</MenuItem>
           </SubMenu>
-          <SubMenu label={dictionary['navigation'].appointments} icon={<i className='tabler-calendar-event' />}>
+          <SubMenu label={t('sidebar.navigation.appointments')} icon={<i className='tabler-calendar-event' />}>
             <MenuItem href={`/${locale}/apps/appointments/list`} icon={<i className='tabler-list' />}>
-              {dictionary['navigation'].appointmentsList}
+              {t('sidebar.navigation.appointmentsList')}
             </MenuItem>
           </SubMenu>
-          <SubMenu label={dictionary['navigation'].prescriptions} icon={<i className='tabler-prescription' />}>
-            <MenuItem href={`/${locale}/apps/prescriptions/list`}>{dictionary['navigation'].allPrescriptions}</MenuItem>
+          <SubMenu label={t('sidebar.navigation.prescriptions')} icon={<i className='tabler-prescription' />}>
+            <MenuItem href={`/${locale}/apps/prescriptions/list`}>{t('sidebar.navigation.allPrescriptions')}</MenuItem>
             <MenuItem href={`/${locale}/apps/prescriptions/create`}>
-              {dictionary['navigation'].createPrescription}
+              {t('sidebar.navigation.createPrescription')}
             </MenuItem>
           </SubMenu>
-          <SubMenu label={dictionary['navigation'].pages} icon={<i className='tabler-file' />}>
-            <MenuItem href={`/${locale}/pages/user-profile`}>{dictionary['navigation'].userProfile}</MenuItem>
-            <MenuItem href={`/${locale}/pages/account-settings`}>{dictionary['navigation'].accountSettings}</MenuItem>
-            <MenuItem href={`/${locale}/pages/faq`}>{dictionary['navigation'].faq}</MenuItem>
-            <MenuItem href={`/${locale}/pages/pricing`}>{dictionary['navigation'].pricing}</MenuItem>
-            <SubMenu label={dictionary['navigation'].miscellaneous}>
+          <SubMenu label={t('sidebar.navigation.pages')} icon={<i className='tabler-file' />}>
+            <MenuItem href={`/${locale}/pages/user-profile`}>{t('sidebar.navigation.userProfile')}</MenuItem>
+            <MenuItem href={`/${locale}/pages/account-settings`}>{t('sidebar.navigation.accountSettings')}</MenuItem>
+            <MenuItem href={`/${locale}/pages/faq`}>{t('sidebar.navigation.faq')}</MenuItem>
+            <MenuItem href={`/${locale}/pages/pricing`}>{t('sidebar.navigation.pricing')}</MenuItem>
+            <SubMenu label={t('sidebar.navigation.miscellaneous')}>
               <MenuItem href={`/${locale}/pages/misc/coming-soon`} target='_blank'>
-                {dictionary['navigation'].comingSoon}
+                {t('sidebar.navigation.comingSoon')}
               </MenuItem>
               <MenuItem href={`/${locale}/pages/misc/under-maintenance`} target='_blank'>
-                {dictionary['navigation'].underMaintenance}
+                {t('sidebar.navigation.underMaintenance')}
               </MenuItem>
               <MenuItem href={`/${locale}/pages/misc/404-not-found`} target='_blank'>
-                {dictionary['navigation'].pageNotFound404}
+                {t('sidebar.navigation.pageNotFound404')}
               </MenuItem>
               <MenuItem href={`/${locale}/pages/misc/401-not-authorized`} target='_blank'>
-                {dictionary['navigation'].notAuthorized401}
+                {t('sidebar.navigation.notAuthorized401')}
               </MenuItem>
             </SubMenu>
           </SubMenu>
-          <SubMenu label={dictionary['navigation'].authPages} icon={<i className='tabler-shield-lock' />}>
-            <SubMenu label={dictionary['navigation'].login}>
+          <SubMenu label={t('sidebar.navigation.authPages')} icon={<i className='tabler-shield-lock' />}>
+            <SubMenu label={t('sidebar.navigation.login')}>
               <MenuItem href={`/${locale}/pages/auth/login-v1`} target='_blank'>
-                {dictionary['navigation'].loginV1}
+                {t('sidebar.navigation.loginV1')}
               </MenuItem>
               <MenuItem href={`/${locale}/pages/auth/login-v2`} target='_blank'>
-                {dictionary['navigation'].loginV2}
+                {t('sidebar.navigation.loginV2')}
               </MenuItem>
             </SubMenu>
-            <SubMenu label={dictionary['navigation'].register}>
+            <SubMenu label={t('sidebar.navigation.register')}>
               <MenuItem href={`/${locale}/pages/auth/register-v1`} target='_blank'>
-                {dictionary['navigation'].registerV1}
+                {t('sidebar.navigation.registerV1')}
               </MenuItem>
               <MenuItem href={`/${locale}/pages/auth/register-v2`} target='_blank'>
-                {dictionary['navigation'].registerV2}
+                {t('sidebar.navigation.registerV2')}
               </MenuItem>
               <MenuItem href={`/${locale}/pages/auth/register-multi-steps`} target='_blank'>
-                {dictionary['navigation'].registerMultiSteps}
+                {t('sidebar.navigation.registerMultiSteps')}
               </MenuItem>
             </SubMenu>
-            <SubMenu label={dictionary['navigation'].verifyEmail}>
+            <SubMenu label={t('sidebar.navigation.verifyEmail')}>
               <MenuItem href={`/${locale}/pages/auth/verify-email-v1`} target='_blank'>
-                {dictionary['navigation'].verifyEmailV1}
+                {t('sidebar.navigation.verifyEmailV1')}
               </MenuItem>
               <MenuItem href={`/${locale}/pages/auth/verify-email-v2`} target='_blank'>
-                {dictionary['navigation'].verifyEmailV2}
+                {t('sidebar.navigation.verifyEmailV2')}
               </MenuItem>
             </SubMenu>
-            <SubMenu label={dictionary['navigation'].forgotPassword}>
+            <SubMenu label={t('sidebar.navigation.forgotPassword')}>
               <MenuItem href={`/${locale}/pages/auth/forgot-password-v1`} target='_blank'>
-                {dictionary['navigation'].forgotPasswordV1}
+                {t('sidebar.navigation.forgotPasswordV1')}
               </MenuItem>
               <MenuItem href={`/${locale}/pages/auth/forgot-password-v2`} target='_blank'>
-                {dictionary['navigation'].forgotPasswordV2}
+                {t('sidebar.navigation.forgotPasswordV2')}
               </MenuItem>
             </SubMenu>
-            <SubMenu label={dictionary['navigation'].resetPassword}>
+            <SubMenu label={t('sidebar.navigation.resetPassword')}>
               <MenuItem href={`/${locale}/pages/auth/reset-password-v1`} target='_blank'>
-                {dictionary['navigation'].resetPasswordV1}
+                {t('sidebar.navigation.resetPasswordV1')}
               </MenuItem>
               <MenuItem href={`/${locale}/pages/auth/reset-password-v2`} target='_blank'>
-                {dictionary['navigation'].resetPasswordV2}
+                {t('sidebar.navigation.resetPasswordV2')}
               </MenuItem>
             </SubMenu>
-            <SubMenu label={dictionary['navigation'].twoSteps}>
+            <SubMenu label={t('sidebar.navigation.twoSteps')}>
               <MenuItem href={`/${locale}/pages/auth/two-steps-v1`} target='_blank'>
-                {dictionary['navigation'].twoStepsV1}
+                {t('sidebar.navigation.twoStepsV1')}
               </MenuItem>
               <MenuItem href={`/${locale}/pages/auth/two-steps-v2`} target='_blank'>
-                {dictionary['navigation'].twoStepsV2}
+                {t('sidebar.navigation.twoStepsV2')}
               </MenuItem>
             </SubMenu>
           </SubMenu>
-          <SubMenu label={dictionary['navigation'].wizardExamples} icon={<i className='tabler-dots' />}>
-            <MenuItem href={`/${locale}/pages/wizard-examples/checkout`}>{dictionary['navigation'].checkout}</MenuItem>
+          <SubMenu label={t('sidebar.navigation.wizardExamples')} icon={<i className='tabler-dots' />}>
+            <MenuItem href={`/${locale}/pages/wizard-examples/checkout`}>{t('sidebar.navigation.checkout')}</MenuItem>
             <MenuItem href={`/${locale}/pages/wizard-examples/property-listing`}>
-              {dictionary['navigation'].propertyListing}
+              {t('sidebar.navigation.propertyListing')}
             </MenuItem>
             <MenuItem href={`/${locale}/pages/wizard-examples/create-deal`}>
-              {dictionary['navigation'].createDeal}
+              {t('sidebar.navigation.createDeal')}
             </MenuItem>
           </SubMenu>
           <MenuItem href={`/${locale}/pages/dialog-examples`} icon={<i className='tabler-square' />}>
-            {dictionary['navigation'].dialogExamples}
+            {t('sidebar.navigation.dialogExamples')}
           </MenuItem>
-          <SubMenu label={dictionary['navigation'].widgetExamples} icon={<i className='tabler-chart-bar' />}>
-            <MenuItem href={`/${locale}/pages/widget-examples/basic`}>{dictionary['navigation'].basic}</MenuItem>
-            <MenuItem href={`/${locale}/pages/widget-examples/advanced`}>{dictionary['navigation'].advanced}</MenuItem>
+          <SubMenu label={t('sidebar.navigation.widgetExamples')} icon={<i className='tabler-chart-bar' />}>
+            <MenuItem href={`/${locale}/pages/widget-examples/basic`}>{t('sidebar.navigation.basic')}</MenuItem>
+            <MenuItem href={`/${locale}/pages/widget-examples/advanced`}>{t('sidebar.navigation.advanced')}</MenuItem>
             <MenuItem href={`/${locale}/pages/widget-examples/statistics`}>
-              {dictionary['navigation'].statistics}
+              {t('sidebar.navigation.statistics')}
             </MenuItem>
-            <MenuItem href={`/${locale}/pages/widget-examples/charts`}>{dictionary['navigation'].charts}</MenuItem>
-            <MenuItem href={`/${locale}/pages/widget-examples/actions`}>{dictionary['navigation'].actions}</MenuItem>
+            <MenuItem href={`/${locale}/pages/widget-examples/charts`}>{t('sidebar.navigation.charts')}</MenuItem>
+            <MenuItem href={`/${locale}/pages/widget-examples/actions`}>{t('sidebar.navigation.actions')}</MenuItem>
           </SubMenu>
         </MenuSection>
-        <MenuSection label={dictionary['navigation'].formsAndTables}>
+        <MenuSection label={t('sidebar.navigation.formsAndTables')}>
           <MenuItem href={`/${locale}/forms/form-layouts`} icon={<i className='tabler-layout' />}>
-            {dictionary['navigation'].formLayouts}
+            {t('sidebar.navigation.formLayouts')}
           </MenuItem>
           <MenuItem href={`/${locale}/forms/form-validation`} icon={<i className='tabler-checkup-list' />}>
-            {dictionary['navigation'].formValidation}
+            {t('sidebar.navigation.formValidation')}
           </MenuItem>
           <MenuItem href={`/${locale}/forms/form-wizard`} icon={<i className='tabler-git-merge' />}>
-            {dictionary['navigation'].formWizard}
+            {t('sidebar.navigation.formWizard')}
           </MenuItem>
           <MenuItem href={`/${locale}/react-table`} icon={<i className='tabler-table' />}>
-            {dictionary['navigation'].reactTable}
+            {t('sidebar.navigation.reactTable')}
           </MenuItem>
           <MenuItem
             icon={<i className='tabler-checkbox' />}
@@ -326,7 +315,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
             suffix={<i className='tabler-external-link text-xl' />}
             target='_blank'
           >
-            {dictionary['navigation'].formELements}
+            {t('sidebar.navigation.formELements')}
           </MenuItem>
           <MenuItem
             icon={<i className='tabler-layout-board-split' />}
@@ -334,13 +323,13 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
             suffix={<i className='tabler-external-link text-xl' />}
             target='_blank'
           >
-            {dictionary['navigation'].muiTables}
+            {t('sidebar.navigation.muiTables')}
           </MenuItem>
         </MenuSection>
-        <MenuSection label={dictionary['navigation'].chartsMisc}>
-          <SubMenu label={dictionary['navigation'].charts} icon={<i className='tabler-chart-donut-2' />}>
-            <MenuItem href={`/${locale}/charts/apex-charts`}>{dictionary['navigation'].apex}</MenuItem>
-            <MenuItem href={`/${locale}/charts/recharts`}>{dictionary['navigation'].recharts}</MenuItem>
+        <MenuSection label={t('sidebar.navigation.chartsMisc')}>
+          <SubMenu label={t('sidebar.navigation.charts')} icon={<i className='tabler-chart-donut-2' />}>
+            <MenuItem href={`/${locale}/charts/apex-charts`}>{t('sidebar.navigation.apex')}</MenuItem>
+            <MenuItem href={`/${locale}/charts/recharts`}>{t('sidebar.navigation.recharts')}</MenuItem>
           </SubMenu>
           <MenuItem
             icon={<i className='tabler-cards' />}
@@ -348,7 +337,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
             suffix={<i className='tabler-external-link text-xl' />}
             target='_blank'
           >
-            {dictionary['navigation'].foundation}
+            {t('sidebar.navigation.foundation')}
           </MenuItem>
           <MenuItem
             icon={<i className='tabler-atom' />}
@@ -356,7 +345,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
             suffix={<i className='tabler-external-link text-xl' />}
             target='_blank'
           >
-            {dictionary['navigation'].components}
+            {t('sidebar.navigation.components')}
           </MenuItem>
           <MenuItem
             icon={<i className='tabler-list-search' />}
@@ -364,7 +353,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
             suffix={<i className='tabler-external-link text-xl' />}
             target='_blank'
           >
-            {dictionary['navigation'].menuExamples}
+            {t('sidebar.navigation.menuExamples')}
           </MenuItem>
           <MenuItem
             icon={<i className='tabler-lifebuoy' />}
@@ -372,7 +361,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
             target='_blank'
             href='https://pixinvent.ticksy.com'
           >
-            {dictionary['navigation'].raiseSupport}
+            {t('sidebar.navigation.raiseSupport')}
           </MenuItem>
           <MenuItem
             icon={<i className='tabler-book-2' />}
@@ -380,39 +369,23 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
             target='_blank'
             href={`${process.env.NEXT_PUBLIC_DOCS_URL}`}
           >
-            {dictionary['navigation'].documentation}
+            {t('sidebar.navigation.documentation')}
           </MenuItem>
-          <SubMenu label={dictionary['navigation'].others} icon={<i className='tabler-box' />}>
+          <SubMenu label={t('sidebar.navigation.others')} icon={<i className='tabler-box' />}>
             <MenuItem suffix={<CustomChip label='New' size='small' color='info' round='true' />}>
-              {dictionary['navigation'].itemWithBadge}
+              {t('sidebar.navigation.itemWithBadge')}
             </MenuItem>
             <MenuItem
               href='https://pixinvent.com'
               target='_blank'
               suffix={<i className='tabler-external-link text-xl' />}
             >
-              {dictionary['navigation'].externalLink}
+              {t('sidebar.navigation.externalLink')}
             </MenuItem>
-            <SubMenu label={dictionary['navigation'].menuLevels}>
-              <MenuItem>{dictionary['navigation'].menuLevel2}</MenuItem>
-              <SubMenu label={dictionary['navigation'].menuLevel2}>
-                <MenuItem>{dictionary['navigation'].menuLevel3}</MenuItem>
-                <MenuItem>{dictionary['navigation'].menuLevel3}</MenuItem>
-              </SubMenu>
-            </SubMenu>
-            <MenuItem disabled>{dictionary['navigation'].disabledMenu}</MenuItem>
+            <MenuItem disabled>{t('sidebar.navigation.disabledMenu')}</MenuItem>
           </SubMenu>
         </MenuSection>
       </Menu>
-      {/* <Menu
-        popoutMenuOffset={{ mainAxis: 23 }}
-        menuItemStyles={menuItemStyles(verticalNavOptions, theme)}
-        renderExpandIcon={({ open }) => <RenderExpandIcon open={open} transitionDuration={transitionDuration} />}
-        renderExpandedMenuItemIcon={{ icon: <i className='tabler-circle text-xs' /> }}
-        menuSectionStyles={menuSectionStyles(verticalNavOptions, theme)}
-      >
-        <GenerateVerticalMenu menuData={menuData(dictionary)} />
-      </Menu> */}
     </ScrollWrapper>
   )
 }
