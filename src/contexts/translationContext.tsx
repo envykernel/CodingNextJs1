@@ -3,7 +3,27 @@ import type { ReactNode } from 'react'
 import React, { createContext, useContext } from 'react'
 
 type Dictionary = {
-  [key: string]: string | Dictionary
+  navigation: {
+    [key: string]: string
+  }
+  form: {
+    [key: string]: string
+  }
+  patient: {
+    [key: string]: string
+  }
+  patientMeasurementsForm: {
+    [key: string]: string
+  }
+  clinicalExamForm: {
+    [key: string]: string
+  }
+  invoice: {
+    [key: string]: string
+  }
+  [key: string]: {
+    [key: string]: string | Dictionary
+  }
 }
 
 type TranslationContextType = {

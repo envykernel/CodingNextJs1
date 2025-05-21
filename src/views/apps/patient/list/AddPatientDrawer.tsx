@@ -81,7 +81,7 @@ const PatientDrawer = ({
   editMode,
   editPatient
 }: Props) => {
-  const dictionary = useTranslation()
+  const { t } = useTranslation()
   const { data: session } = useSession()
   const [doctors, setDoctors] = useState<{ id: string | number; name: string }[]>([])
 
@@ -208,7 +208,7 @@ const PatientDrawer = ({
 
           setFormStatus({
             type: 'success',
-            message: dictionary.messages?.patientUpdated || 'Patient updated successfully'
+            message: t('messages.patientUpdated')
           })
 
           // Close drawer after a short delay to show the success message
@@ -218,7 +218,7 @@ const PatientDrawer = ({
         } else {
           setFormStatus({
             type: 'error',
-            message: result?.message || dictionary.messages?.error || 'An error occurred'
+            message: result?.message || t('messages.error')
           })
         }
       } else {
@@ -242,7 +242,7 @@ const PatientDrawer = ({
 
           setFormStatus({
             type: 'success',
-            message: dictionary.messages?.patientCreated || 'Patient created successfully'
+            message: t('messages.patientCreated')
           })
 
           // Close drawer after a short delay to show the success message
@@ -252,7 +252,7 @@ const PatientDrawer = ({
         } else {
           setFormStatus({
             type: 'error',
-            message: result?.message || dictionary.messages?.error || 'An error occurred'
+            message: result?.message || t('messages.error')
           })
         }
       }
@@ -260,7 +260,7 @@ const PatientDrawer = ({
       console.error('Network or server error:', error)
       setFormStatus({
         type: 'error',
-        message: dictionary.messages?.error || 'An error occurred'
+        message: t('messages.error')
       })
     }
   }
@@ -305,9 +305,7 @@ const PatientDrawer = ({
         sx={{ '& .MuiDrawer-paper': { width: { xs: '100vw', sm: '50vw', md: '50vw' } } }}
       >
         <div className='flex items-center justify-between plb-5 pli-6'>
-          <Typography variant='h5'>
-            {editMode ? dictionary.navigation.editPatient : dictionary.navigation.addNewPatient}
-          </Typography>
+          <Typography variant='h5'>{editMode ? t('navigation.editPatient') : t('navigation.addNewPatient')}</Typography>
           <IconButton size='small' onClick={handleReset}>
             <i className='tabler-x text-2xl text-textPrimary' />
           </IconButton>
@@ -317,7 +315,7 @@ const PatientDrawer = ({
           <form onSubmit={handleSubmit(data => onSubmit(data))}>
             {/* Personal Information Section */}
             <Typography variant='subtitle1' className='mb-2 font-medium'>
-              {dictionary.form.sectionPersonalInfo}
+              {t('form.sectionPersonalInfo')}
             </Typography>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6'>
               <Controller
@@ -327,10 +325,10 @@ const PatientDrawer = ({
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label={dictionary.form.name}
-                    placeholder={dictionary.form.namePlaceholder}
+                    label={t('form.name')}
+                    placeholder={t('form.namePlaceholder')}
                     error={!!errors.name}
-                    helperText={errors.name ? dictionary.form.required : ''}
+                    helperText={errors.name ? t('form.required') : ''}
                   />
                 )}
               />
@@ -342,10 +340,10 @@ const PatientDrawer = ({
                     {...field}
                     type='date'
                     fullWidth
-                    label={dictionary.form.birthdate || 'Date of Birth'}
+                    label={t('form.birthdate')}
                     InputLabelProps={{ shrink: true }}
                     error={!!errors.birthdate}
-                    helperText={errors.birthdate ? dictionary.form.required : ''}
+                    helperText={errors.birthdate ? t('form.required') : ''}
                   />
                 )}
               />
@@ -353,37 +351,24 @@ const PatientDrawer = ({
                 name='gender'
                 control={control}
                 render={({ field }) => {
-                  // Normalize the gender value to match MenuItem values
                   const normalizedGender = field.value
                     ? field.value.charAt(0).toUpperCase() + field.value.slice(1).toLowerCase()
                     : ''
-
-                  console.log('Gender field render:', {
-                    fieldValue: field.value,
-                    normalizedGender,
-                    editPatientGender: editPatient?.gender,
-                    editMode
-                  })
 
                   return (
                     <CustomTextField
                       select
                       fullWidth
-                      label={dictionary.form.gender}
+                      label={t('form.gender')}
                       error={!!errors.gender}
-                      helperText={errors.gender ? dictionary.form.required : ''}
+                      helperText={errors.gender ? t('form.required') : ''}
                       value={normalizedGender}
-                      onChange={e => {
-                        console.log('Gender onChange:', e.target.value)
-
-                        // Store the value in lowercase in the form
-                        field.onChange(e.target.value.toLowerCase())
-                      }}
+                      onChange={e => field.onChange(e.target.value.toLowerCase())}
                     >
-                      <MenuItem value=''>{dictionary.form.selectGender}</MenuItem>
-                      <MenuItem value='Male'>{dictionary.form.male}</MenuItem>
-                      <MenuItem value='Female'>{dictionary.form.female}</MenuItem>
-                      <MenuItem value='Other'>{dictionary.form.other}</MenuItem>
+                      <MenuItem value=''>{t('form.selectGender')}</MenuItem>
+                      <MenuItem value='Male'>{t('form.male')}</MenuItem>
+                      <MenuItem value='Female'>{t('form.female')}</MenuItem>
+                      <MenuItem value='Other'>{t('form.other')}</MenuItem>
                     </CustomTextField>
                   )
                 }}
@@ -395,13 +380,13 @@ const PatientDrawer = ({
                   <CustomTextField
                     select
                     fullWidth
-                    label={dictionary.form.doctor}
+                    label={t('form.doctor')}
                     error={!!errors.doctor}
-                    helperText={!!errors.doctor ? dictionary.form.required : ''}
+                    helperText={!!errors.doctor ? t('form.required') : ''}
                     {...field}
                     value={field.value || ''}
                   >
-                    <MenuItem value=''>{dictionary.form.selectDoctor}</MenuItem>
+                    <MenuItem value=''>{t('form.selectDoctor')}</MenuItem>
                     {doctors &&
                       doctors.map(opt => (
                         <MenuItem key={opt.id} value={opt.name}>
@@ -418,16 +403,15 @@ const PatientDrawer = ({
                   <CustomTextField
                     select
                     fullWidth
-                    label={dictionary.form.status}
+                    label={t('form.status')}
                     error={!!errors.status}
-                    helperText={errors.status ? dictionary.form.required : ''}
+                    helperText={errors.status ? t('form.required') : ''}
                     {...field}
                   >
-                    <MenuItem value=''>{dictionary.form.selectStatus}</MenuItem>
-                    <MenuItem value='enabled'>{dictionary.form.enabled}</MenuItem>
-                    <MenuItem value='disabled'>{dictionary.form.disabled}</MenuItem>
-                    <MenuItem value='blocked'>{dictionary.form.blocked}</MenuItem>
-                    <MenuItem value='pending'>{dictionary.form.pending}</MenuItem>
+                    <MenuItem value='enabled'>{t('form.enabled')}</MenuItem>
+                    <MenuItem value='disabled'>{t('form.disabled')}</MenuItem>
+                    <MenuItem value='blocked'>{t('form.blocked')}</MenuItem>
+                    <MenuItem value='pending'>{t('form.pending')}</MenuItem>
                   </CustomTextField>
                 )}
               />
@@ -438,8 +422,8 @@ const PatientDrawer = ({
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label={dictionary.form.avatar}
-                    placeholder={dictionary.form.avatarPlaceholder}
+                    label={t('form.avatar')}
+                    placeholder={t('form.avatarPlaceholder')}
                   />
                 )}
               />
@@ -448,7 +432,7 @@ const PatientDrawer = ({
 
             {/* Contact Information Section */}
             <Typography variant='subtitle1' className='mb-2 font-medium'>
-              {dictionary.form.sectionContactInfo}
+              {t('form.sectionContactInfo')}
             </Typography>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6'>
               <Controller
@@ -458,8 +442,8 @@ const PatientDrawer = ({
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label={dictionary.form.address}
-                    placeholder={dictionary.form.addressPlaceholder}
+                    label={t('form.address')}
+                    placeholder={t('form.addressPlaceholder')}
                   />
                 )}
               />
@@ -470,8 +454,8 @@ const PatientDrawer = ({
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label={dictionary.form.city}
-                    placeholder={dictionary.form.cityPlaceholder}
+                    label={t('form.city')}
+                    placeholder={t('form.cityPlaceholder')}
                   />
                 )}
               />
@@ -482,10 +466,10 @@ const PatientDrawer = ({
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label={dictionary.form.phoneNumber}
-                    placeholder={dictionary.form.phoneNumberPlaceholder}
+                    label={t('form.phoneNumber')}
+                    placeholder={t('form.phoneNumberPlaceholder')}
                     error={!!errors.phone_number}
-                    helperText={errors.phone_number ? dictionary.form.required : ''}
+                    helperText={errors.phone_number ? t('form.required') : ''}
                   />
                 )}
               />
@@ -497,8 +481,8 @@ const PatientDrawer = ({
                     {...field}
                     type='email'
                     fullWidth
-                    label={dictionary.form.email}
-                    placeholder={dictionary.form.emailPlaceholder}
+                    label={t('form.email')}
+                    placeholder={t('form.emailPlaceholder')}
                   />
                 )}
               />
@@ -507,7 +491,7 @@ const PatientDrawer = ({
 
             {/* Emergency Contact Section */}
             <Typography variant='subtitle1' className='mb-2 font-medium'>
-              {dictionary.form.sectionEmergencyContact}
+              {t('form.sectionEmergencyContact')}
             </Typography>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6'>
               <Controller
@@ -517,8 +501,8 @@ const PatientDrawer = ({
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label={dictionary.form.emergencyContactName}
-                    placeholder={dictionary.form.emergencyContactNamePlaceholder}
+                    label={t('form.emergencyContactName')}
+                    placeholder={t('form.emergencyContactNamePlaceholder')}
                   />
                 )}
               />
@@ -529,8 +513,8 @@ const PatientDrawer = ({
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label={dictionary.form.emergencyContactPhone}
-                    placeholder={dictionary.form.emergencyContactPhonePlaceholder}
+                    label={t('form.emergencyContactPhone')}
+                    placeholder={t('form.emergencyContactPhonePlaceholder')}
                   />
                 )}
               />
@@ -542,8 +526,8 @@ const PatientDrawer = ({
                     {...field}
                     type='email'
                     fullWidth
-                    label={dictionary.form.emergencyContactEmail}
-                    placeholder={dictionary.form.emergencyContactEmailPlaceholder}
+                    label={t('form.emergencyContactEmail')}
+                    placeholder={t('form.emergencyContactEmailPlaceholder')}
                   />
                 )}
               />
@@ -551,10 +535,10 @@ const PatientDrawer = ({
             <div className='flex items-center gap-4 md:col-span-2 mt-8'>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
                 <Button variant='contained' type='submit'>
-                  {editMode ? dictionary.navigation.save : dictionary.navigation.create}
+                  {editMode ? t('navigation.save') : t('navigation.create')}
                 </Button>
                 <Button variant='tonal' color='error' type='reset' onClick={handleReset}>
-                  {dictionary.navigation.cancel}
+                  {t('navigation.cancel')}
                 </Button>
                 {formStatus.type && (
                   <Alert

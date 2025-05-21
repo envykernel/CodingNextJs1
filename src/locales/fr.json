@@ -8,11 +8,20 @@
         "edit": "Modifier",
         "editPatient": "Modifier le patient",
         "add": "Ajouter",
-        "addNewPatient": "Ajouter un nouveau patient"
+        "addNewPatient": "Ajouter un nouveau patient",
+        "create": "Créer"
     },
     "patient": {
+        "name": "Nom",
         "birthdate": "Date de naissance",
-        "gender": "Genre",
+        "gender": {
+            "label": "Genre",
+            "options": {
+                "male": "Homme",
+                "female": "Femme",
+                "other": "Autre"
+            }
+        },
         "phone": "Téléphone",
         "email": "E-mail",
         "address": "Adresse",
@@ -21,7 +30,26 @@
         "newPatientHighlight": "Nouveau patient créé !",
         "newLabel": "nouveau",
         "addNewPatient": "Ajouter un nouveau patient",
-        "patientName": "Nom du patient"
+        "patientName": "Nom du patient",
+        "age": "Âge",
+        "doctor": "Médecin",
+        "status": {
+            "label": "Statut",
+            "options": {
+                "enabled": "Activé",
+                "disabled": "Désactivé",
+                "blocked": "Bloqué",
+                "pending": "En attente",
+                "unknown": "Inconnu"
+            }
+        },
+        "actions": "Actions",
+        "download": "Télécharger",
+        "edit": "Modifier",
+        "filters": "Filtres",
+        "searchPlaceholder": "Rechercher des patients...",
+        "export": "Exporter",
+        "addNew": "Ajouter un nouveau patient"
     },
     "appointments": {
         "typeOptions": {
@@ -147,5 +175,78 @@
         "duplicate": "Dupliquer",
         "searchInvoice": "Rechercher une facture",
         "show": "Afficher"
+    },
+    "form": {
+        "sectionPersonalInfo": "Informations personnelles",
+        "sectionContactInfo": "Informations de contact",
+        "sectionEmergencyContact": "Contact d'urgence",
+        "name": "Nom",
+        "namePlaceholder": "Entrez le nom du patient",
+        "birthdate": "Date de naissance",
+        "gender": "Genre",
+        "selectGender": "Sélectionnez le genre",
+        "male": "Homme",
+        "female": "Femme",
+        "other": "Autre",
+        "doctor": "Médecin",
+        "doctorPlaceholder": "Sélectionnez le médecin",
+        "status": "Statut",
+        "selectStatus": "Sélectionnez le statut",
+        "enabled": "Activé",
+        "disabled": "Désactivé",
+        "blocked": "Bloqué",
+        "pending": "En attente",
+        "avatar": "URL de l'avatar",
+        "avatarPlaceholder": "Entrez l'URL de l'avatar",
+        "address": "Adresse",
+        "addressPlaceholder": "Entrez l'adresse",
+        "city": "Ville",
+        "cityPlaceholder": "Entrez la ville",
+        "phoneNumber": "Numéro de téléphone",
+        "phoneNumberPlaceholder": "Entrez le numéro de téléphone",
+        "email": "E-mail",
+        "emailPlaceholder": "Entrez l'e-mail",
+        "emergencyContactName": "Nom du contact d'urgence",
+        "emergencyContactNamePlaceholder": "Entrez le nom du contact d'urgence",
+        "emergencyContactPhone": "Téléphone du contact d'urgence",
+        "emergencyContactPhonePlaceholder": "Entrez le téléphone du contact d'urgence",
+        "emergencyContactEmail": "E-mail du contact d'urgence",
+        "emergencyContactEmailPlaceholder": "Entrez l'e-mail du contact d'urgence",
+        "required": "Ce champ est requis",
+        "validation": {
+            "required": "Ce champ est requis",
+            "name": {
+                "min": "Le nom doit contenir au moins 4 caractères",
+                "format": "Le nom ne peut contenir que des lettres, des espaces, des tirets et des apostrophes"
+            },
+            "phone": {
+                "format": "Veuillez entrer un numéro de téléphone marocain valide (ex: 0612345678)"
+            },
+            "email": {
+                "format": "Veuillez entrer une adresse e-mail valide"
+            },
+            "date": {
+                "invalid": "Veuillez entrer une date valide"
+            },
+            "url": {
+                "invalid": "Veuillez entrer une URL valide"
+            },
+            "address": {
+                "empty": "L'adresse ne doit pas être vide"
+            },
+            "city": {
+                "empty": "La ville ne doit pas être vide"
+            },
+            "emergencyContact": {
+                "name": {
+                    "empty": "Le nom du contact d'urgence ne doit pas être vide"
+                }
+            }
+        }
+    },
+    "messages": {
+        "patientCreated": "Patient créé avec succès !",
+        "patientUpdated": "Patient mis à jour avec succès !",
+        "error": "Une erreur est survenue"
     }
 }

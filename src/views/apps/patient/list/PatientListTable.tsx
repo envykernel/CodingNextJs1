@@ -47,7 +47,7 @@ import AddPatientDrawer from './AddPatientDrawer'
 import OptionMenu from '@core/components/option-menu'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomAvatar from '@core/components/mui/Avatar'
-import { useTranslation } from '@/contexts/translationContext'
+import { useTranslation, TranslationProvider } from '@/contexts/translationContext'
 
 // Util Imports
 import { getInitials } from '@/utils/getInitials'
@@ -192,7 +192,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const dictionary = useTranslation()
+  const { t, dictionary } = useTranslation()
 
   const handleEditClick = (patient: PatientType) => {
     setSelectedPatient(patient)
@@ -235,10 +235,10 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
         )
       },
       columnHelper.accessor('name', {
-        header: 'Patient Name',
+        header: () => t('patient.name'),
         cell: ({ row }) => {
           const isNewPatient = row.original.id === newPatientId
-          const newLabel = dictionary?.patient?.newLabel || 'new'
+          const newLabel = t('patient.newLabel')
 
           return (
             <div className='flex items-center gap-2'>
@@ -261,12 +261,12 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
         }
       }),
       columnHelper.accessor('birthdate', {
-        header: 'Birthdate',
+        header: () => t('patient.birthdate'),
         cell: ({ row }) => <ClientBirthdateCell birthdate={row.original.birthdate} />
       }),
       columnHelper.display({
         id: 'age',
-        header: dictionary.form.age,
+        header: () => t('patient.age'),
         cell: ({ row }) => {
           const age = calculateAge(row.original.birthdate)
 
@@ -274,28 +274,34 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
         }
       }),
       columnHelper.accessor('gender', {
-        header: 'Gender',
-        cell: ({ row }) => <Typography>{row.original.gender || '-'}</Typography>
+        header: () => t('patient.gender.label'),
+        cell: ({ row }) => (
+          <Typography>{t(`patient.gender.options.${row.original.gender?.toLowerCase() || 'other'}`)}</Typography>
+        )
       }),
       columnHelper.display({
         id: 'doctor',
-        header: dictionary.form.doctor,
+        header: () => t('patient.doctor'),
         cell: ({ row }) => <Typography>{row.original.doctor?.name || '-'}</Typography>
       }),
       columnHelper.accessor('status', {
-        header: 'Status',
-        cell: ({ row }) => (
-          <Chip
-            variant='tonal'
-            label={dictionary.form[row.original.status || 'unknown'] || '-'}
-            size='small'
-            color={patientStatusObj[String(row.original.status || 'unknown')]}
-            className='capitalize'
-          />
-        )
+        header: () => t('patient.status.label'),
+        cell: ({ row }) => {
+          const status = row.original.status?.toLowerCase() || 'unknown'
+
+          return (
+            <Chip
+              variant='tonal'
+              label={t(`patient.status.options.${status}`)}
+              size='small'
+              color={patientStatusObj[status]}
+              className='capitalize'
+            />
+          )
+        }
       }),
       columnHelper.accessor('action', {
-        header: 'Action',
+        header: () => t('patient.actions'),
         cell: ({ row }) => (
           <div className='flex items-center'>
             <IconButton onClick={() => setData(data?.filter(patient => patient.id !== row.original.id))}>
@@ -311,12 +317,12 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
               iconClassName='text-textSecondary'
               options={[
                 {
-                  text: 'Download',
+                  text: t('patient.download'),
                   icon: 'tabler-download',
                   menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
                 },
                 {
-                  text: 'Edit',
+                  text: t('patient.edit'),
                   icon: 'tabler-edit',
                   menuItemProps: {
                     className: 'flex items-center gap-2 text-textSecondary',
@@ -330,7 +336,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
         enableSorting: false
       })
     ]
-  }, [data, filteredData, dictionary, locale])
+  }, [data, filteredData, t, locale, newPatientId])
 
   const table = useReactTable({
     data: filteredData as PatientType[],
@@ -382,7 +388,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
   return (
     <>
       <Card>
-        <CardHeader title='Filters' className='pbe-4' />
+        <CardHeader title={t('patient.filters')} className='pbe-4' />
         <PatientTableFilters setData={setFilteredData} tableData={data} />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
@@ -405,7 +411,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
             <DebouncedInput
               value={globalFilter ?? ''}
               onChange={value => setGlobalFilter(String(value))}
-              placeholder='Search Patient'
+              placeholder={t('patient.searchPlaceholder')}
               className='max-sm:is-full'
             />
             <Button
@@ -414,7 +420,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
               startIcon={<i className='tabler-upload' />}
               className='max-sm:is-full'
             >
-              Export
+              {t('patient.export')}
             </Button>
             <Button
               variant='contained'
@@ -422,7 +428,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
               onClick={() => setAddPatientOpen(!addPatientOpen)}
               className='max-sm:is-full'
             >
-              Add New Patient
+              {t('patient.addNew')}
             </Button>
           </div>
         </div>
@@ -510,22 +516,22 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
           }}
         />
       </Card>
-      <AddPatientDrawer
-        open={addPatientOpen}
-        handleClose={() => setAddPatientOpen(!addPatientOpen)}
-        patientData={data}
-        setData={setData}
-        onPatientCreated={handleAddPatient}
-      />
-      {selectedPatient && (
+      <TranslationProvider dictionary={dictionary}>
         <AddPatientDrawer
-          open={editPatientOpen}
-          handleClose={handleEditClose}
-          editMode={true}
-          editPatient={selectedPatient}
-          onPatientUpdated={handlePatientUpdate}
+          open={addPatientOpen}
+          handleClose={() => setAddPatientOpen(!addPatientOpen)}
+          onPatientCreated={handleAddPatient}
         />
-      )}
+        {selectedPatient && (
+          <AddPatientDrawer
+            open={editPatientOpen}
+            handleClose={handleEditClose}
+            editMode={true}
+            editPatient={selectedPatient}
+            onPatientUpdated={handlePatientUpdate}
+          />
+        )}
+      </TranslationProvider>
     </>
   )
 }

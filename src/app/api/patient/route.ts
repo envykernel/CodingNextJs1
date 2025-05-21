@@ -48,9 +48,30 @@ export async function POST(request: Request) {
       organisation_id
     } = parsed.data
 
-    const data: any = { name, birthdate: new Date(birthdate), gender, status, phone_number, organisation_id }
+    // Find the doctor by name if provided
+    let doctorId: number | undefined
 
-    if (doctor !== undefined) data.doctor = doctor
+    if (doctor) {
+      const doctorRecord = await prisma.doctor.findFirst({
+        where: {
+          name: doctor,
+          organisation_id
+        }
+      })
+
+      doctorId = doctorRecord?.id
+    }
+
+    const data: any = {
+      name,
+      birthdate: new Date(birthdate),
+      gender,
+      status,
+      phone_number,
+      organisation_id,
+      doctor_id: doctorId // Set doctor_id instead of doctor
+    }
+
     if (avatar !== undefined) data.avatar = avatar
     if (address !== undefined) data.address = address
     if (city !== undefined) data.city = city
@@ -58,7 +79,21 @@ export async function POST(request: Request) {
     if (emergency_contact_name !== undefined) data.emergency_contact_name = emergency_contact_name
     if (emergency_contact_phone !== undefined) data.emergency_contact_phone = emergency_contact_phone
     if (emergency_contact_email !== undefined) data.emergency_contact_email = emergency_contact_email
-    const patient = await prisma.patient.create({ data })
+
+    const patient = await prisma.patient.create({
+      data,
+      include: {
+        doctor: {
+          select: {
+            id: true,
+            name: true,
+            specialty: true,
+            email: true,
+            phone_number: true
+          }
+        }
+      }
+    })
 
     return new Response(JSON.stringify({ success: true, patient }), {
       status: 201,

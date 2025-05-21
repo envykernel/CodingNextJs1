@@ -8,11 +8,20 @@
         "edit": "تعديل",
         "editPatient": "تعديل المريض",
         "add": "إضافة",
-        "addNewPatient": "إضافة مريض جديد"
+        "addNewPatient": "إضافة مريض جديد",
+        "create": "إنشاء"
     },
     "patient": {
+        "name": "الاسم",
         "birthdate": "تاريخ الميلاد",
-        "gender": "الجنس",
+        "gender": {
+            "label": "الجنس",
+            "options": {
+                "male": "ذكر",
+                "female": "أنثى",
+                "other": "آخر"
+            }
+        },
         "phone": "الهاتف",
         "email": "البريد الإلكتروني",
         "address": "العنوان",
@@ -21,7 +30,26 @@
         "newPatientHighlight": "تم إنشاء مريض جديد!",
         "newLabel": "جديد",
         "addNewPatient": "إضافة مريض جديد",
-        "patientName": "اسم المريض"
+        "patientName": "اسم المريض",
+        "age": "العمر",
+        "doctor": "الطبيب",
+        "status": {
+            "label": "الحالة",
+            "options": {
+                "enabled": "مفعل",
+                "disabled": "معطل",
+                "blocked": "محظور",
+                "pending": "قيد الانتظار",
+                "unknown": "غير معروف"
+            }
+        },
+        "actions": "الإجراءات",
+        "download": "تحميل",
+        "edit": "تعديل",
+        "filters": "التصفية",
+        "searchPlaceholder": "البحث عن المرضى...",
+        "export": "تصدير",
+        "addNew": "إضافة مريض جديد"
     },
     "appointments": {
         "typeOptions": {
@@ -148,5 +176,78 @@
         "duplicate": "تكرار",
         "searchInvoice": "البحث عن فاتورة",
         "show": "عرض"
+    },
+    "form": {
+        "sectionPersonalInfo": "المعلومات الشخصية",
+        "sectionContactInfo": "معلومات الاتصال",
+        "sectionEmergencyContact": "جهة الاتصال في حالات الطوارئ",
+        "name": "الاسم",
+        "namePlaceholder": "أدخل اسم المريض",
+        "birthdate": "تاريخ الميلاد",
+        "gender": "الجنس",
+        "selectGender": "اختر الجنس",
+        "male": "ذكر",
+        "female": "أنثى",
+        "other": "آخر",
+        "doctor": "الطبيب",
+        "doctorPlaceholder": "اختر الطبيب",
+        "status": "الحالة",
+        "selectStatus": "اختر الحالة",
+        "enabled": "مفعل",
+        "disabled": "معطل",
+        "blocked": "محظور",
+        "pending": "قيد الانتظار",
+        "avatar": "رابط الصورة الشخصية",
+        "avatarPlaceholder": "أدخل رابط الصورة الشخصية",
+        "address": "العنوان",
+        "addressPlaceholder": "أدخل العنوان",
+        "city": "المدينة",
+        "cityPlaceholder": "أدخل المدينة",
+        "phoneNumber": "رقم الهاتف",
+        "phoneNumberPlaceholder": "أدخل رقم الهاتف",
+        "email": "البريد الإلكتروني",
+        "emailPlaceholder": "أدخل البريد الإلكتروني",
+        "emergencyContactName": "اسم جهة الاتصال في حالات الطوارئ",
+        "emergencyContactNamePlaceholder": "أدخل اسم جهة الاتصال في حالات الطوارئ",
+        "emergencyContactPhone": "هاتف جهة الاتصال في حالات الطوارئ",
+        "emergencyContactPhonePlaceholder": "أدخل هاتف جهة الاتصال في حالات الطوارئ",
+        "emergencyContactEmail": "البريد الإلكتروني لجهة الاتصال في حالات الطوارئ",
+        "emergencyContactEmailPlaceholder": "أدخل البريد الإلكتروني لجهة الاتصال في حالات الطوارئ",
+        "required": "هذا الحقل مطلوب",
+        "validation": {
+            "required": "هذا الحقل مطلوب",
+            "name": {
+                "min": "يجب أن يحتوي الاسم على 4 أحرف على الأقل",
+                "format": "يمكن أن يحتوي الاسم على أحرف ومسافات وشرطات وعلامات اقتباس فقط"
+            },
+            "phone": {
+                "format": "الرجاء إدخال رقم هاتف مغربي صالح (مثال: 0612345678)"
+            },
+            "email": {
+                "format": "الرجاء إدخال عنوان بريد إلكتروني صالح"
+            },
+            "date": {
+                "invalid": "الرجاء إدخال تاريخ صالح"
+            },
+            "url": {
+                "invalid": "الرجاء إدخال رابط صالح"
+            },
+            "address": {
+                "empty": "يجب ألا يكون العنوان فارغًا"
+            },
+            "city": {
+                "empty": "يجب ألا تكون المدينة فارغة"
+            },
+            "emergencyContact": {
+                "name": {
+                    "empty": "يجب ألا يكون اسم جهة الاتصال في حالات الطوارئ فارغًا"
+                }
+            }
+        }
+    },
+    "messages": {
+        "patientCreated": "تم إنشاء المريض بنجاح!",
+        "patientUpdated": "تم تحديث بيانات المريض بنجاح!",
+        "error": "حدث خطأ"
     }
 }

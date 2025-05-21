@@ -8,11 +8,20 @@
         "edit": "Edit",
         "editPatient": "Edit Patient",
         "add": "Add",
-        "addNewPatient": "Add New Patient"
+        "addNewPatient": "Add New Patient",
+        "create": "Create"
     },
     "patient": {
+        "name": "Name",
         "birthdate": "Birthdate",
-        "gender": "Gender",
+        "gender": {
+            "label": "Gender",
+            "options": {
+                "male": "Male",
+                "female": "Female",
+                "other": "Other"
+            }
+        },
         "phone": "Phone",
         "email": "Email",
         "address": "Address",
@@ -21,7 +30,33 @@
         "newPatientHighlight": "New patient created!",
         "newLabel": "new",
         "addNewPatient": "Add new patient",
-        "patientName": "Patient Name"
+        "patientName": "Patient Name",
+        "age": "Age",
+        "doctor": "Doctor",
+        "status": {
+            "label": "Status",
+            "options": {
+                "enabled": "Enabled",
+                "disabled": "Disabled",
+                "blocked": "Blocked",
+                "pending": "Pending",
+                "unknown": "Unknown"
+            }
+        },
+        "actions": "Actions",
+        "download": "Download",
+        "edit": "Edit",
+        "filters": "Filters",
+        "searchPlaceholder": "Search patients...",
+        "export": "Export",
+        "addNew": "Add New Patient",
+        "status": {
+            "enabled": "Enabled",
+            "disabled": "Disabled",
+            "blocked": "Blocked",
+            "pending": "Pending",
+            "unknown": "Unknown"
+        }
     },
     "appointments": {
         "typeOptions": {
@@ -147,5 +182,78 @@
         "duplicate": "Duplicate",
         "searchInvoice": "Search Invoice",
         "show": "Show"
+    },
+    "form": {
+        "sectionPersonalInfo": "Personal Information",
+        "sectionContactInfo": "Contact Information",
+        "sectionEmergencyContact": "Emergency Contact",
+        "name": "Name",
+        "namePlaceholder": "Enter patient name",
+        "birthdate": "Date of Birth",
+        "gender": "Gender",
+        "selectGender": "Select Gender",
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "doctor": "Doctor",
+        "doctorPlaceholder": "Select doctor",
+        "status": "Status",
+        "selectStatus": "Select Status",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "blocked": "Blocked",
+        "pending": "Pending",
+        "avatar": "Avatar URL",
+        "avatarPlaceholder": "Enter avatar URL",
+        "address": "Address",
+        "addressPlaceholder": "Enter address",
+        "city": "City",
+        "cityPlaceholder": "Enter city",
+        "phoneNumber": "Phone Number",
+        "phoneNumberPlaceholder": "Enter phone number",
+        "email": "Email",
+        "emailPlaceholder": "Enter email",
+        "emergencyContactName": "Emergency Contact Name",
+        "emergencyContactNamePlaceholder": "Enter emergency contact name",
+        "emergencyContactPhone": "Emergency Contact Phone",
+        "emergencyContactPhonePlaceholder": "Enter emergency contact phone",
+        "emergencyContactEmail": "Emergency Contact Email",
+        "emergencyContactEmailPlaceholder": "Enter emergency contact email",
+        "required": "This field is required",
+        "validation": {
+            "required": "This field is required",
+            "name": {
+                "min": "Name must be at least 4 characters",
+                "format": "Name can only contain letters, spaces, hyphens and apostrophes"
+            },
+            "phone": {
+                "format": "Please enter a valid Moroccan phone number (e.g., 0612345678)"
+            },
+            "email": {
+                "format": "Please enter a valid email address"
+            },
+            "date": {
+                "invalid": "Please enter a valid date"
+            },
+            "url": {
+                "invalid": "Please enter a valid URL"
+            },
+            "address": {
+                "empty": "Address must not be empty"
+            },
+            "city": {
+                "empty": "City must not be empty"
+            },
+            "emergencyContact": {
+                "name": {
+                    "empty": "Emergency contact name must not be empty"
+                }
+            }
+        }
+    },
+    "messages": {
+        "patientCreated": "Patient created successfully!",
+        "patientUpdated": "Patient updated successfully!",
+        "error": "An error occurred"
     }
 }
