@@ -96,6 +96,8 @@ export async function POST(req: NextRequest) {
       patient: { connect: { id: patient_id } },
       visit: visit_id ? { connect: { id: visit_id } } : undefined,
       due_date: due_date ? new Date(due_date) : undefined,
+      payment_status: 'PENDING',
+      record_status: 'ACTIVE',
       total_amount,
       lines: {
         create: lines.map((line: any) => ({
