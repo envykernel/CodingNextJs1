@@ -12,7 +12,7 @@
         "create": "إنشاء"
     },
     "patient": {
-        "name": "الاسم",
+        "name": "الاسم الكامل",
         "birthdate": "تاريخ الميلاد",
         "gender": {
             "label": "الجنس",
@@ -22,10 +22,13 @@
                 "other": "آخر"
             }
         },
-        "phone": "الهاتف",
+        "phone": "رقم الهاتف",
         "email": "البريد الإلكتروني",
         "address": "العنوان",
         "city": "المدينة",
+        "state": "الولاية/المقاطعة",
+        "country": "البلد",
+        "postalCode": "الرمز البريدي",
         "medicalData": "البيانات الطبية",
         "newPatientHighlight": "تم إنشاء مريض جديد!",
         "newLabel": "جديد",
@@ -49,7 +52,9 @@
         "filters": "التصفية",
         "searchPlaceholder": "البحث عن المرضى...",
         "export": "تصدير",
-        "addNew": "إضافة مريض جديد"
+        "addNew": "إضافة مريض جديد",
+        "createNew": "إنشاء مريض جديد",
+        "errorCreating": "خطأ في إنشاء المريض. يرجى المحاولة مرة أخرى."
     },
     "appointments": {
         "typeOptions": {
@@ -140,6 +145,8 @@
         "createInvoice": "إنشاء فاتورة",
         "updateInvoice": "تحديث الفاتورة",
         "cancel": "إلغاء",
+        "cancelInvoice": "إلغاء الفاتورة",
+        "confirmation": "تم إنشاء الفاتورة بنجاح!",
         "dateCreation": "تاريخ الإنشاء:",
         "date": "التاريخ",
         "addPayment": "إضافة دفعة",

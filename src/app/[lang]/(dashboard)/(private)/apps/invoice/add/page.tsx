@@ -3,10 +3,6 @@ import Grid from '@mui/material/Grid2'
 
 // Component Imports
 import AddCard from '@views/apps/invoice/add/AddCard'
-import AddActions from '@views/apps/invoice/add/AddActions'
-
-// Data Imports
-import { getInvoiceData } from '@/app/server/actions'
 
 /**
  * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
@@ -26,17 +22,11 @@ import { getInvoiceData } from '@/app/server/actions'
   return res.json()
 }
  */
-const InvoiceAdd = async () => {
-  // Vars
-  const data = await getInvoiceData()
-
+const InvoiceAdd = () => {
   return (
     <Grid container spacing={6}>
-      <Grid size={{ xs: 12, md: 9 }}>
-        <AddCard invoiceData={data} />
-      </Grid>
-      <Grid size={{ xs: 12, md: 3 }}>
-        <AddActions />
+      <Grid size={{ xs: 12 }}>
+        <AddCard />
       </Grid>
     </Grid>
   )

@@ -12,7 +12,7 @@
         "create": "Create"
     },
     "patient": {
-        "name": "Name",
+        "name": "Full Name",
         "birthdate": "Birthdate",
         "gender": {
             "label": "Gender",
@@ -22,10 +22,13 @@
                 "other": "Other"
             }
         },
-        "phone": "Phone",
+        "phone": "Phone Number",
         "email": "Email",
         "address": "Address",
         "city": "City",
+        "state": "State/Province",
+        "country": "Country",
+        "postalCode": "Postal Code",
         "medicalData": "Medical Data",
         "newPatientHighlight": "New patient created!",
         "newLabel": "new",
@@ -49,14 +52,15 @@
         "filters": "Filters",
         "searchPlaceholder": "Search patients...",
         "export": "Export",
-        "addNew": "Add New Patient",
+        "addNew": "Create New Patient",
         "status": {
             "enabled": "Enabled",
             "disabled": "Disabled",
             "blocked": "Blocked",
             "pending": "Pending",
             "unknown": "Unknown"
-        }
+        },
+        "errorCreating": "Error creating patient. Please try again."
     },
     "appointments": {
         "typeOptions": {
@@ -147,6 +151,8 @@
         "createInvoice": "Create Invoice",
         "updateInvoice": "Update Invoice",
         "cancel": "Cancel",
+        "cancelInvoice": "Cancel Invoice",
+        "confirmation": "Invoice created successfully!",
         "date": "Date",
         "dateCreation": "Date Creation:",
         "addPayment": "Add Payment",

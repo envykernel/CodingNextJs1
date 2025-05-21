@@ -304,9 +304,25 @@ export async function getAppointmentsList({
   }
 }
 
-export async function getAllPatients() {
+export async function getAllPatients(search?: string) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user?.organisationId) {
+    throw new Error('User not authenticated or no organization assigned')
+  }
+
+  const organisationId = parseInt(session.user.organisationId)
+
+  const where: any = { organisation_id: organisationId }
+
+  if (search) {
+    where.name = { contains: search, mode: 'insensitive' }
+  }
+
   const patients = await prisma.patient.findMany({
-    select: { id: true, name: true }
+    where,
+    select: { id: true, name: true },
+    orderBy: { name: 'asc' }
   })
 
   return patients

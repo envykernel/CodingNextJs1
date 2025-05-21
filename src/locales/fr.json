@@ -12,7 +12,7 @@
         "create": "Créer"
     },
     "patient": {
-        "name": "Nom",
+        "name": "Nom complet",
         "birthdate": "Date de naissance",
         "gender": {
             "label": "Genre",
@@ -22,10 +22,13 @@
                 "other": "Autre"
             }
         },
-        "phone": "Téléphone",
-        "email": "E-mail",
+        "phone": "Numéro de téléphone",
+        "email": "Email",
         "address": "Adresse",
         "city": "Ville",
+        "state": "État/Province",
+        "country": "Pays",
+        "postalCode": "Code postal",
         "medicalData": "Données médicales",
         "newPatientHighlight": "Nouveau patient créé !",
         "newLabel": "nouveau",
@@ -49,7 +52,9 @@
         "filters": "Filtres",
         "searchPlaceholder": "Rechercher des patients...",
         "export": "Exporter",
-        "addNew": "Ajouter un nouveau patient"
+        "addNew": "Ajouter un nouveau patient",
+        "createNew": "Créer un nouveau patient",
+        "errorCreating": "Erreur lors de la création du patient. Veuillez réessayer."
     },
     "appointments": {
         "typeOptions": {
@@ -140,6 +145,8 @@
         "createInvoice": "Créer une facture",
         "updateInvoice": "Mettre à jour la facture",
         "cancel": "Annuler",
+        "cancelInvoice": "Annuler la facture",
+        "confirmation": "Facture créée avec succès !",
         "date": "Date",
         "dateCreation": "Date de création :",
         "addPayment": "Ajouter un paiement",
