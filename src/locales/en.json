@@ -357,5 +357,64 @@
             "externalLink": "External Link",
             "disabledMenu": "Disabled Menu"
         }
+    },
+    "patientView": {
+        "tabs": {
+            "overview": "Overview",
+            "medicalData": "Medical Data",
+            "appointments": "Appointments",
+            "security": "Security",
+            "billingPlans": "Billing & Plans",
+            "notifications": "Notifications",
+            "connections": "Connections"
+        },
+        "medicalData": {
+            "title": "Medical Data",
+            "allergies": "Allergies",
+            "conditions": "Medical Conditions",
+            "medications": "Current Medications",
+            "familyHistory": "Family History",
+            "immunizations": "Immunizations",
+            "labResults": "Lab Results",
+            "noData": "No medical data available"
+        },
+        "appointments": {
+            "title": "Appointments",
+            "upcoming": "Upcoming Appointments",
+            "past": "Past Appointments",
+            "noAppointments": "No appointments scheduled",
+            "bookNew": "Book New Appointment",
+            "cancel": "Cancel Appointment",
+            "reschedule": "Reschedule",
+            "viewDetails": "View Details"
+        },
+        "security": {
+            "title": "Security Settings",
+            "password": "Password",
+            "twoFactor": "Two-Factor Authentication",
+            "sessions": "Active Sessions",
+            "privacy": "Privacy Settings"
+        },
+        "billingPlans": {
+            "title": "Billing & Plans",
+            "currentPlan": "Current Plan",
+            "billingHistory": "Billing History",
+            "paymentMethods": "Payment Methods",
+            "invoices": "Invoices"
+        },
+        "notifications": {
+            "title": "Notifications",
+            "email": "Email Notifications",
+            "sms": "SMS Notifications",
+            "app": "App Notifications",
+            "preferences": "Notification Preferences"
+        },
+        "connections": {
+            "title": "Connections",
+            "doctors": "Connected Doctors",
+            "family": "Family Members",
+            "emergency": "Emergency Contacts",
+            "insurance": "Insurance Providers"
+        }
     }
 }

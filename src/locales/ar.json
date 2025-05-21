@@ -351,5 +351,64 @@
             "externalLink": "رابط خارجي",
             "disabledMenu": "قائمة معطلة"
         }
+    },
+    "patientView": {
+        "tabs": {
+            "overview": "نظرة عامة",
+            "medicalData": "البيانات الطبية",
+            "appointments": "المواعيد",
+            "security": "الأمان",
+            "billingPlans": "الفوترة والاشتراكات",
+            "notifications": "الإشعارات",
+            "connections": "الاتصالات"
+        },
+        "medicalData": {
+            "title": "البيانات الطبية",
+            "allergies": "الحساسية",
+            "conditions": "الحالات الطبية",
+            "medications": "الأدوية الحالية",
+            "familyHistory": "التاريخ العائلي",
+            "immunizations": "التطعيمات",
+            "labResults": "نتائج المختبر",
+            "noData": "لا توجد بيانات طبية متاحة"
+        },
+        "appointments": {
+            "title": "المواعيد",
+            "upcoming": "المواعيد القادمة",
+            "past": "المواعيد السابقة",
+            "noAppointments": "لا توجد مواعيد مجدولة",
+            "bookNew": "حجز موعد جديد",
+            "cancel": "إلغاء الموعد",
+            "reschedule": "إعادة الجدولة",
+            "viewDetails": "عرض التفاصيل"
+        },
+        "security": {
+            "title": "إعدادات الأمان",
+            "password": "كلمة المرور",
+            "twoFactor": "المصادقة الثنائية",
+            "sessions": "الجلسات النشطة",
+            "privacy": "إعدادات الخصوصية"
+        },
+        "billingPlans": {
+            "title": "الفوترة والاشتراكات",
+            "currentPlan": "الخطة الحالية",
+            "billingHistory": "سجل الفواتير",
+            "paymentMethods": "طرق الدفع",
+            "invoices": "الفواتير"
+        },
+        "notifications": {
+            "title": "الإشعارات",
+            "email": "إشعارات البريد الإلكتروني",
+            "sms": "إشعارات الرسائل القصيرة",
+            "app": "إشعارات التطبيق",
+            "preferences": "تفضيلات الإشعارات"
+        },
+        "connections": {
+            "title": "الاتصالات",
+            "doctors": "الأطباء المتصلون",
+            "family": "أفراد العائلة",
+            "emergency": "جهات الاتصال في حالات الطوارئ",
+            "insurance": "شركات التأمين"
+        }
     }
 }

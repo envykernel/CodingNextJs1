@@ -350,5 +350,64 @@
             "externalLink": "Lien externe",
             "disabledMenu": "Menu désactivé"
         }
+    },
+    "patientView": {
+        "tabs": {
+            "overview": "Vue d'ensemble",
+            "medicalData": "Données médicales",
+            "appointments": "Rendez-vous",
+            "security": "Sécurité",
+            "billingPlans": "Facturation & Abonnements",
+            "notifications": "Notifications",
+            "connections": "Connexions"
+        },
+        "medicalData": {
+            "title": "Données médicales",
+            "allergies": "Allergies",
+            "conditions": "Conditions médicales",
+            "medications": "Médicaments actuels",
+            "familyHistory": "Antécédents familiaux",
+            "immunizations": "Vaccinations",
+            "labResults": "Résultats d'analyses",
+            "noData": "Aucune donnée médicale disponible"
+        },
+        "appointments": {
+            "title": "Rendez-vous",
+            "upcoming": "Rendez-vous à venir",
+            "past": "Rendez-vous passés",
+            "noAppointments": "Aucun rendez-vous programmé",
+            "bookNew": "Prendre un rendez-vous",
+            "cancel": "Annuler le rendez-vous",
+            "reschedule": "Reprogrammer",
+            "viewDetails": "Voir les détails"
+        },
+        "security": {
+            "title": "Paramètres de sécurité",
+            "password": "Mot de passe",
+            "twoFactor": "Authentification à deux facteurs",
+            "sessions": "Sessions actives",
+            "privacy": "Paramètres de confidentialité"
+        },
+        "billingPlans": {
+            "title": "Facturation & Abonnements",
+            "currentPlan": "Forfait actuel",
+            "billingHistory": "Historique de facturation",
+            "paymentMethods": "Méthodes de paiement",
+            "invoices": "Factures"
+        },
+        "notifications": {
+            "title": "Notifications",
+            "email": "Notifications par e-mail",
+            "sms": "Notifications SMS",
+            "app": "Notifications de l'application",
+            "preferences": "Préférences de notification"
+        },
+        "connections": {
+            "title": "Connexions",
+            "doctors": "Médecins connectés",
+            "family": "Membres de la famille",
+            "emergency": "Contacts d'urgence",
+            "insurance": "Assureurs"
+        }
     }
 }

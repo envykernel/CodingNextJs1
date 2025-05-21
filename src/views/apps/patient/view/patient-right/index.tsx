@@ -15,6 +15,12 @@ import { useTranslation } from '@/contexts/translationContext'
 // Component Imports
 import CustomTabList from '@core/components/mui/TabList'
 
+interface TabItem {
+  value: string
+  label: string
+  icon: React.ReactElement
+}
+
 const UserRight = ({ tabContentList }: { tabContentList: { [key: string]: ReactElement } }) => {
   // States
   const [activeTab, setActiveTab] = useState('overview')
@@ -24,54 +30,53 @@ const UserRight = ({ tabContentList }: { tabContentList: { [key: string]: ReactE
     setActiveTab(value)
   }
 
+  const tabs: TabItem[] = [
+    {
+      value: 'overview',
+      label: t('patientView.tabs.overview') || 'Overview',
+      icon: <i className='tabler-users' />
+    },
+    {
+      value: 'medical-data',
+      label: t('patientView.tabs.medicalData') || 'Medical Data',
+      icon: <i className='tabler-heartbeat' />
+    },
+    {
+      value: 'appointments',
+      label: t('patientView.tabs.appointments') || 'Appointments',
+      icon: <i className='tabler-calendar-event' />
+    },
+    {
+      value: 'security',
+      label: t('patientView.tabs.security') || 'Security',
+      icon: <i className='tabler-lock' />
+    },
+    {
+      value: 'billing-plans',
+      label: t('patientView.tabs.billingPlans') || 'Billing & Plans',
+      icon: <i className='tabler-bookmark' />
+    },
+    {
+      value: 'notifications',
+      label: t('patientView.tabs.notifications') || 'Notifications',
+      icon: <i className='tabler-bell' />
+    },
+    {
+      value: 'connections',
+      label: t('patientView.tabs.connections') || 'Connections',
+      icon: <i className='tabler-link' />
+    }
+  ]
+
   return (
     <>
       <TabContext value={activeTab}>
         <Grid container spacing={6}>
           <Grid size={{ xs: 12 }}>
             <CustomTabList onChange={handleChange} variant='scrollable' pill='true'>
-              <Tab
-                icon={<i className='tabler-users' />}
-                value='overview'
-                label={t('navigation.overview') || t('navigation.dashboard') || 'Overview'}
-                iconPosition='start'
-              />
-              <Tab
-                icon={<i className='tabler-heartbeat' />}
-                value='medical'
-                label={t('patient.medicalData') || 'Medical Data'}
-                iconPosition='start'
-              />
-              <Tab
-                icon={<i className='tabler-calendar-event' />}
-                value='appointments'
-                label={t('appointmentsList') || 'Appointments'}
-                iconPosition='start'
-              />
-              <Tab
-                icon={<i className='tabler-lock' />}
-                value='security'
-                label={t('navigation.security') || 'Security'}
-                iconPosition='start'
-              />
-              <Tab
-                icon={<i className='tabler-bookmark' />}
-                value='billing-plans'
-                label={t('navigation.billingPlans') || 'Billing & Plans'}
-                iconPosition='start'
-              />
-              <Tab
-                icon={<i className='tabler-bell' />}
-                value='notifications'
-                label={t('navigation.notifications') || 'Notifications'}
-                iconPosition='start'
-              />
-              <Tab
-                icon={<i className='tabler-link' />}
-                value='connections'
-                label={t('navigation.connections') || 'Connections'}
-                iconPosition='start'
-              />
+              {tabs.map((tab: TabItem) => (
+                <Tab key={tab.value} icon={tab.icon} value={tab.value} label={tab.label} iconPosition='start' />
+              ))}
             </CustomTabList>
           </Grid>
           <Grid size={{ xs: 12 }}>

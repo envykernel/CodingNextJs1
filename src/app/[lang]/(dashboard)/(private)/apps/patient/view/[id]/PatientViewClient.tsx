@@ -29,7 +29,7 @@ const AppointmentsTab = dynamic(() => import('@views/apps/patient/view/patient-r
 // Vars
 const tabContentList = (patientData: any, appointments: any[]): { [key: string]: ReactElement } => ({
   overview: <OverViewTab patientData={patientData} />,
-  medical: <MedicalDataTab patientData={patientData} />,
+  'medical-data': <MedicalDataTab patientData={patientData} />,
   appointments: <AppointmentsTab appointments={appointments} />,
   security: <SecurityTab />,
   'billing-plans': <BillingPlans data={[]} />,
