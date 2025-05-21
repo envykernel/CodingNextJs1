@@ -28,7 +28,10 @@ export type InvoiceType = {
   issuedDate: string
   companyEmail: string
   balance: string | number
-  invoiceStatus: InvoiceStatus
+  payment_status: 'PENDING' | 'PAID' | 'PARTIAL'
+  record_status: 'ACTIVE' | 'ARCHIVED' | 'DELETED'
+  archived_at?: string
+  deleted_at?: string
   createdDate?: string
   invoice_date?: string
   invoice_number?: string

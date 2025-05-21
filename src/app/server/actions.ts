@@ -30,50 +30,60 @@ export const getLogisticsData = async () => {
 }
 
 export const getInvoiceData = async () => {
-  const invoices = await prisma.invoice.findMany({
-    include: {
-      patient: true,
-      organisation: true,
-      lines: { include: { service: true } },
-      payment_apps: true
-    },
-    orderBy: { id: 'desc' }
-  })
-
-  // Map Prisma results to InvoiceType expected by the UI
-  return invoices.map(inv => {
-    const firstLine = inv.lines[0] || {}
-    const totalPaid = inv.payment_apps.reduce((sum, p) => sum + Number(p.amount_applied), 0)
-    const balance = Number(inv.total_amount) - totalPaid
-
-    // Debug log for backend calculation
-    console.log('[DEBUG] Invoice:', {
-      id: inv.id,
-      total_amount: inv.total_amount,
-      payment_apps: inv.payment_apps,
-      totalPaid,
-      balance
+  try {
+    const invoices = await prisma.invoice.findMany({
+      include: {
+        patient: true,
+        organisation: true,
+        lines: { include: { service: true } },
+        payment_apps: true
+      },
+      orderBy: { id: 'desc' }
     })
 
-    return {
-      id: inv.id.toString(),
-      name: inv.patient?.name || '',
-      total: Number(inv.total_amount),
-      avatar: inv.patient?.avatar || '',
-      service: firstLine.service?.name || '',
-      dueDate: inv.due_date ? inv.due_date.toISOString().split('T')[0] : '',
-      address: inv.patient?.address || '',
-      company: inv.organisation?.name || '',
-      country: inv.organisation?.address || '', // Placeholder, no country field
-      contact: inv.patient?.phone_number || '',
-      avatarColor: 'primary', // Or any logic you want
-      companyEmail: inv.patient?.email || '',
-      balance: (balance ?? 0).toLocaleString('en-US', { style: 'currency', currency: 'EUR' }),
-      invoiceStatus: inv.status || 'PENDING',
-      invoice_date: inv.invoice_date ? inv.invoice_date.toISOString().split('T')[0] : '',
-      invoice_number: inv.invoice_number
-    }
-  })
+    // Map Prisma results to InvoiceType expected by the UI
+    return invoices.map(inv => {
+      const firstLine = inv.lines[0] || {}
+      const totalPaid = inv.payment_apps.reduce((sum, p) => sum + Number(p.amount_applied), 0)
+      const balance = Number(inv.total_amount) - totalPaid
+
+      // Debug log for backend calculation
+      console.log('[DEBUG] Invoice:', {
+        id: inv.id,
+        total_amount: inv.total_amount,
+        payment_apps: inv.payment_apps,
+        totalPaid,
+        balance
+      })
+
+      return {
+        id: inv.id.toString(),
+        name: inv.patient?.name || '',
+        total: Number(inv.total_amount),
+        avatar: inv.patient?.avatar || '',
+        service: firstLine.service?.name || '',
+        dueDate: inv.due_date ? inv.due_date.toISOString().split('T')[0] : '',
+        address: inv.patient?.address || '',
+        company: inv.organisation?.name || '',
+        country: inv.organisation?.address || '', // Placeholder, no country field
+        contact: inv.patient?.phone_number || '',
+        avatarColor: 'primary', // Or any logic you want
+        companyEmail: inv.patient?.email || '',
+        balance: (balance ?? 0).toLocaleString('en-US', { style: 'currency', currency: 'EUR' }),
+        payment_status: inv.payment_status,
+        record_status: inv.record_status,
+        archived_at: inv.archived_at ? inv.archived_at.toISOString() : undefined,
+        deleted_at: inv.deleted_at ? inv.deleted_at.toISOString() : undefined,
+        invoice_date: inv.invoice_date ? inv.invoice_date.toISOString().split('T')[0] : '',
+        invoice_number: inv.invoice_number
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching invoices:', error)
+
+    // Return empty array instead of throwing error
+    return []
+  }
 }
 
 export const getUserData = async () => {

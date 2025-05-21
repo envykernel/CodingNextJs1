@@ -177,7 +177,21 @@
         "download": "تنزيل",
         "duplicate": "تكرار",
         "searchInvoice": "البحث عن فاتورة",
-        "show": "عرض"
+        "show": "عرض",
+        "noInvoices": "لم يتم العثور على فواتير",
+        "noInvoicesDescription": "لا توجد فواتير في قاعدة البيانات حتى الآن. قم بإنشاء فاتورتك الأولى للبدء.",
+        "paymentStatus": {
+            "label": "حالة الدفع",
+            "pending": "قيد الانتظار",
+            "paid": "مدفوع",
+            "partial": "دفعة جزئية"
+        },
+        "recordStatus": {
+            "label": "حالة السجل",
+            "active": "نشط",
+            "archived": "مؤرشف",
+            "deleted": "محذوف"
+        }
     },
     "form": {
         "sectionPersonalInfo": "المعلومات الشخصية",

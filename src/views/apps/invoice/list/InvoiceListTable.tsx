@@ -120,10 +120,16 @@ const DebouncedInput = ({
 }
 
 // Vars
-const invoiceStatusObj: InvoiceStatusObj = {
+const invoicePaymentStatusObj: InvoiceStatusObj = {
   PAID: { color: 'success', icon: 'tabler-check' },
   PARTIAL: { color: 'warning', icon: 'tabler-chart-pie-2' },
   PENDING: { color: 'error', icon: 'tabler-alert-circle' }
+}
+
+const invoiceRecordStatusObj: InvoiceStatusObj = {
+  ACTIVE: { color: 'primary', icon: 'tabler-file-invoice' },
+  ARCHIVED: { color: 'info', icon: 'tabler-archive' },
+  DELETED: { color: 'error', icon: 'tabler-trash' }
 }
 
 // Column Definitions
@@ -131,16 +137,23 @@ const columnHelper = createColumnHelper<InvoiceTypeWithAction>()
 
 const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
   // States
-  const [status, setStatus] = useState<InvoiceType['invoiceStatus']>('')
+  const [paymentStatus, setPaymentStatus] = useState<string>('')
+  const [recordStatus, setRecordStatus] = useState<string>('')
   const [rowSelection, setRowSelection] = useState({})
-  const [data, setData] = useState(...[invoiceData])
-  const [filteredData, setFilteredData] = useState(data)
+  const [data, setData] = useState<InvoiceType[]>(invoiceData || [])
+  const [filteredData, setFilteredData] = useState<InvoiceType[]>(invoiceData || [])
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Hooks
   const params = useParams()
   const locale = params?.lang as Locale
   const { t } = useTranslation()
+
+  // Update data when invoiceData changes
+  useEffect(() => {
+    setData(invoiceData || [])
+    setFilteredData(invoiceData || [])
+  }, [invoiceData])
 
   const columns = useMemo<ColumnDef<InvoiceTypeWithAction, any>[]>(
     () => [
@@ -178,10 +191,10 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
           </Typography>
         )
       }),
-      columnHelper.accessor('invoiceStatus', {
-        header: t('invoice.status'),
+      columnHelper.accessor('payment_status', {
+        header: t('invoice.paymentStatus.label'),
         cell: ({ row }) => {
-          const statusObj = invoiceStatusObj[row.original.invoiceStatus] || {
+          const statusObj = invoicePaymentStatusObj[row.original.payment_status] || {
             color: 'default',
             icon: 'tabler-file-invoice'
           }
@@ -201,13 +214,39 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
               }
             >
               <Chip
-                label={
-                  row.original.invoiceStatus === 'PAID'
-                    ? t('invoice.paid')
-                    : row.original.invoiceStatus === 'PARTIAL'
-                      ? t('invoice.partial')
-                      : t('invoice.unpaid')
-                }
+                label={t(`invoice.paymentStatus.${row.original.payment_status.toLowerCase()}`)}
+                color={statusObj.color}
+                size='small'
+                variant='tonal'
+              />
+            </Tooltip>
+          )
+        }
+      }),
+      columnHelper.accessor('record_status', {
+        header: t('invoice.recordStatus.label'),
+        cell: ({ row }) => {
+          const statusObj = invoiceRecordStatusObj[row.original.record_status] || {
+            color: 'default',
+            icon: 'tabler-file-invoice'
+          }
+
+          return (
+            <Tooltip
+              title={
+                <div>
+                  <Typography variant='body2' component='span' className='text-inherit'>
+                    {row.original.record_status === 'ARCHIVED' && row.original.archived_at
+                      ? `${t('invoice.archivedAt')}: ${new Date(row.original.archived_at).toLocaleDateString()}`
+                      : row.original.record_status === 'DELETED' && row.original.deleted_at
+                        ? `${t('invoice.deletedAt')}: ${new Date(row.original.deleted_at).toLocaleDateString()}`
+                        : ''}
+                  </Typography>
+                </div>
+              }
+            >
+              <Chip
+                label={t(`invoice.recordStatus.${row.original.record_status.toLowerCase()}`)}
                 color={statusObj.color}
                 size='small'
                 variant='tonal'
@@ -339,13 +378,14 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
 
   useEffect(() => {
     const filteredData = data?.filter(invoice => {
-      if (status && invoice.invoiceStatus.toLowerCase().replace(/\s+/g, '-') !== status) return false
+      if (paymentStatus && invoice.payment_status !== paymentStatus) return false
+      if (recordStatus && invoice.record_status !== recordStatus) return false
 
       return true
     })
 
     setFilteredData(filteredData)
-  }, [status, data, setFilteredData])
+  }, [paymentStatus, recordStatus, data, setFilteredData])
 
   return (
     <Card>
@@ -383,21 +423,33 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
           />
           <CustomTextField
             select
-            id='select-status'
-            value={status}
-            onChange={e => setStatus(e.target.value)}
+            id='select-payment-status'
+            value={paymentStatus}
+            onChange={e => setPaymentStatus(e.target.value)}
             className='max-sm:is-full sm:is-[160px]'
             slotProps={{
               select: { displayEmpty: true }
             }}
           >
-            <MenuItem value=''>{t('invoice.status')}</MenuItem>
-            <MenuItem value='downloaded'>{t('invoice.downloaded')}</MenuItem>
-            <MenuItem value='draft'>{t('invoice.draft')}</MenuItem>
-            <MenuItem value='paid'>{t('invoice.paid')}</MenuItem>
-            <MenuItem value='partial-payment'>{t('invoice.partial')}</MenuItem>
-            <MenuItem value='past-due'>{t('invoice.pastDue')}</MenuItem>
-            <MenuItem value='sent'>{t('invoice.sent')}</MenuItem>
+            <MenuItem value=''>{t('invoice.paymentStatus.label')}</MenuItem>
+            <MenuItem value='PAID'>{t('invoice.paymentStatus.paid')}</MenuItem>
+            <MenuItem value='PARTIAL'>{t('invoice.paymentStatus.partial')}</MenuItem>
+            <MenuItem value='PENDING'>{t('invoice.paymentStatus.pending')}</MenuItem>
+          </CustomTextField>
+          <CustomTextField
+            select
+            id='select-record-status'
+            value={recordStatus}
+            onChange={e => setRecordStatus(e.target.value)}
+            className='max-sm:is-full sm:is-[160px]'
+            slotProps={{
+              select: { displayEmpty: true }
+            }}
+          >
+            <MenuItem value=''>{t('invoice.recordStatus.label')}</MenuItem>
+            <MenuItem value='ACTIVE'>{t('invoice.recordStatus.active')}</MenuItem>
+            <MenuItem value='ARCHIVED'>{t('invoice.recordStatus.archived')}</MenuItem>
+            <MenuItem value='DELETED'>{t('invoice.recordStatus.deleted')}</MenuItem>
           </CustomTextField>
         </div>
       </CardContent>
@@ -430,17 +482,32 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
               </tr>
             ))}
           </thead>
-          {table.getFilteredRowModel().rows.length === 0 ? (
-            <tbody>
+          <tbody>
+            {table.getFilteredRowModel().rows.length === 0 ? (
               <tr>
-                <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                  No data available
+                <td colSpan={table.getVisibleFlatColumns().length} className='text-center p-8'>
+                  <div className='flex flex-col items-center gap-2'>
+                    <i className='tabler-file-invoice text-4xl text-textSecondary' />
+                    <Typography variant='h6' color='text.secondary'>
+                      {t('invoice.noInvoices') || 'No Invoices Found'}
+                    </Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                      {t('invoice.noInvoicesDescription') || 'There are no invoices in the database yet.'}
+                    </Typography>
+                    <Button
+                      variant='contained'
+                      component={Link}
+                      startIcon={<i className='tabler-plus' />}
+                      href={getLocalizedUrl('apps/invoice/add', locale)}
+                      className='mt-4'
+                    >
+                      {t('invoice.createInvoice')}
+                    </Button>
+                  </div>
                 </td>
               </tr>
-            </tbody>
-          ) : (
-            <tbody>
-              {table
+            ) : (
+              table
                 .getRowModel()
                 .rows.slice(0, table.getState().pagination.pageSize)
                 .map(row => {
@@ -451,21 +518,23 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
                       ))}
                     </tr>
                   )
-                })}
-            </tbody>
-          )}
+                })
+            )}
+          </tbody>
         </table>
       </div>
-      <TablePagination
-        component={() => <TablePaginationComponent table={table} />}
-        count={table.getFilteredRowModel().rows.length}
-        rowsPerPage={table.getState().pagination.pageSize}
-        page={table.getState().pagination.pageIndex}
-        onPageChange={(_, page) => {
-          table.setPageIndex(page)
-        }}
-        onRowsPerPageChange={e => table.setPageSize(Number(e.target.value))}
-      />
+      {table.getFilteredRowModel().rows.length > 0 && (
+        <TablePagination
+          component={() => <TablePaginationComponent table={table} />}
+          count={table.getFilteredRowModel().rows.length}
+          rowsPerPage={table.getState().pagination.pageSize}
+          page={table.getState().pagination.pageIndex}
+          onPageChange={(_, page) => {
+            table.setPageIndex(page)
+          }}
+          onRowsPerPageChange={e => table.setPageSize(Number(e.target.value))}
+        />
+      )}
     </Card>
   )
 }

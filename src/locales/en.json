@@ -183,7 +183,21 @@
         "download": "Download",
         "duplicate": "Duplicate",
         "searchInvoice": "Search Invoice",
-        "show": "Show"
+        "show": "Show",
+        "noInvoices": "No Invoices Found",
+        "noInvoicesDescription": "There are no invoices in the database yet. Create your first invoice to get started.",
+        "paymentStatus": {
+            "label": "Payment Status",
+            "pending": "Pending",
+            "paid": "Paid",
+            "partial": "Partial Payment"
+        },
+        "recordStatus": {
+            "label": "Record Status",
+            "active": "Active",
+            "archived": "Archived",
+            "deleted": "Deleted"
+        }
     },
     "form": {
         "sectionPersonalInfo": "Personal Information",

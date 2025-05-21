@@ -176,7 +176,21 @@
         "download": "Télécharger",
         "duplicate": "Dupliquer",
         "searchInvoice": "Rechercher une facture",
-        "show": "Afficher"
+        "show": "Afficher",
+        "noInvoices": "Aucune facture trouvée",
+        "noInvoicesDescription": "Il n'y a pas encore de factures dans la base de données. Créez votre première facture pour commencer.",
+        "paymentStatus": {
+            "label": "Statut de paiement",
+            "pending": "En attente",
+            "paid": "Payé",
+            "partial": "Paiement partiel"
+        },
+        "recordStatus": {
+            "label": "Statut du dossier",
+            "active": "Actif",
+            "archived": "Archivé",
+            "deleted": "Supprimé"
+        }
     },
     "form": {
         "sectionPersonalInfo": "Informations personnelles",
