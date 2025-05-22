@@ -470,7 +470,9 @@
         },
         "error": {
             "create": "Failed to create user",
-            "update": "Failed to update user"
+            "update": "Failed to update user",
+            "emailExists": "This email address is already in use by another user",
+            "emailCheck": "Error checking email address"
         },
         "confirmation": {
             "adminRole": {

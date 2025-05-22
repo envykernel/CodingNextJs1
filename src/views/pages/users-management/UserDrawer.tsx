@@ -22,7 +22,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  DialogActions
+  DialogActions,
+  Alert
 } from '@mui/material'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 
@@ -31,11 +32,17 @@ import type { UserRole } from '@prisma/client'
 
 import { useTranslation } from '@/contexts/translationContext'
 
-// Config Imports
-import { roleConfig } from '@/configs/roleConfig'
-
-// Type Imports
-import type { RoleConfig } from '@/configs/roleConfig'
+// Constants
+const ROLE_CONFIG: Record<UserRole, { icon: string; color: string }> = {
+  ADMIN: { icon: 'tabler-user-shield', color: 'error' },
+  DOCTOR: { icon: 'tabler-user-md', color: 'primary' },
+  NURSE: { icon: 'tabler-nurse', color: 'info' },
+  RECEPTIONIST: { icon: 'tabler-receipt', color: 'success' },
+  ACCOUNTANT: { icon: 'tabler-calculator', color: 'warning' },
+  LAB_TECHNICIAN: { icon: 'tabler-microscope', color: 'secondary' },
+  PHARMACIST: { icon: 'tabler-pill', color: 'info' },
+  USER: { icon: 'tabler-user', color: 'default' }
+} as const
 
 interface UserDrawerProps {
   open: boolean
@@ -75,75 +82,123 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
 
   const [showAdminConfirmDialog, setShowAdminConfirmDialog] = useState(false)
   const [pendingSubmit, setPendingSubmit] = useState<(() => void) | null>(null)
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  // Add translations for confirmation dialog
-  const confirmDialogTranslations = {
-    title: translate('confirmation.adminRole.title'),
-    message: translate('confirmation.adminRole.message'),
-    confirm: translate('confirmation.adminRole.confirm'),
-    cancel: translate('confirmation.adminRole.cancel')
-  }
-
-  // Reset form when user changes or drawer opens/closes
+  // Reset form and error when drawer opens/closes
   useEffect(() => {
-    console.log('useEffect - User changed:', user)
-    console.log('useEffect - isApproved value:', user?.isApproved, 'type:', typeof user?.isApproved)
+    if (open) {
+      setError(null)
 
-    if (user) {
-      // Convert isApproved to boolean explicitly
-      const isApproved = user.isApproved === true
-
-      console.log('useEffect - Converted isApproved:', isApproved, 'type:', typeof isApproved)
-
-      setFormData({
-        name: user.name || '',
-        email: user.email || '',
-        role: user.role || 'USER',
-        isApproved,
-        organisationId: user.organisationId || organisationId
-      })
-    } else {
-      setFormData({
-        name: '',
-        email: '',
-        role: 'USER',
-        isApproved: false,
-        organisationId
-      })
+      if (user) {
+        setFormData({
+          name: user.name || '',
+          email: user.email || '',
+          role: user.role || 'USER',
+          isApproved: user.isApproved === true,
+          organisationId: user.organisationId || organisationId
+        })
+      } else {
+        setFormData({
+          name: '',
+          email: '',
+          role: 'USER',
+          isApproved: false,
+          organisationId
+        })
+      }
     }
   }, [user, organisationId, open])
 
+  const checkEmailExists = async (email: string, userId?: string): Promise<boolean> => {
+    try {
+      setIsCheckingEmail(true)
+      setError(null)
+
+      const response = await fetch(
+        `/api/users/check-email?email=${encodeURIComponent(email)}${userId ? `&excludeUserId=${userId}` : ''}`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+
+        throw new Error(errorData?.error || translate('error.emailCheck'))
+      }
+
+      const data = await response.json()
+
+      return data.exists
+    } catch (error) {
+      console.error('Error checking email:', error)
+
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError(translate('error.emailCheck'))
+      }
+
+      throw error
+    } finally {
+      setIsCheckingEmail(false)
+    }
+  }
+
   const handleSubmitUser = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
 
-    // Check if role is being changed to ADMIN
-    const isChangingToAdmin = formData.role === 'ADMIN'
-    const isNewUser = !user
-    const isExistingUserChangingToAdmin = user && user.role !== 'ADMIN' && isChangingToAdmin
-
-    if ((isNewUser && isChangingToAdmin) || isExistingUserChangingToAdmin) {
-      // Show confirmation dialog
-      setShowAdminConfirmDialog(true)
-
-      // Store the submit function to be called after confirmation
-      setPendingSubmit(() => async () => {
-        try {
-          await onSubmit(formData)
-          onClose()
-        } catch (error) {
-          console.error('Error submitting user:', error)
-        }
-      })
-
-      return
-    }
-
-    // If not changing to admin, proceed normally
     try {
+      // Check if email already exists
+      const emailExists = await checkEmailExists(formData.email, user?.id)
+
+      if (emailExists) {
+        setError(translate('error.emailExists'))
+
+        return
+      }
+
+      // Check if role is being changed to ADMIN
+      const isChangingToAdmin = formData.role === 'ADMIN'
+      const isNewUser = !user
+      const isExistingUserChangingToAdmin = user && user.role !== 'ADMIN' && isChangingToAdmin
+
+      if ((isNewUser && isChangingToAdmin) || isExistingUserChangingToAdmin) {
+        setShowAdminConfirmDialog(true)
+        setPendingSubmit(() => async () => {
+          try {
+            await onSubmit(formData)
+            onClose()
+          } catch (error) {
+            console.error('Error submitting user:', error)
+
+            if (error instanceof Error) {
+              setError(error.message)
+            } else {
+              setError(translate('error.createUser'))
+            }
+          }
+        })
+
+        return
+      }
+
       await onSubmit(formData)
       onClose()
     } catch (error) {
       console.error('Error submitting user:', error)
+
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError(translate('error.createUser'))
+      }
     }
   }
 
@@ -183,12 +238,21 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
 
           <form onSubmit={handleSubmitUser}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {error && (
+                <Alert severity='error' sx={{ mb: 2 }}>
+                  {error}
+                </Alert>
+              )}
+
               <TextField
                 fullWidth
                 label={translate('form.name')}
                 placeholder={translate('form.namePlaceholder')}
                 value={formData.name}
-                onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, name: e.target.value }))
+                  setError(null)
+                }}
                 required
               />
 
@@ -198,8 +262,14 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
                 label={translate('form.email')}
                 placeholder={translate('form.emailPlaceholder')}
                 value={formData.email}
-                onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, email: e.target.value }))
+                  setError(null)
+                }}
                 required
+                disabled={isCheckingEmail}
+                error={!!error}
+                helperText={error}
               />
 
               <FormControl fullWidth>
@@ -210,7 +280,7 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
                   onChange={e => setFormData(prev => ({ ...prev, role: e.target.value as UserRole }))}
                   required
                 >
-                  {(Object.entries(roleConfig) as [UserRole, RoleConfig][]).map(([role, config]) => (
+                  {Object.entries(ROLE_CONFIG).map(([role, config]) => (
                     <MenuItem key={role} value={role}>
                       <div className='flex items-center gap-2'>
                         <i className={config.icon} style={{ color: `var(--mui-palette-${config.color}-main)` }} />
@@ -225,10 +295,7 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
                 control={
                   <Switch
                     checked={formData.isApproved === true}
-                    onChange={e => {
-                      console.log('Switch changed to:', e.target.checked)
-                      setFormData(prev => ({ ...prev, isApproved: e.target.checked }))
-                    }}
+                    onChange={e => setFormData(prev => ({ ...prev, isApproved: e.target.checked }))}
                   />
                 }
                 label={
@@ -245,7 +312,7 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
                 <Button variant='outlined' onClick={onClose} fullWidth>
                   {translate('form.cancel')}
                 </Button>
-                <Button type='submit' variant='contained' fullWidth>
+                <Button type='submit' variant='contained' fullWidth disabled={isCheckingEmail}>
                   {user ? translate('form.save') : translate('form.create')}
                 </Button>
               </Box>
@@ -261,17 +328,17 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
       >
         <DialogTitle id='admin-role-confirm-dialog-title' sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <WarningAmberIcon color='warning' sx={{ fontSize: 28 }} />
-          {confirmDialogTranslations.title}
+          {translate('confirmation.adminRole.title')}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ mt: 1 }}>{confirmDialogTranslations.message}</DialogContentText>
+          <DialogContentText sx={{ mt: 1 }}>{translate('confirmation.adminRole.message')}</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelAdminRole} color='primary'>
-            {confirmDialogTranslations.cancel}
+            {translate('confirmation.adminRole.cancel')}
           </Button>
           <Button onClick={handleConfirmAdminRole} color='warning' variant='contained' autoFocus>
-            {confirmDialogTranslations.confirm}
+            {translate('confirmation.adminRole.confirm')}
           </Button>
         </DialogActions>
       </Dialog>
