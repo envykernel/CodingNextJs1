@@ -554,3 +554,17 @@ model UserShortcut {
   @@index([userId])
   @@index([shortcutId])
 }
+
+model FAQ {
+  id              Int      @id @default(autoincrement())
+  question        String   @db.VarChar(500)
+  answer          String   @db.Text
+  category        String   @db.VarChar(100)  // e.g., "Patients", "Appointments", "Billing", etc.
+  order           Int      @default(0)       // For controlling the display order
+  isActive        Boolean  @default(true)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@index([category])
+  @@index([isActive])
+}
