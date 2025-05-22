@@ -5,9 +5,6 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid2'
 import Divider from '@mui/material/Divider'
 
-// Component Imports
-import Logo from '@components/layout/shared/Logo'
-
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
 import './print.css'
@@ -56,9 +53,6 @@ const PreviewCard = ({ invoiceData, id }: { invoiceData: any; id: string }) => {
             <div className='p-6 bg-actionHover rounded'>
               <div className='flex justify-between gap-y-4 flex-col sm:flex-row'>
                 <div className='flex flex-col gap-6'>
-                  <div className='flex items-center gap-2.5'>
-                    <Logo />
-                  </div>
                   <div>
                     <div className='flex items-center gap-2 mb-1'>
                       <i className='tabler-building text-lg text-gray-500' />
@@ -71,6 +65,10 @@ const PreviewCard = ({ invoiceData, id }: { invoiceData: any; id: string }) => {
                     <div className='flex items-center gap-2'>
                       <i className='tabler-phone text-lg text-gray-500' />
                       <Typography color='text.primary'>{invoiceData.organisation?.phone_number || ''}</Typography>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                      <i className='tabler-mail text-lg text-gray-500' />
+                      <Typography color='text.primary'>{invoiceData.organisation?.email || ''}</Typography>
                     </div>
                   </div>
                 </div>
