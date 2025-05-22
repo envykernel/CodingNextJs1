@@ -500,7 +500,10 @@
             "role": "الدور",
             "organisation": "المنظمة",
             "status": "الحالة",
-            "actions": "الإجراءات"
+            "actions": "الإجراءات",
+            "approvalStatus": "حالة الموافقة",
+            "createdAt": "تاريخ الإنشاء",
+            "updatedAt": "آخر تعديل"
         },
         "roles": {
             "ADMIN": "مدير النظام",
@@ -514,7 +517,9 @@
         },
         "status": {
             "active": "نشط",
-            "inactive": "غير نشط"
+            "inactive": "غير نشط",
+            "approved": "تمت الموافقة",
+            "pending": "في انتظار الموافقة"
         },
         "actions": {
             "edit": "تعديل المستخدم",

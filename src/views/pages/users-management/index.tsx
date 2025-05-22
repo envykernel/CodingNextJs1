@@ -92,9 +92,10 @@ interface User {
   email: string
   role: UserRole | null
   organisationName: string
-  status: 'active' | 'inactive'
   isApproved: boolean
   organisationId: number | null
+  createdAt: Date
+  updatedAt: Date
 }
 
 interface UsersManagementProps {
@@ -148,18 +149,6 @@ const roleConfig = {
   }
 } as const
 
-// Add status configuration
-const statusConfig = {
-  active: {
-    color: 'success',
-    icon: 'tabler-circle-check'
-  },
-  inactive: {
-    color: 'error',
-    icon: 'tabler-circle-x'
-  }
-} as const
-
 const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementProps) => {
   const router = useRouter()
   const { t } = useTranslation()
@@ -203,6 +192,10 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
           </Typography>
         )
       }),
+      columnHelper.accessor('email', {
+        header: translate('columns.email'),
+        cell: info => <Typography color='text.primary'>{info.getValue()}</Typography>
+      }),
       columnHelper.accessor('role', {
         header: translate('columns.role'),
         cell: info => {
@@ -226,19 +219,18 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
           </div>
         )
       }),
-      columnHelper.accessor('status', {
+      columnHelper.accessor('isApproved', {
         header: translate('columns.status'),
         cell: info => {
-          const status = info.getValue() as keyof typeof statusConfig
-          const statusInfo = statusConfig[status]
+          const isApproved = info.getValue()
 
           return (
             <Chip
               variant='tonal'
-              label={translate(`status.${status}`)}
+              label={isApproved ? translate('status.approved') : translate('status.pending')}
               size='small'
-              color={statusInfo.color}
-              icon={<i className={statusInfo.icon} />}
+              color={isApproved ? 'success' : 'warning'}
+              icon={<i className={isApproved ? 'tabler-circle-check' : 'tabler-clock'} />}
               className='capitalize'
             />
           )

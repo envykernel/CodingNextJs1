@@ -498,7 +498,10 @@
             "role": "Rôle",
             "organisation": "Organisation",
             "status": "Statut",
-            "actions": "Actions"
+            "actions": "Actions",
+            "approvalStatus": "Statut d'Approbation",
+            "createdAt": "Date de Création",
+            "updatedAt": "Dernière Modification"
         },
         "roles": {
             "ADMIN": "Administrateur",
@@ -512,7 +515,9 @@
         },
         "status": {
             "active": "Actif",
-            "inactive": "Inactif"
+            "inactive": "Inactif",
+            "approved": "Approuvé",
+            "pending": "En Attente d'Approbation"
         },
         "actions": {
             "edit": "Modifier",
