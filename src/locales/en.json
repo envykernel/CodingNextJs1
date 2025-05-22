@@ -472,7 +472,9 @@
             "create": "Failed to create user",
             "update": "Failed to update user",
             "emailExists": "This email address is already in use by another user",
-            "emailCheck": "Error checking email address"
+            "emailCheck": "Error checking email address",
+            "nameExists": "This name is already in use by another user in this organization",
+            "nameCheck": "Error checking username"
         },
         "confirmation": {
             "adminRole": {

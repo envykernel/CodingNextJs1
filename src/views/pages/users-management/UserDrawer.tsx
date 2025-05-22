@@ -83,12 +83,15 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
   const [showAdminConfirmDialog, setShowAdminConfirmDialog] = useState(false)
   const [pendingSubmit, setPendingSubmit] = useState<(() => void) | null>(null)
   const [isCheckingEmail, setIsCheckingEmail] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [isCheckingName, setIsCheckingName] = useState(false)
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [nameError, setNameError] = useState<string | null>(null)
 
   // Reset form and error when drawer opens/closes
   useEffect(() => {
     if (open) {
-      setError(null)
+      setEmailError(null)
+      setNameError(null)
 
       if (user) {
         setFormData({
@@ -113,7 +116,7 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
   const checkEmailExists = async (email: string, userId?: string): Promise<boolean> => {
     try {
       setIsCheckingEmail(true)
-      setError(null)
+      setEmailError(null)
 
       const response = await fetch(
         `/api/users/check-email?email=${encodeURIComponent(email)}${userId ? `&excludeUserId=${userId}` : ''}`,
@@ -139,9 +142,9 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
       console.error('Error checking email:', error)
 
       if (error instanceof Error) {
-        setError(error.message)
+        setEmailError(error.message)
       } else {
-        setError(translate('error.emailCheck'))
+        setEmailError(translate('error.emailCheck'))
       }
 
       throw error
@@ -150,16 +153,68 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
     }
   }
 
+  const checkNameExists = async (name: string, organisationId: number, userId?: string): Promise<boolean> => {
+    try {
+      setIsCheckingName(true)
+      setNameError(null)
+
+      const response = await fetch(
+        `/api/users/check-username?name=${encodeURIComponent(name)}&organisationId=${organisationId}${
+          userId ? `&excludeUserId=${userId}` : ''
+        }`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+
+        throw new Error(errorData?.error || translate('error.nameCheck'))
+      }
+
+      const data = await response.json()
+
+      return data.exists
+    } catch (error) {
+      console.error('Error checking name:', error)
+
+      if (error instanceof Error) {
+        setNameError(error.message)
+      } else {
+        setNameError(translate('error.nameCheck'))
+      }
+
+      throw error
+    } finally {
+      setIsCheckingName(false)
+    }
+  }
+
   const handleSubmitUser = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError(null)
+    setEmailError(null)
+    setNameError(null)
 
     try {
+      // Check if name already exists in the organization
+      const nameExists = await checkNameExists(formData.name, formData.organisationId, user?.id)
+
+      if (nameExists) {
+        setNameError(translate('error.nameExists'))
+
+        return
+      }
+
       // Check if email already exists
       const emailExists = await checkEmailExists(formData.email, user?.id)
 
       if (emailExists) {
-        setError(translate('error.emailExists'))
+        setEmailError(translate('error.emailExists'))
 
         return
       }
@@ -179,9 +234,15 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
             console.error('Error submitting user:', error)
 
             if (error instanceof Error) {
-              setError(error.message)
+              if (error.message.includes('email')) {
+                setEmailError(error.message)
+              } else if (error.message.includes('name')) {
+                setNameError(error.message)
+              } else {
+                setEmailError(translate('error.createUser'))
+              }
             } else {
-              setError(translate('error.createUser'))
+              setEmailError(translate('error.createUser'))
             }
           }
         })
@@ -195,9 +256,15 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
       console.error('Error submitting user:', error)
 
       if (error instanceof Error) {
-        setError(error.message)
+        if (error.message.includes('email')) {
+          setEmailError(error.message)
+        } else if (error.message.includes('name')) {
+          setNameError(error.message)
+        } else {
+          setEmailError(translate('error.createUser'))
+        }
       } else {
-        setError(translate('error.createUser'))
+        setEmailError(translate('error.createUser'))
       }
     }
   }
@@ -238,9 +305,9 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
 
           <form onSubmit={handleSubmitUser}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {error && (
+              {(emailError || nameError) && (
                 <Alert severity='error' sx={{ mb: 2 }}>
-                  {error}
+                  {emailError || nameError}
                 </Alert>
               )}
 
@@ -251,9 +318,12 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
                 value={formData.name}
                 onChange={e => {
                   setFormData(prev => ({ ...prev, name: e.target.value }))
-                  setError(null)
+                  setNameError(null)
                 }}
                 required
+                disabled={isCheckingName}
+                error={!!nameError}
+                helperText={nameError}
               />
 
               <TextField
@@ -264,12 +334,12 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
                 value={formData.email}
                 onChange={e => {
                   setFormData(prev => ({ ...prev, email: e.target.value }))
-                  setError(null)
+                  setEmailError(null)
                 }}
                 required
                 disabled={isCheckingEmail}
-                error={!!error}
-                helperText={error}
+                error={!!emailError}
+                helperText={emailError}
               />
 
               <FormControl fullWidth>

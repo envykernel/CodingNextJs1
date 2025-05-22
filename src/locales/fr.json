@@ -466,7 +466,9 @@
             "create": "Échec de la création de l'utilisateur",
             "update": "Échec de la mise à jour de l'utilisateur",
             "emailExists": "Cette adresse e-mail est déjà utilisée par un autre utilisateur",
-            "emailCheck": "Erreur lors de la vérification de l'adresse e-mail"
+            "emailCheck": "Erreur lors de la vérification de l'adresse e-mail",
+            "nameExists": "Ce nom est déjà utilisé par un autre utilisateur dans cette organisation",
+            "nameCheck": "Erreur lors de la vérification du nom d'utilisateur"
         },
         "confirmation": {
             "adminRole": {
