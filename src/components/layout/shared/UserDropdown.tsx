@@ -249,6 +249,12 @@ const UserDropdown = () => {
                     <i className='tabler-settings' />
                     <Typography color='text.primary'>Settings</Typography>
                   </MenuItem>
+                  {userRole === 'ADMIN' && (
+                    <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/apps/organisation')}>
+                      <i className='tabler-building' />
+                      <Typography color='text.primary'>Organisation</Typography>
+                    </MenuItem>
+                  )}
                   <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/pricing')}>
                     <i className='tabler-currency-dollar' />
                     <Typography color='text.primary'>Pricing</Typography>
