@@ -435,10 +435,44 @@
             "insurance": "شركات التأمين"
         }
     },
+    "userDrawer": {
+        "title": {
+            "add": "إضافة مستخدم جديد",
+            "edit": "تعديل المستخدم"
+        },
+        "form": {
+            "name": "الاسم الكامل",
+            "namePlaceholder": "أدخل الاسم الكامل",
+            "email": "البريد الإلكتروني",
+            "emailPlaceholder": "أدخل البريد الإلكتروني",
+            "role": "الدور",
+            "rolePlaceholder": "اختر الدور",
+            "isApproved": "معتمد",
+            "isApprovedDescription": "السماح للمستخدم بالوصول إلى النظام",
+            "cancel": "إلغاء",
+            "create": "إنشاء مستخدم",
+            "save": "حفظ التغييرات"
+        },
+        "validation": {
+            "nameRequired": "الاسم مطلوب",
+            "emailRequired": "البريد الإلكتروني مطلوب",
+            "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح",
+            "roleRequired": "الدور مطلوب"
+        },
+        "success": {
+            "create": "تم إنشاء المستخدم بنجاح",
+            "update": "تم تحديث المستخدم بنجاح"
+        },
+        "error": {
+            "create": "فشل في إنشاء المستخدم",
+            "update": "فشل في تحديث المستخدم"
+        }
+    },
     "usersManagement": {
         "title": "إدارة المستخدمين",
         "searchPlaceholder": "البحث عن المستخدمين...",
         "addUser": "إضافة مستخدم",
+        "editUser": "تعديل المستخدم",
         "columns": {
             "name": "الاسم",
             "email": "البريد الإلكتروني",
@@ -448,7 +482,13 @@
             "actions": "الإجراءات"
         },
         "roles": {
-            "ADMIN": "مدير",
+            "ADMIN": "مدير النظام",
+            "DOCTOR": "طبيب",
+            "NURSE": "ممرض(ة)",
+            "RECEPTIONIST": "موظف استقبال",
+            "ACCOUNTANT": "محاسب",
+            "LAB_TECHNICIAN": "فني مختبر",
+            "PHARMACIST": "صيدلي(ة)",
             "USER": "مستخدم"
         },
         "status": {
@@ -456,7 +496,8 @@
             "inactive": "غير نشط"
         },
         "actions": {
-            "edit": "تعديل المستخدم"
+            "edit": "تعديل المستخدم",
+            "view": "عرض المستخدم"
         },
         "noUsers": "لم يتم العثور على مستخدمين"
     }

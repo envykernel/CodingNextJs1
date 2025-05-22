@@ -440,20 +440,60 @@
             "insurance": "Insurance Providers"
         }
     },
+    "userDrawer": {
+        "title": {
+            "add": "Add New User",
+            "edit": "Edit User"
+        },
+        "form": {
+            "name": "Full Name",
+            "namePlaceholder": "Enter full name",
+            "email": "Email Address",
+            "emailPlaceholder": "Enter email address",
+            "role": "Role",
+            "rolePlaceholder": "Select role",
+            "isApproved": "Approved",
+            "isApprovedDescription": "Allow user to access the system",
+            "cancel": "Cancel",
+            "create": "Create User",
+            "save": "Save Changes"
+        },
+        "validation": {
+            "nameRequired": "Name is required",
+            "emailRequired": "Email is required",
+            "emailInvalid": "Please enter a valid email address",
+            "roleRequired": "Role is required"
+        },
+        "success": {
+            "create": "User created successfully",
+            "update": "User updated successfully"
+        },
+        "error": {
+            "create": "Failed to create user",
+            "update": "Failed to update user"
+        }
+    },
     "usersManagement": {
-        "title": "Users Management",
+        "title": "User Management",
         "searchPlaceholder": "Search users...",
         "addUser": "Add User",
+        "editUser": "Edit User",
         "columns": {
             "name": "Name",
             "email": "Email",
             "role": "Role",
-            "organisation": "Organisation",
+            "organisation": "Organization",
             "status": "Status",
             "actions": "Actions"
         },
         "roles": {
             "ADMIN": "Administrator",
+            "DOCTOR": "Doctor",
+            "NURSE": "Nurse",
+            "RECEPTIONIST": "Receptionist",
+            "ACCOUNTANT": "Accountant",
+            "LAB_TECHNICIAN": "Lab Technician",
+            "PHARMACIST": "Pharmacist",
             "USER": "User"
         },
         "status": {
@@ -461,7 +501,8 @@
             "inactive": "Inactive"
         },
         "actions": {
-            "edit": "Edit User"
+            "edit": "Edit User",
+            "view": "View User"
         },
         "noUsers": "No users found"
     }

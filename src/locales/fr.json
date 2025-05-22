@@ -434,13 +434,47 @@
             "insurance": "Assureurs"
         }
     },
+    "userDrawer": {
+        "title": {
+            "add": "Ajouter un Nouvel Utilisateur",
+            "edit": "Modifier l'Utilisateur"
+        },
+        "form": {
+            "name": "Nom Complet",
+            "namePlaceholder": "Entrez le nom complet",
+            "email": "Adresse E-mail",
+            "emailPlaceholder": "Entrez l'adresse e-mail",
+            "role": "Rôle",
+            "rolePlaceholder": "Sélectionnez le rôle",
+            "isApproved": "Approuvé",
+            "isApprovedDescription": "Autoriser l'accès au système",
+            "cancel": "Annuler",
+            "create": "Créer l'Utilisateur",
+            "save": "Enregistrer les Modifications"
+        },
+        "validation": {
+            "nameRequired": "Le nom est requis",
+            "emailRequired": "L'e-mail est requis",
+            "emailInvalid": "Veuillez entrer une adresse e-mail valide",
+            "roleRequired": "Le rôle est requis"
+        },
+        "success": {
+            "create": "Utilisateur créé avec succès",
+            "update": "Utilisateur mis à jour avec succès"
+        },
+        "error": {
+            "create": "Échec de la création de l'utilisateur",
+            "update": "Échec de la mise à jour de l'utilisateur"
+        }
+    },
     "usersManagement": {
-        "title": "Gestion des utilisateurs",
+        "title": "Gestion des Utilisateurs",
         "searchPlaceholder": "Rechercher des utilisateurs...",
-        "addUser": "Ajouter un utilisateur",
+        "addUser": "Ajouter un Utilisateur",
+        "editUser": "Modifier l'Utilisateur",
         "columns": {
             "name": "Nom",
-            "email": "Email",
+            "email": "E-mail",
             "role": "Rôle",
             "organisation": "Organisation",
             "status": "Statut",
@@ -448,6 +482,12 @@
         },
         "roles": {
             "ADMIN": "Administrateur",
+            "DOCTOR": "Médecin",
+            "NURSE": "Infirmier(ère)",
+            "RECEPTIONIST": "Réceptionniste",
+            "ACCOUNTANT": "Comptable",
+            "LAB_TECHNICIAN": "Technicien de Laboratoire",
+            "PHARMACIST": "Pharmacien(ne)",
             "USER": "Utilisateur"
         },
         "status": {
@@ -455,8 +495,18 @@
             "inactive": "Inactif"
         },
         "actions": {
-            "edit": "Modifier l'utilisateur"
+            "edit": "Modifier l'Utilisateur",
+            "view": "Voir l'Utilisateur"
         },
-        "noUsers": "Aucun utilisateur trouvé"
+        "noUsers": "Aucun utilisateur trouvé",
+        "errors": {
+            "notAuthorized": "Vous n'êtes pas autorisé à effectuer cette action",
+            "organizationAccess": "Vous n'êtes pas autorisé à gérer les utilisateurs de cette organisation",
+            "generic": "Une erreur est survenue lors de l'opération"
+        },
+        "success": {
+            "userCreated": "Utilisateur créé avec succès",
+            "userUpdated": "Utilisateur mis à jour avec succès"
+        }
     }
 }

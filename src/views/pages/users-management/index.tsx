@@ -2,10 +2,11 @@
 
 // Next.js Imports
 import { useState } from 'react'
-
 import { useMemo } from 'react'
 
 import { useRouter } from 'next/navigation'
+
+import { useSession } from 'next-auth/react'
 
 // React Imports
 
@@ -25,10 +26,23 @@ import type { RankingInfo } from '@tanstack/match-sorter-utils'
 import classnames from 'classnames'
 
 // MUI Imports
-import { Card, Grid, Typography, TextField, IconButton, InputAdornment, Button, Chip } from '@mui/material'
+import {
+  Card,
+  Grid,
+  Typography,
+  TextField,
+  IconButton,
+  InputAdornment,
+  Button,
+  Chip,
+  Snackbar,
+  Alert
+} from '@mui/material'
 import TablePagination from '@mui/material/TablePagination'
 
 // Style Imports
+import type { UserRole } from '@prisma/client'
+
 import tableStyles from '@core/styles/table.module.css'
 
 // Hook Imports
@@ -36,9 +50,15 @@ import { useTranslation } from '@/contexts/translationContext'
 
 // Component Imports
 import CustomAvatar from '@core/components/mui/Avatar'
+import UserDrawer, { type UserFormData } from './UserDrawer'
 
 // Util Imports
 import { getInitials } from '@/utils/getInitials'
+
+// Server Action Imports
+import { createUser, updateUser } from '@/app/server/userActions'
+
+// Type Imports
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -66,9 +86,11 @@ interface User {
   id: string
   name: string
   email: string
-  role: string
+  role: UserRole | null
   organisationName: string
   status: 'active' | 'inactive'
+  isApproved: boolean
+  organisationId: number | null
 }
 
 interface UsersManagementProps {
@@ -137,13 +159,29 @@ const statusConfig = {
 const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementProps) => {
   const router = useRouter()
   const { t } = useTranslation()
+  const { data: session } = useSession()
   const translate = (key: string) => t(`usersManagement.${key}`)
 
+  const isAdmin = session?.user?.role === 'ADMIN'
+  const userOrgId = Number(session?.user?.organisationId)
+
   const [searchValue, setSearchValue] = useState('')
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<User | undefined>()
 
   const [paginationModel, setPaginationModel] = useState({
     pageIndex: page - 1,
     pageSize
+  })
+
+  const [notification, setNotification] = useState<{
+    open: boolean
+    message: string
+    severity: 'success' | 'error'
+  }>({
+    open: false,
+    message: '',
+    severity: 'success'
   })
 
   const columnHelper = createColumnHelper<User>()
@@ -214,7 +252,7 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
         cell: info => (
           <div className='flex items-center gap-2'>
             <IconButton
-              onClick={() => router.push(`/users/${info.getValue()}/edit`)}
+              onClick={() => handleEditUser(info.row.original)}
               aria-label={translate('actions.edit')}
               size='small'
               color='primary'
@@ -261,6 +299,61 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
     setSearchValue(event.target.value)
   }
 
+  const handleAddUser = () => {
+    setSelectedUser(undefined)
+    setDrawerOpen(true)
+  }
+
+  const handleEditUser = (user: User) => {
+    console.log('Editing user - Full user data:', user)
+    console.log('isApproved value:', user.isApproved, 'type:', typeof user.isApproved)
+    setSelectedUser(user)
+    setDrawerOpen(true)
+  }
+
+  const handleCloseNotification = () => {
+    setNotification(prev => ({ ...prev, open: false }))
+  }
+
+  const handleSubmitUser = async (data: UserFormData) => {
+    try {
+      if (!isAdmin) {
+        throw new Error('Not authorized')
+      }
+
+      // Ensure we're using the current user's organization
+      const userData = {
+        ...data,
+        organisationId: userOrgId
+      }
+
+      if (selectedUser) {
+        const result = await updateUser({ id: selectedUser.id, ...userData })
+
+        if (result.success) {
+          router.refresh()
+        }
+      } else {
+        const result = await createUser(userData)
+
+        if (result.success) {
+          router.refresh()
+        }
+      }
+    } catch (error: any) {
+      console.error('Error saving user:', error)
+
+      // Handle specific error messages
+      if (error.message.includes('organization')) {
+        throw new Error(translate('errors.organizationAccess'))
+      } else if (error.message.includes('Not authorized')) {
+        throw new Error(translate('errors.notAuthorized'))
+      } else {
+        throw new Error(translate('errors.generic'))
+      }
+    }
+  }
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -284,13 +377,11 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
                 }}
                 sx={{ mr: 4 }}
               />
-              <Button
-                variant='contained'
-                startIcon={<i className='tabler-plus' />}
-                onClick={() => router.push('/users/new')}
-              >
-                {translate('addUser')}
-              </Button>
+              {isAdmin && (
+                <Button variant='contained' startIcon={<i className='tabler-plus' />} onClick={handleAddUser}>
+                  {translate('addUser')}
+                </Button>
+              )}
             </Grid>
           </Grid>
 
@@ -348,7 +439,34 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
                   table.getRowModel().rows.map(row => (
                     <tr key={row.id} className='transition-colors hover:bg-action-hover'>
                       {row.getVisibleCells().map(cell => (
-                        <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                        <td key={cell.id}>
+                          {cell.column.id === 'id' ? (
+                            <div className='flex items-center gap-2'>
+                              {isAdmin && (
+                                <IconButton
+                                  onClick={() => handleEditUser(row.original)}
+                                  aria-label={translate('actions.edit')}
+                                  size='small'
+                                  color='primary'
+                                  className='hover:bg-primary/10'
+                                >
+                                  <i className='tabler-edit text-lg' />
+                                </IconButton>
+                              )}
+                              <IconButton
+                                onClick={() => router.push(`/users/${cell.getValue()}/view`)}
+                                aria-label={translate('actions.view')}
+                                size='small'
+                                color='info'
+                                className='hover:bg-info/10'
+                              >
+                                <i className='tabler-eye text-lg' />
+                              </IconButton>
+                            </div>
+                          ) : (
+                            flexRender(cell.column.columnDef.cell, cell.getContext())
+                          )}
+                        </td>
                       ))}
                     </tr>
                   ))
@@ -374,6 +492,27 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
           />
         </Card>
       </Grid>
+
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseNotification} severity={notification.severity} sx={{ width: '100%' }}>
+          {notification.message}
+        </Alert>
+      </Snackbar>
+
+      {isAdmin && (
+        <UserDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          onSubmit={handleSubmitUser}
+          user={selectedUser}
+          organisationId={userOrgId}
+        />
+      )}
     </Grid>
   )
 }
