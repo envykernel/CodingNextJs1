@@ -434,5 +434,30 @@
             "emergency": "جهات الاتصال في حالات الطوارئ",
             "insurance": "شركات التأمين"
         }
+    },
+    "usersManagement": {
+        "title": "إدارة المستخدمين",
+        "searchPlaceholder": "البحث عن المستخدمين...",
+        "addUser": "إضافة مستخدم",
+        "columns": {
+            "name": "الاسم",
+            "email": "البريد الإلكتروني",
+            "role": "الدور",
+            "organisation": "المنظمة",
+            "status": "الحالة",
+            "actions": "الإجراءات"
+        },
+        "roles": {
+            "ADMIN": "مدير",
+            "USER": "مستخدم"
+        },
+        "status": {
+            "active": "نشط",
+            "inactive": "غير نشط"
+        },
+        "actions": {
+            "edit": "تعديل المستخدم"
+        },
+        "noUsers": "لم يتم العثور على مستخدمين"
     }
 }

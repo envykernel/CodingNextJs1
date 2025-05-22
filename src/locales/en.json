@@ -439,5 +439,30 @@
             "emergency": "Emergency Contacts",
             "insurance": "Insurance Providers"
         }
+    },
+    "usersManagement": {
+        "title": "Users Management",
+        "searchPlaceholder": "Search users...",
+        "addUser": "Add User",
+        "columns": {
+            "name": "Name",
+            "email": "Email",
+            "role": "Role",
+            "organisation": "Organisation",
+            "status": "Status",
+            "actions": "Actions"
+        },
+        "roles": {
+            "ADMIN": "Administrator",
+            "USER": "User"
+        },
+        "status": {
+            "active": "Active",
+            "inactive": "Inactive"
+        },
+        "actions": {
+            "edit": "Edit User"
+        },
+        "noUsers": "No users found"
     }
 }

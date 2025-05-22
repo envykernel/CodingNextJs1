@@ -433,5 +433,30 @@
             "emergency": "Contacts d'urgence",
             "insurance": "Assureurs"
         }
+    },
+    "usersManagement": {
+        "title": "Gestion des utilisateurs",
+        "searchPlaceholder": "Rechercher des utilisateurs...",
+        "addUser": "Ajouter un utilisateur",
+        "columns": {
+            "name": "Nom",
+            "email": "Email",
+            "role": "Rôle",
+            "organisation": "Organisation",
+            "status": "Statut",
+            "actions": "Actions"
+        },
+        "roles": {
+            "ADMIN": "Administrateur",
+            "USER": "Utilisateur"
+        },
+        "status": {
+            "active": "Actif",
+            "inactive": "Inactif"
+        },
+        "actions": {
+            "edit": "Modifier l'utilisateur"
+        },
+        "noUsers": "Aucun utilisateur trouvé"
     }
 }
