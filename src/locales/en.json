@@ -471,6 +471,14 @@
         "error": {
             "create": "Failed to create user",
             "update": "Failed to update user"
+        },
+        "confirmation": {
+            "adminRole": {
+                "title": "Admin Role Confirmation",
+                "message": "You are about to assign the administrator role to this user. Administrators have elevated privileges and can manage all aspects of the system. Are you sure you want to continue?",
+                "confirm": "Confirm",
+                "cancel": "Cancel"
+            }
         }
     },
     "usersManagement": {

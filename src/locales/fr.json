@@ -465,6 +465,14 @@
         "error": {
             "create": "Échec de la création de l'utilisateur",
             "update": "Échec de la mise à jour de l'utilisateur"
+        },
+        "confirmation": {
+            "adminRole": {
+                "title": "Confirmation du rôle administrateur",
+                "message": "Vous êtes sur le point d'attribuer le rôle d'administrateur à cet utilisateur. Les administrateurs ont des privilèges élevés et peuvent gérer tous les aspects du système. Êtes-vous sûr de vouloir continuer ?",
+                "confirm": "Confirmer",
+                "cancel": "Annuler"
+            }
         }
     },
     "usersManagement": {
