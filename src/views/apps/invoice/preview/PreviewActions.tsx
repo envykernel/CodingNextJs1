@@ -59,16 +59,24 @@ const PreviewActions = ({
             t={{ invoice: { totalAmount: 'Total', paid: 'Paid', remaining: 'Remaining' } }}
           />
           <div className='flex items-center gap-4'>
-            <Button fullWidth color='secondary' variant='tonal' className='capitalize' onClick={onButtonClick}>
+            <Button
+              fullWidth
+              color='info'
+              variant='tonal'
+              className='capitalize'
+              onClick={onButtonClick}
+              startIcon={<i className='tabler-printer' />}
+            >
               Print
             </Button>
             <Button
               fullWidth
               component={Link}
-              color='secondary'
-              variant='tonal'
+              color='primary'
+              variant='contained'
               className='capitalize'
               href={getLocalizedUrl(`/apps/invoice/edit/${id}`, locale as Locale)}
+              startIcon={<i className='tabler-edit' />}
             >
               Edit
             </Button>
