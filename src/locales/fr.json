@@ -476,6 +476,14 @@
                 "message": "Vous êtes sur le point d'attribuer le rôle d'administrateur à cet utilisateur. Les administrateurs ont des privilèges élevés et peuvent gérer tous les aspects du système. Êtes-vous sûr de vouloir continuer ?",
                 "confirm": "Confirmer",
                 "cancel": "Annuler"
+            },
+            "deleteUser": {
+                "title": "Supprimer l'utilisateur",
+                "message": "Êtes-vous sûr de vouloir supprimer {name} ? Cette action ne peut pas être annulée.",
+                "cancel": "Annuler",
+                "confirm": "Supprimer",
+                "warning": "Attention",
+                "description": "Cela supprimera définitivement l'utilisateur et toutes les données associées. Cette action ne peut pas être annulée."
             }
         }
     },
@@ -508,7 +516,8 @@
         },
         "actions": {
             "edit": "Modifier",
-            "view": "Voir"
+            "view": "Voir",
+            "delete": "Supprimer"
         },
         "noUsers": "Aucun utilisateur trouvé",
         "errors": {
@@ -518,7 +527,8 @@
         },
         "success": {
             "userCreated": "Utilisateur créé avec succès",
-            "userUpdated": "Utilisateur mis à jour avec succès"
+            "userUpdated": "Utilisateur mis à jour avec succès",
+            "userDeleted": "L'utilisateur a été supprimé avec succès"
         },
         "pagination": {
             "rowsPerPage": "Lignes par page",

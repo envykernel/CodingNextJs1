@@ -208,3 +208,44 @@ export async function updateUser(data: UpdateUserParams) {
     throw error
   }
 }
+
+export async function deleteUser(userId: string) {
+  try {
+    // Get the current session to check user permissions
+    const session = await getServerSession(authOptions)
+
+    if (!session) {
+      throw new Error('Not authenticated')
+    }
+
+    // Check if the user is an admin
+    if ((session.user as any).role !== 'ADMIN') {
+      throw new Error('Not authorized')
+    }
+
+    // Get the user to check organization
+    const user = await prisma.userInternal.findUnique({
+      where: { id: Number(userId) },
+      select: { organisationId: true }
+    })
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    // Check if the admin is from the same organization
+    if (user.organisationId !== Number(session.user.organisationId)) {
+      throw new Error('Not authorized to delete users from other organizations')
+    }
+
+    // Delete the user
+    await prisma.userInternal.delete({
+      where: { id: Number(userId) }
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error deleting user:', error)
+    throw error
+  }
+}

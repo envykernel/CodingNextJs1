@@ -4,6 +4,8 @@
 import { useState } from 'react'
 import { useMemo } from 'react'
 
+import React from 'react'
+
 import { useRouter } from 'next/navigation'
 
 import { useSession } from 'next-auth/react'
@@ -26,8 +28,24 @@ import type { RankingInfo } from '@tanstack/match-sorter-utils'
 import classnames from 'classnames'
 
 // MUI Imports
-import { Card, Grid, Typography, TextField, InputAdornment, Button, Chip, Snackbar, Alert } from '@mui/material'
+import {
+  Card,
+  Grid,
+  Typography,
+  TextField,
+  InputAdornment,
+  Button,
+  Chip,
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
+} from '@mui/material'
 import TablePagination from '@mui/material/TablePagination'
+import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 
 // Style Imports
 import type { UserRole } from '@prisma/client'
@@ -42,7 +60,7 @@ import UserDrawer, { type UserFormData } from './UserDrawer'
 
 // Util Imports
 // Server Action Imports
-import { createUser, updateUser } from '@/app/server/userActions'
+import { createUser, updateUser, deleteUser } from '@/app/server/userActions'
 
 // Type Imports
 
@@ -147,6 +165,7 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
   const { t } = useTranslation()
   const { data: session } = useSession()
   const translate = (key: string) => t(`usersManagement.${key}`)
+  const translateConfirmation = (key: string) => t(`userDrawer.confirmation.${key}`)
 
   const isAdmin = session?.user?.role === 'ADMIN'
   const userOrgId = Number(session?.user?.organisationId)
@@ -154,6 +173,8 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
   const [searchValue, setSearchValue] = useState('')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | undefined>()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [userToDelete, setUserToDelete] = useState<User | null>(null)
 
   const [paginationModel, setPaginationModel] = useState({
     pageIndex: page - 1,
@@ -228,15 +249,26 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
         cell: info => (
           <div className='flex items-center gap-2'>
             {isAdmin && (
-              <Button
-                onClick={() => handleEditUser(info.row.original)}
-                size='small'
-                color='primary'
-                variant='text'
-                startIcon={<i className='tabler-edit' />}
-              >
-                {translate('actions.edit')}
-              </Button>
+              <>
+                <Button
+                  onClick={() => handleEditUser(info.row.original)}
+                  size='small'
+                  color='primary'
+                  variant='text'
+                  startIcon={<i className='tabler-edit' />}
+                >
+                  {translate('actions.edit')}
+                </Button>
+                <Button
+                  onClick={() => handleDeleteClick(info.row.original)}
+                  size='small'
+                  color='error'
+                  variant='text'
+                  startIcon={<i className='tabler-trash' />}
+                >
+                  {translate('actions.delete')}
+                </Button>
+              </>
             )}
           </div>
         )
@@ -321,6 +353,43 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
         throw new Error(translate('errors.generic'))
       }
     }
+  }
+
+  const handleDeleteClick = (user: User) => {
+    setUserToDelete(user)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!userToDelete) return
+
+    try {
+      const result = await deleteUser(userToDelete.id)
+
+      if (result.success) {
+        setNotification({
+          open: true,
+          message: translate('success.userDeleted'),
+          severity: 'success'
+        })
+        router.refresh()
+      }
+    } catch (error: any) {
+      console.error('Error deleting user:', error)
+      setNotification({
+        open: true,
+        message: error.message || translate('errors.generic'),
+        severity: 'error'
+      })
+    } finally {
+      setDeleteDialogOpen(false)
+      setUserToDelete(null)
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false)
+    setUserToDelete(null)
   }
 
   return (
@@ -408,25 +477,7 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
                   table.getRowModel().rows.map(row => (
                     <tr key={row.id} className='transition-colors hover:bg-action-hover'>
                       {row.getVisibleCells().map(cell => (
-                        <td key={cell.id}>
-                          {cell.column.id === 'id' ? (
-                            <div className='flex items-center gap-2'>
-                              {isAdmin && (
-                                <Button
-                                  onClick={() => handleEditUser(row.original)}
-                                  size='small'
-                                  color='primary'
-                                  variant='text'
-                                  startIcon={<i className='tabler-edit' />}
-                                >
-                                  {translate('actions.edit')}
-                                </Button>
-                              )}
-                            </div>
-                          ) : (
-                            flexRender(cell.column.columnDef.cell, cell.getContext())
-                          )}
-                        </td>
+                        <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                       ))}
                     </tr>
                   ))
@@ -477,6 +528,44 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
           organisationId={userOrgId}
         />
       )}
+
+      {/* Add Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel} aria-labelledby='delete-user-dialog-title'>
+        <DialogTitle id='delete-user-dialog-title' sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <WarningAmberIcon color='error' sx={{ fontSize: 28 }} />
+          {translateConfirmation('deleteUser.title')}
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant='subtitle1' color='error' sx={{ mb: 2 }}>
+            {translateConfirmation('deleteUser.warning')}
+          </Typography>
+          <DialogContentText sx={{ mb: 2 }}>
+            {translateConfirmation('deleteUser.message')
+              .split('{name}')
+              .map((part, index, array) => (
+                <React.Fragment key={index}>
+                  {part}
+                  {index < array.length - 1 && (
+                    <Typography component='span' sx={{ fontWeight: 'bold' }}>
+                      {userToDelete?.name || ''}
+                    </Typography>
+                  )}
+                </React.Fragment>
+              ))}
+          </DialogContentText>
+          <DialogContentText color='text.secondary'>
+            {translateConfirmation('deleteUser.description')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color='primary'>
+            {translateConfirmation('deleteUser.cancel')}
+          </Button>
+          <Button onClick={handleDeleteConfirm} color='error' variant='contained' autoFocus>
+            {translateConfirmation('deleteUser.confirm')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   )
 }

@@ -514,8 +514,22 @@
         },
         "actions": {
             "edit": "Edit User",
-            "view": "View User"
+            "view": "View User",
+            "delete": "Delete User"
         },
         "noUsers": "No users found"
+    },
+    "confirmation": {
+        "deleteUser": {
+            "title": "Delete User",
+            "message": "Are you sure you want to delete {name}? This action cannot be undone.",
+            "cancel": "Cancel",
+            "confirm": "Delete",
+            "warning": "Warning",
+            "description": "This will permanently delete the user and all associated data. This action cannot be undone."
+        }
+    },
+    "success": {
+        "userDeleted": "User has been successfully deleted"
     }
 }
