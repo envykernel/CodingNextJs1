@@ -61,5 +61,27 @@
         "label": "Doctor",
         "email": "Email",
         "phone": "Phone"
+    },
+    "organisation": {
+        "title": "Edit Organisation",
+        "basicInfo": "Basic Information",
+        "workingHours": "Working Hours",
+        "workingDays": "Working Days",
+        "workHours": "Work Hours",
+        "breakHours": "Break Hours",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "name": "Name",
+        "address": "Address",
+        "phoneNumber": "Phone Number",
+        "email": "Email",
+        "status": "Status",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "saveChanges": "Save Changes",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "success": "Organisation updated successfully!",
+        "error": "Failed to update organisation"
     }
 }

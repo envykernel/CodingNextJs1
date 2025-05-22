@@ -61,5 +61,27 @@
         "label": "الطبيب",
         "email": "البريد الإلكتروني",
         "phone": "الهاتف"
+    },
+    "organisation": {
+        "title": "تعديل المؤسسة",
+        "basicInfo": "المعلومات الأساسية",
+        "workingHours": "ساعات العمل",
+        "workingDays": "أيام العمل",
+        "workHours": "ساعات العمل",
+        "breakHours": "ساعات الراحة",
+        "startTime": "وقت البدء",
+        "endTime": "وقت الانتهاء",
+        "name": "الاسم",
+        "address": "العنوان",
+        "phoneNumber": "رقم الهاتف",
+        "email": "البريد الإلكتروني",
+        "status": "الحالة",
+        "enabled": "مفعل",
+        "disabled": "معطل",
+        "saveChanges": "حفظ التغييرات",
+        "cancel": "إلغاء",
+        "saving": "جارٍ الحفظ...",
+        "success": "تم تحديث المؤسسة بنجاح!",
+        "error": "فشل في تحديث المؤسسة"
     }
 }

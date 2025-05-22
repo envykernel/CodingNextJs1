@@ -105,9 +105,12 @@ const roleConfig = {
   }
 } as const
 
+import EditOrganisationDrawer from '@/components/organisation/EditOrganisationDrawer'
+
 const UserDropdown = () => {
   // States
   const [open, setOpen] = useState(false)
+  const [organisationDrawerOpen, setOrganisationDrawerOpen] = useState(false)
 
   // Refs
   const anchorRef = useRef<HTMLDivElement>(null)
@@ -157,6 +160,18 @@ const UserDropdown = () => {
       // Show above error in a toast like following
       // toastService.error((err as Error).message)
     }
+  }
+
+  const handleOrganisationClick = (e: MouseEvent<HTMLLIElement>) => {
+    e.preventDefault()
+    setOrganisationDrawerOpen(true)
+    setOpen(false)
+  }
+
+  const handleOrganisationUpdated = () => {
+    // Update the session with new organisation data
+    // This will trigger a re-render with updated data
+    window.location.reload()
   }
 
   return (
@@ -250,7 +265,7 @@ const UserDropdown = () => {
                     <Typography color='text.primary'>Settings</Typography>
                   </MenuItem>
                   {userRole === 'ADMIN' && (
-                    <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/apps/organisation')}>
+                    <MenuItem className='mli-2 gap-3' onClick={handleOrganisationClick}>
                       <i className='tabler-building' />
                       <Typography color='text.primary'>Organisation</Typography>
                     </MenuItem>
@@ -282,6 +297,12 @@ const UserDropdown = () => {
           </Fade>
         )}
       </Popper>
+
+      <EditOrganisationDrawer
+        open={organisationDrawerOpen}
+        onClose={() => setOrganisationDrawerOpen(false)}
+        onOrganisationUpdated={handleOrganisationUpdated}
+      />
     </>
   )
 }

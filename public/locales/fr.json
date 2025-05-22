@@ -61,5 +61,27 @@
         "label": "Médecin",
         "email": "E-mail",
         "phone": "Téléphone"
+    },
+    "organisation": {
+        "title": "Modifier l'Organisation",
+        "basicInfo": "Informations de Base",
+        "workingHours": "Heures de Travail",
+        "workingDays": "Jours de Travail",
+        "workHours": "Heures de Travail",
+        "breakHours": "Heures de Pause",
+        "startTime": "Heure de Début",
+        "endTime": "Heure de Fin",
+        "name": "Nom",
+        "address": "Adresse",
+        "phoneNumber": "Numéro de Téléphone",
+        "email": "E-mail",
+        "status": "Statut",
+        "enabled": "Activé",
+        "disabled": "Désactivé",
+        "saveChanges": "Enregistrer les Modifications",
+        "cancel": "Annuler",
+        "saving": "Enregistrement...",
+        "success": "Organisation mise à jour avec succès !",
+        "error": "Échec de la mise à jour de l'organisation"
     }
 }
