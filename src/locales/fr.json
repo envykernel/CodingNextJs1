@@ -495,8 +495,8 @@
             "inactive": "Inactif"
         },
         "actions": {
-            "edit": "Modifier l'Utilisateur",
-            "view": "Voir l'Utilisateur"
+            "edit": "Modifier",
+            "view": "Voir"
         },
         "noUsers": "Aucun utilisateur trouvé",
         "errors": {
@@ -507,6 +507,12 @@
         "success": {
             "userCreated": "Utilisateur créé avec succès",
             "userUpdated": "Utilisateur mis à jour avec succès"
+        },
+        "pagination": {
+            "rowsPerPage": "Lignes par page",
+            "of": "sur",
+            "showing": "Affichage de",
+            "to": "à"
         }
     }
 }

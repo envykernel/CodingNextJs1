@@ -26,18 +26,7 @@ import type { RankingInfo } from '@tanstack/match-sorter-utils'
 import classnames from 'classnames'
 
 // MUI Imports
-import {
-  Card,
-  Grid,
-  Typography,
-  TextField,
-  IconButton,
-  InputAdornment,
-  Button,
-  Chip,
-  Snackbar,
-  Alert
-} from '@mui/material'
+import { Card, Grid, Typography, TextField, InputAdornment, Button, Chip, Snackbar, Alert } from '@mui/material'
 import TablePagination from '@mui/material/TablePagination'
 
 // Style Imports
@@ -49,12 +38,9 @@ import tableStyles from '@core/styles/table.module.css'
 import { useTranslation } from '@/contexts/translationContext'
 
 // Component Imports
-import CustomAvatar from '@core/components/mui/Avatar'
 import UserDrawer, { type UserFormData } from './UserDrawer'
 
 // Util Imports
-import { getInitials } from '@/utils/getInitials'
-
 // Server Action Imports
 import { createUser, updateUser } from '@/app/server/userActions'
 
@@ -191,19 +177,9 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
       columnHelper.accessor('name', {
         header: translate('columns.name'),
         cell: info => (
-          <div className='flex items-center gap-4'>
-            <CustomAvatar skin='light' size={34}>
-              {getInitials(info.getValue())}
-            </CustomAvatar>
-            <div className='flex flex-col'>
-              <Typography className='font-medium' color='text.primary'>
-                {info.getValue()}
-              </Typography>
-              <Typography variant='caption' color='text.secondary'>
-                {info.row.original.email}
-              </Typography>
-            </div>
-          </div>
+          <Typography className='font-medium' color='text.primary'>
+            {info.getValue()}
+          </Typography>
         )
       }),
       columnHelper.accessor('role', {
@@ -251,29 +227,22 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
         header: translate('columns.actions'),
         cell: info => (
           <div className='flex items-center gap-2'>
-            <IconButton
-              onClick={() => handleEditUser(info.row.original)}
-              aria-label={translate('actions.edit')}
-              size='small'
-              color='primary'
-              className='hover:bg-primary/10'
-            >
-              <i className='tabler-edit text-lg' />
-            </IconButton>
-            <IconButton
-              onClick={() => router.push(`/users/${info.getValue()}/view`)}
-              aria-label={translate('actions.view')}
-              size='small'
-              color='info'
-              className='hover:bg-info/10'
-            >
-              <i className='tabler-eye text-lg' />
-            </IconButton>
+            {isAdmin && (
+              <Button
+                onClick={() => handleEditUser(info.row.original)}
+                size='small'
+                color='primary'
+                variant='text'
+                startIcon={<i className='tabler-edit' />}
+              >
+                {translate('actions.edit')}
+              </Button>
+            )}
           </div>
         )
       })
     ],
-    [translate, router]
+    [translate, router, isAdmin]
   )
 
   const table = useReactTable({
@@ -443,25 +412,16 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
                           {cell.column.id === 'id' ? (
                             <div className='flex items-center gap-2'>
                               {isAdmin && (
-                                <IconButton
+                                <Button
                                   onClick={() => handleEditUser(row.original)}
-                                  aria-label={translate('actions.edit')}
                                   size='small'
                                   color='primary'
-                                  className='hover:bg-primary/10'
+                                  variant='text'
+                                  startIcon={<i className='tabler-edit' />}
                                 >
-                                  <i className='tabler-edit text-lg' />
-                                </IconButton>
+                                  {translate('actions.edit')}
+                                </Button>
                               )}
-                              <IconButton
-                                onClick={() => router.push(`/users/${cell.getValue()}/view`)}
-                                aria-label={translate('actions.view')}
-                                size='small'
-                                color='info'
-                                className='hover:bg-info/10'
-                              >
-                                <i className='tabler-eye text-lg' />
-                              </IconButton>
                             </div>
                           ) : (
                             flexRender(cell.column.columnDef.cell, cell.getContext())
@@ -483,6 +443,10 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
             onPageChange={(_, page) => table.setPageIndex(page)}
             onRowsPerPageChange={e => table.setPageSize(Number(e.target.value))}
             rowsPerPageOptions={[10, 25, 50]}
+            labelRowsPerPage={translate('pagination.rowsPerPage')}
+            labelDisplayedRows={({ from, to, count }) =>
+              `${translate('pagination.showing')} ${from}-${to} ${translate('pagination.of')} ${count}`
+            }
             sx={{
               borderTop: '1px solid var(--border-color)',
               '.MuiTablePagination-select': {
