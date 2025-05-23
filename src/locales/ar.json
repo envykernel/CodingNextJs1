@@ -568,6 +568,31 @@
                 "title": "عام",
                 "subtitle": "أسئلة وأجوبة عامة",
                 "icon": "tabler-help"
+            },
+            "actions-courantes": {
+                "title": "الإجراءات الشائعة",
+                "subtitle": "الحصول على مساعدة في الإجراءات والعمليات الشائعة",
+                "icon": "tabler-click"
+            },
+            "bonnes-pratiques": {
+                "title": "الممارسات الجيدة",
+                "subtitle": "تعرف على الممارسات والإرشادات الموصى بها",
+                "icon": "tabler-checklist"
+            },
+            "gestion-des-patients": {
+                "title": "إدارة المرضى",
+                "subtitle": "الحصول على مساعدة في إدارة سجلات ومعلومات المرضى",
+                "icon": "tabler-user-plus"
+            },
+            "rôles-et-permissions": {
+                "title": "الأدوار والصلاحيات",
+                "subtitle": "تعرف على أدوار المستخدمين وحقوق الوصول وصلاحيات النظام",
+                "icon": "tabler-shield-lock"
+            },
+            "sécurité-et-accès": {
+                "title": "الأمان والوصول",
+                "subtitle": "تعرف على أمان النظام والمصادقة والتحكم في الوصول",
+                "icon": "tabler-lock"
             }
         }
     }

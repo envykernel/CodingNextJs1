@@ -582,6 +582,31 @@
                 "title": "Général",
                 "subtitle": "Questions et réponses générales",
                 "icon": "tabler-help"
+            },
+            "actions-courantes": {
+                "title": "Actions Courantes",
+                "subtitle": "Obtenir de l'aide pour les actions et opérations courantes",
+                "icon": "tabler-click"
+            },
+            "bonnes-pratiques": {
+                "title": "Bonnes Pratiques",
+                "subtitle": "Découvrez les pratiques et directives recommandées",
+                "icon": "tabler-checklist"
+            },
+            "gestion-des-patients": {
+                "title": "Gestion des Patients",
+                "subtitle": "Obtenir de l'aide pour la gestion des dossiers et informations des patients",
+                "icon": "tabler-user-plus"
+            },
+            "rôles-et-permissions": {
+                "title": "Rôles & Permissions",
+                "subtitle": "Découvrez les rôles utilisateurs, droits d'accès et permissions système",
+                "icon": "tabler-shield-lock"
+            },
+            "sécurité-et-accès": {
+                "title": "Sécurité & Accès",
+                "subtitle": "Découvrez la sécurité du système, l'authentification et le contrôle d'accès",
+                "icon": "tabler-lock"
             }
         }
     }

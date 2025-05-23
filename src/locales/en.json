@@ -577,6 +577,31 @@
                 "title": "General",
                 "subtitle": "General questions and answers",
                 "icon": "tabler-help"
+            },
+            "actions-courantes": {
+                "title": "Common Actions",
+                "subtitle": "Get help with common actions and operations",
+                "icon": "tabler-click"
+            },
+            "bonnes-pratiques": {
+                "title": "Best Practices",
+                "subtitle": "Learn about recommended practices and guidelines",
+                "icon": "tabler-checklist"
+            },
+            "gestion-des-patients": {
+                "title": "Patient Management",
+                "subtitle": "Get help with managing patient records and information",
+                "icon": "tabler-user-plus"
+            },
+            "rôles-et-permissions": {
+                "title": "Roles & Permissions",
+                "subtitle": "Learn about user roles, access rights and system permissions",
+                "icon": "tabler-shield-lock"
+            },
+            "sécurité-et-accès": {
+                "title": "Security & Access",
+                "subtitle": "Learn about system security, authentication and access control",
+                "icon": "tabler-lock"
             }
         }
     }
