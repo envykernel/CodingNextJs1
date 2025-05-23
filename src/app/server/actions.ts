@@ -12,7 +12,6 @@ import { db as vehicleData } from '@/fake-db/apps/logistics'
 import { db as userData } from '@/fake-db/apps/userList'
 import { db as permissionData } from '@/fake-db/apps/permissions'
 import { db as profileData } from '@/fake-db/pages/userProfile'
-import { db as faqData } from '@/fake-db/pages/faq'
 import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
 import { prisma } from '@/prisma/prisma'
@@ -98,8 +97,59 @@ export const getProfileData = async () => {
   return profileData
 }
 
+// Type for FAQ from database
+type FAQFromDB = {
+  id: number
+  question: string
+  answer: string
+  category: string
+  order: number
+  isActive: boolean
+  created_at: Date
+  updated_at: Date
+}
+
 export const getFaqData = async () => {
-  return faqData
+  // Fetch FAQs from database and group by category
+  const faqs = (await prisma.fAQ.findMany({
+    where: {
+      isActive: true
+    },
+    orderBy: [{ category: 'asc' }, { order: 'asc' }]
+  })) as FAQFromDB[]
+
+  // Transform the data into the expected format
+  const categories = Array.from(new Set(faqs.map(faq => faq.category))) as string[]
+
+  return categories.map(category => {
+    const categoryFaqs = faqs.filter(faq => faq.category === category)
+
+    return {
+      id: category.toLowerCase().replace(/\s+/g, '-'),
+      title: category,
+      icon: getCategoryIcon(category),
+      subtitle: `Get help with ${category.toLowerCase()}`,
+      questionsAnswers: categoryFaqs.map(faq => ({
+        id: `faq-${faq.id}`,
+        question: faq.question,
+        answer: faq.answer
+      }))
+    }
+  })
+}
+
+// Helper function to get icon based on category
+const getCategoryIcon = (category: string): string => {
+  const iconMap: { [key: string]: string } = {
+    Patients: 'tabler-users',
+    Appointments: 'tabler-calendar',
+    Billing: 'tabler-credit-card',
+    'User Management': 'tabler-user',
+    System: 'tabler-settings',
+    General: 'tabler-help'
+  }
+
+  return iconMap[category] || 'tabler-help'
 }
 
 export const getPricingData = async () => {
@@ -168,7 +218,8 @@ export async function updatePatientAction(patientId: number, data: any) {
       include: {
         patient_measurements: true,
         patient_medical: true,
-        patient_medical_history: true
+        patient_medical_history: true,
+        doctor: true
       }
     })
 

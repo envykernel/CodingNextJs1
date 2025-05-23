@@ -1,8 +1,9 @@
 // Component Imports
 import FAQ from '@views/pages/faq'
-
-// Data Imports
 import { getFaqData } from '@/app/server/actions'
+import { getDictionary } from '@/utils/getDictionary'
+import { TranslationProvider } from '@/contexts/translationContext'
+import type { Locale } from '@configs/i18n'
 
 /**
  * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
@@ -22,11 +23,18 @@ import { getFaqData } from '@/app/server/actions'
   return res.json()
 } */
 
-const FAQPage = async () => {
-  // Vars
-  const data = await getFaqData()
+const FaqPage = async ({ params }: { params: Promise<{ lang: Locale }> }) => {
+  // First await the params object
+  const { lang } = await params
 
-  return <FAQ data={data} />
+  // Then await both async operations in parallel
+  const [data, dictionary] = await Promise.all([getFaqData(), getDictionary(lang)])
+
+  return (
+    <TranslationProvider dictionary={dictionary}>
+      <FAQ data={data} />
+    </TranslationProvider>
+  )
 }
 
-export default FAQPage
+export default FaqPage

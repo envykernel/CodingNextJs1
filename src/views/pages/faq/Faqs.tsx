@@ -21,13 +21,26 @@ import type { FaqType } from '@/types/pages/faqTypes'
 // Component Imports
 import CustomAvatar from '@core/components/mui/Avatar'
 import CustomTabList from '@core/components/mui/TabList'
+import { useTranslation } from '@/contexts/translationContext'
 
 type props = {
   faqData?: FaqType[]
   searchValue: string
 }
 
+// Helper function to format text with line breaks
+const formatText = (text: string) => {
+  return text.split('\\n').map((line, index) => (
+    <span key={index}>
+      {line}
+      {index < text.split('\\n').length - 1 && <br />}
+    </span>
+  ))
+}
+
 const FAQ = ({ faqData, searchValue }: props) => {
+  const { t } = useTranslation()
+
   // States
   const [activeTab, setActiveTab] = useState('payment')
 
@@ -66,7 +79,7 @@ const FAQ = ({ faqData, searchValue }: props) => {
             {filteredData?.map((faq, index) => (
               <Tab
                 key={index}
-                label={faq.title}
+                label={t(`faq.categories.${faq.id}.title`)}
                 value={faq.id}
                 icon={<i className={classnames(faq.icon, '!mbe-0 mie-1.5')} />}
                 className='flex-row justify-start !min-is-full'
@@ -87,8 +100,8 @@ const FAQ = ({ faqData, searchValue }: props) => {
                   <i className={classnames(faq.icon, 'text-3xl')} />
                 </CustomAvatar>
                 <div>
-                  <Typography variant='h5'>{faq.title}</Typography>
-                  <Typography>{faq.subtitle}</Typography>
+                  <Typography variant='h5'>{t(`faq.categories.${faq.id}.title`)}</Typography>
+                  <Typography>{t(`faq.categories.${faq.id}.subtitle`)}</Typography>
                 </div>
               </div>
               <div>
@@ -101,7 +114,9 @@ const FAQ = ({ faqData, searchValue }: props) => {
                       <Typography>{items.question}</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <Typography>{items.answer}</Typography>
+                      <Typography component='div' className='whitespace-pre-line'>
+                        {formatText(items.answer)}
+                      </Typography>
                     </AccordionDetails>
                   </Accordion>
                 ))}
@@ -114,7 +129,7 @@ const FAQ = ({ faqData, searchValue }: props) => {
   ) : (
     <div className='flex justify-center items-center'>
       <i className='tabler-alert-circle' />
-      <Typography>No results found</Typography>
+      <Typography>{t('faq.noResults')}</Typography>
     </div>
   )
 }

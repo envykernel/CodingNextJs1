@@ -541,5 +541,48 @@
             "showing": "Affichage de",
             "to": "à"
         }
+    },
+    "faq": {
+        "title": "Questions Fréquemment Posées",
+        "searchPlaceholder": "Rechercher dans les FAQ...",
+        "noResults": "Aucun résultat trouvé",
+        "contact": {
+            "title": "Vous avez encore des questions ?",
+            "message": "Si vous ne trouvez pas votre question dans notre FAQ, vous pouvez toujours nous contacter. Nous vous répondrons rapidement !",
+            "phoneMessage": "Nous sommes toujours heureux de vous aider !",
+            "emailMessage": "La meilleure façon d'obtenir une réponse plus rapidement !"
+        },
+        "categories": {
+            "patients": {
+                "title": "Patients",
+                "subtitle": "Obtenir de l'aide pour la gestion des patients",
+                "icon": "tabler-users"
+            },
+            "appointments": {
+                "title": "Rendez-vous",
+                "subtitle": "Obtenir de l'aide pour la planification des rendez-vous",
+                "icon": "tabler-calendar"
+            },
+            "billing": {
+                "title": "Facturation",
+                "subtitle": "Obtenir de l'aide pour la facturation et les paiements",
+                "icon": "tabler-credit-card"
+            },
+            "userManagement": {
+                "title": "Gestion des Utilisateurs",
+                "subtitle": "Obtenir de l'aide pour les comptes et les rôles utilisateurs",
+                "icon": "tabler-user"
+            },
+            "system": {
+                "title": "Système",
+                "subtitle": "Obtenir de l'aide pour les paramètres système",
+                "icon": "tabler-settings"
+            },
+            "general": {
+                "title": "Général",
+                "subtitle": "Questions et réponses générales",
+                "icon": "tabler-help"
+            }
+        }
     }
 }

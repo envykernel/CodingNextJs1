@@ -12,6 +12,7 @@ import classnames from 'classnames'
 // Styles imports
 import styles from './styles.module.css'
 import CustomTextField from '@core/components/mui/TextField'
+import { useTranslation } from '@/contexts/translationContext'
 
 // Styled CustomTextField component
 const CustomTextFieldStyled = styled(CustomTextField)<TextFieldProps>(({ theme }) => ({
@@ -30,16 +31,18 @@ type Props = {
 }
 
 const FaqHeader = ({ searchValue, setSearchValue }: Props) => {
+  const { t } = useTranslation()
+
   return (
     <Card className={classnames('shadow-none bg-transparent bg-cover', styles.bgImage)} elevation={0}>
       <CardContent className='flex flex-col items-center is-full text-center !plb-[5.8125rem] pli-5'>
         <Typography variant='h4' className='mbe-2.5'>
-          Hello, how can we help?
+          {t('faq.title')}
         </Typography>
-        <Typography className='mbe-4'>or choose a category to quickly find the help you need</Typography>
+        <Typography className='mbe-4'>{t('faq.searchPlaceholder')}</Typography>
         <CustomTextFieldStyled
           className='is-full sm:max-is-[55%] md:max-is-[600px]'
-          placeholder='search articles...'
+          placeholder={t('faq.searchPlaceholder')}
           value={searchValue}
           onChange={e => setSearchValue(e.target.value)}
           slotProps={{

@@ -527,5 +527,48 @@
             "delete": "حذف المستخدم"
         },
         "noUsers": "لم يتم العثور على مستخدمين"
+    },
+    "faq": {
+        "title": "الأسئلة الشائعة",
+        "searchPlaceholder": "البحث في الأسئلة الشائعة...",
+        "noResults": "لم يتم العثور على نتائج",
+        "contact": {
+            "title": "هل لا تزال لديك أسئلة؟",
+            "message": "إذا لم تتمكن من العثور على سؤال في الأسئلة الشائعة، يمكنك دائماً التواصل معنا. سنرد عليك قريباً!",
+            "phoneMessage": "نحن دائماً سعداء بالمساعدة!",
+            "emailMessage": "أفضل طريقة للحصول على إجابة أسرع!"
+        },
+        "categories": {
+            "patients": {
+                "title": "المرضى",
+                "subtitle": "الحصول على مساعدة في إدارة المرضى",
+                "icon": "tabler-users"
+            },
+            "appointments": {
+                "title": "المواعيد",
+                "subtitle": "الحصول على مساعدة في جدولة المواعيد",
+                "icon": "tabler-calendar"
+            },
+            "billing": {
+                "title": "الفوترة",
+                "subtitle": "الحصول على مساعدة في الفوترة والمدفوعات",
+                "icon": "tabler-credit-card"
+            },
+            "userManagement": {
+                "title": "إدارة المستخدمين",
+                "subtitle": "الحصول على مساعدة في حسابات المستخدمين والأدوار",
+                "icon": "tabler-user"
+            },
+            "system": {
+                "title": "النظام",
+                "subtitle": "الحصول على مساعدة في إعدادات النظام",
+                "icon": "tabler-settings"
+            },
+            "general": {
+                "title": "عام",
+                "subtitle": "أسئلة وأجوبة عامة",
+                "icon": "tabler-help"
+            }
+        }
     }
 }

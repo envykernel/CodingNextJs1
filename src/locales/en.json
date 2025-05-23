@@ -536,5 +536,48 @@
     },
     "success": {
         "userDeleted": "User has been successfully deleted"
+    },
+    "faq": {
+        "title": "Frequently Asked Questions",
+        "searchPlaceholder": "Search FAQs...",
+        "noResults": "No results found",
+        "contact": {
+            "title": "Still have questions?",
+            "message": "If you cannot find a question in our FAQ, you can always contact us. We will answer you shortly!",
+            "phoneMessage": "We are always happy to help!",
+            "emailMessage": "Best way to get answer faster!"
+        },
+        "categories": {
+            "patients": {
+                "title": "Patients",
+                "subtitle": "Get help with patient management",
+                "icon": "tabler-users"
+            },
+            "appointments": {
+                "title": "Appointments",
+                "subtitle": "Get help with appointment scheduling",
+                "icon": "tabler-calendar"
+            },
+            "billing": {
+                "title": "Billing",
+                "subtitle": "Get help with billing and payments",
+                "icon": "tabler-credit-card"
+            },
+            "userManagement": {
+                "title": "User Management",
+                "subtitle": "Get help with user accounts and roles",
+                "icon": "tabler-user"
+            },
+            "system": {
+                "title": "System",
+                "subtitle": "Get help with system settings",
+                "icon": "tabler-settings"
+            },
+            "general": {
+                "title": "General",
+                "subtitle": "General questions and answers",
+                "icon": "tabler-help"
+            }
+        }
     }
 }
