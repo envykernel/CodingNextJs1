@@ -276,6 +276,14 @@
         "patientUpdated": "Patient updated successfully!",
         "error": "An error occurred"
     },
+    "database": {
+        "errors": {
+            "connection": {
+                "title": "Database Connection Error",
+                "message": "Unable to connect to the database server. Please try again later or contact support if the issue persists."
+            }
+        }
+    },
     "sidebar": {
         "navigation": {
             "dashboards": "Dashboards",

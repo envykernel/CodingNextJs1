@@ -270,6 +270,17 @@
         "patientUpdated": "Patient mis à jour avec succès !",
         "error": "Une erreur est survenue"
     },
+    "database": {
+        "errors": {
+            "connection": {
+                "title": "Erreur de Connexion à la Base de Données",
+                "message": "Impossible de se connecter au serveur de base de données. Veuillez réessayer plus tard ou contacter le support si le problème persiste.",
+                "details": "Le serveur de base de données ne répond pas. Cela peut être dû à des problèmes de réseau ou à une maintenance du serveur.",
+                "details": "Le serveur de base de données à {host} ne répond pas. Cela peut être dû à des problèmes de réseau ou à une maintenance du serveur.",
+                "action": "Veuillez réessayer dans quelques minutes. Si le problème persiste, contactez votre administrateur système."
+            }
+        }
+    },
     "sidebar": {
         "navigation": {
             "dashboards": "Tableaux de bord",

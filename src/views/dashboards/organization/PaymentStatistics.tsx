@@ -7,7 +7,10 @@ import dynamic from 'next/dynamic'
 
 import { format } from 'date-fns'
 
-// Next Imports
+// Type Imports
+import type { ApexOptions } from 'apexcharts'
+
+// Translation Imports
 
 // MUI Imports
 import Card from '@mui/material/Card'
@@ -20,8 +23,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import { useTheme } from '@mui/material/styles'
 
-// Third Party Imports
-import type { ApexOptions } from 'apexcharts'
+import { useTranslation } from '@/contexts/translationContext'
 
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'), { ssr: false })
@@ -72,9 +74,10 @@ interface ServiceStats {
 
 const PaymentStatistics = () => {
   const theme = useTheme()
+  const { t } = useTranslation()
   const [payments, setPayments] = useState<Payment[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<{ title: string; message: string } | null>(null)
   const processedInvoices = useRef<Set<number>>(new Set())
 
   useEffect(() => {
@@ -100,6 +103,16 @@ const PaymentStatistics = () => {
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }))
 
+          // Check if it's a database connection error
+          if (errorData?.error?.includes("Can't reach database server")) {
+            setError({
+              title: t('database.errors.connection.title'),
+              message: t('database.errors.connection.message')
+            })
+
+            return
+          }
+
           throw new Error(errorData?.error || `HTTP error! status: ${response.status}`)
         }
 
@@ -114,8 +127,16 @@ const PaymentStatistics = () => {
         setPayments(data)
       } catch (err) {
         if (!isMounted) return
+
         console.error('Error fetching payments:', err)
-        setError(err instanceof Error ? err.message : 'Failed to fetch payments')
+
+        // Only set generic error if we haven't set a specific error
+        if (!error) {
+          setError({
+            title: t('messages.error'),
+            message: err instanceof Error ? err.message : 'Failed to fetch payments'
+          })
+        }
       } finally {
         if (isMounted) {
           setLoading(false)
@@ -128,7 +149,7 @@ const PaymentStatistics = () => {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [t])
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -583,10 +604,10 @@ const PaymentStatistics = () => {
         <CardContent>
           <Box display='flex' flexDirection='column' alignItems='center' gap={2} minHeight={400}>
             <Typography color='error' variant='h6'>
-              Error Loading Payment Statistics
+              {error.title}
             </Typography>
-            <Typography color='error' variant='body2'>
-              {error}
+            <Typography color='error' variant='body1' align='center'>
+              {error.message}
             </Typography>
           </Box>
         </CardContent>
