@@ -621,10 +621,10 @@ const PaymentStatistics = () => {
         <CardContent>
           <Box display='flex' flexDirection='column' alignItems='center' gap={2} minHeight={400}>
             <Typography variant='h6' color='text.secondary'>
-              No Payment Data Available
+              {t('paymentStatistics.noData.title')}
             </Typography>
             <Typography variant='body2' color='text.secondary'>
-              There are no payments recorded for this week.
+              {t('paymentStatistics.noData.message')}
             </Typography>
           </Box>
         </CardContent>
@@ -652,9 +652,9 @@ const PaymentStatistics = () => {
               <i className='tabler-chart-bar text-xl' />
             </Box>
             <Box>
-              <Typography variant='h5'>Payment Statistics</Typography>
+              <Typography variant='h5'>{t('paymentStatistics.title')}</Typography>
               <Typography variant='subtitle2' color='text.secondary'>
-                This Week&apos;s Overview
+                {t('paymentStatistics.subtitle')}
               </Typography>
             </Box>
           </Box>
@@ -665,13 +665,15 @@ const PaymentStatistics = () => {
           <Grid item xs={12} md={7.2}>
             <Box className='flex flex-col gap-4' sx={{ pr: 3 }}>
               <Box className='flex items-center justify-between'>
-                <Typography variant='subtitle1'>Daily Payment Totals</Typography>
+                <Typography variant='subtitle1'>{t('paymentStatistics.dailyTotals.title')}</Typography>
                 <Box className='flex items-center gap-4'>
                   <Typography variant='subtitle2' color='success.main'>
-                    Paid: {formatAmount(dailyStats.reduce((sum, day) => sum + day.paid, 0))}
+                    {t('paymentStatistics.dailyTotals.paid')}:{' '}
+                    {formatAmount(dailyStats.reduce((sum, day) => sum + day.paid, 0))}
                   </Typography>
                   <Typography variant='subtitle2' color='error.main'>
-                    Balance: {formatAmount(dailyStats.reduce((sum, day) => sum + day.remaining, 0))}
+                    {t('paymentStatistics.dailyTotals.balance')}:{' '}
+                    {formatAmount(dailyStats.reduce((sum, day) => sum + day.remaining, 0))}
                   </Typography>
                 </Box>
               </Box>
@@ -685,7 +687,7 @@ const PaymentStatistics = () => {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pl: 3 }}>
               <Box>
                 <Typography variant='subtitle1' sx={{ mb: 2 }}>
-                  Payment Methods
+                  {t('paymentStatistics.paymentMethods.title')}
                 </Typography>
                 <AppReactApexCharts
                   type='donut'
@@ -700,7 +702,7 @@ const PaymentStatistics = () => {
               </Box>
               <Box>
                 <Typography variant='subtitle1' sx={{ mb: 2 }}>
-                  Services
+                  {t('paymentStatistics.services.title')}
                 </Typography>
                 <AppReactApexCharts
                   type='donut'

@@ -617,10 +617,32 @@
             "cash": "نقداً",
             "card": "بطاقة",
             "bank_transfer": "تحويل بنكي",
-            "mobile_money": "دفع إلكتروني",
+            "mobile_money": "محفظة إلكترونية",
             "insurance": "تأمين",
             "cheque": "شيك",
             "other": "أخرى"
+        }
+    },
+    "paymentStatistics": {
+        "title": "إحصائيات المدفوعات",
+        "subtitle": "نظرة عامة على هذا الأسبوع",
+        "dailyTotals": {
+            "title": "إجماليات المدفوعات اليومية",
+            "paid": "مدفوع",
+            "balance": "الرصيد"
+        },
+        "paymentMethods": {
+            "title": "طرق الدفع"
+        },
+        "services": {
+            "title": "الخدمات"
+        },
+        "noData": {
+            "title": "لا توجد بيانات مدفوعات متاحة",
+            "message": "لا توجد مدفوعات مسجلة لهذا الأسبوع."
+        },
+        "chart": {
+            "totalAmount": "المبلغ الإجمالي"
         }
     }
 }

@@ -631,5 +631,27 @@
             "cheque": "Cheque",
             "other": "Other"
         }
+    },
+    "paymentStatistics": {
+        "title": "Payment Statistics",
+        "subtitle": "This Week's Overview",
+        "dailyTotals": {
+            "title": "Daily Payment Totals",
+            "paid": "Paid",
+            "balance": "Balance"
+        },
+        "paymentMethods": {
+            "title": "Payment Methods"
+        },
+        "services": {
+            "title": "Services"
+        },
+        "noData": {
+            "title": "No Payment Data Available",
+            "message": "There are no payments recorded for this week."
+        },
+        "chart": {
+            "totalAmount": "Total Amount"
+        }
     }
 }

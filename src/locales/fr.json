@@ -633,11 +633,33 @@
         "paymentMethods": {
             "cash": "Espèces",
             "card": "Carte",
-            "bank_transfer": "Virement Bancaire",
+            "bank_transfer": "Virement",
             "mobile_money": "Mobile Money",
             "insurance": "Assurance",
             "cheque": "Chèque",
             "other": "Autre"
+        }
+    },
+    "paymentStatistics": {
+        "title": "Statistiques des Paiements",
+        "subtitle": "Aperçu de la Semaine",
+        "dailyTotals": {
+            "title": "Totaux des Paiements Quotidiens",
+            "paid": "Payé",
+            "balance": "Solde"
+        },
+        "paymentMethods": {
+            "title": "Méthodes de Paiement"
+        },
+        "services": {
+            "title": "Services"
+        },
+        "noData": {
+            "title": "Aucune Donnée de Paiement Disponible",
+            "message": "Aucun paiement n'a été enregistré cette semaine."
+        },
+        "chart": {
+            "totalAmount": "Montant Total"
         }
     }
 }
