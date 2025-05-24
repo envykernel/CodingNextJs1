@@ -50,21 +50,73 @@ type StatusColumn = {
 
 const TodayAppointments = () => {
   const theme = useTheme()
-  const t = useTranslation()
+  const { t } = useTranslation()
+  const router = useRouter()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [visitsByAppointmentId, setVisitsByAppointmentId] = useState<Record<number, any>>({})
   const [navigatingVisitId, setNavigatingVisitId] = useState<number | null>(null)
-  const router = useRouter()
+
+  // Status column configurations
+  const statusColumns: StatusColumn[] = [
+    {
+      id: 'scheduled',
+      label: t('appointmentStatistics.todayAppointments.status.scheduled'),
+      icon: 'tabler-clock',
+      color: theme.palette.info.main
+    },
+    {
+      id: 'in_progress',
+      label: t('appointmentStatistics.todayAppointments.status.in_progress'),
+      icon: 'tabler-loader-2',
+      color: theme.palette.warning.main
+    },
+    {
+      id: 'completed',
+      label: t('appointmentStatistics.todayAppointments.status.completed'),
+      icon: 'tabler-check',
+      color: theme.palette.success.main
+    },
+    {
+      id: 'cancelled',
+      label: t('appointmentStatistics.todayAppointments.status.cancelled'),
+      icon: 'tabler-x',
+      color: theme.palette.error.main
+    }
+  ]
 
   // Appointment type configurations with fallback
   const appointmentTypes: Record<AppointmentType, { label: string; color: string; icon: string }> = {
-    consultation: { label: 'Consultation', color: theme.palette.primary.main, icon: 'tabler-stethoscope' },
-    'follow-up': { label: 'Follow-up', color: theme.palette.success.main, icon: 'tabler-refresh' },
-    emergency: { label: 'Emergency', color: theme.palette.error.main, icon: 'tabler-ambulance' },
-    'routine-check': { label: 'Routine Check', color: theme.palette.info.main, icon: 'tabler-clipboard-check' },
-    specialist: { label: 'Specialist', color: theme.palette.warning.main, icon: 'tabler-user-md' },
-    other: { label: 'Other', color: theme.palette.grey[500], icon: 'tabler-calendar' }
+    consultation: {
+      label: t('appointmentStatistics.todayAppointments.appointmentTypes.consultation'),
+      color: theme.palette.primary.main,
+      icon: 'tabler-stethoscope'
+    },
+    'follow-up': {
+      label: t('appointmentStatistics.todayAppointments.appointmentTypes.follow-up'),
+      color: theme.palette.success.main,
+      icon: 'tabler-refresh'
+    },
+    emergency: {
+      label: t('appointmentStatistics.todayAppointments.appointmentTypes.emergency'),
+      color: theme.palette.error.main,
+      icon: 'tabler-ambulance'
+    },
+    'routine-check': {
+      label: t('appointmentStatistics.todayAppointments.appointmentTypes.routine-check'),
+      color: theme.palette.info.main,
+      icon: 'tabler-clipboard-check'
+    },
+    specialist: {
+      label: t('appointmentStatistics.todayAppointments.appointmentTypes.specialist'),
+      color: theme.palette.warning.main,
+      icon: 'tabler-user-md'
+    },
+    other: {
+      label: t('appointmentStatistics.todayAppointments.appointmentTypes.other'),
+      color: theme.palette.grey[500],
+      icon: 'tabler-calendar'
+    }
   }
 
   // Helper function to get appointment type config with fallback
@@ -73,34 +125,6 @@ const TodayAppointments = () => {
 
     return appointmentTypes[normalizedType] || appointmentTypes.other
   }
-
-  // Status column configurations
-  const statusColumns: StatusColumn[] = [
-    {
-      id: 'scheduled',
-      label: 'Scheduled',
-      icon: 'tabler-clock',
-      color: theme.palette.info.main
-    },
-    {
-      id: 'in_progress',
-      label: 'In Progress',
-      icon: 'tabler-loader-2',
-      color: theme.palette.warning.main
-    },
-    {
-      id: 'completed',
-      label: 'Completed',
-      icon: 'tabler-check',
-      color: theme.palette.success.main
-    },
-    {
-      id: 'cancelled',
-      label: 'Cancelled',
-      icon: 'tabler-x',
-      color: theme.palette.error.main
-    }
-  ]
 
   const fetchAppointments = async () => {
     try {
@@ -115,7 +139,7 @@ const TodayAppointments = () => {
         const appointmentDate = new Date(apt.appointmentDate)
 
         // Format time in user's local timezone
-        const time = appointmentDate.toLocaleTimeString('en-US', {
+        const time = appointmentDate.toLocaleTimeString('fr-FR', {
           hour: '2-digit',
           minute: '2-digit',
           hour12: false,
@@ -170,7 +194,7 @@ const TodayAppointments = () => {
         <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
           <Box sx={{ textAlign: 'center' }}>
             <i className='tabler-loader-2 animate-spin text-4xl' />
-            <Typography sx={{ mt: 2 }}>Loading appointments...</Typography>
+            <Typography sx={{ mt: 2 }}>{t('appointmentStatistics.todayAppointments.loading')}</Typography>
           </Box>
         </CardContent>
       </Card>
@@ -197,9 +221,9 @@ const TodayAppointments = () => {
               <i className='tabler-calendar-event text-xl' />
             </Box>
             <Box>
-              <Typography variant='h5'>Today&apos;s Schedule</Typography>
+              <Typography variant='h5'>{t('appointmentStatistics.todayAppointments.title')}</Typography>
               <Typography variant='body2' sx={{ color: 'text.secondary', mt: 0.5 }}>
-                {new Date().toLocaleDateString('en-US', {
+                {new Date().toLocaleDateString('fr-FR', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
@@ -208,6 +232,7 @@ const TodayAppointments = () => {
                 })}
                 {' • '}
                 <Typography component='span' variant='caption' sx={{ color: 'text.secondary' }}>
+                  {t('appointmentStatistics.todayAppointments.timezone')}:{' '}
                   {Intl.DateTimeFormat().resolvedOptions().timeZone}
                 </Typography>
               </Typography>
@@ -217,11 +242,14 @@ const TodayAppointments = () => {
         action={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Chip
-              label={`${appointments.length} appointments`}
+              label={t('appointmentStatistics.todayAppointments.appointmentsCount').replace(
+                '{count}',
+                appointments.length.toString()
+              )}
               size='small'
               sx={{ backgroundColor: alpha(theme.palette.primary.main, 0.1), color: 'primary.main' }}
             />
-            <Tooltip title='Refresh'>
+            <Tooltip title={t('appointmentStatistics.todayAppointments.refresh')}>
               <IconButton onClick={fetchAppointments}>
                 <i className='tabler-refresh' />
               </IconButton>
@@ -319,8 +347,10 @@ const TodayAppointments = () => {
                     >
                       <Typography variant='body2' sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <i className='tabler-calendar-off text-lg' />
-                        {t.noAppointmentsInStatus?.replace('{status}', column.label.toLowerCase()) ||
-                          `No ${column.label.toLowerCase()} appointments`}
+                        {t('appointmentStatistics.todayAppointments.card.empty.description').replace(
+                          '{status}',
+                          column.label.toLowerCase()
+                        )}
                       </Typography>
                     </Box>
                   ) : (
@@ -367,7 +397,7 @@ const TodayAppointments = () => {
                                 {appointment.patientName}
                               </Typography>
                               <Typography variant='caption' sx={{ color: 'text.secondary' }}>
-                                {appointment.doctorName}
+                                {t('appointmentStatistics.todayAppointments.card.doctor')}: {appointment.doctorName}
                               </Typography>
                             </Box>
                           </Box>
@@ -376,14 +406,15 @@ const TodayAppointments = () => {
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               <i className='tabler-clock text-base' style={{ color: theme.palette.text.secondary }} />
                               <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-                                {appointment.time}
+                                {t('appointmentStatistics.todayAppointments.card.time')}: {appointment.time}
                               </Typography>
                               <Typography variant='caption' sx={{ color: 'text.secondary' }}>
-                                ({appointment.duration} min)
+                                ({t('appointmentStatistics.todayAppointments.card.duration')}: {appointment.duration}{' '}
+                                min)
                               </Typography>
                             </Box>
                             <Chip
-                              label={appointment.type}
+                              label={typeConfig.label}
                               size='small'
                               sx={{
                                 backgroundColor: alpha(typeConfig.color, 0.1),
@@ -412,7 +443,9 @@ const TodayAppointments = () => {
                                   )
                                 }
                               >
-                                {isNavigating ? t.loading || 'Loading...' : t.goToVisit || 'Go to Visit'}
+                                {isNavigating
+                                  ? t('common.loading')
+                                  : t('appointmentStatistics.todayAppointments.card.actions.goToVisit')}
                               </Button>
                             ) : (
                               appointment.status === 'scheduled' && (

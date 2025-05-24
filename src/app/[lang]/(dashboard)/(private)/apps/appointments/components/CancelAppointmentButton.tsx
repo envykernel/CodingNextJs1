@@ -76,19 +76,17 @@ const CancelAppointmentButton: React.FC<CancelAppointmentButtonProps> = ({
         disabled={loading}
         startIcon={loading ? <CircularProgress size={20} color='inherit' /> : <i className='tabler-x text-lg' />}
       >
-        {loading ? t.loading || 'Loading...' : t.cancel || 'Cancel'}
+        {loading ? t('appointments.actions.loading') : t('appointments.actions.cancel')}
       </Button>
 
       <Dialog open={dialogOpen} onClose={handleCancelClose}>
-        <DialogTitle>{t.confirmCancellation || 'Confirm Cancellation'}</DialogTitle>
+        <DialogTitle>{t('appointments.actions.confirmCancellation')}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            {t.cancelAppointmentConfirmation || 'Are you sure you want to cancel this appointment?'}
-          </DialogContentText>
+          <DialogContentText>{t('appointments.actions.cancelAppointmentConfirmation')}</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelClose} disabled={loading}>
-            {t.cancel || 'Cancel'}
+            {t('appointments.actions.cancel')}
           </Button>
           <Button
             onClick={handleCancelConfirm}
@@ -96,7 +94,7 @@ const CancelAppointmentButton: React.FC<CancelAppointmentButtonProps> = ({
             disabled={loading}
             startIcon={loading ? <CircularProgress size={20} color='inherit' /> : undefined}
           >
-            {loading ? t.loading || 'Loading...' : t.confirm || 'Confirm'}
+            {loading ? t('appointments.actions.loading') : t('appointments.actions.confirm')}
           </Button>
         </DialogActions>
       </Dialog>

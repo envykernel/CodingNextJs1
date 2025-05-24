@@ -67,6 +67,15 @@
             "scheduled": "Planifié",
             "completed": "Terminé",
             "cancelled": "Annulé"
+        },
+        "actions": {
+            "goToVisit": "Aller à la visite",
+            "createVisit": "Créer une visite",
+            "cancel": "Annuler",
+            "confirm": "Confirmer",
+            "loading": "Chargement...",
+            "confirmCancellation": "Confirmer l'annulation",
+            "cancelAppointmentConfirmation": "Êtes-vous sûr de vouloir annuler ce rendez-vous ?"
         }
     },
     "noAppointments": "Aucun rendez-vous disponible.",
@@ -82,7 +91,9 @@
         "billingPlans": "Facturation & Abonnements",
         "notifications": "Notifications",
         "connections": "Connexions",
-        "show": "Afficher"
+        "show": "Afficher",
+        "loading": "Chargement...",
+        "goToVisit": "Aller à la visite"
     },
     "appointmentsList": "Liste des rendez-vous",
     "bookAppointment": "Prendre rendez-vous",
@@ -90,7 +101,6 @@
     "createAppointment": "Créer un nouveau rendez-vous",
     "createVisit": "Créer une visite",
     "createVisitSuccess": "Visite créée avec succès !",
-    "loading": "Chargement...",
     "availabilityTitle": "Disponibilité",
     "available": "Disponible",
     "unavailable": "Indisponible",
@@ -100,7 +110,6 @@
         "message": "Vous n'avez pas la permission d'accéder à cette page. Veuillez contacter votre administrateur si vous pensez qu'il s'agit d'une erreur.",
         "button": "Retour à l'accueil"
     },
-    "goToVisit": "Aller à la visite",
     "prescriptions": "Ordonnances",
     "savePrescription": "Enregistrer l'ordonnance",
     "medication": "Médicament",
@@ -660,6 +669,48 @@
         },
         "chart": {
             "totalAmount": "Montant Total"
+        }
+    },
+    "appointmentStatistics": {
+        "todayAppointments": {
+            "title": "Planning du Jour",
+            "subtitle": "Aujourd'hui",
+            "noAppointmentsInStatus": "Aucun rendez-vous {status}",
+            "appointmentsCount": "{count} rendez-vous",
+            "refresh": "Actualiser",
+            "loading": "Chargement des rendez-vous...",
+            "status": {
+                "scheduled": "Planifié",
+                "in_progress": "En cours",
+                "completed": "Terminé",
+                "cancelled": "Annulé"
+            },
+            "appointmentTypes": {
+                "consultation": "Consultation",
+                "follow-up": "Suivi",
+                "emergency": "Urgence",
+                "routine-check": "Contrôle de routine",
+                "specialist": "Spécialiste",
+                "other": "Autre"
+            },
+            "duration": "{minutes} min",
+            "timezone": "Fuseau horaire",
+            "card": {
+                "patient": "Patient",
+                "doctor": "Médecin",
+                "time": "Heure",
+                "duration": "Durée",
+                "type": "Type",
+                "actions": {
+                    "goToVisit": "Aller à la visite",
+                    "createVisit": "Créer une visite",
+                    "cancel": "Annuler le rendez-vous"
+                },
+                "empty": {
+                    "title": "Aucun rendez-vous",
+                    "description": "Aucun rendez-vous {status} pour aujourd'hui"
+                }
+            }
         }
     }
 }

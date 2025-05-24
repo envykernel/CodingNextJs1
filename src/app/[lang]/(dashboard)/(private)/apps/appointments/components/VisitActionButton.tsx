@@ -39,7 +39,7 @@ const VisitActionButton: React.FC<VisitActionButtonProps> = ({
         onClick={() => router.push(`/${lang}/apps/visits/view/${visit.id}`)}
         startIcon={<i className='tabler-clipboard-check text-lg' />}
       >
-        {t.goToVisit || 'Go to Visit'}
+        {t('appointments.actions.goToVisit')}
       </Button>
     )
   }
@@ -80,7 +80,7 @@ const VisitActionButton: React.FC<VisitActionButtonProps> = ({
       disabled={loading}
       startIcon={loading ? <CircularProgress size={20} color='inherit' /> : <i className='tabler-plus text-lg' />}
     >
-      {loading ? t.loading || 'Loading...' : t.createVisit || 'Create Visit'}
+      {loading ? t('appointments.actions.loading') : t('appointments.actions.createVisit')}
     </Button>
   )
 }
