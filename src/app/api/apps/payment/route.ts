@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
 
     await prisma.invoice.update({
       where: { id: invoice_id },
-      data: { status: newStatus }
+      data: { payment_status: newStatus }
     })
 
     return NextResponse.json({ success: true })

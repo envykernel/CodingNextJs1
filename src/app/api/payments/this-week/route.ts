@@ -94,7 +94,7 @@ export async function GET() {
               select: {
                 id: true,
                 total_amount: true,
-                status: true
+                payment_status: true
               }
             },
             invoice_line: {

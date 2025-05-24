@@ -41,7 +41,7 @@ interface Payment {
     invoice: {
       id: number
       total_amount: number
-      status: string
+      payment_status: string
     }
     invoice_line?: {
       service: {
