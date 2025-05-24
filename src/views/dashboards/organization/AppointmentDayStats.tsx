@@ -12,6 +12,9 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useTheme } from '@mui/material/styles'
 
+// Contexts
+import { useTranslation } from '@/contexts/translationContext'
+
 // Types
 type PaletteColorKey = 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success'
 
@@ -25,15 +28,14 @@ interface DayStats {
 }
 
 interface AppointmentDayStatsProps {
-  title: string
-  subtitle: string
   dateRange?: 'week' | 'year'
   startDate?: Date | string
   endDate?: Date | string
 }
 
-const AppointmentDayStats = ({ title, subtitle, dateRange, startDate, endDate }: AppointmentDayStatsProps) => {
+const AppointmentDayStats = ({ dateRange, startDate, endDate }: AppointmentDayStatsProps) => {
   const theme = useTheme()
+  const { t } = useTranslation()
   const [stats, setStats] = useState<DayStats[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -108,6 +110,7 @@ const AppointmentDayStats = ({ title, subtitle, dateRange, startDate, endDate }:
         <CardContent>
           <Box display='flex' justifyContent='center' alignItems='center' minHeight={200}>
             <CircularProgress />
+            <Typography sx={{ ml: 2 }}>{t('appointmentStatistics.dayStats.loading')}</Typography>
           </Box>
         </CardContent>
       </Card>
@@ -119,7 +122,7 @@ const AppointmentDayStats = ({ title, subtitle, dateRange, startDate, endDate }:
       <Card>
         <CardContent>
           <Typography color='error' align='center'>
-            {error}
+            {t('appointmentStatistics.dayStats.error')}
           </Typography>
         </CardContent>
       </Card>
@@ -152,9 +155,9 @@ const AppointmentDayStats = ({ title, subtitle, dateRange, startDate, endDate }:
               />
             </Box>
             <Box>
-              <Typography variant='h5'>{title}</Typography>
+              <Typography variant='h5'>{t('appointmentStatistics.dayStats.title')}</Typography>
               <Typography variant='subtitle2' color='text.secondary'>
-                {subtitle}
+                {t(`appointmentStatistics.dayStats.subtitle.${startDate && endDate ? 'custom' : dateRange || 'week'}`)}
               </Typography>
             </Box>
           </Box>
@@ -165,6 +168,8 @@ const AppointmentDayStats = ({ title, subtitle, dateRange, startDate, endDate }:
           {stats.map((item, index) => {
             const color = theme.palette[item.color][item.colorVariant]
             const textColor = getContrastText(color)
+            const dayKey = item.day.toLowerCase()
+            const translatedDay = t(`appointmentStatistics.dayStats.days.${dayKey}`)
 
             return (
               <Box
@@ -205,7 +210,7 @@ const AppointmentDayStats = ({ title, subtitle, dateRange, startDate, endDate }:
                       fontWeight: 500
                     }}
                   >
-                    {item.day}
+                    {translatedDay}
                   </Typography>
                   <Typography
                     variant='body2'

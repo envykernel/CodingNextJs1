@@ -717,6 +717,39 @@
                     "plural": "{count} rendez-vous"
                 }
             }
+        },
+        "dayStats": {
+            "title": "Répartition des rendez-vous",
+            "subtitle": {
+                "week": "Cette semaine",
+                "year": "Cette année",
+                "custom": "Période personnalisée"
+            },
+            "loading": "Chargement des statistiques des rendez-vous...",
+            "error": "Échec du chargement des statistiques des rendez-vous",
+            "days": {
+                "monday": "Lun",
+                "tuesday": "Mar",
+                "wednesday": "Mer",
+                "thursday": "Jeu",
+                "friday": "Ven",
+                "saturday": "Sam",
+                "sunday": "Dim"
+            },
+            "months": {
+                "january": "Jan",
+                "february": "Fév",
+                "march": "Mar",
+                "april": "Avr",
+                "may": "Mai",
+                "june": "Juin",
+                "july": "Juil",
+                "august": "Août",
+                "september": "Sep",
+                "october": "Oct",
+                "november": "Nov",
+                "december": "Déc"
+            }
         }
     }
 }
