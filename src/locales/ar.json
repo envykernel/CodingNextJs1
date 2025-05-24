@@ -603,5 +603,24 @@
                 "icon": "tabler-lock"
             }
         }
+    },
+    "thisWeekPayments": {
+        "title": "مدفوعات هذا الأسبوع",
+        "total": "المجموع",
+        "receipt": "الإيصال",
+        "patientName": "المريض",
+        "date": "التاريخ",
+        "paymentMethod": "طريقة الدفع",
+        "paymentAmount": "المبلغ",
+        "noPayments": "لا توجد مدفوعات لهذا الأسبوع",
+        "paymentMethods": {
+            "cash": "نقداً",
+            "card": "بطاقة",
+            "bank_transfer": "تحويل بنكي",
+            "mobile_money": "دفع إلكتروني",
+            "insurance": "تأمين",
+            "cheque": "شيك",
+            "other": "أخرى"
+        }
     }
 }

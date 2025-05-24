@@ -24,6 +24,9 @@ import Paper from '@mui/material/Paper'
 // Type Imports
 import type { PaymentMethod } from '@prisma/client'
 
+// Translation Imports
+import { useTranslation } from '@/contexts/translationContext'
+
 interface Payment {
   id: number
   receipt_number: string
@@ -38,31 +41,81 @@ interface Payment {
 
 const ThisWeekPayments = () => {
   const theme = useTheme()
+  const { t } = useTranslation()
   const [payments, setPayments] = useState<Payment[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<{ title: string; message: string } | null>(null)
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchPayments = async () => {
+      if (!isMounted) return
+
       try {
-        const response = await fetch('/api/payments/this-week')
+        setLoading(true)
+        setError(null)
+
+        const response = await fetch('/api/payments/this-week', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cache: 'no-store'
+        })
+
+        if (!isMounted) return
 
         if (!response.ok) {
-          throw new Error('Failed to fetch payments')
+          const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }))
+
+          // Check if it's a database connection error
+          if (errorData?.error?.includes("Can't reach database server")) {
+            setError({
+              title: t('database.errors.connection.title'),
+              message: t('database.errors.connection.message')
+            })
+
+            return
+          }
+
+          throw new Error(errorData?.error || `HTTP error! status: ${response.status}`)
         }
 
         const data = await response.json()
 
+        if (!isMounted) return
+
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid data format received from server')
+        }
+
         setPayments(data)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
+        if (!isMounted) return
+
+        console.error('Error fetching payments:', err)
+
+        // Only set generic error if we haven't set a specific error
+        if (!error) {
+          setError({
+            title: t('messages.error'),
+            message: err instanceof Error ? err.message : 'Failed to fetch payments'
+          })
+        }
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
 
     fetchPayments()
-  }, [])
+
+    return () => {
+      isMounted = false
+    }
+  }, [t])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -109,9 +162,14 @@ const ThisWeekPayments = () => {
     return (
       <Card>
         <CardContent>
-          <Typography color='error' align='center'>
-            {error}
-          </Typography>
+          <Box display='flex' flexDirection='column' alignItems='center' gap={2} minHeight={200}>
+            <Typography color='error' variant='h6'>
+              {error.title}
+            </Typography>
+            <Typography color='error' variant='body1' align='center'>
+              {error.message}
+            </Typography>
+          </Box>
         </CardContent>
       </Card>
     )
@@ -155,7 +213,7 @@ const ThisWeekPayments = () => {
             </Box>
             <Box>
               <Typography variant='h5' sx={{ mb: 0.5, fontWeight: 500 }}>
-                This Week&apos;s Payments
+                {t('thisWeekPayments.title')}
               </Typography>
               <Typography
                 variant='subtitle2'
@@ -167,7 +225,7 @@ const ThisWeekPayments = () => {
                 }}
               >
                 <i className='tabler-currency-dollar text-lg' />
-                Total: {formatAmount(totalAmount)}
+                {t('thisWeekPayments.total')}: {formatAmount(totalAmount)}
               </Typography>
             </Box>
           </Box>
@@ -205,7 +263,7 @@ const ThisWeekPayments = () => {
                     py: 2.5
                   }}
                 >
-                  Receipt #
+                  {t('thisWeekPayments.receipt')} #
                 </TableCell>
                 <TableCell
                   sx={{
@@ -216,7 +274,7 @@ const ThisWeekPayments = () => {
                     py: 2.5
                   }}
                 >
-                  Patient
+                  {t('thisWeekPayments.patientName')}
                 </TableCell>
                 <TableCell
                   sx={{
@@ -227,7 +285,7 @@ const ThisWeekPayments = () => {
                     py: 2.5
                   }}
                 >
-                  Date
+                  {t('thisWeekPayments.date')}
                 </TableCell>
                 <TableCell
                   sx={{
@@ -238,7 +296,7 @@ const ThisWeekPayments = () => {
                     py: 2.5
                   }}
                 >
-                  Method
+                  {t('thisWeekPayments.paymentMethod')}
                 </TableCell>
                 <TableCell
                   align='right'
@@ -250,7 +308,7 @@ const ThisWeekPayments = () => {
                     py: 2.5
                   }}
                 >
-                  Amount
+                  {t('thisWeekPayments.paymentAmount')}
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -260,7 +318,7 @@ const ThisWeekPayments = () => {
                   <TableCell colSpan={5} align='center' sx={{ py: 8 }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
                       <i className='tabler-cash-off text-4xl' style={{ color: theme.palette.text.disabled }} />
-                      <Typography color='text.secondary'>No payments found for this week</Typography>
+                      <Typography color='text.secondary'>{t('thisWeekPayments.noPayments')}</Typography>
                     </Box>
                   </TableCell>
                 </TableRow>
@@ -281,7 +339,7 @@ const ThisWeekPayments = () => {
                       <TableCell sx={{ py: 2.5 }}>{formatDate(payment.payment_date)}</TableCell>
                       <TableCell sx={{ py: 2.5 }}>
                         <Chip
-                          label={payment.payment_method.replace('_', ' ')}
+                          label={t(`thisWeekPayments.paymentMethods.${payment.payment_method.toLowerCase()}`)}
                           color={getPaymentMethodColor(payment.payment_method)}
                           size='small'
                           sx={{
@@ -311,7 +369,7 @@ const ThisWeekPayments = () => {
                     borderColor: 'divider'
                   }}
                 >
-                  Total
+                  {t('thisWeekPayments.total')}
                 </TableCell>
                 <TableCell
                   align='right'

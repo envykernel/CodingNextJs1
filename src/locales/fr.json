@@ -620,5 +620,24 @@
                 "icon": "tabler-lock"
             }
         }
+    },
+    "thisWeekPayments": {
+        "title": "Paiements de la Semaine",
+        "total": "Total",
+        "receipt": "Reçu",
+        "patientName": "Patient",
+        "date": "Date",
+        "paymentMethod": "Méthode",
+        "paymentAmount": "Montant",
+        "noPayments": "Aucun paiement trouvé cette semaine",
+        "paymentMethods": {
+            "cash": "Espèces",
+            "card": "Carte",
+            "bank_transfer": "Virement Bancaire",
+            "mobile_money": "Mobile Money",
+            "insurance": "Assurance",
+            "cheque": "Chèque",
+            "other": "Autre"
+        }
     }
 }
