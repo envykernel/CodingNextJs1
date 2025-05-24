@@ -710,6 +710,12 @@
                     "title": "Aucun rendez-vous",
                     "description": "Aucun rendez-vous {status} pour aujourd'hui"
                 }
+            },
+            "column": {
+                "appointmentCount": {
+                    "singular": "{count} rendez-vous",
+                    "plural": "{count} rendez-vous"
+                }
             }
         }
     }

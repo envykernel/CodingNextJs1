@@ -66,7 +66,16 @@
         "statusOptions": {
             "scheduled": "مجدول",
             "completed": "مكتمل",
-            "cancelled": "ملغى"
+            "cancelled": "ملغي"
+        },
+        "actions": {
+            "goToVisit": "الذهاب إلى الزيارة",
+            "createVisit": "إنشاء زيارة",
+            "cancel": "إلغاء",
+            "confirm": "تأكيد",
+            "loading": "جاري التحميل...",
+            "confirmCancellation": "تأكيد الإلغاء",
+            "cancelAppointmentConfirmation": "هل أنت متأكد أنك تريد إلغاء هذا الموعد؟"
         }
     },
     "noAppointments": "لا توجد مواعيد متاحة.",
@@ -643,6 +652,54 @@
         },
         "chart": {
             "totalAmount": "المبلغ الإجمالي"
+        }
+    },
+    "appointmentStatistics": {
+        "todayAppointments": {
+            "title": "جدول اليوم",
+            "subtitle": "اليوم",
+            "noAppointmentsInStatus": "لا توجد مواعيد {status}",
+            "appointmentsCount": "{count} موعد",
+            "refresh": "تحديث",
+            "loading": "جاري تحميل المواعيد...",
+            "status": {
+                "scheduled": "مجدول",
+                "in_progress": "قيد التنفيذ",
+                "completed": "مكتمل",
+                "cancelled": "ملغي"
+            },
+            "appointmentTypes": {
+                "consultation": "استشارة",
+                "follow-up": "متابعة",
+                "emergency": "طوارئ",
+                "routine-check": "فحص روتيني",
+                "specialist": "متخصص",
+                "other": "أخرى"
+            },
+            "duration": "{minutes} دقيقة",
+            "timezone": "المنطقة الزمنية",
+            "card": {
+                "patient": "المريض",
+                "doctor": "الطبيب",
+                "time": "الوقت",
+                "duration": "المدة",
+                "type": "النوع",
+                "actions": {
+                    "goToVisit": "الذهاب إلى الزيارة",
+                    "createVisit": "إنشاء زيارة",
+                    "cancel": "إلغاء الموعد"
+                },
+                "empty": {
+                    "title": "لا توجد مواعيد",
+                    "description": "لا توجد مواعيد {status} لهذا اليوم"
+                }
+            },
+            "column": {
+                "appointmentCount": {
+                    "singular": "موعد واحد",
+                    "plural": "{count} مواعيد"
+                }
+            }
         }
     }
 }

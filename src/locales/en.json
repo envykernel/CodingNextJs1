@@ -73,6 +73,15 @@
             "scheduled": "Scheduled",
             "completed": "Completed",
             "cancelled": "Cancelled"
+        },
+        "actions": {
+            "goToVisit": "Go to Visit",
+            "createVisit": "Create Visit",
+            "cancel": "Cancel",
+            "confirm": "Confirm",
+            "loading": "Loading...",
+            "confirmCancellation": "Confirm Cancellation",
+            "cancelAppointmentConfirmation": "Are you sure you want to cancel this appointment?"
         }
     },
     "noAppointments": "No appointments available.",
@@ -652,6 +661,54 @@
         },
         "chart": {
             "totalAmount": "Total Amount"
+        }
+    },
+    "appointmentStatistics": {
+        "todayAppointments": {
+            "title": "Today's Schedule",
+            "subtitle": "Today",
+            "noAppointmentsInStatus": "No {status} appointments",
+            "appointmentsCount": "{count} appointments",
+            "refresh": "Refresh",
+            "loading": "Loading appointments...",
+            "status": {
+                "scheduled": "Scheduled",
+                "in_progress": "In Progress",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            },
+            "appointmentTypes": {
+                "consultation": "Consultation",
+                "follow-up": "Follow-up",
+                "emergency": "Emergency",
+                "routine-check": "Routine Check",
+                "specialist": "Specialist",
+                "other": "Other"
+            },
+            "duration": "{minutes} min",
+            "timezone": "Time Zone",
+            "card": {
+                "patient": "Patient",
+                "doctor": "Doctor",
+                "time": "Time",
+                "duration": "Duration",
+                "type": "Type",
+                "actions": {
+                    "goToVisit": "Go to Visit",
+                    "createVisit": "Create Visit",
+                    "cancel": "Cancel Appointment"
+                },
+                "empty": {
+                    "title": "No Appointments",
+                    "description": "No {status} appointments for today"
+                }
+            },
+            "column": {
+                "appointmentCount": {
+                    "singular": "{count} appointment",
+                    "plural": "{count} appointments"
+                }
+            }
         }
     }
 }

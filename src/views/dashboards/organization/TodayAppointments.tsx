@@ -312,7 +312,10 @@ const TodayAppointments = () => {
                     </Typography>
                   </Box>
                   <Chip
-                    label={`${columnAppointments.length} appointment${columnAppointments.length !== 1 ? 's' : ''}`}
+                    label={t('appointmentStatistics.todayAppointments.column.appointmentCount.plural').replace(
+                      '{count}',
+                      columnAppointments.length.toString()
+                    )}
                     size='small'
                     sx={{
                       backgroundColor: alpha(column.color, 0.1),
