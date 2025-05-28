@@ -160,8 +160,10 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
         throw new Error('Failed to update service')
       }
 
+      const updatedService = await response.json()
+
       // Update local state
-      setServices(prevServices => prevServices.map(s => (s.id === service.id ? service : s)))
+      setServices(prevServices => prevServices.map(s => (s.id === service.id ? updatedService : s)))
       setEditingService(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
