@@ -260,22 +260,22 @@ const UserDropdown = () => {
                   <Divider className='mlb-1' />
                   <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/user-profile')}>
                     <i className='tabler-user' />
-                    <Typography color='text.primary'>My Profile</Typography>
+                    <Typography color='text.primary'>{t('userMenu.myProfile')}</Typography>
                   </MenuItem>
                   <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/account-settings')}>
                     <i className='tabler-settings' />
-                    <Typography color='text.primary'>Settings</Typography>
+                    <Typography color='text.primary'>{t('userMenu.settings')}</Typography>
                   </MenuItem>
                   {userRole === 'ADMIN' && (
                     <MenuItem className='mli-2 gap-3' onClick={handleOrganisationClick}>
                       <i className='tabler-building' />
-                      <Typography color='text.primary'>Organisation</Typography>
+                      <Typography color='text.primary'>{t('userMenu.organisation')}</Typography>
                     </MenuItem>
                   )}
                   {userRole === 'ADMIN' && (
                     <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/users-management')}>
                       <i className='tabler-users' />
-                      <Typography color='text.primary'>Users Management</Typography>
+                      <Typography color='text.primary'>{t('userMenu.usersManagement')}</Typography>
                     </MenuItem>
                   )}
                   {userRole === 'ADMIN' && (
@@ -286,11 +286,11 @@ const UserDropdown = () => {
                   )}
                   <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/pricing')}>
                     <i className='tabler-currency-dollar' />
-                    <Typography color='text.primary'>Pricing</Typography>
+                    <Typography color='text.primary'>{t('userMenu.pricing')}</Typography>
                   </MenuItem>
                   <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/faq')}>
                     <i className='tabler-help-circle' />
-                    <Typography color='text.primary'>FAQ</Typography>
+                    <Typography color='text.primary'>{t('userMenu.faq')}</Typography>
                   </MenuItem>
                   <div className='flex items-center plb-2 pli-3'>
                     <Button
@@ -302,7 +302,7 @@ const UserDropdown = () => {
                       onClick={handleUserLogout}
                       sx={{ '& .MuiButton-endIcon': { marginInlineStart: 1.5 } }}
                     >
-                      Logout
+                      {t('userMenu.logout')}
                     </Button>
                   </div>
                 </MenuList>

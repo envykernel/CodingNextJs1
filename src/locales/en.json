@@ -746,6 +746,13 @@
         }
     },
     "userMenu": {
-        "services": "Services"
+        "services": "Services",
+        "myProfile": "My Profile",
+        "settings": "Settings",
+        "organisation": "Organisation",
+        "usersManagement": "Users Management",
+        "pricing": "Pricing",
+        "faq": "FAQ",
+        "logout": "Logout"
     }
 }

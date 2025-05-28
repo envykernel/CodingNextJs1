@@ -737,6 +737,13 @@
         }
     },
     "userMenu": {
-        "services": "الخدمات"
+        "services": "الخدمات",
+        "myProfile": "الملف الشخصي",
+        "settings": "الإعدادات",
+        "organisation": "المؤسسة",
+        "usersManagement": "إدارة المستخدمين",
+        "pricing": "التسعير",
+        "faq": "الأسئلة الشائعة",
+        "logout": "تسجيل الخروج"
     }
 }
