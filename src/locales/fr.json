@@ -727,6 +727,7 @@
             },
             "loading": "Chargement des statistiques des rendez-vous...",
             "error": "Échec du chargement des statistiques des rendez-vous",
+            "noAppointments": "Aucun rendez-vous pour cette période",
             "days": {
                 "monday": "Lun",
                 "tuesday": "Mar",

@@ -719,6 +719,7 @@
             },
             "loading": "Loading appointment statistics...",
             "error": "Failed to load appointment statistics",
+            "noAppointments": "No appointments for this period",
             "days": {
                 "monday": "Mon",
                 "tuesday": "Tue",

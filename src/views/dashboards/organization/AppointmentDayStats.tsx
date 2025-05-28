@@ -107,11 +107,39 @@ const AppointmentDayStats = ({ dateRange, startDate, endDate }: AppointmentDaySt
   if (loading) {
     return (
       <Card>
-        <CardContent>
-          <Box display='flex' justifyContent='center' alignItems='center' minHeight={200}>
-            <CircularProgress />
-            <Typography sx={{ ml: 2 }}>{t('appointmentStatistics.dayStats.loading')}</Typography>
-          </Box>
+        <CardHeader
+          title={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  backgroundColor: theme.palette.primary.light,
+                  color: theme.palette.primary.main
+                }}
+              >
+                <i
+                  className={`tabler-calendar-${startDate && endDate ? 'stats' : dateRange === 'week' ? 'week' : 'stats'} text-xl`}
+                />
+              </Box>
+              <Box>
+                <Typography variant='h5'>{t('appointmentStatistics.dayStats.title')}</Typography>
+                <Typography variant='subtitle2' color='text.secondary'>
+                  {t(
+                    `appointmentStatistics.dayStats.subtitle.${startDate && endDate ? 'custom' : dateRange || 'week'}`
+                  )}
+                </Typography>
+              </Box>
+            </Box>
+          }
+        />
+        <CardContent sx={{ height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <CircularProgress />
+          <Typography sx={{ ml: 2 }}>{t('appointmentStatistics.dayStats.loading')}</Typography>
         </CardContent>
       </Card>
     )
@@ -120,9 +148,82 @@ const AppointmentDayStats = ({ dateRange, startDate, endDate }: AppointmentDaySt
   if (error) {
     return (
       <Card>
-        <CardContent>
+        <CardHeader
+          title={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  backgroundColor: theme.palette.primary.light,
+                  color: theme.palette.primary.main
+                }}
+              >
+                <i
+                  className={`tabler-calendar-${startDate && endDate ? 'stats' : dateRange === 'week' ? 'week' : 'stats'} text-xl`}
+                />
+              </Box>
+              <Box>
+                <Typography variant='h5'>{t('appointmentStatistics.dayStats.title')}</Typography>
+                <Typography variant='subtitle2' color='text.secondary'>
+                  {t(
+                    `appointmentStatistics.dayStats.subtitle.${startDate && endDate ? 'custom' : dateRange || 'week'}`
+                  )}
+                </Typography>
+              </Box>
+            </Box>
+          }
+        />
+        <CardContent sx={{ height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Typography color='error' align='center'>
             {t('appointmentStatistics.dayStats.error')}
+          </Typography>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Add check for empty stats but keep the header
+  if (stats.length === 0 || stats.every(stat => stat.count === 0)) {
+    return (
+      <Card>
+        <CardHeader
+          title={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  backgroundColor: theme.palette.primary.light,
+                  color: theme.palette.primary.main
+                }}
+              >
+                <i
+                  className={`tabler-calendar-${startDate && endDate ? 'stats' : dateRange === 'week' ? 'week' : 'stats'} text-xl`}
+                />
+              </Box>
+              <Box>
+                <Typography variant='h5'>{t('appointmentStatistics.dayStats.title')}</Typography>
+                <Typography variant='subtitle2' color='text.secondary'>
+                  {t(
+                    `appointmentStatistics.dayStats.subtitle.${startDate && endDate ? 'custom' : dateRange || 'week'}`
+                  )}
+                </Typography>
+              </Box>
+            </Box>
+          }
+        />
+        <CardContent sx={{ height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Typography color='text.secondary' align='center'>
+            {t('appointmentStatistics.dayStats.noAppointments')}
           </Typography>
         </CardContent>
       </Card>
@@ -163,8 +264,8 @@ const AppointmentDayStats = ({ dateRange, startDate, endDate }: AppointmentDaySt
           </Box>
         }
       />
-      <CardContent sx={{ p: '0 !important' }}>
-        <Box sx={{ display: 'flex', height: 120, width: '100%' }}>
+      <CardContent sx={{ p: '0 !important', height: 120 }}>
+        <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
           {stats.map((item, index) => {
             const color = theme.palette[item.color][item.colorVariant]
             const textColor = getContrastText(color)
