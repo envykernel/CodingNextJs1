@@ -752,5 +752,8 @@
                 "december": "Déc"
             }
         }
+    },
+    "userMenu": {
+        "services": "Services"
     }
 }

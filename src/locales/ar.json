@@ -735,5 +735,8 @@
                 "december": "ديسمبر"
             }
         }
+    },
+    "userMenu": {
+        "services": "الخدمات"
     }
 }

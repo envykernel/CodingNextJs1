@@ -744,5 +744,8 @@
                 "december": "Dec"
             }
         }
+    },
+    "userMenu": {
+        "services": "Services"
     }
 }

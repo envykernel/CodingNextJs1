@@ -29,6 +29,7 @@ import type { Locale } from '@configs/i18n'
 
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
+import { useTranslation } from '@/contexts/translationContext'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
@@ -120,6 +121,7 @@ const UserDropdown = () => {
   const { data: session } = useSession()
   const { settings } = useSettings()
   const { lang } = useParams() as { lang?: string }
+  const { t } = useTranslation()
 
   // Translation for organisation label
   const translations: Record<string, Record<string, string>> = {
@@ -274,6 +276,12 @@ const UserDropdown = () => {
                     <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/users-management')}>
                       <i className='tabler-users' />
                       <Typography color='text.primary'>Users Management</Typography>
+                    </MenuItem>
+                  )}
+                  {userRole === 'ADMIN' && (
+                    <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/services')}>
+                      <i className='tabler-clipboard-list' />
+                      <Typography color='text.primary'>{t('userMenu.services')}</Typography>
                     </MenuItem>
                   )}
                   <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/pricing')}>
