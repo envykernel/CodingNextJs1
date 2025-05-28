@@ -752,14 +752,36 @@
         "name": "اسم الخدمة",
         "description": "الوصف",
         "price": "السعر",
+        "amount": "المبلغ",
         "duration": "المدة",
         "minutes": "دقائق",
+        "status": "الحالة",
+        "allStatus": "جميع الحالات",
+        "sortBy": "ترتيب حسب",
+        "sortByName": "ترتيب حسب الاسم",
+        "sortByAmount": "ترتيب حسب المبلغ",
+        "isActive": "الحالة النشطة",
+        "cancel": "إلغاء",
+        "save": "حفظ",
+        "status": {
+            "active": "نشط",
+            "inactive": "غير نشط",
+            "enabled": "مفعل",
+            "disabled": "معطل",
+            "archived": "مؤرشف",
+            "deleted": "محذوف",
+            "pending": "قيد الانتظار",
+            "blocked": "محظور"
+        },
         "confirmDelete": "هل أنت متأكد من حذف هذه الخدمة؟",
         "error": {
             "fetch": "فشل في جلب الخدمات",
             "create": "فشل في إنشاء الخدمة",
             "update": "فشل في تحديث الخدمة",
             "delete": "فشل في حذف الخدمة"
-        }
+        },
+        "searchPlaceholder": "البحث عن الخدمات...",
+        "noResults": "لم يتم العثور على خدمات تطابق بحثك",
+        "noServices": "لا توجد خدمات متاحة"
     }
 }

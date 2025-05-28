@@ -86,9 +86,9 @@
     "doctor": "Médecin",
     "notes": "Remarques",
     "common": {
-        "overview": "Vue d'ensemble",
+        "overview": "Aperçu",
         "security": "Sécurité",
-        "billingPlans": "Facturation & Abonnements",
+        "billingPlans": "Facturation et Plans",
         "notifications": "Notifications",
         "connections": "Connexions",
         "show": "Afficher",
@@ -769,14 +769,35 @@
         "name": "Nom du Service",
         "description": "Description",
         "price": "Prix",
+        "amount": "Montant",
         "duration": "Durée",
         "minutes": "minutes",
+        "allStatus": "Tous les Statuts",
+        "sortBy": "Trier par",
+        "sortByName": "Trier par Nom",
+        "sortByAmount": "Trier par Montant",
+        "isActive": "Statut Actif",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "status": {
+            "active": "Actif",
+            "inactive": "Inactif",
+            "enabled": "Activé",
+            "disabled": "Désactivé",
+            "archived": "Archivé",
+            "deleted": "Supprimé",
+            "pending": "En attente",
+            "blocked": "Bloqué"
+        },
         "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce service ?",
         "error": {
             "fetch": "Échec de la récupération des services",
             "create": "Échec de la création du service",
             "update": "Échec de la mise à jour du service",
             "delete": "Échec de la suppression du service"
-        }
+        },
+        "searchPlaceholder": "Rechercher des services...",
+        "noResults": "Aucun service ne correspond à votre recherche",
+        "noServices": "Aucun service disponible"
     }
 }

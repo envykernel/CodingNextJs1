@@ -761,14 +761,36 @@
         "name": "Service Name",
         "description": "Description",
         "price": "Price",
+        "amount": "Amount",
         "duration": "Duration",
         "minutes": "minutes",
+        "status": "Status",
+        "allStatus": "All Status",
+        "sortBy": "Sort By",
+        "sortByName": "Sort by Name",
+        "sortByAmount": "Sort by Amount",
+        "isActive": "Active Status",
+        "cancel": "Cancel",
+        "save": "Save",
+        "status": {
+            "active": "Active",
+            "inactive": "Inactive",
+            "enabled": "Enabled",
+            "disabled": "Disabled",
+            "archived": "Archived",
+            "deleted": "Deleted",
+            "pending": "Pending",
+            "blocked": "Blocked"
+        },
         "confirmDelete": "Are you sure you want to delete this service?",
         "error": {
             "fetch": "Failed to fetch services",
             "create": "Failed to create service",
             "update": "Failed to update service",
             "delete": "Failed to delete service"
-        }
+        },
+        "searchPlaceholder": "Search services...",
+        "noResults": "No services found matching your search",
+        "noServices": "No services available"
     }
 }
