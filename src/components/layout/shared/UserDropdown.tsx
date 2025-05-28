@@ -107,11 +107,13 @@ const roleConfig = {
 } as const
 
 import EditOrganisationDrawer from '@/components/organisation/EditOrganisationDrawer'
+import ServicesDrawer from '@/components/services/ServicesDrawer'
 
 const UserDropdown = () => {
   // States
   const [open, setOpen] = useState(false)
   const [organisationDrawerOpen, setOrganisationDrawerOpen] = useState(false)
+  const [servicesDrawerOpen, setServicesDrawerOpen] = useState(false)
 
   // Refs
   const anchorRef = useRef<HTMLDivElement>(null)
@@ -167,6 +169,12 @@ const UserDropdown = () => {
   const handleOrganisationClick = (e: MouseEvent<HTMLLIElement>) => {
     e.preventDefault()
     setOrganisationDrawerOpen(true)
+    setOpen(false)
+  }
+
+  const handleServicesClick = (e: MouseEvent<HTMLLIElement>) => {
+    e.preventDefault()
+    setServicesDrawerOpen(true)
     setOpen(false)
   }
 
@@ -279,7 +287,7 @@ const UserDropdown = () => {
                     </MenuItem>
                   )}
                   {userRole === 'ADMIN' && (
-                    <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/services')}>
+                    <MenuItem className='mli-2 gap-3' onClick={handleServicesClick}>
                       <i className='tabler-clipboard-list' />
                       <Typography color='text.primary'>{t('userMenu.services')}</Typography>
                     </MenuItem>
@@ -317,6 +325,8 @@ const UserDropdown = () => {
         onClose={() => setOrganisationDrawerOpen(false)}
         onOrganisationUpdated={handleOrganisationUpdated}
       />
+
+      <ServicesDrawer open={servicesDrawerOpen} onClose={() => setServicesDrawerOpen(false)} />
     </>
   )
 }

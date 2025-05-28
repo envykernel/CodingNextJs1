@@ -754,5 +754,21 @@
         "pricing": "Pricing",
         "faq": "FAQ",
         "logout": "Logout"
+    },
+    "services": {
+        "title": "Services Management",
+        "addNew": "Add New Service",
+        "name": "Service Name",
+        "description": "Description",
+        "price": "Price",
+        "duration": "Duration",
+        "minutes": "minutes",
+        "confirmDelete": "Are you sure you want to delete this service?",
+        "error": {
+            "fetch": "Failed to fetch services",
+            "create": "Failed to create service",
+            "update": "Failed to update service",
+            "delete": "Failed to delete service"
+        }
     }
 }

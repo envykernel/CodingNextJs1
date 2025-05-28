@@ -762,5 +762,21 @@
         "pricing": "Tarification",
         "faq": "FAQ",
         "logout": "Déconnexion"
+    },
+    "services": {
+        "title": "Gestion des Services",
+        "addNew": "Ajouter un Nouveau Service",
+        "name": "Nom du Service",
+        "description": "Description",
+        "price": "Prix",
+        "duration": "Durée",
+        "minutes": "minutes",
+        "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce service ?",
+        "error": {
+            "fetch": "Échec de la récupération des services",
+            "create": "Échec de la création du service",
+            "update": "Échec de la mise à jour du service",
+            "delete": "Échec de la suppression du service"
+        }
     }
 }
