@@ -33,6 +33,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return new NextResponse('Service not found', { status: 404 })
     }
 
+    // Validate amount is greater than zero
+    if (typeof body.amount !== 'number' || body.amount <= 0) {
+      return new NextResponse(JSON.stringify({ error: 'services.error.invalidAmount' }), { status: 400 })
+    }
+
     // Update the service
     const updatedService = await prisma.service.update({
       where: { id: serviceId },

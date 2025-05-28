@@ -33,7 +33,8 @@ import { useTranslation } from '@/contexts/translationContext'
 
 // Types
 interface Service {
-  id: string
+  // Make id optional since new services won't have one
+  id?: string
   code: string
   name: string
   description: string
@@ -44,20 +45,6 @@ interface Service {
 interface ServicesDrawerProps {
   open: boolean
   onClose: () => void
-}
-
-// Helper function to generate code from name
-const generateCode = (name: string): string => {
-  // Remove special characters and convert to uppercase
-  const baseCode = name
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, '')
-    .slice(0, 8) // Limit to 8 characters
-
-  // Add timestamp to ensure uniqueness
-  const timestamp = Date.now().toString().slice(-4)
-
-  return `${baseCode}-${timestamp}`
 }
 
 const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
@@ -140,74 +127,98 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
     setEditingService(service)
   }
 
-  const handleSaveService = async (service: Service) => {
-    try {
-      setIsSubmitting(true)
-      setError(null)
+  const handleAddService = () => {
+    setError(null)
 
-      const response = await fetch(`/api/services/${service.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          amount: service.amount,
-          is_active: service.is_active
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to update service')
-      }
-
-      const updatedService = await response.json()
-
-      // Update local state
-      setServices(prevServices => prevServices.map(s => (s.id === service.id ? updatedService : s)))
-      setEditingService(null)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setIsSubmitting(false)
+    // Create a new empty service object without an id
+    const newService: Omit<Service, 'id'> = {
+      code: '',
+      name: '',
+      description: '',
+      amount: 0,
+      is_active: true
     }
+
+    // Set it as the editing service immediately
+    setEditingService(newService as Service)
   }
 
-  const handleAddService = async () => {
+  const handleSaveService = async (service: Service) => {
+    if (!service) return
+
     try {
       setIsSubmitting(true)
       setError(null)
 
-      const newService: Omit<Service, 'id' | 'code'> = {
-        name: '',
-        description: '',
-        amount: 0,
-        is_active: true
+      // Validate required fields
+      if (!service.name || service.name.trim().length === 0) {
+        setError(t('services.error.nameRequired'))
+
+        return
       }
 
-      const response = await fetch('/api/services', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newService)
-      })
+      // Validate amount is greater than zero
+      if (typeof service.amount !== 'number' || service.amount <= 0) {
+        setError(t('services.error.invalidAmount'))
 
-      if (!response.ok) {
-        throw new Error('Failed to create service')
+        return
       }
 
-      const createdService = await response.json()
+      // For new services (no id), use POST
+      if (!service.id) {
+        const response = await fetch('/api/services', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: service.name,
+            description: service.description,
+            amount: service.amount,
+            is_active: service.is_active
+          })
+        })
 
-      setServices(prevServices => [...prevServices, createdService])
-      setEditingService(createdService)
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(t(data.error || 'services.error.create'))
+        }
+
+        setServices(prevServices => [...prevServices, data])
+        setEditingService(null)
+      } else {
+        // For existing services, use PUT
+        const response = await fetch(`/api/services/${service.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            amount: service.amount,
+            is_active: service.is_active
+          })
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(t(data.error || 'services.error.update'))
+        }
+
+        setServices(prevServices => prevServices.map(s => (s.id === service.id ? data : s)))
+        setEditingService(null)
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : t('services.error.unknown'))
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const handleDeleteService = async (serviceId: string) => {
+    if (!serviceId) return
+
     if (!confirm(t('services.confirmDelete'))) return
 
     try {
@@ -218,13 +229,15 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
         method: 'DELETE'
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error('Failed to delete service')
+        throw new Error(t(data.error || 'services.error.delete'))
       }
 
       setServices(prevServices => prevServices.filter(s => s.id !== serviceId))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : t('services.error.unknown'))
     } finally {
       setIsSubmitting(false)
     }
@@ -383,7 +396,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                   variant='contained'
                   startIcon={<i className='tabler-plus' />}
                   onClick={handleAddService}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || editingService !== null}
                 >
                   {t('services.addNew')}
                 </Button>
@@ -396,6 +409,126 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
               </Box>
             ) : (
               <>
+                {/* New Service Form */}
+                {editingService && !editingService.id && (
+                  <Card sx={{ mb: 4 }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        <TextField
+                          fullWidth
+                          required
+                          label={t('services.name')}
+                          value={editingService?.name || ''}
+                          onChange={e => {
+                            const newName = e.target.value
+
+                            setEditingService(
+                              prev =>
+                                prev && {
+                                  ...prev,
+                                  name: newName
+                                }
+                            )
+                          }}
+                          error={error?.includes('name')}
+                          helperText={error?.includes('name') ? error : ''}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position='start'>
+                                <i className='tabler-tag' />
+                              </InputAdornment>
+                            )
+                          }}
+                        />
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={2}
+                          label={t('services.description')}
+                          value={editingService?.description || ''}
+                          onChange={e => setEditingService(prev => prev && { ...prev, description: e.target.value })}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position='start'>
+                                <i className='tabler-file-description' />
+                              </InputAdornment>
+                            )
+                          }}
+                        />
+                        <TextField
+                          fullWidth
+                          type='number'
+                          label={t('services.amount')}
+                          value={editingService?.amount ?? 0}
+                          onChange={e => {
+                            const value = Number(e.target.value)
+                            if (value > 0 && editingService) {
+                              setEditingService({
+                                ...editingService,
+                                amount: value
+                              })
+                            }
+                          }}
+                          inputProps={{
+                            min: 0.01,
+                            step: 0.01
+                          }}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position='start'>
+                                <i className='tabler-currency-dollar' />
+                              </InputAdornment>
+                            ),
+                            endAdornment: <InputAdornment position='end'>EUR</InputAdornment>
+                          }}
+                          sx={{
+                            '& .MuiInputBase-input': {
+                              fontWeight: 600,
+                              color: 'primary.main'
+                            }
+                          }}
+                        />
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Typography>{t('services.isActive')}</Typography>
+                          <Switch
+                            checked={editingService?.is_active ?? true}
+                            onChange={e =>
+                              setEditingService(
+                                prev =>
+                                  prev && {
+                                    ...prev,
+                                    is_active: e.target.checked
+                                  }
+                              )
+                            }
+                          />
+                        </Box>
+                        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
+                          <Button
+                            variant='outlined'
+                            onClick={() => {
+                              setEditingService(null)
+                              setError(null)
+                            }}
+                            disabled={isSubmitting}
+                            startIcon={<i className='tabler-x' />}
+                          >
+                            {t('services.cancel')}
+                          </Button>
+                          <Button
+                            variant='contained'
+                            onClick={() => editingService && handleSaveService(editingService)}
+                            disabled={isSubmitting || !editingService}
+                            startIcon={<i className='tabler-device-floppy' />}
+                          >
+                            {t('services.save')}
+                          </Button>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )}
+
                 <Grid container spacing={3}>
                   {paginatedServices.map(service => (
                     <Grid item xs={12} sm={6} key={service.id}>
@@ -416,6 +549,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                 <>
                                   <TextField
                                     fullWidth
+                                    required
                                     label={t('services.name')}
                                     value={editingService.name}
                                     onChange={e => {
@@ -425,11 +559,12 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                         prev =>
                                           prev && {
                                             ...prev,
-                                            name: newName,
-                                            code: generateCode(newName)
+                                            name: newName
                                           }
                                       )
                                     }}
+                                    error={error?.includes('name')}
+                                    helperText={error?.includes('name') ? error : ''}
                                     InputProps={{
                                       startAdornment: (
                                         <InputAdornment position='start'>
@@ -474,16 +609,20 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                 fullWidth
                                 type='number'
                                 label={t('services.amount')}
-                                value={editingService.amount || 0}
-                                onChange={e =>
-                                  setEditingService(
-                                    prev =>
-                                      prev && {
-                                        ...prev,
-                                        amount: Number(e.target.value) || 0
-                                      }
-                                  )
-                                }
+                                value={editingService?.amount ?? 0}
+                                onChange={e => {
+                                  const value = Number(e.target.value)
+                                  if (value > 0 && editingService) {
+                                    setEditingService({
+                                      ...editingService,
+                                      amount: value
+                                    })
+                                  }
+                                }}
+                                inputProps={{
+                                  min: 0.01,
+                                  step: 0.01
+                                }}
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position='start'>
@@ -517,7 +656,10 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
                                 <Button
                                   variant='outlined'
-                                  onClick={() => setEditingService(null)}
+                                  onClick={() => {
+                                    setEditingService(null)
+                                    setError(null)
+                                  }}
                                   disabled={isSubmitting}
                                   startIcon={<i className='tabler-x' />}
                                 >
