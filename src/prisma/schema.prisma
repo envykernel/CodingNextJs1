@@ -444,19 +444,22 @@ model invoice {
 }
 
 model invoice_line {
-  id              Int                   @id @default(autoincrement())
-  organisation_id Int
-  invoice_id      Int
-  service_id      Int
-  description     String?
-  quantity        Int                   @default(1)
-  unit_price      Decimal               @db.Decimal(10, 2)
-  line_total      Decimal               @db.Decimal(12, 2)
-  created_at      DateTime              @default(now())
-  invoice         invoice               @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
-  organisation    organisation          @relation(fields: [organisation_id], references: [id])
-  service         service               @relation(fields: [service_id], references: [id])
-  payment_apps    payment_application[] @relation("InvoiceLinePaymentApps")
+  id                  Int                   @id @default(autoincrement())
+  organisation_id     Int
+  invoice_id         Int
+  service_id         Int
+  service_name       String                 @db.VarChar(100)  // Store service name at invoice time
+  service_code       String                 @db.VarChar(20)   // Store service code at invoice time
+  service_description String?               // Store service description at invoice time
+  description        String?
+  quantity           Int                    @default(1)
+  unit_price         Decimal                @db.Decimal(10, 2)
+  line_total         Decimal                @db.Decimal(12, 2)
+  created_at         DateTime               @default(now())
+  invoice            invoice                @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  organisation       organisation           @relation(fields: [organisation_id], references: [id])
+  service            service                @relation(fields: [service_id], references: [id])
+  payment_apps       payment_application[]  @relation("InvoiceLinePaymentApps")
 
   @@index([organisation_id])
   @@index([invoice_id])

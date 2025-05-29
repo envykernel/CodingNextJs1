@@ -33,19 +33,17 @@ const PreviewPage = async (props: { params: Promise<{ id: string }> }) => {
     where: { id: Number(id) },
     include: {
       lines: {
-        include: {
-          service: {
-            select: {
-              id: true,
-              code: true,
-              name: true,
-              description: true,
-              amount: true,
-              is_active: true,
-              created_at: true,
-              updated_at: true
-            }
-          }
+        select: {
+          id: true,
+          service_id: true,
+          service_name: true,
+          service_code: true,
+          service_description: true,
+          description: true,
+          quantity: true,
+          unit_price: true,
+          line_total: true,
+          created_at: true
         }
       },
       patient: true,
@@ -69,6 +67,9 @@ const PreviewPage = async (props: { params: Promise<{ id: string }> }) => {
             select: {
               id: true,
               service_id: true,
+              service_name: true,
+              service_code: true,
+              service_description: true,
               description: true,
               quantity: true,
               unit_price: true,
@@ -92,12 +93,12 @@ const PreviewPage = async (props: { params: Promise<{ id: string }> }) => {
       ...line,
       unit_price: Number(line.unit_price),
       line_total: Number(line.line_total),
-      service: line.service
-        ? {
-            ...line.service,
-            amount: Number(line.service.amount)
-          }
-        : null
+      service: {
+        id: line.service_id,
+        name: line.service_name,
+        code: line.service_code,
+        description: line.service_description
+      }
     })),
     payment_apps: invoice.payment_apps.map(app => ({
       ...app,
@@ -112,7 +113,13 @@ const PreviewPage = async (props: { params: Promise<{ id: string }> }) => {
         ? {
             ...app.invoice_line,
             unit_price: Number(app.invoice_line.unit_price),
-            line_total: Number(app.invoice_line.line_total)
+            line_total: Number(app.invoice_line.line_total),
+            service: {
+              id: app.invoice_line.service_id,
+              name: app.invoice_line.service_name,
+              code: app.invoice_line.service_code,
+              description: app.invoice_line.service_description
+            }
           }
         : null
     }))

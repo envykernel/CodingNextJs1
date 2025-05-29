@@ -72,16 +72,33 @@ export async function POST(req: NextRequest) {
 
   const services = await prisma.service.findMany({
     where: { id: { in: serviceIds } },
-    select: { id: true, amount: true }
+    select: {
+      id: true,
+      amount: true,
+      name: true,
+      code: true,
+      description: true
+    }
   })
 
-  const serviceMap = Object.fromEntries(services.map((s: any) => [s.id, s.amount]))
+  const serviceMap = Object.fromEntries(
+    services.map((s: any) => [
+      s.id,
+      {
+        amount: s.amount,
+        name: s.name,
+        code: s.code,
+        description: s.description
+      }
+    ])
+  )
 
   // Prepare invoice lines
   let total_amount = 0
 
   for (const line of lines) {
-    const unit_price = Number(serviceMap[line.service_id] || 0)
+    const service = serviceMap[line.service_id] || { amount: 0, name: '', code: '', description: null }
+    const unit_price = Number(service.amount)
     const quantity = Number(line.quantity)
     const line_total = unit_price * quantity
 
@@ -100,14 +117,20 @@ export async function POST(req: NextRequest) {
       record_status: 'ACTIVE',
       total_amount,
       lines: {
-        create: lines.map((line: any) => ({
-          service: { connect: { id: line.service_id } },
-          description: line.description,
-          quantity: Number(line.quantity),
-          unit_price: Number(serviceMap[line.service_id] || 0),
-          line_total: Number(serviceMap[line.service_id] || 0) * Number(line.quantity),
-          organisation: { connect: { id: organisation_id } }
-        }))
+        create: lines.map((line: any) => {
+          const service = serviceMap[line.service_id] || { amount: 0, name: '', code: '', description: null }
+          return {
+            service: { connect: { id: line.service_id } },
+            service_name: service.name,
+            service_code: service.code,
+            service_description: service.description,
+            description: line.description,
+            quantity: Number(line.quantity),
+            unit_price: Number(service.amount),
+            line_total: Number(service.amount) * Number(line.quantity),
+            organisation: { connect: { id: organisation_id } }
+          }
+        })
       }
     },
     include: { lines: true }
@@ -133,16 +156,33 @@ export async function PUT(req: NextRequest) {
 
   const services = await prisma.service.findMany({
     where: { id: { in: serviceIds } },
-    select: { id: true, amount: true }
+    select: {
+      id: true,
+      amount: true,
+      name: true,
+      code: true,
+      description: true
+    }
   })
 
-  const serviceMap = Object.fromEntries(services.map((s: any) => [s.id, s.amount]))
+  const serviceMap = Object.fromEntries(
+    services.map((s: any) => [
+      s.id,
+      {
+        amount: s.amount,
+        name: s.name,
+        code: s.code,
+        description: s.description
+      }
+    ])
+  )
 
   // Prepare invoice lines
   let total_amount = 0
 
   for (const line of lines) {
-    const unit_price = Number(serviceMap[line.service_id] || 0)
+    const service = serviceMap[line.service_id] || { amount: 0, name: '', code: '', description: null }
+    const unit_price = Number(service.amount)
     const quantity = Number(line.quantity)
     const line_total = unit_price * quantity
 
@@ -200,10 +240,13 @@ export async function PUT(req: NextRequest) {
         where: { id: line.id },
         data: {
           service: { connect: { id: line.service_id } },
+          service_name: serviceMap[line.service_id]?.name || '',
+          service_code: serviceMap[line.service_id]?.code || '',
+          service_description: serviceMap[line.service_id]?.description || null,
           description: line.description,
           quantity: Number(line.quantity),
-          unit_price: Number(serviceMap[line.service_id] || 0),
-          line_total: Number(serviceMap[line.service_id] || 0) * Number(line.quantity),
+          unit_price: Number(serviceMap[line.service_id]?.amount || 0),
+          line_total: Number(serviceMap[line.service_id]?.amount || 0) * Number(line.quantity),
           organisation: { connect: { id: organisation_id } }
         }
       })
@@ -213,10 +256,13 @@ export async function PUT(req: NextRequest) {
         data: {
           invoice: { connect: { id: Number(id) } },
           service: { connect: { id: line.service_id } },
+          service_name: serviceMap[line.service_id]?.name || '',
+          service_code: serviceMap[line.service_id]?.code || '',
+          service_description: serviceMap[line.service_id]?.description || null,
           description: line.description,
           quantity: Number(line.quantity),
-          unit_price: Number(serviceMap[line.service_id] || 0),
-          line_total: Number(serviceMap[line.service_id] || 0) * Number(line.quantity),
+          unit_price: Number(serviceMap[line.service_id]?.amount || 0),
+          line_total: Number(serviceMap[line.service_id]?.amount || 0) * Number(line.quantity),
           organisation: { connect: { id: organisation_id } }
         }
       })
