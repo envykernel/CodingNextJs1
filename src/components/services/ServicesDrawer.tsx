@@ -441,6 +441,11 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                               </InputAdornment>
                             )
                           }}
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: theme => theme.palette.background.paper
+                            }
+                          }}
                         />
                         <TextField
                           fullWidth
@@ -458,6 +463,11 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                 <i className='tabler-file-description' />
                               </InputAdornment>
                             )
+                          }}
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: theme => theme.palette.background.paper
+                            }
                           }}
                         />
                         <TextField
@@ -480,28 +490,37 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                             step: 0.01
                           }}
                           InputProps={{
-                            startAdornment: (
-                              <InputAdornment position='start'>
-                                <i className='tabler-currency-dollar' />
-                              </InputAdornment>
-                            ),
-                            endAdornment: <InputAdornment position='end'>EUR</InputAdornment>
+                            endAdornment: <InputAdornment position='end'>MAD</InputAdornment>
                           }}
                           sx={{
-                            '& .MuiInputBase-input': {
-                              fontWeight: 600,
-                              color: 'primary.main'
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: theme => theme.palette.background.paper,
+                              '& .MuiInputBase-input': {
+                                fontWeight: 600,
+                                color: 'primary.main',
+                                fontSize: '1.1rem'
+                              }
                             }
                           }}
                         />
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Typography>{t('services.isActive')}</Typography>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 2,
+                            p: 2,
+                            borderRadius: 1,
+                            bgcolor: theme => theme.palette.action.hover
+                          }}
+                        >
+                          <Typography sx={{ fontWeight: 500 }}>{t('services.isActive')}</Typography>
                           <Switch
                             checked={editingService!.is_active}
                             onChange={e => {
                               if (!editingService) return
                               setEditingService({ ...editingService, is_active: e.target.checked })
                             }}
+                            color='success'
                           />
                         </Box>
                         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
@@ -513,6 +532,21 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                             }}
                             disabled={isSubmitting}
                             startIcon={<i className='tabler-x' />}
+                            sx={{
+                              minWidth: 100,
+                              height: 36,
+                              textTransform: 'none',
+                              borderColor: 'divider',
+                              color: 'text.secondary',
+                              '&:hover': {
+                                borderColor: 'text.secondary',
+                                bgcolor: 'action.hover'
+                              },
+                              '&.Mui-disabled': {
+                                borderColor: 'action.disabled',
+                                color: 'action.disabled'
+                              }
+                            }}
                           >
                             {t('services.cancel')}
                           </Button>
@@ -525,6 +559,19 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                             }}
                             disabled={isSubmitting || !editingService}
                             startIcon={<i className='tabler-device-floppy' />}
+                            sx={{
+                              minWidth: 100,
+                              height: 36,
+                              textTransform: 'none',
+                              bgcolor: 'success.main',
+                              '&:hover': {
+                                bgcolor: 'success.dark'
+                              },
+                              '&.Mui-disabled': {
+                                bgcolor: 'action.disabledBackground',
+                                color: 'action.disabled'
+                              }
+                            }}
                           >
                             {t('services.save')}
                           </Button>
@@ -541,13 +588,15 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                         sx={{
                           height: '100%',
                           transition: 'all 0.2s ease-in-out',
+                          position: 'relative',
+                          overflow: 'visible',
                           '&:hover': {
-                            transform: 'translateY(-2px)',
-                            boxShadow: theme => theme.shadows[4]
+                            transform: 'translateY(-4px)',
+                            boxShadow: theme => theme.shadows[8]
                           }
                         }}
                       >
-                        <CardContent>
+                        <CardContent sx={{ p: 4 }}>
                           {editingService?.id === service.id && editingService ? (
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                               {!service.code ? (
@@ -570,6 +619,11 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                         </InputAdornment>
                                       )
                                     }}
+                                    sx={{
+                                      '& .MuiOutlinedInput-root': {
+                                        backgroundColor: theme => theme.palette.background.paper
+                                      }
+                                    }}
                                   />
                                   <TextField
                                     fullWidth
@@ -588,11 +642,16 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                         </InputAdornment>
                                       )
                                     }}
+                                    sx={{
+                                      '& .MuiOutlinedInput-root': {
+                                        backgroundColor: theme => theme.palette.background.paper
+                                      }
+                                    }}
                                   />
                                 </>
                               ) : (
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                  <Typography variant='subtitle1' sx={{ flex: 1 }}>
+                                  <Typography variant='subtitle1' sx={{ flex: 1, fontWeight: 600 }}>
                                     {service.name}
                                   </Typography>
                                   <Chip
@@ -600,7 +659,14 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                     label={service.code}
                                     color='primary'
                                     variant='outlined'
-                                    sx={{ mr: 2 }}
+                                    sx={{
+                                      mr: 2,
+                                      height: 24,
+                                      '& .MuiChip-label': {
+                                        px: 1.5,
+                                        fontWeight: 500
+                                      }
+                                    }}
                                   />
                                 </Box>
                               )}
@@ -624,28 +690,37 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                   step: 0.01
                                 }}
                                 InputProps={{
-                                  startAdornment: (
-                                    <InputAdornment position='start'>
-                                      <i className='tabler-currency-dollar' />
-                                    </InputAdornment>
-                                  ),
-                                  endAdornment: <InputAdornment position='end'>EUR</InputAdornment>
+                                  endAdornment: <InputAdornment position='end'>MAD</InputAdornment>
                                 }}
                                 sx={{
-                                  '& .MuiInputBase-input': {
-                                    fontWeight: 600,
-                                    color: 'primary.main'
+                                  '& .MuiOutlinedInput-root': {
+                                    backgroundColor: theme => theme.palette.background.paper,
+                                    '& .MuiInputBase-input': {
+                                      fontWeight: 600,
+                                      color: 'primary.main',
+                                      fontSize: '1.1rem'
+                                    }
                                   }
                                 }}
                               />
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Typography>{t('services.isActive')}</Typography>
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 2,
+                                  p: 2,
+                                  borderRadius: 1,
+                                  bgcolor: theme => theme.palette.action.hover
+                                }}
+                              >
+                                <Typography sx={{ fontWeight: 500 }}>{t('services.isActive')}</Typography>
                                 <Switch
                                   checked={editingService.is_active}
                                   onChange={e => {
                                     if (!editingService) return
                                     setEditingService({ ...editingService, is_active: e.target.checked })
                                   }}
+                                  color='success'
                                 />
                               </Box>
                               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
@@ -657,6 +732,21 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                   }}
                                   disabled={isSubmitting}
                                   startIcon={<i className='tabler-x' />}
+                                  sx={{
+                                    minWidth: 100,
+                                    height: 36,
+                                    textTransform: 'none',
+                                    borderColor: 'divider',
+                                    color: 'text.secondary',
+                                    '&:hover': {
+                                      borderColor: 'text.secondary',
+                                      bgcolor: 'action.hover'
+                                    },
+                                    '&.Mui-disabled': {
+                                      borderColor: 'action.disabled',
+                                      color: 'action.disabled'
+                                    }
+                                  }}
                                 >
                                   {t('services.cancel')}
                                 </Button>
@@ -669,6 +759,19 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                   }}
                                   disabled={isSubmitting || !editingService}
                                   startIcon={<i className='tabler-device-floppy' />}
+                                  sx={{
+                                    minWidth: 100,
+                                    height: 36,
+                                    textTransform: 'none',
+                                    bgcolor: 'success.main',
+                                    '&:hover': {
+                                      bgcolor: 'success.dark'
+                                    },
+                                    '&.Mui-disabled': {
+                                      bgcolor: 'action.disabledBackground',
+                                      color: 'action.disabled'
+                                    }
+                                  }}
                                 >
                                   {t('services.save')}
                                 </Button>
@@ -681,11 +784,18 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                   display: 'flex',
                                   justifyContent: 'space-between',
                                   alignItems: 'flex-start',
-                                  mb: 2
+                                  mb: 3
                                 }}
                               >
                                 <Box>
-                                  <Typography variant='h6' sx={{ mb: 0.5 }}>
+                                  <Typography
+                                    variant='h6'
+                                    sx={{
+                                      mb: 1,
+                                      fontWeight: 600,
+                                      color: theme => theme.palette.text.primary
+                                    }}
+                                  >
                                     {service.name}
                                   </Typography>
                                   <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -694,7 +804,13 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                       label={service.code}
                                       color='primary'
                                       variant='outlined'
-                                      sx={{ height: 20 }}
+                                      sx={{
+                                        height: 24,
+                                        '& .MuiChip-label': {
+                                          px: 1.5,
+                                          fontWeight: 500
+                                        }
+                                      }}
                                     />
                                     <Chip
                                       size='small'
@@ -702,7 +818,13 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                         service.is_active ? t('services.status.active') : t('services.status.inactive')
                                       }
                                       color={service.is_active ? 'success' : 'default'}
-                                      sx={{ height: 20 }}
+                                      sx={{
+                                        height: 24,
+                                        '& .MuiChip-label': {
+                                          px: 1.5,
+                                          fontWeight: 500
+                                        }
+                                      }}
                                     />
                                   </Box>
                                 </Box>
@@ -712,46 +834,98 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                       size='small'
                                       onClick={() => handleEditService(service)}
                                       disabled={isSubmitting}
-                                      color='primary'
+                                      sx={{
+                                        width: 32,
+                                        height: 32,
+                                        bgcolor: 'background.paper',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        color: 'text.secondary',
+                                        '&:hover': {
+                                          bgcolor: 'primary.main',
+                                          borderColor: 'primary.main',
+                                          color: 'white'
+                                        },
+                                        '&.Mui-disabled': {
+                                          bgcolor: 'action.disabledBackground',
+                                          borderColor: 'action.disabled',
+                                          color: 'action.disabled'
+                                        }
+                                      }}
                                     >
-                                      <i className='tabler-edit' />
+                                      <i className='tabler-edit' style={{ fontSize: '1rem' }} />
                                     </IconButton>
                                   </Tooltip>
                                   <Tooltip title={t('common.delete')}>
                                     <IconButton
                                       size='small'
-                                      color='error'
                                       onClick={() => service.id && handleDeleteService(service.id)}
                                       disabled={isSubmitting}
+                                      sx={{
+                                        width: 32,
+                                        height: 32,
+                                        bgcolor: 'background.paper',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        color: 'text.secondary',
+                                        '&:hover': {
+                                          bgcolor: 'error.main',
+                                          borderColor: 'error.main',
+                                          color: 'white'
+                                        },
+                                        '&.Mui-disabled': {
+                                          bgcolor: 'action.disabledBackground',
+                                          borderColor: 'action.disabled',
+                                          color: 'action.disabled'
+                                        }
+                                      }}
                                     >
-                                      <i className='tabler-trash' />
+                                      <i className='tabler-trash' style={{ fontSize: '1rem' }} />
                                     </IconButton>
                                   </Tooltip>
                                 </Box>
                               </Box>
-                              <Typography color='text.secondary' sx={{ mb: 2 }}>
+                              <Typography
+                                color='text.secondary'
+                                sx={{
+                                  mb: 3,
+                                  minHeight: 48,
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden'
+                                }}
+                              >
                                 {service.description}
                               </Typography>
                               <Box
                                 sx={{
-                                  display: 'flex',
-                                  gap: 3,
-                                  p: 2,
-                                  bgcolor: theme => theme.palette.action.hover,
-                                  borderRadius: 1
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 1,
+                                  px: 2,
+                                  py: 1,
+                                  bgcolor: 'background.paper',
+                                  borderRadius: 1,
+                                  border: '1px solid',
+                                  borderColor: 'divider',
+                                  boxShadow: 1
                                 }}
                               >
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <i className='tabler-currency-dollar text-primary' />
-                                  <Typography variant='h6' color='primary.main' sx={{ fontWeight: 600 }}>
-                                    {(service.amount || 0).toLocaleString('fr-FR', {
-                                      style: 'currency',
-                                      currency: 'EUR',
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2
-                                    })}
-                                  </Typography>
-                                </Box>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 600,
+                                    color: '#2e7d32', // success.main
+                                    fontSize: '1rem',
+                                    lineHeight: 1
+                                  }}
+                                >
+                                  {(service.amount || 0).toLocaleString('fr-FR', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                  })}{' '}
+                                  MAD
+                                </Typography>
                               </Box>
                             </Box>
                           )}
