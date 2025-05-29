@@ -74,6 +74,22 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
     }
   }, [open])
 
+  // Reset state when drawer is closed
+  useEffect(() => {
+    if (!open) {
+      setServices([])
+      setLoading(true)
+      setError(null)
+      setEditingService(null)
+      setIsSubmitting(false)
+      setSearchQuery('')
+      setStatusFilter('all')
+      setSortBy('name')
+      setSortOrder('asc')
+      setPage(1)
+    }
+  }, [open])
+
   const fetchServices = async () => {
     try {
       setLoading(true)
