@@ -178,7 +178,10 @@
                 "inProgress": "En Cours",
                 "completed": "Terminé",
                 "cancelled": "Annulé"
-            }
+            },
+            "noMeasurements": "Aucune mesure enregistrée",
+            "noClinicalExam": "Aucun examen clinique enregistré",
+            "noPrescriptions": "Aucune ordonnance enregistrée"
         }
     },
     "patient": {
