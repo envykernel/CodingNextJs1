@@ -259,7 +259,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
       anchor='right'
       PaperProps={{
         sx: {
-          width: { xs: '100%', sm: '50%' },
+          width: { xs: '100%', sm: '75%' },
           boxShadow: theme => theme.shadows[8]
         }
       }}
@@ -285,9 +285,16 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
         </Box>
 
         {/* Search and Filters */}
-        <Box sx={{ p: 5, pb: 0 }}>
+        <Box
+          sx={{
+            p: 5,
+            pb: 4,
+            borderBottom: theme => `1px solid ${theme.palette.divider}`,
+            mb: 4
+          }}
+        >
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <Paper
                 component='form'
                 sx={{
@@ -325,9 +332,9 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                 )}
               </Paper>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={8}>
               <Grid container spacing={2}>
-                <Grid item xs={6}>
+                <Grid item xs={4}>
                   <FormControl fullWidth size='small'>
                     <InputLabel>{t('services.status')}</InputLabel>
                     <Select
@@ -344,7 +351,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={4}>
                   <FormControl fullWidth size='small'>
                     <InputLabel>{t('services.sortBy')}</InputLabel>
                     <Select
@@ -353,35 +360,34 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                       onChange={e => {
                         const newSortBy = e.target.value as typeof sortBy
 
-                        // Toggle sort order if clicking the same sort option
-                        if (newSortBy === sortBy) {
-                          setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))
-                        } else {
-                          setSortBy(newSortBy)
-                          setSortOrder('asc')
-                        }
+                        setSortBy(newSortBy)
 
+                        // Always set to ascending when changing sort field
+                        setSortOrder('asc')
                         setPage(1)
                       }}
-                      endAdornment={
-                        <InputAdornment position='end'>
-                          <IconButton
-                            size='small'
-                            onClick={e => {
-                              e.stopPropagation()
-                              setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))
-                              setPage(1)
-                            }}
-                          >
-                            <i className={`tabler-arrow-${sortOrder === 'asc' ? 'up' : 'down'}`} />
-                          </IconButton>
-                        </InputAdornment>
-                      }
                     >
                       <MenuItem value='name'>{t('services.sortByName')}</MenuItem>
                       <MenuItem value='amount'>{t('services.sortByAmount')}</MenuItem>
                     </Select>
                   </FormControl>
+                </Grid>
+                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    variant='contained'
+                    startIcon={<i className='tabler-plus' />}
+                    onClick={handleAddService}
+                    disabled={isSubmitting || editingService !== null}
+                    size='small'
+                    sx={{
+                      textTransform: 'none',
+                      px: 2,
+                      whiteSpace: 'nowrap',
+                      minWidth: 'auto'
+                    }}
+                  >
+                    {t('services.addNew')}
+                  </Button>
                 </Grid>
               </Grid>
             </Grid>
@@ -396,21 +402,6 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                 {error}
               </Alert>
             )}
-
-            {/* Add New Service Button */}
-            <Card sx={{ mb: 4 }}>
-              <CardContent>
-                <Button
-                  fullWidth
-                  variant='contained'
-                  startIcon={<i className='tabler-plus' />}
-                  onClick={handleAddService}
-                  disabled={isSubmitting || editingService !== null}
-                >
-                  {t('services.addNew')}
-                </Button>
-              </CardContent>
-            </Card>
 
             {loading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
@@ -583,7 +574,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
 
                 <Grid container spacing={3}>
                   {paginatedServices.map(service => (
-                    <Grid item xs={12} sm={6} key={service.id}>
+                    <Grid item xs={12} sm={6} md={4} key={service.id}>
                       <Card
                         sx={{
                           height: '100%',
@@ -596,9 +587,9 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                           }
                         }}
                       >
-                        <CardContent sx={{ p: 4 }}>
+                        <CardContent sx={{ p: 2.5 }}>
                           {editingService?.id === service.id && editingService ? (
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                               {!service.code ? (
                                 <>
                                   <TextField
@@ -612,6 +603,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                     }}
                                     error={error?.includes('name')}
                                     helperText={error?.includes('name') ? error : ''}
+                                    size='small'
                                     InputProps={{
                                       startAdornment: (
                                         <InputAdornment position='start'>
@@ -628,13 +620,14 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                   <TextField
                                     fullWidth
                                     multiline
-                                    rows={2}
+                                    rows={1}
                                     label={t('services.description')}
                                     value={editingService.description}
                                     onChange={e => {
                                       if (!editingService) return
                                       setEditingService({ ...editingService, description: e.target.value })
                                     }}
+                                    size='small'
                                     InputProps={{
                                       startAdornment: (
                                         <InputAdornment position='start'>
@@ -685,6 +678,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                     })
                                   }
                                 }}
+                                size='small'
                                 inputProps={{
                                   min: 0.01,
                                   step: 0.01
@@ -698,7 +692,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                     '& .MuiInputBase-input': {
                                       fontWeight: 600,
                                       color: 'primary.main',
-                                      fontSize: '1.1rem'
+                                      fontSize: '1rem'
                                     }
                                   }
                                 }}
@@ -708,12 +702,14 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                   display: 'flex',
                                   alignItems: 'center',
                                   gap: 2,
-                                  p: 2,
+                                  p: 1.5,
                                   borderRadius: 1,
                                   bgcolor: theme => theme.palette.action.hover
                                 }}
                               >
-                                <Typography sx={{ fontWeight: 500 }}>{t('services.isActive')}</Typography>
+                                <Typography sx={{ fontWeight: 500, fontSize: '0.875rem' }}>
+                                  {t('services.isActive')}
+                                </Typography>
                                 <Switch
                                   checked={editingService.is_active}
                                   onChange={e => {
@@ -721,9 +717,10 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                     setEditingService({ ...editingService, is_active: e.target.checked })
                                   }}
                                   color='success'
+                                  size='small'
                                 />
                               </Box>
-                              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
+                              <Box sx={{ display: 'flex', gap: 1.5, justifyContent: 'flex-end', mt: 1 }}>
                                 <Button
                                   variant='outlined'
                                   onClick={() => {
@@ -732,9 +729,10 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                   }}
                                   disabled={isSubmitting}
                                   startIcon={<i className='tabler-x' />}
+                                  size='small'
                                   sx={{
-                                    minWidth: 100,
-                                    height: 36,
+                                    minWidth: 90,
+                                    height: 32,
                                     textTransform: 'none',
                                     borderColor: 'divider',
                                     color: 'text.secondary',
@@ -759,9 +757,10 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                   }}
                                   disabled={isSubmitting || !editingService}
                                   startIcon={<i className='tabler-device-floppy' />}
+                                  size='small'
                                   sx={{
-                                    minWidth: 100,
-                                    height: 36,
+                                    minWidth: 90,
+                                    height: 32,
                                     textTransform: 'none',
                                     bgcolor: 'success.main',
                                     '&:hover': {
@@ -784,14 +783,14 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                   display: 'flex',
                                   justifyContent: 'space-between',
                                   alignItems: 'flex-start',
-                                  mb: 3
+                                  mb: 2
                                 }}
                               >
                                 <Box>
                                   <Typography
-                                    variant='h6'
+                                    variant='subtitle1'
                                     sx={{
-                                      mb: 1,
+                                      mb: 0.5,
                                       fontWeight: 600,
                                       color: theme => theme.palette.text.primary
                                     }}
@@ -835,8 +834,8 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                       onClick={() => handleEditService(service)}
                                       disabled={isSubmitting}
                                       sx={{
-                                        width: 32,
-                                        height: 32,
+                                        width: 28,
+                                        height: 28,
                                         bgcolor: 'background.paper',
                                         border: '1px solid',
                                         borderColor: 'divider',
@@ -853,7 +852,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                         }
                                       }}
                                     >
-                                      <i className='tabler-edit' style={{ fontSize: '1rem' }} />
+                                      <i className='tabler-edit' style={{ fontSize: '0.875rem' }} />
                                     </IconButton>
                                   </Tooltip>
                                   <Tooltip title={t('common.delete')}>
@@ -862,8 +861,8 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                       onClick={() => service.id && handleDeleteService(service.id)}
                                       disabled={isSubmitting}
                                       sx={{
-                                        width: 32,
-                                        height: 32,
+                                        width: 28,
+                                        height: 28,
                                         bgcolor: 'background.paper',
                                         border: '1px solid',
                                         borderColor: 'divider',
@@ -880,7 +879,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                         }
                                       }}
                                     >
-                                      <i className='tabler-trash' style={{ fontSize: '1rem' }} />
+                                      <i className='tabler-trash' style={{ fontSize: '0.875rem' }} />
                                     </IconButton>
                                   </Tooltip>
                                 </Box>
@@ -888,12 +887,14 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                               <Typography
                                 color='text.secondary'
                                 sx={{
-                                  mb: 3,
-                                  minHeight: 48,
+                                  mb: 2,
+                                  minHeight: 36,
                                   display: '-webkit-box',
                                   WebkitLineClamp: 2,
                                   WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden'
+                                  overflow: 'hidden',
+                                  fontSize: '0.875rem',
+                                  lineHeight: 1.4
                                 }}
                               >
                                 {service.description}
@@ -904,7 +905,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                   alignItems: 'center',
                                   gap: 1,
                                   px: 2,
-                                  py: 1,
+                                  py: 0.75,
                                   bgcolor: 'background.paper',
                                   borderRadius: 1,
                                   border: '1px solid',
@@ -915,8 +916,8 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                 <Typography
                                   sx={{
                                     fontWeight: 600,
-                                    color: '#2e7d32', // success.main
-                                    fontSize: '1rem',
+                                    color: '#2e7d32',
+                                    fontSize: '0.875rem',
                                     lineHeight: 1
                                   }}
                                 >
