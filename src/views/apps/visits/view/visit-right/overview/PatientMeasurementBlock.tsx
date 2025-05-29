@@ -14,26 +14,35 @@ import { useTheme } from '@mui/material/styles'
 import { useTranslation } from '@/contexts/translationContext'
 
 interface PatientMeasurementBlockProps {
-  measurement: any
+  measurement: {
+    weight_kg?: number | null
+    height_cm?: number | null
+    temperature_c?: number | null
+    blood_pressure_systolic?: number | null
+    blood_pressure_diastolic?: number | null
+    pulse?: number | null
+    oxygen_saturation?: number | null
+    respiratory_rate?: number | null
+    notes?: string | null
+  } | null
 }
 
 const PatientMeasurementBlock: React.FC<PatientMeasurementBlockProps> = ({ measurement }) => {
-  const t = useTranslation()
-  const tForm = t.patientMeasurementsForm
+  const { t } = useTranslation()
   const theme = useTheme()
 
   if (!measurement) return null
 
   const rows = [
-    { label: tForm.weight, value: measurement.weight_kg ?? '-' },
-    { label: tForm.height, value: measurement.height_cm ?? '-' },
-    { label: tForm.temperature, value: measurement.temperature_c ?? '-' },
-    { label: tForm.bloodPressureSystolic, value: measurement.blood_pressure_systolic ?? '-' },
-    { label: tForm.bloodPressureDiastolic, value: measurement.blood_pressure_diastolic ?? '-' },
-    { label: tForm.pulse, value: measurement.pulse ?? '-' },
-    { label: tForm.oxygenSaturation, value: measurement.oxygen_saturation ?? '-' },
-    { label: tForm.respiratoryRate, value: measurement.respiratory_rate ?? '-' },
-    { label: tForm.notes, value: measurement.notes ?? '-' }
+    { label: t('patientMeasurementsForm.weight'), value: measurement.weight_kg ?? '-' },
+    { label: t('patientMeasurementsForm.height'), value: measurement.height_cm ?? '-' },
+    { label: t('patientMeasurementsForm.temperature'), value: measurement.temperature_c ?? '-' },
+    { label: t('patientMeasurementsForm.bloodPressureSystolic'), value: measurement.blood_pressure_systolic ?? '-' },
+    { label: t('patientMeasurementsForm.bloodPressureDiastolic'), value: measurement.blood_pressure_diastolic ?? '-' },
+    { label: t('patientMeasurementsForm.pulse'), value: measurement.pulse ?? '-' },
+    { label: t('patientMeasurementsForm.oxygenSaturation'), value: measurement.oxygen_saturation ?? '-' },
+    { label: t('patientMeasurementsForm.respiratoryRate'), value: measurement.respiratory_rate ?? '-' },
+    { label: t('patientMeasurementsForm.notes'), value: measurement.notes ?? '-' }
   ]
 
   return (
@@ -41,7 +50,7 @@ const PatientMeasurementBlock: React.FC<PatientMeasurementBlockProps> = ({ measu
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <div className='flex items-center gap-3'>
           <i className='tabler-activity text-xl text-primary' />
-          <Typography variant='subtitle1'>{tForm.title}</Typography>
+          <Typography variant='subtitle1'>{t('patientMeasurementsForm.title')}</Typography>
         </div>
       </AccordionSummary>
       <AccordionDetails>
