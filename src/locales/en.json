@@ -60,7 +60,10 @@
             "pending": "Pending",
             "unknown": "Unknown"
         },
-        "errorCreating": "Error creating patient. Please try again."
+        "errorCreating": "Error creating patient. Please try again.",
+        "profile": "Patient Profile",
+        "information": "Patient Information",
+        "emergencyContact": "Emergency Contact"
     },
     "appointments": {
         "typeOptions": {

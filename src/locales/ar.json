@@ -54,7 +54,10 @@
         "export": "تصدير",
         "addNew": "إضافة مريض جديد",
         "createNew": "إنشاء مريض جديد",
-        "errorCreating": "خطأ في إنشاء المريض. يرجى المحاولة مرة أخرى."
+        "errorCreating": "خطأ في إنشاء المريض. يرجى المحاولة مرة أخرى.",
+        "profile": "الملف الشخصي للمريض",
+        "information": "معلومات المريض",
+        "emergencyContact": "جهة الاتصال في حالات الطوارئ"
     },
     "appointments": {
         "typeOptions": {

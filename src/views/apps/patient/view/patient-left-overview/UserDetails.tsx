@@ -88,7 +88,7 @@ const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
           <div className='w-full'>
             <Typography variant='subtitle1' className='mb-3 font-medium flex items-center gap-2'>
               <i className='tabler-user text-xl text-primary' />
-              {t('navigation.patientProfile') || 'Patient Profile'}
+              {t('patient.profile') || 'Patient Profile'}
             </Typography>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center gap-2'>
@@ -116,7 +116,7 @@ const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
           <div className='w-full'>
             <Typography variant='subtitle1' className='mb-3 font-medium flex items-center gap-2'>
               <i className='tabler-address-book text-xl text-primary' />
-              {t('navigation.patientInformation') || 'Patient Information'}
+              {t('patient.information') || 'Patient Information'}
             </Typography>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center gap-2'>
@@ -156,7 +156,7 @@ const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
           <div className='w-full'>
             <Typography variant='subtitle1' className='mb-3 font-medium flex items-center gap-2'>
               <i className='tabler-alert-triangle text-xl text-primary' />
-              {t('navigation.emergencyContact') || 'Emergency Contact'}
+              {t('patient.emergencyContact') || 'Emergency Contact'}
             </Typography>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center gap-2'>

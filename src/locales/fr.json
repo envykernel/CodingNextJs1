@@ -54,7 +54,10 @@
         "export": "Exporter",
         "addNew": "Ajouter un nouveau patient",
         "createNew": "Créer un nouveau patient",
-        "errorCreating": "Erreur lors de la création du patient. Veuillez réessayer."
+        "errorCreating": "Erreur lors de la création du patient. Veuillez réessayer.",
+        "profile": "Profil du Patient",
+        "information": "Informations du Patient",
+        "emergencyContact": "Contact d'Urgence"
     },
     "appointments": {
         "typeOptions": {
