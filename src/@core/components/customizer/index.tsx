@@ -116,11 +116,6 @@ const Customizer = ({ breakpoint = 'lg', dir = 'ltr', disableDirection = false }
   // Check if user is admin
   const isAdmin = session?.user?.role === 'ADMIN' || false
 
-  // If user is not admin, don't render the customizer
-  if (!isAdmin) {
-    return null
-  }
-
   // Vars
   let breakpointValue: CustomizerProps['breakpoint']
 
@@ -153,6 +148,11 @@ const Customizer = ({ breakpoint = 'lg', dir = 'ltr', disableDirection = false }
   const isColorFromPrimaryConfig = primaryColorConfig.find(item => item.main === settings.primaryColor)
 
   const ScrollWrapper = isBelowLgScreen ? 'div' : PerfectScrollbar
+
+  // If user is not admin or breakpoint is reached, don't render the customizer
+  if (!isAdmin || breakpointReached) {
+    return null
+  }
 
   const handleToggle = () => {
     setIsOpen(!isOpen)
