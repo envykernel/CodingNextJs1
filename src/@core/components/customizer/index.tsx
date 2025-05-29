@@ -22,6 +22,7 @@ import classnames from 'classnames'
 import { useDebounce, useMedia } from 'react-use'
 import { HexColorPicker, HexColorInput } from 'react-colorful'
 import PerfectScrollbar from 'react-perfect-scrollbar'
+import { useSession } from 'next-auth/react'
 
 // Type Imports
 import type { Settings } from '@core/contexts/settingsContext'
@@ -54,7 +55,7 @@ type CustomizerProps = {
   disableDirection?: boolean
 }
 
-const getLocalePath = (pathName: string, locale: string) => {
+const getLocalePath = (pathName: string | null, locale: string) => {
   if (!pathName) return '/'
   const segments = pathName.split('/')
 
@@ -110,6 +111,15 @@ const Customizer = ({ breakpoint = 'lg', dir = 'ltr', disableDirection = false }
   const pathName = usePathname()
   const { settings, updateSettings, resetSettings, isSettingsChanged } = useSettings()
   const isSystemDark = useMedia('(prefers-color-scheme: dark)', false)
+  const { data: session } = useSession()
+
+  // Check if user is admin
+  const isAdmin = session?.user?.role === 'ADMIN' || false
+
+  // If user is not admin, don't render the customizer
+  if (!isAdmin) {
+    return null
+  }
 
   // Vars
   let breakpointValue: CustomizerProps['breakpoint']
