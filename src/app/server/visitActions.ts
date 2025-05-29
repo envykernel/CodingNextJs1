@@ -72,7 +72,13 @@ export async function getVisitById(id: number) {
     visit_date: visit.visit_date ? visit.visit_date.toISOString().split('T')[0] : null,
     start_time: visit.start_time, // Already a string in HH:mm format
     end_time: visit.end_time, // Already a string in HH:mm format
-    created_at: visit.created_at ? visit.created_at.toISOString() : null
+    created_at: visit.created_at ? visit.created_at.toISOString() : null,
+    patient: visit.patient
+      ? {
+          ...visit.patient,
+          birthdate: visit.patient.birthdate ? visit.patient.birthdate.toISOString().split('T')[0] : null
+        }
+      : null
   }
 
   return prismaDecimalToNumber(serializedVisit)
