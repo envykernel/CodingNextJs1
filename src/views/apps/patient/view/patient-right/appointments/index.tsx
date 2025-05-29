@@ -140,7 +140,7 @@ const AppointmentCard = ({
         </div>
       </CardContent>
       <Divider />
-      <div className='flex justify-center p-2'>
+      <div className='flex justify-center p-2 min-h-[48px]'>
         {appointment.visit?.id ? (
           <Tooltip title={t('goToVisit') || 'Go to Visit'}>
             <Button
@@ -167,7 +167,10 @@ const AppointmentCard = ({
               {t('appointments.actions.cancel') || 'Cancel'}
             </Button>
           </Tooltip>
-        ) : null}
+        ) : (
+          // Empty div with same height as button to maintain consistent spacing
+          <div className='h-[32px]' />
+        )}
       </div>
     </Card>
   )
