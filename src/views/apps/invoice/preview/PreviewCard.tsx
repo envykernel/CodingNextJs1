@@ -75,7 +75,23 @@ const PreviewCard = ({ invoiceData, id }: { invoiceData: any; id: string }) => {
                 <div className='flex flex-col gap-6'>
                   <Typography variant='h5'>{`Invoice #${invoiceData.invoice_number || id}`}</Typography>
                   <div className='flex flex-col gap-1'>
-                    <Typography color='text.primary'>{`Date : ${invoiceData.invoice_date ? invoiceData.invoice_date.toString().split('T')[0] : ''}`}</Typography>
+                    <Typography color='text.primary'>
+                      {`Date: ${
+                        invoiceData.invoice_date
+                          ? new Date(invoiceData.invoice_date).toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            })
+                          : invoiceData.created_at
+                            ? new Date(invoiceData.created_at).toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                              })
+                            : ''
+                      }`}
+                    </Typography>
                   </div>
                 </div>
               </div>

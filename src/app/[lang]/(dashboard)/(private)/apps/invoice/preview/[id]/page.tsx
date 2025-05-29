@@ -31,7 +31,14 @@ const PreviewPage = async (props: { params: Promise<{ id: string }> }) => {
   // Fetch the invoice by ID from the database
   const invoice = await prisma.invoice.findUnique({
     where: { id: Number(id) },
-    include: {
+    select: {
+      id: true,
+      invoice_number: true,
+      invoice_date: true,
+      created_at: true,
+      total_amount: true,
+      payment_status: true,
+      record_status: true,
       lines: {
         select: {
           id: true,
