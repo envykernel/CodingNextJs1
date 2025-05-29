@@ -33,7 +33,6 @@ import { useTranslation } from '@/contexts/translationContext'
 
 // Types
 interface Service {
-  // Make id optional since new services won't have one
   id?: string
   code: string
   name: string
@@ -157,15 +156,46 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
         return
       }
 
-      // Validate amount is greater than zero
-      if (typeof service.amount !== 'number' || service.amount <= 0) {
-        setError(t('services.error.invalidAmount'))
+      // For existing services, use PUT
+      if (service.id) {
+        const currentService = services.find(s => s.id === service.id)
 
-        return
-      }
+        // Only validate amount if it's being changed
+        if (service.amount !== currentService?.amount) {
+          if (typeof service.amount !== 'number' || service.amount <= 0) {
+            setError(t('services.error.invalidAmount'))
 
-      // For new services (no id), use POST
-      if (!service.id) {
+            return
+          }
+        }
+
+        const requestBody: any = {
+          is_active: service.is_active
+        }
+
+        // Only include amount if it's different from current amount
+        if (service.amount !== currentService?.amount) {
+          requestBody.amount = service.amount
+        }
+
+        const response = await fetch(`/api/services/${service.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(t(data.error || 'services.error.update'))
+        }
+
+        setServices(prevServices => prevServices.map(s => (s.id === service.id ? data : s)))
+        setEditingService(null)
+      } else {
+        // For new services (no id), use POST
         const response = await fetch('/api/services', {
           method: 'POST',
           headers: {
@@ -186,27 +216,6 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
         }
 
         setServices(prevServices => [...prevServices, data])
-        setEditingService(null)
-      } else {
-        // For existing services, use PUT
-        const response = await fetch(`/api/services/${service.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            amount: service.amount,
-            is_active: service.is_active
-          })
-        })
-
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(t(data.error || 'services.error.update'))
-        }
-
-        setServices(prevServices => prevServices.map(s => (s.id === service.id ? data : s)))
         setEditingService(null)
       }
     } catch (err) {
@@ -418,17 +427,10 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                           fullWidth
                           required
                           label={t('services.name')}
-                          value={editingService?.name || ''}
+                          value={editingService!.name}
                           onChange={e => {
-                            const newName = e.target.value
-
-                            setEditingService(
-                              prev =>
-                                prev && {
-                                  ...prev,
-                                  name: newName
-                                }
-                            )
+                            if (!editingService) return
+                            setEditingService({ ...editingService, name: e.target.value })
                           }}
                           error={error?.includes('name')}
                           helperText={error?.includes('name') ? error : ''}
@@ -445,8 +447,11 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                           multiline
                           rows={2}
                           label={t('services.description')}
-                          value={editingService?.description || ''}
-                          onChange={e => setEditingService(prev => prev && { ...prev, description: e.target.value })}
+                          value={editingService!.description}
+                          onChange={e => {
+                            if (!editingService) return
+                            setEditingService({ ...editingService, description: e.target.value })
+                          }}
                           InputProps={{
                             startAdornment: (
                               <InputAdornment position='start'>
@@ -462,6 +467,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                           value={editingService?.amount ?? 0}
                           onChange={e => {
                             const value = Number(e.target.value)
+
                             if (value > 0 && editingService) {
                               setEditingService({
                                 ...editingService,
@@ -491,16 +497,11 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                           <Typography>{t('services.isActive')}</Typography>
                           <Switch
-                            checked={editingService?.is_active ?? true}
-                            onChange={e =>
-                              setEditingService(
-                                prev =>
-                                  prev && {
-                                    ...prev,
-                                    is_active: e.target.checked
-                                  }
-                              )
-                            }
+                            checked={editingService!.is_active}
+                            onChange={e => {
+                              if (!editingService) return
+                              setEditingService({ ...editingService, is_active: e.target.checked })
+                            }}
                           />
                         </Box>
                         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
@@ -517,7 +518,11 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                           </Button>
                           <Button
                             variant='contained'
-                            onClick={() => editingService && handleSaveService(editingService)}
+                            onClick={() => {
+                              if (editingService) {
+                                handleSaveService(editingService)
+                              }
+                            }}
                             disabled={isSubmitting || !editingService}
                             startIcon={<i className='tabler-device-floppy' />}
                           >
@@ -543,7 +548,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                         }}
                       >
                         <CardContent>
-                          {editingService?.id === service.id ? (
+                          {editingService?.id === service.id && editingService ? (
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                               {!service.code ? (
                                 <>
@@ -553,15 +558,8 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                     label={t('services.name')}
                                     value={editingService.name}
                                     onChange={e => {
-                                      const newName = e.target.value
-
-                                      setEditingService(
-                                        prev =>
-                                          prev && {
-                                            ...prev,
-                                            name: newName
-                                          }
-                                      )
+                                      if (!editingService) return
+                                      setEditingService({ ...editingService, name: e.target.value })
                                     }}
                                     error={error?.includes('name')}
                                     helperText={error?.includes('name') ? error : ''}
@@ -579,9 +577,10 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                     rows={2}
                                     label={t('services.description')}
                                     value={editingService.description}
-                                    onChange={e =>
-                                      setEditingService(prev => prev && { ...prev, description: e.target.value })
-                                    }
+                                    onChange={e => {
+                                      if (!editingService) return
+                                      setEditingService({ ...editingService, description: e.target.value })
+                                    }}
                                     InputProps={{
                                       startAdornment: (
                                         <InputAdornment position='start'>
@@ -612,6 +611,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                 value={editingService?.amount ?? 0}
                                 onChange={e => {
                                   const value = Number(e.target.value)
+
                                   if (value > 0 && editingService) {
                                     setEditingService({
                                       ...editingService,
@@ -642,15 +642,10 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                 <Typography>{t('services.isActive')}</Typography>
                                 <Switch
                                   checked={editingService.is_active}
-                                  onChange={e =>
-                                    setEditingService(
-                                      prev =>
-                                        prev && {
-                                          ...prev,
-                                          is_active: e.target.checked
-                                        }
-                                    )
-                                  }
+                                  onChange={e => {
+                                    if (!editingService) return
+                                    setEditingService({ ...editingService, is_active: e.target.checked })
+                                  }}
                                 />
                               </Box>
                               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
@@ -667,8 +662,12 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                 </Button>
                                 <Button
                                   variant='contained'
-                                  onClick={() => handleSaveService(editingService)}
-                                  disabled={isSubmitting}
+                                  onClick={() => {
+                                    if (editingService) {
+                                      handleSaveService(editingService)
+                                    }
+                                  }}
+                                  disabled={isSubmitting || !editingService}
                                   startIcon={<i className='tabler-device-floppy' />}
                                 >
                                   {t('services.save')}
@@ -722,7 +721,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                                     <IconButton
                                       size='small'
                                       color='error'
-                                      onClick={() => handleDeleteService(service.id)}
+                                      onClick={() => service.id && handleDeleteService(service.id)}
                                       disabled={isSubmitting}
                                     >
                                       <i className='tabler-trash' />
