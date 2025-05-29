@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { useRouter, usePathname, useSearchParams, useParams } from 'next/navigation'
 
@@ -35,7 +35,7 @@ import { addDays, isAfter, isBefore } from 'date-fns'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 import CustomTextField from '@core/components/mui/TextField'
 
-import { useTranslation, TranslationProvider } from '@/contexts/translationContext'
+import { useTranslation } from '@/contexts/translationContext'
 import AddAppointmentDrawer from './AddAppointmentDrawer'
 import { LocalDate, LocalTime } from '@/components/LocalTime'
 import VisitActionButton from './VisitActionButton'
@@ -133,6 +133,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   // Helper function to handle navigation
   const handleNavigation = async (params: URLSearchParams) => {
     setIsLoading(true)
+
     try {
       await router.push(`${pathname}?${params.toString()}`)
       router.refresh()
@@ -148,7 +149,9 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   // Modify handlePageChange
   const handlePageChange = (_event: unknown, newPage: number) => {
     const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
+
     params.set('page', String(newPage + 1))
+
     handleNavigation(params)
   }
 
@@ -156,8 +159,10 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   const handlePageSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
     const newPageSize = Number(event.target.value)
+
     params.set('pageSize', String(newPageSize))
     params.set('page', '1')
+
     handleNavigation(params)
   }
 
@@ -183,6 +188,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     }
 
     params.set('page', '1')
+
     handleNavigation(params)
   }
 
@@ -260,13 +266,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
 
   // Helper function to map database appointment types to translation keys
   const mapAppointmentTypeToKey = (type: string) => {
-    const typeMap: Record<string, string> = {
-      consultation: 'Consultation',
-      medical_check: 'Medical Check',
-      clinical_procedure: 'Clinical Procedure',
-      other: 'Other'
-    }
-    return typeMap[type.toLowerCase()] || type
+    return type.toLowerCase().replace(/\s+/g, '_')
   }
 
   return (
@@ -404,23 +404,37 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                     >
                       {t('patientView.appointments.viewDetails')}
                     </Button>
-                    {row.status === 'scheduled' && isAppointmentWithinLastWeek(row.appointmentDate) && (
-                      <>
+                    {/* Show VisitActionButton if there's a linked visit */}
+                    {visitsByAppointmentId[row.id] && (
+                      <VisitActionButton
+                        appointmentId={row.id}
+                        visit={visitsByAppointmentId[row.id]}
+                        lang={lang}
+                        size='small'
+                        variant='contained'
+                        onVisitCreated={() => router.refresh()}
+                      />
+                    )}
+                    {/* Show create visit button only for scheduled appointments within last week */}
+                    {!visitsByAppointmentId[row.id] &&
+                      row.status === 'scheduled' &&
+                      isAppointmentWithinLastWeek(row.appointmentDate) && (
                         <VisitActionButton
                           appointmentId={row.id}
-                          visit={visitsByAppointmentId[row.id]}
+                          visit={undefined}
                           lang={lang}
                           size='small'
                           variant='contained'
                           onVisitCreated={() => router.refresh()}
                         />
-                        <CancelAppointmentButton
-                          appointmentId={row.id}
-                          size='small'
-                          variant='outlined'
-                          onAppointmentCancelled={() => router.refresh()}
-                        />
-                      </>
+                      )}
+                    {row.status === 'scheduled' && isAppointmentWithinLastWeek(row.appointmentDate) && (
+                      <CancelAppointmentButton
+                        appointmentId={row.id}
+                        size='small'
+                        variant='outlined'
+                        onAppointmentCancelled={() => router.refresh()}
+                      />
                     )}
                   </div>
                 </TableCell>
