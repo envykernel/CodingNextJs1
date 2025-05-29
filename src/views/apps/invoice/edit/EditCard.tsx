@@ -98,6 +98,13 @@ const EditCard = ({ invoice }: EditCardProps) => {
 
   const invoiceTotal = items.reduce((sum: number, item: any) => sum + (item.line_total || 0), 0)
 
+  // Helper function to format currency
+  const formatCurrency = (amount: number) => {
+    const currency = invoice?.organisation?.currency || 'MAD'
+
+    return amount.toLocaleString('en-US', { style: 'currency', currency })
+  }
+
   const handleSubmitInvoice = async () => {
     setLoading(true)
     setError('')
@@ -300,9 +307,7 @@ const EditCard = ({ invoice }: EditCardProps) => {
                       </Grid>
                       <Grid size={{ xs: 12, md: 2 }}>
                         <Typography className='font-medium md:absolute md:-top-8'>{t('invoice.lineTotal')}</Typography>
-                        <Typography>
-                          {item.line_total.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
-                        </Typography>
+                        <Typography>{formatCurrency(item.line_total)}</Typography>
                       </Grid>
                     </Grid>
                     <div className='flex flex-col justify-start border-is'>
@@ -343,7 +348,7 @@ const EditCard = ({ invoice }: EditCardProps) => {
                 <div className='min-is-[200px] flex items-center justify-between'>
                   <Typography>Total:</Typography>
                   <Typography className='font-medium' color='text.primary'>
-                    {invoiceTotal.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
+                    {formatCurrency(invoiceTotal)}
                   </Typography>
                 </div>
               </div>
