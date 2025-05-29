@@ -10,6 +10,7 @@ import Tooltip from '@mui/material/Tooltip'
 import InfoIcon from '@mui/icons-material/Info'
 
 import { useTranslation } from '@/contexts/translationContext'
+import { formatDateToDDMMYYYY } from '@/utils/date'
 import PatientMeasurementBlock from './PatientMeasurementBlock'
 import ClinicalExamBlock from './ClinicalExamBlock'
 import PrescriptionBlock from './PrescriptionBlock'
@@ -57,7 +58,7 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
                     <Typography variant='subtitle2' sx={{ color: 'text.secondary', mr: 1 }}>
                       {t.date || 'Date'}:
                     </Typography>
-                    <Typography variant='body1'>{visitData.visit_date}</Typography>
+                    <Typography variant='body1'>{formatDateToDDMMYYYY(visitData.visit_date)}</Typography>
                   </Box>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

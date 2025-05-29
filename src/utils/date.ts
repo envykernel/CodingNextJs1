@@ -11,3 +11,19 @@ export function calculateAge(birthdate: string | Date): number | undefined {
 
   return age
 }
+
+/**
+ * Formats a date string or Date object to DD/MM/YYYY format
+ * @param date - The date to format (string or Date object)
+ * @returns The formatted date string in DD/MM/YYYY format
+ */
+export function formatDateToDDMMYYYY(date: string | Date): string {
+  if (!date) return '-'
+  const dateObj = new Date(date)
+
+  return dateObj.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  })
+}
