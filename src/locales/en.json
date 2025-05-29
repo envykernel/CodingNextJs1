@@ -53,13 +53,6 @@
         "searchPlaceholder": "Search patients...",
         "export": "Export",
         "addNew": "Create New Patient",
-        "status": {
-            "enabled": "Enabled",
-            "disabled": "Disabled",
-            "blocked": "Blocked",
-            "pending": "Pending",
-            "unknown": "Unknown"
-        },
         "errorCreating": "Error creating patient. Please try again.",
         "profile": "Patient Profile",
         "information": "Patient Information",
@@ -229,7 +222,8 @@
             "active": "Active",
             "archived": "Archived",
             "deleted": "Deleted"
-        }
+        },
+        "doctorSignature": "Doctor Signature"
     },
     "form": {
         "sectionPersonalInfo": "Personal Information",
@@ -822,5 +816,71 @@
         "searchPlaceholder": "Search services...",
         "noResults": "No services found matching your search",
         "noServices": "No services available"
-    }
+    },
+    "patientMeasurementsForm": {
+        "title": "Patient Measurements",
+        "weight": "Weight (kg)",
+        "height": "Height (cm)",
+        "temperature": "Temperature (°C)",
+        "bloodPressureSystolic": "Blood Pressure Systolic",
+        "bloodPressureDiastolic": "Blood Pressure Diastolic",
+        "pulse": "Pulse (bpm)",
+        "oxygenSaturation": "Oxygen Saturation (%)",
+        "respiratoryRate": "Respiratory Rate",
+        "notes": "Notes",
+        "save": "Save",
+        "saving": "Saving...",
+        "savedSuccessfully": "Saved successfully!"
+    },
+    "clinicalExamForm": {
+        "title": "Clinical Exam",
+        "chiefComplaint": "Chief Complaint",
+        "historyIllness": "History of Present Illness",
+        "medicalHistory": "Medical History",
+        "generalAppearance": "General Appearance",
+        "cardiovascular": "Cardiovascular",
+        "respiratory": "Respiratory",
+        "gastrointestinal": "Gastrointestinal",
+        "neurological": "Neurological",
+        "musculoskeletal": "Musculoskeletal",
+        "skin": "Skin",
+        "ent": "ENT (Ear, Nose, Throat)",
+        "assessment": "Assessment",
+        "plan": "Plan",
+        "save": "Save",
+        "saving": "Saving...",
+        "savedSuccessfully": "Clinical exam saved successfully!",
+        "selectSections": "Select sections to fill",
+        "sections": {
+            "chiefComplaint": "Chief Complaint",
+            "historyIllness": "History of Present Illness",
+            "medicalHistory": "Medical History",
+            "generalAppearance": "General Appearance",
+            "cardiovascular": "Cardiovascular",
+            "respiratory": "Respiratory",
+            "gastrointestinal": "Gastrointestinal",
+            "neurological": "Neurological",
+            "musculoskeletal": "Musculoskeletal",
+            "skin": "Skin",
+            "ent": "ENT (Ear, Nose, Throat)",
+            "assessment": "Assessment",
+            "plan": "Plan"
+        }
+    },
+    "testForm": {
+        "title": "Lab Tests",
+        "selectTest": "Select Test",
+        "result": "Result",
+        "unit": "Unit",
+        "referenceRange": "Reference Range",
+        "notes": "Notes",
+        "save": "Save",
+        "saving": "Saving...",
+        "savedSuccessfully": "Test order saved successfully!",
+        "addTest": "Add Test",
+        "editTest": "Edit Test",
+        "testType": "Test Type",
+        "status": "Status"
+    },
+    "cannotDeleteItemWithPayments": "This item cannot be deleted because it has one or more payments linked. Please remove all payments from this item before deleting."
 }
