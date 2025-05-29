@@ -157,6 +157,8 @@
     "invoice": {
         "item": "Article",
         "selectService": "Sélectionner un service",
+        "selectItemForPayment": "Sélectionner un article pour le paiement",
+        "internalPaymentNote": "Note interne de paiement",
         "unitPrice": "Prix unitaire",
         "quantity": "Quantité",
         "lineTotal": "Total de la ligne",
