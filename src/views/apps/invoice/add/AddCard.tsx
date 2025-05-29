@@ -225,7 +225,10 @@ const AddAction = () => {
       })
 
       if (res.ok) {
+        const invoice = await res.json()
         setSuccess(true)
+        // Redirect to the invoice preview page
+        router.push(`/${locale}/apps/invoice/preview/${invoice.id}`)
       } else {
         setError(t('invoice.error') || 'Error creating invoice!')
       }
