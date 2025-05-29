@@ -112,23 +112,23 @@ const HorizontalMenu = () => {
           </MenuItem>
         </SubMenu>
         <SubMenu label={t('sidebar.navigation.medical')} icon={<i className='tabler-stethoscope' />}>
-          <MenuItem href={`/${locale}/medical/patients`} icon={<i className='tabler-users' />}>
+          <MenuItem href={`/${locale}/apps/patient/list`} icon={<i className='tabler-users' />}>
             {t('sidebar.navigation.patients')}
           </MenuItem>
-          <MenuItem href={`/${locale}/medical/appointments`} icon={<i className='tabler-calendar-event' />}>
+          <MenuItem href={`/${locale}/apps/appointments/list`} icon={<i className='tabler-calendar-event' />}>
             {t('sidebar.navigation.appointments')}
           </MenuItem>
         </SubMenu>
         <SubMenu label={t('sidebar.navigation.financial')} icon={<i className='tabler-cash' />}>
-          <MenuItem href={`/${locale}/financial/invoices`} icon={<i className='tabler-file-invoice' />}>
+          <MenuItem href={`/${locale}/apps/invoice/list`} icon={<i className='tabler-file-invoice' />}>
             {t('sidebar.navigation.invoices')}
           </MenuItem>
-          <MenuItem href={`/${locale}/financial/invoices/create`} icon={<i className='tabler-file-plus' />}>
+          <MenuItem href={`/${locale}/apps/invoice/add`} icon={<i className='tabler-file-plus' />}>
             {t('sidebar.navigation.createInvoice')}
           </MenuItem>
         </SubMenu>
         <SubMenu label={t('sidebar.navigation.administration')} icon={<i className='tabler-settings' />}>
-          <MenuItem href={`/${locale}/administration/users`} icon={<i className='tabler-users' />}>
+          <MenuItem href={`/${locale}/pages/users-management`} icon={<i className='tabler-users' />}>
             {t('sidebar.navigation.userManagement')}
           </MenuItem>
           <MenuItem href={`/${locale}/administration/organisation`} icon={<i className='tabler-building' />}>
