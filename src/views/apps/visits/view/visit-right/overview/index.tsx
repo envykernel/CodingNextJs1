@@ -17,7 +17,7 @@ import PrescriptionBlock from './PrescriptionBlock'
 import LabTestRecapBlock from './LabTestRecapBlock'
 
 const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionary: any }) => {
-  const t = useTranslation()
+  const { t } = useTranslation()
   const status = visitData.status
 
   const visitStatusObj: {
@@ -26,14 +26,17 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
       label: string
     }
   } = {
-    scheduled: { color: 'info', label: t.scheduled || 'Scheduled' },
-    in_progress: { color: 'warning', label: t.inProgress || 'In Progress' },
-    completed: { color: 'success', label: t.completed || 'Completed' },
-    cancelled: { color: 'error', label: t.cancelled || 'Cancelled' }
+    scheduled: { color: 'info', label: t('navigation.visitDetails.statusOptions.scheduled') || 'Scheduled' },
+    in_progress: { color: 'warning', label: t('navigation.visitDetails.statusOptions.inProgress') || 'In Progress' },
+    completed: { color: 'success', label: t('navigation.visitDetails.statusOptions.completed') || 'Completed' },
+    cancelled: { color: 'error', label: t('navigation.visitDetails.statusOptions.cancelled') || 'Cancelled' }
   }
 
   const isVisitEnded = status === 'completed' || status === 'cancelled'
-  const endTimeLabel = isVisitEnded ? t.endTime || 'End Time' : t.estimatedEndTime || 'Estimated End Time'
+
+  const endTimeLabel = isVisitEnded
+    ? t('navigation.visitDetails.endTime') || 'End Time'
+    : t('navigation.visitDetails.estimatedEndTime') || 'Estimated End Time'
 
   return (
     <Grid container spacing={3}>
@@ -45,7 +48,7 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
               <Grid item xs={12}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Typography variant='h5' sx={{ mr: 2 }}>
-                    {t.visitDetails || 'Visit Details'}
+                    {t('navigation.visitDetails.title') || 'Visit Details'}
                   </Typography>
                 </Box>
                 <Divider sx={{ mb: 4 }} />
@@ -56,7 +59,7 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <i className='tabler-calendar text-lg text-primary' />
                     <Typography variant='subtitle2' sx={{ color: 'text.secondary', mr: 1 }}>
-                      {t.date || 'Date'}:
+                      {t('navigation.visitDetails.date') || 'Date'}:
                     </Typography>
                     <Typography variant='body1'>{formatDateToDDMMYYYY(visitData.visit_date)}</Typography>
                   </Box>
@@ -64,7 +67,7 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <i className='tabler-clock text-lg text-primary' />
                     <Typography variant='subtitle2' sx={{ color: 'text.secondary', mr: 1 }}>
-                      {t.startTime || 'Start Time'}:
+                      {t('navigation.visitDetails.startTime') || 'Start Time'}:
                     </Typography>
                     <Typography variant='body1'>{visitData.start_time || '-'}</Typography>
                   </Box>
@@ -78,7 +81,7 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
                       {!isVisitEnded && (
                         <Tooltip
                           title={
-                            t.estimatedEndTimeTooltip ||
+                            t('navigation.visitDetails.estimatedEndTimeTooltip') ||
                             'This is the estimated end time based on the appointment duration'
                           }
                         >
@@ -94,7 +97,7 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <i className='tabler-flag text-lg text-primary' />
                     <Typography variant='subtitle2' sx={{ color: 'text.secondary', mr: 1 }}>
-                      {t.status || 'Status'}:
+                      {t('navigation.visitDetails.status') || 'Status'}:
                     </Typography>
                     <Chip
                       label={visitStatusObj[status]?.label || status}
@@ -116,7 +119,9 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
         ) : (
           <Card>
             <CardContent>
-              <Typography color='text.secondary'>{t.noMeasurements || 'No measurements recorded'}</Typography>
+              <Typography color='text.secondary'>
+                {t('navigation.visitDetails.noMeasurements') || 'No measurements recorded'}
+              </Typography>
             </CardContent>
           </Card>
         )}
@@ -128,7 +133,9 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
         ) : (
           <Card>
             <CardContent>
-              <Typography color='text.secondary'>{t.noClinicalExam || 'No clinical exam recorded'}</Typography>
+              <Typography color='text.secondary'>
+                {t('navigation.visitDetails.noClinicalExam') || 'No clinical exam recorded'}
+              </Typography>
             </CardContent>
           </Card>
         )}
@@ -156,7 +163,9 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
         ) : (
           <Card>
             <CardContent>
-              <Typography color='text.secondary'>{t.noPrescriptions || 'No prescriptions recorded'}</Typography>
+              <Typography color='text.secondary'>
+                {t('navigation.visitDetails.noPrescriptions') || 'No prescriptions recorded'}
+              </Typography>
             </CardContent>
           </Card>
         )}

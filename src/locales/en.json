@@ -9,7 +9,25 @@
         "editPatient": "Edit Patient",
         "add": "Add",
         "addNewPatient": "Add New Patient",
-        "create": "Create"
+        "create": "Create",
+        "visitDetails": {
+            "title": "Visit Details",
+            "date": "Date",
+            "startTime": "Start Time",
+            "endTime": "End Time",
+            "estimatedEndTime": "Estimated End Time",
+            "estimatedEndTimeTooltip": "This is the estimated end time based on the appointment duration",
+            "status": "Status",
+            "statusOptions": {
+                "scheduled": "Scheduled",
+                "inProgress": "In Progress",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            },
+            "noMeasurements": "No measurements recorded",
+            "noClinicalExam": "No clinical exam recorded",
+            "noPrescriptions": "No prescriptions recorded"
+        }
     },
     "patient": {
         "name": "Full Name",

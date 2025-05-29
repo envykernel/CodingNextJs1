@@ -157,7 +157,22 @@
     "remaining": "Restant",
     "save": "Enregistrer",
     "editPatient": "Modifier le patient",
-    "emergencyContact": "Contact d'urgence"
+    "emergencyContact": "Contact d'urgence",
+    "visitDetails": {
+      "title": "Détails de la Visite",
+      "date": "Date",
+      "startTime": "Heure de Début",
+      "endTime": "Heure de Fin",
+      "estimatedEndTime": "Heure de Fin Estimée",
+      "estimatedEndTimeTooltip": "Il s'agit de l'heure de fin estimée basée sur la durée du rendez-vous",
+      "status": "Statut",
+      "statusOptions": {
+        "scheduled": "Planifié",
+        "inProgress": "En Cours",
+        "completed": "Terminé",
+        "cancelled": "Annulé"
+      }
+    }
   },
   "form": {
     "sectionPersonalInfo": "Informations personnelles",

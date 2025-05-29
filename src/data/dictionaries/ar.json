@@ -157,7 +157,22 @@
     "remaining": "المتبقي",
     "save": "حفظ",
     "editPatient": "تعديل المريض",
-    "emergencyContact": "جهة الاتصال في حالات الطوارئ"
+    "emergencyContact": "جهة الاتصال في حالات الطوارئ",
+    "visitDetails": {
+      "title": "تفاصيل الزيارة",
+      "date": "التاريخ",
+      "startTime": "وقت البدء",
+      "endTime": "وقت الانتهاء",
+      "estimatedEndTime": "وقت الانتهاء المتوقع",
+      "estimatedEndTimeTooltip": "هذا هو وقت الانتهاء المتوقع بناءً على مدة الموعد",
+      "status": "الحالة",
+      "statusOptions": {
+        "scheduled": "مجدول",
+        "inProgress": "قيد التنفيذ",
+        "completed": "مكتمل",
+        "cancelled": "ملغي"
+      }
+    }
   },
   "form": {
     "sectionPersonalInfo": "المعلومات الشخصية",

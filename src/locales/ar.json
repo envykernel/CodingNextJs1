@@ -164,7 +164,25 @@
         "remaining": "المتبقي",
         "save": "حفظ",
         "editPatient": "تعديل المريض",
-        "emergencyContact": "جهة الاتصال في حالات الطوارئ"
+        "emergencyContact": "جهة الاتصال في حالات الطوارئ",
+        "visitDetails": {
+            "title": "تفاصيل الزيارة",
+            "date": "التاريخ",
+            "startTime": "وقت البدء",
+            "endTime": "وقت الانتهاء",
+            "estimatedEndTime": "وقت الانتهاء المتوقع",
+            "estimatedEndTimeTooltip": "هذا هو وقت الانتهاء المتوقع بناءً على مدة الموعد",
+            "status": "الحالة",
+            "statusOptions": {
+                "scheduled": "مجدول",
+                "inProgress": "قيد التنفيذ",
+                "completed": "مكتمل",
+                "cancelled": "ملغي"
+            },
+            "noMeasurements": "لا توجد قياسات مسجلة",
+            "noClinicalExam": "لا يوجد فحص سريري مسجل",
+            "noPrescriptions": "لا توجد وصفات طبية مسجلة"
+        }
     },
     "patient": {
         "name": "الاسم الكامل",
@@ -610,7 +628,22 @@
             "others": "أخرى",
             "itemWithBadge": "عنصر مع شارة",
             "externalLink": "رابط خارجي",
-            "disabledMenu": "قائمة معطلة"
+            "disabledMenu": "قائمة معطلة",
+            "visitDetails": {
+                "title": "تفاصيل الزيارة",
+                "date": "التاريخ",
+                "startTime": "وقت البدء",
+                "endTime": "وقت الانتهاء",
+                "estimatedEndTime": "وقت الانتهاء المتوقع",
+                "estimatedEndTimeTooltip": "هذا هو وقت الانتهاء المتوقع بناءً على مدة الموعد",
+                "status": "الحالة",
+                "statusOptions": {
+                    "scheduled": "مجدول",
+                    "inProgress": "قيد التنفيذ",
+                    "completed": "مكتمل",
+                    "cancelled": "ملغي"
+                }
+            }
         }
     },
     "patientView": {

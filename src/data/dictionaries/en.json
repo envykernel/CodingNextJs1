@@ -158,7 +158,22 @@
     "paid": "Paid",
     "remaining": "Remaining",
     "save": "Save",
-    "emergencyContact": "Emergency Contact"
+    "emergencyContact": "Emergency Contact",
+    "visitDetails": {
+      "title": "Visit Details",
+      "date": "Date",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "estimatedEndTime": "Estimated End Time",
+      "estimatedEndTimeTooltip": "This is the estimated end time based on the appointment duration",
+      "status": "Status",
+      "statusOptions": {
+        "scheduled": "Scheduled",
+        "inProgress": "In Progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      }
+    }
   },
   "form": {
     "name": "Name",
