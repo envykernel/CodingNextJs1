@@ -59,8 +59,8 @@
     "appointments": {
         "typeOptions": {
             "Consultation": "Consultation",
-            "Medical Check": "Bilan médical",
-            "Clinical Procedure": "Procédure clinique",
+            "Medical Check": "Examen Médical",
+            "Clinical Procedure": "Procédure Clinique",
             "Other": "Autre"
         },
         "statusOptions": {
@@ -69,21 +69,24 @@
             "cancelled": "Annulé"
         },
         "actions": {
-            "goToVisit": "Aller à la visite",
-            "createVisit": "Créer une visite",
+            "goToVisit": "Aller à la Visite",
+            "createVisit": "Créer une Visite",
             "cancel": "Annuler",
             "confirm": "Confirmer",
             "loading": "Chargement...",
-            "confirmCancellation": "Confirmer l'annulation",
+            "confirmCancellation": "Confirmer l'Annulation",
             "cancelAppointmentConfirmation": "Êtes-vous sûr de vouloir annuler ce rendez-vous ?"
         },
         "pagination": {
             "rowsPerPage": "Lignes par page",
             "of": "sur",
-            "showing": "Affichage de",
+            "showing": "Affichage",
             "to": "à"
         },
-        "noAppointments": "Aucun rendez-vous disponible."
+        "noAppointments": "Aucun rendez-vous disponible.",
+        "past": "Rendez-vous Passés",
+        "thisMonth": "Ce Mois",
+        "upcoming": "Rendez-vous à Venir"
     },
     "date": "Date :",
     "time": "Heure",

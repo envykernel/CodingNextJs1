@@ -242,19 +242,19 @@ const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
             <div>
               <Typography variant='subtitle1' className='mb-2 text-center'>
-                {t('common.overview') || 'Past'}
+                {t('appointments.past') || 'Past Appointments'}
               </Typography>
               {renderCards(past)}
             </div>
             <div>
               <Typography variant='subtitle1' className='mb-2 text-center'>
-                {t('availabilityTitle') || 'This Month'}
+                {t('appointments.thisMonth') || 'This Month'}
               </Typography>
               {renderCards(thisMonth)}
             </div>
             <div>
               <Typography variant='subtitle1' className='mb-2 text-center'>
-                {t('common.connections') || 'Next'}
+                {t('appointments.upcoming') || 'Upcoming Appointments'}
               </Typography>
               {renderCards(next)}
             </div>

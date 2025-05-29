@@ -89,7 +89,10 @@
             "showing": "Showing",
             "to": "to"
         },
-        "noAppointments": "No appointments available."
+        "noAppointments": "No appointments available.",
+        "past": "Past Appointments",
+        "thisMonth": "This Month",
+        "upcoming": "Upcoming Appointments"
     },
     "date": "Date:",
     "time": "Time",
