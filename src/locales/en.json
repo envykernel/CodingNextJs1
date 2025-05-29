@@ -764,6 +764,7 @@
         "amount": "Amount",
         "duration": "Duration",
         "minutes": "minutes",
+        "statusLabel": "Status",
         "status": "Status",
         "allStatus": "All Status",
         "sortBy": "Sort By",

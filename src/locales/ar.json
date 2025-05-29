@@ -755,6 +755,7 @@
         "amount": "المبلغ",
         "duration": "المدة",
         "minutes": "دقائق",
+        "statusLabel": "الحالة",
         "status": "الحالة",
         "allStatus": "جميع الحالات",
         "sortBy": "ترتيب حسب",

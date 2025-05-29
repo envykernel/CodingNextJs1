@@ -772,6 +772,8 @@
         "amount": "Montant",
         "duration": "Durée",
         "minutes": "minutes",
+        "statusLabel": "Statut",
+        "status": "Statut",
         "allStatus": "Tous les Statuts",
         "sortBy": "Trier par",
         "sortByName": "Trier par Nom",

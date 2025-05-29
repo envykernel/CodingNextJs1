@@ -294,7 +294,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
           }}
         >
           <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
               <Paper
                 component='form'
                 sx={{
@@ -311,7 +311,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                   value={searchQuery}
                   onChange={e => {
                     setSearchQuery(e.target.value)
-                    setPage(1) // Reset to first page on search
+                    setPage(1)
                   }}
                   startAdornment={
                     <InputAdornment position='start'>
@@ -332,14 +332,15 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                 )}
               </Paper>
             </Grid>
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={6}>
               <Grid container spacing={2}>
-                <Grid item xs={4}>
+                <Grid item xs={6}>
                   <FormControl fullWidth size='small'>
-                    <InputLabel>{t('services.status')}</InputLabel>
+                    <InputLabel id='service-status-label'>{t('services.statusLabel')}</InputLabel>
                     <Select
+                      labelId='service-status-label'
                       value={statusFilter}
-                      label={t('services.status')}
+                      label={t('services.statusLabel')}
                       onChange={e => {
                         setStatusFilter(e.target.value as typeof statusFilter)
                         setPage(1)
@@ -351,7 +352,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={6}>
                   <FormControl fullWidth size='small'>
                     <InputLabel>{t('services.sortBy')}</InputLabel>
                     <Select
@@ -361,8 +362,6 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                         const newSortBy = e.target.value as typeof sortBy
 
                         setSortBy(newSortBy)
-
-                        // Always set to ascending when changing sort field
                         setSortOrder('asc')
                         setPage(1)
                       }}
@@ -372,24 +371,24 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button
-                    variant='contained'
-                    startIcon={<i className='tabler-plus' />}
-                    onClick={handleAddService}
-                    disabled={isSubmitting || editingService !== null}
-                    size='small'
-                    sx={{
-                      textTransform: 'none',
-                      px: 2,
-                      whiteSpace: 'nowrap',
-                      minWidth: 'auto'
-                    }}
-                  >
-                    {t('services.addNew')}
-                  </Button>
-                </Grid>
               </Grid>
+            </Grid>
+            <Grid item xs={12} md={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                variant='contained'
+                startIcon={<i className='tabler-plus' />}
+                onClick={handleAddService}
+                disabled={isSubmitting || editingService !== null}
+                size='small'
+                sx={{
+                  textTransform: 'none',
+                  px: 2,
+                  whiteSpace: 'nowrap',
+                  minWidth: 'auto'
+                }}
+              >
+                {t('services.addNew')}
+              </Button>
             </Grid>
           </Grid>
         </Box>
