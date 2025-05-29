@@ -177,6 +177,7 @@ model organisation {
   phone_number            String?                   @db.VarChar(50)
   email                   String?                   @db.VarChar(255)
   status                  String?                   @default("enabled") @db.VarChar(50)
+  currency                String?                   @default("MAD") @db.VarChar(3)
   created_at              DateTime?                 @default(now()) @db.Timestamp(6)
   updated_at              DateTime?                 @default(now()) @db.Timestamp(6)
   break_end_time          String?                   @db.VarChar(5)
