@@ -262,10 +262,11 @@ const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
         </CardContent>
       </Card>
       <Dialog open={cancelDialogOpen} onClose={handleCancelClose}>
-        <DialogTitle>{t('appointmentDetails') || 'Confirm Cancellation'}</DialogTitle>
+        <DialogTitle>{t('appointments.actions.confirmCancellation') || 'Confirm Cancellation'}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {t('createAppointment') || 'Are you sure you want to cancel this appointment?'}
+            {t('appointments.actions.cancelAppointmentConfirmation') ||
+              'Are you sure you want to cancel this appointment?'}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -273,7 +274,9 @@ const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
             {t('navigation.cancel') || 'Cancel'}
           </Button>
           <Button onClick={handleCancelConfirm} color='error' variant='contained' disabled={isCancelling}>
-            {isCancelling ? t('loading') || 'Loading...' : t('navigation.save') || 'Confirm'}
+            {isCancelling
+              ? t('appointments.actions.loading') || 'Loading...'
+              : t('appointments.actions.confirm') || 'Confirm'}
           </Button>
         </DialogActions>
       </Dialog>
