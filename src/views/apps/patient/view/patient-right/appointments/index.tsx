@@ -219,7 +219,9 @@ const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
 
   const renderCards = (data: Appointment[]) =>
     data.length === 0 ? (
-      <Typography className='text-center'>{t('noAppointments') || 'No appointments available.'}</Typography>
+      <Typography className='text-center'>
+        {t('appointments.noAppointments') || 'No appointments available.'}
+      </Typography>
     ) : (
       <div className='flex flex-col gap-2'>
         {data.map((a: Appointment) => (

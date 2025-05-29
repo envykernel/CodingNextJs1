@@ -76,9 +76,15 @@
             "loading": "جاري التحميل...",
             "confirmCancellation": "تأكيد الإلغاء",
             "cancelAppointmentConfirmation": "هل أنت متأكد أنك تريد إلغاء هذا الموعد؟"
-        }
+        },
+        "pagination": {
+            "rowsPerPage": "الصفوف في الصفحة",
+            "of": "من",
+            "showing": "عرض",
+            "to": "إلى"
+        },
+        "noAppointments": "لا توجد مواعيد متاحة."
     },
-    "noAppointments": "لا توجد مواعيد متاحة.",
     "date": "التاريخ:",
     "time": "الوقت",
     "type": "النوع",

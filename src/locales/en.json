@@ -82,9 +82,15 @@
             "loading": "Loading...",
             "confirmCancellation": "Confirm Cancellation",
             "cancelAppointmentConfirmation": "Are you sure you want to cancel this appointment?"
-        }
+        },
+        "pagination": {
+            "rowsPerPage": "Rows per page",
+            "of": "of",
+            "showing": "Showing",
+            "to": "to"
+        },
+        "noAppointments": "No appointments available."
     },
-    "noAppointments": "No appointments available.",
     "date": "Date:",
     "time": "Time",
     "type": "Type",

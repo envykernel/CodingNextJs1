@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
 import { useRouter, usePathname, useSearchParams, useParams } from 'next/navigation'
 
@@ -106,6 +106,62 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     details?: string
   } | null>(error || null)
 
+  // Add effect to reset loading state when data changes
+  useEffect(() => {
+    if (appointmentData) {
+      setIsLoading(false)
+    }
+  }, [appointmentData])
+
+  // Add a timeout to reset loading state as fallback
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | undefined
+
+    if (isLoading) {
+      timeoutId = setTimeout(() => {
+        setIsLoading(false)
+      }, 5000) // 5 second timeout as fallback
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [isLoading])
+
+  // Helper function to handle navigation
+  const handleNavigation = async (params: URLSearchParams) => {
+    setIsLoading(true)
+    try {
+      await router.push(`${pathname}?${params.toString()}`)
+      router.refresh()
+    } catch (err) {
+      setErrorState({
+        error: 'appointments.errors.navigationFailed',
+        message: 'appointments.errors.navigationFailedMessage'
+      })
+      setIsLoading(false)
+    }
+  }
+
+  // Modify handlePageChange
+  const handlePageChange = (_event: unknown, newPage: number) => {
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
+    params.set('page', String(newPage + 1))
+    handleNavigation(params)
+  }
+
+  // Modify handlePageSizeChange
+  const handlePageSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
+    const newPageSize = Number(event.target.value)
+    params.set('pageSize', String(newPageSize))
+    params.set('page', '1')
+    handleNavigation(params)
+  }
+
+  // Modify other handlers to use handleNavigation
   const handleDateRangeChange = (newStartDate: Date | null, newEndDate: Date | null) => {
     const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
 
@@ -126,8 +182,8 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
       params.delete('endDate')
     }
 
-    params.set('page', '1') // Reset to first page on filter change
-    router.push(`${pathname}?${params.toString()}`)
+    params.set('page', '1')
+    handleNavigation(params)
   }
 
   const handleFilter = (newFilter: string) => {
@@ -146,7 +202,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     }
 
     params.set('page', '1')
-    router.push(`${pathname}?${params.toString()}`)
+    handleNavigation(params)
   }
 
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
@@ -160,7 +216,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     }
 
     params.set('page', '1')
-    router.push(`${pathname}?${params.toString()}`)
+    handleNavigation(params)
   }
 
   const handleTypeChange = (event: SelectChangeEvent<string>) => {
@@ -174,7 +230,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     }
 
     params.set('page', '1')
-    router.push(`${pathname}?${params.toString()}`)
+    handleNavigation(params)
   }
 
   const handleClearDateRange = () => {
@@ -185,7 +241,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     params.delete('startDate')
     params.delete('endDate')
     params.set('page', '1')
-    router.push(`${pathname}?${params.toString()}`)
+    handleNavigation(params)
   }
 
   const isAppointmentWithinLastWeek = (appointmentDate: string) => {
@@ -202,40 +258,15 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     }
   }, [appointmentData])
 
-  // Add error handling to page change
-  const handlePageChange = async (_event: unknown, newPage: number) => {
-    setIsLoading(true)
-    setErrorState(null)
-    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
-
-    params.set('page', String(newPage + 1))
-    try {
-      await router.push(`${pathname}?${params.toString()}`)
-    } catch (err) {
-      setErrorState({
-        error: 'appointments.errors.navigationFailed',
-        message: 'appointments.errors.navigationFailedMessage'
-      })
+  // Helper function to map database appointment types to translation keys
+  const mapAppointmentTypeToKey = (type: string) => {
+    const typeMap: Record<string, string> = {
+      consultation: 'Consultation',
+      medical_check: 'Medical Check',
+      clinical_procedure: 'Clinical Procedure',
+      other: 'Other'
     }
-  }
-
-  // Add error handling to page size change
-  const handlePageSizeChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsLoading(true)
-    setErrorState(null)
-    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
-    const newPageSize = Number(event.target.value)
-
-    params.set('pageSize', String(newPageSize))
-    params.set('page', '1')
-    try {
-      await router.push(`${pathname}?${params.toString()}`)
-    } catch (err) {
-      setErrorState({
-        error: 'appointments.errors.navigationFailed',
-        message: 'appointments.errors.navigationFailedMessage'
-      })
-    }
+    return typeMap[type.toLowerCase()] || type
   }
 
   return (
@@ -353,7 +384,9 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                 <TableCell>
                   <LocalTime iso={row.appointmentDate} />
                 </TableCell>
-                <TableCell>{t(`appointments.typeOptions.${row.type}`)}</TableCell>
+                <TableCell>
+                  {row.type ? t(`appointments.typeOptions.${mapAppointmentTypeToKey(row.type)}`) : ''}
+                </TableCell>
                 <TableCell>
                   <Chip
                     label={t(`appointmentStatistics.todayAppointments.status.${row.status}`)}
@@ -443,8 +476,8 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
         onPageChange={handlePageChange}
         rowsPerPage={pageSize}
         onRowsPerPageChange={handlePageSizeChange}
-        labelRowsPerPage={t('common.rowsPerPage')}
-        labelDisplayedRows={({ from, to, count }) => `${from}-${to} ${t('common.of')} ${count}`}
+        labelRowsPerPage={t('appointments.pagination.rowsPerPage')}
+        labelDisplayedRows={({ from, to, count }) => `${from}-${to} ${t('appointments.pagination.of')} ${count}`}
       />
       <AddAppointmentDrawer
         open={addOpen}

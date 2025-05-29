@@ -76,9 +76,15 @@
             "loading": "Chargement...",
             "confirmCancellation": "Confirmer l'annulation",
             "cancelAppointmentConfirmation": "Êtes-vous sûr de vouloir annuler ce rendez-vous ?"
-        }
+        },
+        "pagination": {
+            "rowsPerPage": "Lignes par page",
+            "of": "sur",
+            "showing": "Affichage de",
+            "to": "à"
+        },
+        "noAppointments": "Aucun rendez-vous disponible."
     },
-    "noAppointments": "Aucun rendez-vous disponible.",
     "date": "Date :",
     "time": "Heure",
     "type": "Type",
