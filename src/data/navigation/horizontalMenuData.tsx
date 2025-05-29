@@ -45,6 +45,38 @@ const horizontalMenuData = (): HorizontalMenuDataType[] => {
       ]
     },
     {
+      label: t('sidebar.navigation.medical'),
+      icon: 'tabler-stethoscope',
+      children: [
+        {
+          label: t('sidebar.navigation.patients'),
+          icon: 'tabler-users',
+          href: '/medical/patients'
+        },
+        {
+          label: t('sidebar.navigation.appointments'),
+          icon: 'tabler-calendar-event',
+          href: '/medical/appointments'
+        }
+      ]
+    },
+    {
+      label: t('sidebar.navigation.financial'),
+      icon: 'tabler-cash',
+      children: [
+        {
+          label: t('sidebar.navigation.invoices'),
+          icon: 'tabler-file-invoice',
+          href: '/financial/invoices'
+        },
+        {
+          label: t('sidebar.navigation.createInvoice'),
+          icon: 'tabler-file-plus',
+          href: '/financial/invoices/create'
+        }
+      ]
+    },
+    {
       label: t('sidebar.navigation.apps'),
       icon: 'tabler-mail',
       children: [
