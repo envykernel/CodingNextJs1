@@ -49,7 +49,7 @@ const EditActions = ({ invoice, refreshInvoice }: EditActionsProps) => {
               variant='contained'
               className='capitalize'
               onClick={() => setPaymentDrawerOpen(true)}
-              startIcon={<i className='tabler-currency-dollar' />}
+              startIcon={<i className='tabler-credit-card' />}
             >
               {t('invoice.addPayment')}
             </Button>
