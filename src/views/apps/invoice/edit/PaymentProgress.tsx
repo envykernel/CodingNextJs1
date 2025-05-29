@@ -21,13 +21,13 @@ const PaymentProgress = ({ invoice, t }: { invoice: any; t: any }) => {
     <div className='flex flex-col gap-2'>
       <div className='flex justify-between items-center'>
         <Typography variant='body2' className='font-medium'>
-          {t.invoice?.totalAmount || 'Total'}: {formatCurrency(total)}
+          {t('invoice.totalAmount')}: {formatCurrency(total)}
         </Typography>
         <Typography variant='body2' className='font-medium'>
-          {t.invoice?.paid || 'Paid'}: {formatCurrency(paid)}
+          {t('invoice.paid')}: {formatCurrency(paid)}
         </Typography>
         <Typography variant='body2' color='error' className='font-medium'>
-          {t.invoice?.remaining || 'Remaining'}: {formatCurrency(remaining)}
+          {t('invoice.remaining')}: {formatCurrency(remaining)}
         </Typography>
       </div>
       <LinearProgress variant='determinate' value={percent} sx={{ height: 10, borderRadius: 5 }} />

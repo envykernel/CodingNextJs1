@@ -8,8 +8,6 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid2'
-import LinearProgress from '@mui/material/LinearProgress'
-import Typography from '@mui/material/Typography'
 
 // Component Imports
 import AddPaymentDrawer from '@views/apps/invoice/shared/AddPaymentDrawer'
@@ -17,17 +15,20 @@ import SendInvoiceDrawer from '@views/apps/invoice/shared/SendInvoiceDrawer'
 import PaymentsList from '../shared/PaymentsList'
 import PaymentProgress from './PaymentProgress'
 
+// Translation Imports
+import { useTranslation } from '@/contexts/translationContext'
+
 type EditActionsProps = { invoice: any; refreshInvoice?: () => void }
 
 const EditActions = ({ invoice, refreshInvoice }: EditActionsProps) => {
+  const { t } = useTranslation()
+
   // States
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false)
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false)
   const [services, setServices] = useState<any[]>([])
 
   // Hooks
-  const t = require('@/contexts/translationContext').useTranslation()
-
   useEffect(() => {
     fetch('/api/services')
       .then(res => res.json())
@@ -50,7 +51,7 @@ const EditActions = ({ invoice, refreshInvoice }: EditActionsProps) => {
               onClick={() => setPaymentDrawerOpen(true)}
               startIcon={<i className='tabler-currency-dollar' />}
             >
-              Add Payment
+              {t('invoice.addPayment')}
             </Button>
           </CardContent>
         </Card>
