@@ -31,7 +31,7 @@ const PatientMeasurementsForm: React.FC<PatientMeasurementsFormProps> = ({
   initialValues,
   onVisitUpdate
 }) => {
-  const t = dictionary.patientMeasurementsForm
+  const t = dictionary?.patientMeasurementsForm || {}
 
   const [form, setForm] = useState(() => {
     if (initialValues) {

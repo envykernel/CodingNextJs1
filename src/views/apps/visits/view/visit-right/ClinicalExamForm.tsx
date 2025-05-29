@@ -57,8 +57,8 @@ const sectionKeys = [
 ]
 
 const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary, initialValues, onVisitUpdate }) => {
-  const t = dictionary.clinicalExamForm
-  const tSections = t.sections
+  const t = dictionary?.clinicalExamForm || {}
+  const tSections = t?.sections || {}
 
   const [selectedSections, setSelectedSections] = useState<string[]>(generalSectionKeys)
 
@@ -148,19 +148,21 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             value={selectedSections}
             onChange={(_e, value) => setSelectedSections(value)}
             getOptionLabel={key => tSections[key.replace(/_([a-z])/g, (_, c) => c.toUpperCase())] || key}
-            renderInput={params => <TextField {...params} label={t.selectSections} variant='outlined' size='small' />}
+            renderInput={params => (
+              <TextField {...params} label={t.selectSections || 'Select Sections'} variant='outlined' size='small' />
+            )}
             fullWidth
           />
         </div>
         <Typography variant='h6' className='mb-4'>
-          {t.title}
+          {t.title || 'Clinical Exam'}
         </Typography>
         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
           <Grid container spacing={2}>
             {selectedSections.includes('chief_complaint') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.chiefComplaint}
+                  label={t.chiefComplaint || 'Chief Complaint'}
                   name='chief_complaint'
                   value={form.chief_complaint}
                   onChange={handleChange}
@@ -173,7 +175,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('history_illness') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.historyIllness}
+                  label={t.historyIllness || 'History of Illness'}
                   name='history_illness'
                   value={form.history_illness}
                   onChange={handleChange}
@@ -186,7 +188,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('medical_history') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.medicalHistory}
+                  label={t.medicalHistory || 'Medical History'}
                   name='medical_history'
                   value={form.medical_history}
                   onChange={handleChange}
@@ -199,7 +201,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('general_appearance') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.generalAppearance}
+                  label={t.generalAppearance || 'General Appearance'}
                   name='general_appearance'
                   value={form.general_appearance}
                   onChange={handleChange}
@@ -212,7 +214,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('cardiovascular') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.cardiovascular}
+                  label={t.cardiovascular || 'Cardiovascular'}
                   name='cardiovascular'
                   value={form.cardiovascular}
                   onChange={handleChange}
@@ -225,7 +227,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('respiratory') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.respiratory}
+                  label={t.respiratory || 'Respiratory'}
                   name='respiratory'
                   value={form.respiratory}
                   onChange={handleChange}
@@ -238,7 +240,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('gastrointestinal') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.gastrointestinal}
+                  label={t.gastrointestinal || 'Gastrointestinal'}
                   name='gastrointestinal'
                   value={form.gastrointestinal}
                   onChange={handleChange}
@@ -251,7 +253,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('neurological') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.neurological}
+                  label={t.neurological || 'Neurological'}
                   name='neurological'
                   value={form.neurological}
                   onChange={handleChange}
@@ -264,7 +266,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('musculoskeletal') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.musculoskeletal}
+                  label={t.musculoskeletal || 'Musculoskeletal'}
                   name='musculoskeletal'
                   value={form.musculoskeletal}
                   onChange={handleChange}
@@ -277,7 +279,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('skin') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.skin}
+                  label={t.skin || 'Skin'}
                   name='skin'
                   value={form.skin}
                   onChange={handleChange}
@@ -290,7 +292,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('ent') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.ent}
+                  label={t.ent || 'ENT'}
                   name='ent'
                   value={form.ent}
                   onChange={handleChange}
@@ -303,7 +305,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('assessment') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.assessment}
+                  label={t.assessment || 'Assessment'}
                   name='assessment'
                   value={form.assessment}
                   onChange={handleChange}
@@ -316,7 +318,7 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {selectedSections.includes('plan') && (
               <Grid item xs={12} className='mb-3'>
                 <TextField
-                  label={t.plan}
+                  label={t.plan || 'Plan'}
                   name='plan'
                   value={form.plan}
                   onChange={handleChange}
@@ -331,13 +333,13 @@ const ClinicalExamForm: React.FC<ClinicalExamFormProps> = ({ visitId, dictionary
             {success && (
               <Grid item>
                 <Alert icon={<CheckCircleIcon fontSize='inherit' />} severity='success'>
-                  {t.savedSuccessfully}
+                  {t.savedSuccessfully || 'Saved successfully'}
                 </Alert>
               </Grid>
             )}
             <Grid item>
               <Button type='submit' variant='contained' color='primary' disabled={loading}>
-                {loading ? t.saving : t.save}
+                {loading ? t.saving || 'Saving...' : t.save || 'Save'}
               </Button>
             </Grid>
             {error && (
