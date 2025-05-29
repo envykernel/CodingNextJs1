@@ -155,7 +155,7 @@ const AppointmentCard = ({
             </Button>
           </Tooltip>
         ) : appointment.status === 'scheduled' ? (
-          <Tooltip title={t('bookAppointment') || 'Cancel Appointment'}>
+          <Tooltip title={t('appointments.actions.cancel') || 'Cancel Appointment'}>
             <Button
               size='small'
               variant='outlined'
@@ -164,7 +164,7 @@ const AppointmentCard = ({
               className='hover:text-error hover:border-error'
               startIcon={<i className='tabler-x text-lg' />}
             >
-              {t('bookAppointment') || 'Cancel'}
+              {t('appointments.actions.cancel') || 'Cancel'}
             </Button>
           </Tooltip>
         ) : null}
