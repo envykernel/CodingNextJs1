@@ -197,6 +197,13 @@ const AddAction = () => {
 
   const invoiceTotal = items.reduce((sum, item) => sum + (item.line_total || 0), 0)
 
+  // Helper function to format currency
+  const formatCurrency = (amount: number) => {
+    const currency = selectedOrganisation?.currency || 'MAD'
+
+    return amount.toLocaleString('en-US', { style: 'currency', currency })
+  }
+
   const handleSubmitInvoice = async () => {
     if (!selectedPatient || !selectedOrganisation) {
       setError(t('invoice.errorMissingPatientOrOrg') || 'Please select a patient and organisation')
@@ -226,7 +233,9 @@ const AddAction = () => {
 
       if (res.ok) {
         const invoice = await res.json()
+
         setSuccess(true)
+
         // Redirect to the invoice preview page
         router.push(`/${locale}/apps/invoice/preview/${invoice.id}`)
       } else {
@@ -459,9 +468,7 @@ const AddAction = () => {
                       </Grid>
                       <Grid size={{ xs: 12, md: 2 }}>
                         <Typography className='font-medium md:absolute md:-top-8'>{t('invoice.lineTotal')}</Typography>
-                        <Typography>
-                          {item.line_total.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
-                        </Typography>
+                        <Typography>{formatCurrency(item.line_total)}</Typography>
                       </Grid>
                     </Grid>
                     <div className='flex flex-col justify-start border-is'>
@@ -485,7 +492,7 @@ const AddAction = () => {
                   <div className='min-is-[200px] flex items-center justify-between'>
                     <Typography>Total:</Typography>
                     <Typography className='font-medium' color='text.primary'>
-                      {invoiceTotal.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
+                      {formatCurrency(invoiceTotal)}
                     </Typography>
                   </div>
                 </div>
