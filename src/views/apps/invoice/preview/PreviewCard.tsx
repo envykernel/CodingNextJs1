@@ -45,6 +45,14 @@ const PreviewCard = ({ invoiceData, id }: { invoiceData: any; id: string }) => {
   const tax = Number(invoiceData.tax || 0)
   const total = subtotal - discount + tax
 
+  // Get the organisation's currency, default to MAD if not set
+  const currency = invoiceData.organisation?.currency || 'MAD'
+
+  // Helper function to format currency
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString('en-US', { style: 'currency', currency })
+  }
+
   return (
     <Card className='previewCard'>
       <CardContent className='sm:!p-12'>
@@ -129,14 +137,10 @@ const PreviewCard = ({ invoiceData, id }: { invoiceData: any; id: string }) => {
                         <Typography color='text.primary'>{line.quantity}</Typography>
                       </td>
                       <td>
-                        <Typography color='text.primary'>
-                          {Number(line.unit_price).toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
-                        </Typography>
+                        <Typography color='text.primary'>{formatCurrency(Number(line.unit_price))}</Typography>
                       </td>
                       <td>
-                        <Typography color='text.primary'>
-                          {Number(line.line_total).toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
-                        </Typography>
+                        <Typography color='text.primary'>{formatCurrency(Number(line.line_total))}</Typography>
                       </td>
                     </tr>
                   ))}
@@ -151,7 +155,7 @@ const PreviewCard = ({ invoiceData, id }: { invoiceData: any; id: string }) => {
                   Total:
                 </Typography>
                 <Typography className='font-medium text-right' color='text.primary' style={{ minWidth: 120 }}>
-                  {total.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })}
+                  {formatCurrency(total)}
                 </Typography>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>

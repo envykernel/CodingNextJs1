@@ -54,7 +54,16 @@ const PreviewPage = async (props: { params: Promise<{ id: string }> }) => {
         }
       },
       patient: true,
-      organisation: true,
+      organisation: {
+        select: {
+          id: true,
+          name: true,
+          address: true,
+          phone_number: true,
+          email: true,
+          currency: true
+        }
+      },
       payment_apps: {
         include: {
           payment: {
