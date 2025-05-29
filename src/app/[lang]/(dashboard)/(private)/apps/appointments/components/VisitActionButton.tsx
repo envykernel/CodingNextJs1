@@ -1,14 +1,12 @@
 import React, { useState } from 'react'
-
 import { useRouter } from 'next/navigation'
-
 import { Button, CircularProgress } from '@mui/material'
 import type { patient_visit } from '@prisma/client'
+import { useTranslation } from '@/contexts/translationContext'
 
 interface VisitActionButtonProps {
   appointmentId: number
   visit?: patient_visit
-  t: any
   lang: string
   onVisitCreated?: () => void
   size?: 'small' | 'medium' | 'large'
@@ -19,7 +17,6 @@ interface VisitActionButtonProps {
 const VisitActionButton: React.FC<VisitActionButtonProps> = ({
   appointmentId,
   visit,
-  t,
   lang,
   onVisitCreated,
   size = 'small',
@@ -28,6 +25,7 @@ const VisitActionButton: React.FC<VisitActionButtonProps> = ({
 }) => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const { t } = useTranslation()
 
   if (visit) {
     return (

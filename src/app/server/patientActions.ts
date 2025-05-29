@@ -321,7 +321,12 @@ export async function getAllPatients(search?: string) {
 
   const patients = await prisma.patient.findMany({
     where,
-    select: { id: true, name: true },
+    select: {
+      id: true,
+      name: true,
+      birthdate: true,
+      gender: true
+    },
     orderBy: { name: 'asc' }
   })
 

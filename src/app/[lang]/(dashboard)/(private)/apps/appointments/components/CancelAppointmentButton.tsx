@@ -1,40 +1,42 @@
 import React, { useState } from 'react'
-
 import { useRouter } from 'next/navigation'
-
 import {
   Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
   DialogContentText,
+  DialogTitle,
   CircularProgress
 } from '@mui/material'
+import { useTranslation } from '@/contexts/translationContext'
 
 interface CancelAppointmentButtonProps {
   appointmentId: number
-  t: any
-  onAppointmentCancelled?: () => void
   size?: 'small' | 'medium' | 'large'
   variant?: 'text' | 'outlined' | 'contained'
   className?: string
+  onAppointmentCancelled?: () => void
 }
 
 const CancelAppointmentButton: React.FC<CancelAppointmentButtonProps> = ({
   appointmentId,
-  t,
-  onAppointmentCancelled,
   size = 'small',
   variant = 'outlined',
-  className = ''
+  className = '',
+  onAppointmentCancelled
 }) => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const { t } = useTranslation()
 
   const handleCancelClick = () => {
     setDialogOpen(true)
+  }
+
+  const handleCancelClose = () => {
+    setDialogOpen(false)
   }
 
   const handleCancelConfirm = async () => {
@@ -49,20 +51,16 @@ const CancelAppointmentButton: React.FC<CancelAppointmentButtonProps> = ({
 
       if (res.ok) {
         if (onAppointmentCancelled) onAppointmentCancelled()
-        router.refresh()
       } else {
-        console.error('Failed to cancel appointment')
+        const data = await res.json()
+        console.error(data.error || 'Error cancelling appointment')
       }
-    } catch (error) {
-      console.error('Error cancelling appointment:', error)
+    } catch (e) {
+      console.error('Error cancelling appointment')
     } finally {
       setLoading(false)
       setDialogOpen(false)
     }
-  }
-
-  const handleCancelClose = () => {
-    setDialogOpen(false)
   }
 
   return (

@@ -24,7 +24,9 @@ import {
   IconButton,
   CircularProgress,
   Box,
-  useTheme
+  useTheme,
+  Alert,
+  Typography
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
 
@@ -51,6 +53,11 @@ interface AppointmentListTableProps {
   patients: PatientType[]
   dictionary: any
   visitsByAppointmentId?: Record<number, any>
+  error?: {
+    error: string
+    message: string
+    details?: string
+  }
 }
 
 const statusColor: { [key: string]: string } = {
@@ -70,7 +77,8 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   doctors = [],
   patients = [],
   dictionary,
-  visitsByAppointmentId = {}
+  visitsByAppointmentId = {},
+  error
 }) => {
   const router = useRouter()
   const pathname = usePathname()
@@ -82,7 +90,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   const type = searchParams?.get('type') || ''
   const startDateParam = searchParams?.get('startDate') || ''
   const endDateParam = searchParams?.get('endDate') || ''
-  const t = useTranslation()
+  const { t } = useTranslation()
   const [addOpen, setAddOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const theme = useTheme()
@@ -90,6 +98,13 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   // State for date pickers
   const [startDate, setStartDate] = useState<Date | null>(startDateParam ? new Date(startDateParam) : null)
   const [endDate, setEndDate] = useState<Date | null>(endDateParam ? new Date(endDateParam) : null)
+
+  // Add error state
+  const [errorState, setErrorState] = useState<{
+    error: string
+    message: string
+    details?: string
+  } | null>(error || null)
 
   const handleDateRangeChange = (newStartDate: Date | null, newEndDate: Date | null) => {
     const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
@@ -180,37 +195,68 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     return isAfter(appointmentDateTime, oneWeekAgo) || isBefore(appointmentDateTime, new Date())
   }
 
-  const handlePageChange = (_event: unknown, newPage: number) => {
+  // Reset error state when data changes
+  React.useEffect(() => {
+    if (appointmentData) {
+      setErrorState(null)
+    }
+  }, [appointmentData])
+
+  // Add error handling to page change
+  const handlePageChange = async (_event: unknown, newPage: number) => {
     setIsLoading(true)
+    setErrorState(null)
     const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
 
-    params.set('page', String(newPage + 1)) // Convert back to 1-based page number
-    router.push(`${pathname}?${params.toString()}`)
+    params.set('page', String(newPage + 1))
+    try {
+      await router.push(`${pathname}?${params.toString()}`)
+    } catch (err) {
+      setErrorState({
+        error: 'appointments.errors.navigationFailed',
+        message: 'appointments.errors.navigationFailedMessage'
+      })
+    }
   }
 
-  const handlePageSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Add error handling to page size change
+  const handlePageSizeChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsLoading(true)
+    setErrorState(null)
     const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
     const newPageSize = Number(event.target.value)
 
     params.set('pageSize', String(newPageSize))
-    params.set('page', '1') // Reset to first page when changing page size
-    router.push(`${pathname}?${params.toString()}`)
+    params.set('page', '1')
+    try {
+      await router.push(`${pathname}?${params.toString()}`)
+    } catch (err) {
+      setErrorState({
+        error: 'appointments.errors.navigationFailed',
+        message: 'appointments.errors.navigationFailedMessage'
+      })
+    }
   }
-
-  // Reset loading state when data changes
-  React.useEffect(() => {
-    setIsLoading(false)
-  }, [appointmentData])
 
   return (
     <Card>
+      {errorState && (
+        <Alert severity='error' sx={{ mb: 4 }} onClose={() => setErrorState(null)}>
+          <Typography variant='subtitle1' sx={{ fontWeight: 600 }}>
+            {t(errorState.error)}
+          </Typography>
+          <Typography variant='body2'>{t(errorState.message)}</Typography>
+          {errorState.details && (
+            <Typography variant='body2' sx={{ mt: 1 }}>
+              {t(errorState.details)}
+            </Typography>
+          )}
+        </Alert>
+      )}
       <div className='flex items-center justify-between px-6 pt-6'>
-        <span className='text-xl font-semibold'>
-          {t.appointmentsList || t.appointments?.appointmentsList || 'Appointments List'}
-        </span>
+        <span className='text-xl font-semibold'>{t('appointmentsList')}</span>
         <Button variant='contained' color='primary' onClick={() => setAddOpen(true)}>
-          {t.createAppointment || t.appointments?.createAppointment || 'Create New Appointment'}
+          {t('createAppointment')}
         </Button>
       </div>
       <Divider className='my-4' />
@@ -219,23 +265,23 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
         <div className='flex flex-wrap items-center gap-4 flex-1'>
           {/* Status/Type filters */}
           <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%' }}>
-            <InputLabel shrink>Status</InputLabel>
-            <Select value={status} label='Status' onChange={handleStatusChange} displayEmpty>
-              <MenuItem value=''>All Statuses</MenuItem>
+            <InputLabel shrink>{t('status')}</InputLabel>
+            <Select value={status} label={t('status')} onChange={handleStatusChange} displayEmpty>
+              <MenuItem value=''>{t('all')}</MenuItem>
               {statusOptions.map(option => (
                 <MenuItem key={option} value={option}>
-                  {option}
+                  {t(`appointmentStatistics.todayAppointments.status.${option}`)}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
           <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%' }}>
-            <InputLabel shrink>Type</InputLabel>
-            <Select value={type} label='Type' onChange={handleTypeChange} displayEmpty>
-              <MenuItem value=''>All Types</MenuItem>
+            <InputLabel shrink>{t('type')}</InputLabel>
+            <Select value={type} label={t('type')} onChange={handleTypeChange} displayEmpty>
+              <MenuItem value=''>{t('all')}</MenuItem>
               {typeOptions.map(option => (
                 <MenuItem key={option} value={option}>
-                  {option}
+                  {t(`appointments.typeOptions.${option}`)}
                 </MenuItem>
               ))}
             </Select>
@@ -275,14 +321,14 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
             color={filter === 'today' ? 'primary' : 'inherit'}
             onClick={() => handleFilter(filter === 'today' ? '' : 'today')}
           >
-            Today
+            {t('appointmentStatistics.todayAppointments.subtitle')}
           </Button>
           <Button
             variant={filter === 'week' ? 'contained' : 'outlined'}
             color={filter === 'week' ? 'primary' : 'inherit'}
             onClick={() => handleFilter(filter === 'week' ? '' : 'week')}
           >
-            This Week
+            {t('appointmentStatistics.dayStats.subtitle.week')}
           </Button>
         </div>
       </div>
@@ -291,31 +337,27 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 700 }}>Patient Name</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Date</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Time</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Type</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Actions</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>{t('date')}</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>{t('time')}</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>{t('type')}</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>{t('status')}</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>{t('actions')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {appointmentData.map(row => (
               <TableRow key={row.id}>
-                <TableCell>{row.patientName}</TableCell>
                 <TableCell>
                   <LocalDate iso={row.appointmentDate} />
                 </TableCell>
                 <TableCell>
                   <LocalTime iso={row.appointmentDate} />
                 </TableCell>
-                <TableCell>{row.type}</TableCell>
+                <TableCell>{t(`appointments.typeOptions.${row.type}`)}</TableCell>
                 <TableCell>
                   <Chip
-                    label={row.status}
-                    color={
-                      (statusColor[row.status] as 'info' | 'success' | 'warning' | 'error' | 'default') || 'default'
-                    }
+                    label={t(`appointmentStatistics.todayAppointments.status.${row.status}`)}
+                    color={statusColor[row.status] as any}
                     size='small'
                   />
                 </TableCell>
@@ -324,17 +366,16 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                     <Button
                       variant='outlined'
                       size='small'
-                      onClick={() => router.push(`/fr/apps/appointments/details?id=${row.id}`)}
+                      onClick={() => router.push(`/${lang}/apps/appointments/details?id=${row.id}`)}
                       startIcon={<i className='tabler-eye text-lg' />}
                     >
-                      {t.viewDetails || 'View Details'}
+                      {t('patientView.appointments.viewDetails')}
                     </Button>
                     {row.status === 'scheduled' && isAppointmentWithinLastWeek(row.appointmentDate) && (
                       <>
                         <VisitActionButton
                           appointmentId={row.id}
                           visit={visitsByAppointmentId[row.id]}
-                          t={t}
                           lang={lang}
                           size='small'
                           variant='contained'
@@ -342,7 +383,6 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                         />
                         <CancelAppointmentButton
                           appointmentId={row.id}
-                          t={t}
                           size='small'
                           variant='outlined'
                           onAppointmentCancelled={() => router.refresh()}
@@ -386,8 +426,13 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                 fontWeight: 500
               }}
             >
-              {t.loading || 'Loading appointments...'}
+              {t('loading')}
             </Box>
+          </Box>
+        )}
+        {!isLoading && !errorState && appointmentData.length === 0 && (
+          <Box sx={{ p: 4, textAlign: 'center' }}>
+            <Typography>{t('appointments.noAppointments')}</Typography>
           </Box>
         )}
       </TableContainer>
@@ -398,18 +443,17 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
         onPageChange={handlePageChange}
         rowsPerPage={pageSize}
         onRowsPerPageChange={handlePageSizeChange}
-        rowsPerPageOptions={[10, 25, 50]}
+        labelRowsPerPage={t('common.rowsPerPage')}
+        labelDisplayedRows={({ from, to, count }) => `${from}-${to} ${t('common.of')} ${count}`}
       />
-      <TranslationProvider dictionary={dictionary}>
-        <AddAppointmentDrawer
-          open={addOpen}
-          handleClose={() => setAddOpen(false)}
-          doctors={doctors}
-          patients={patients}
-          dictionary={dictionary}
-          onAppointmentCreated={() => router.refresh()}
-        />
-      </TranslationProvider>
+      <AddAppointmentDrawer
+        open={addOpen}
+        handleClose={() => setAddOpen(false)}
+        doctors={doctors}
+        patients={patients}
+        dictionary={dictionary}
+        onAppointmentCreated={() => router.refresh()}
+      />
     </Card>
   )
 }

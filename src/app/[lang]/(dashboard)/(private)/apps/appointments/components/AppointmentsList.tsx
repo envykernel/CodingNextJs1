@@ -3,6 +3,7 @@
 import React from 'react'
 
 import type { patient_visit } from '@prisma/client'
+import type { PatientType } from '@/views/apps/patient/list/PatientListTable'
 
 import Grid from '@mui/material/Grid'
 
@@ -19,6 +20,11 @@ interface AppointmentsListProps {
   total: number
   dictionary: any
   visitsByAppointmentId?: Record<number, patient_visit>
+  error?: {
+    error: string
+    message: string
+    details?: string
+  }
 }
 
 const AppointmentsList = async ({
@@ -27,10 +33,16 @@ const AppointmentsList = async ({
   pageSize,
   total,
   dictionary,
-  visitsByAppointmentId = {}
+  visitsByAppointmentId = {},
+  error
 }: AppointmentsListProps) => {
   const doctors = (await getAllDoctors()).map(d => ({ ...d, id: String(d.id) }))
-  const patients = (await getAllPatients()).map(p => ({ ...p, id: String(p.id) }))
+  const patients = (await getAllPatients()).map(p => ({
+    id: p.id,
+    name: p.name,
+    birthdate: p.birthdate || new Date(),
+    gender: p.gender || 'unknown'
+  }))
 
   return (
     <Grid container spacing={6}>
@@ -49,6 +61,7 @@ const AppointmentsList = async ({
           patients={patients}
           dictionary={dictionary}
           visitsByAppointmentId={visitsByAppointmentId}
+          error={error}
         />
       </Grid>
     </Grid>
