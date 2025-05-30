@@ -407,11 +407,11 @@ model radiology_order {
   doctor_id        Int?
   exam_type_id     Int
   organisation_id  Int
-  ordered_at       DateTime?         @default(now()) @db.Timestamp(6)
+  ordered_at       String?           @default(dbgenerated("CURRENT_TIMESTAMP::text")) @db.VarChar(50)
   status           String?           @default("pending") @db.VarChar(50) // "pending", "completed", "cancelled"
   notes            String?           // Notes spécifiques pour cette demande
   result           String?           // Résultat ou conclusion de l'examen
-  result_date      DateTime?         // Date du résultat
+  result_date      String?           @db.VarChar(50) // Date du résultat
   
   // Relations
   doctor           doctor?           @relation(fields: [doctor_id], references: [id])

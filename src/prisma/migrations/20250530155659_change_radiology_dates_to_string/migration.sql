@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "radiology_order" ALTER COLUMN "ordered_at" SET DEFAULT CURRENT_TIMESTAMP::text,
+ALTER COLUMN "ordered_at" SET DATA TYPE VARCHAR(50),
+ALTER COLUMN "result_date" SET DATA TYPE VARCHAR(50);
