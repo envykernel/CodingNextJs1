@@ -1069,6 +1069,7 @@
     "radiology": {
         "title": "Radiologie",
         "result": "Résultat",
+        "resultDate": "Date du Résultat",
         "noOrders": "Aucun ordre de radiologie enregistré",
         "orderForm": {
             "title": "Ordre de Radiologie",

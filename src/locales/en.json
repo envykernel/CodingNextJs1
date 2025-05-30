@@ -904,6 +904,7 @@
     "radiology": {
         "title": "Radiology",
         "result": "Result",
+        "resultDate": "Result Date",
         "noOrders": "No radiology orders recorded",
         "orderForm": {
             "title": "Radiology Order",
