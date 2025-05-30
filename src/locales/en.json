@@ -903,6 +903,7 @@
     "cannotDeleteItemWithPayments": "This item cannot be deleted because it has one or more payments linked. Please remove all payments from this item before deleting.",
     "radiology": {
         "title": "Radiology",
+        "result": "Result",
         "noOrders": "No radiology orders recorded",
         "orderForm": {
             "title": "Radiology Order",

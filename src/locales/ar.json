@@ -1046,6 +1046,7 @@
     },
     "radiology": {
         "title": "الأشعة",
+        "result": "النتيجة",
         "noOrders": "لا توجد أوامر أشعة مسجلة",
         "orderForm": {
             "title": "طلب الأشعة",
