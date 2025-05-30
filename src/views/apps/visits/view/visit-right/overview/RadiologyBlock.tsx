@@ -9,7 +9,6 @@ import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 
 import { useTranslation } from '@/contexts/translationContext'
-import { formatDateToDDMMYYYY } from '@/utils/date'
 
 interface RadiologyBlockProps {
   radiologyOrders: any[]
@@ -89,14 +88,14 @@ const RadiologyBlock = ({ radiologyOrders }: RadiologyBlockProps) => {
                     {order.result_date && (
                       <Grid item xs={12}>
                         <Typography variant='body2' color='text.secondary'>
-                          {t('radiology.resultDate') || 'Result Date'}: {formatDateToDDMMYYYY(order.result_date)}
+                          {t('radiology.resultDate') || 'Result Date'}: {order.result_date}
                         </Typography>
                       </Grid>
                     )}
 
                     <Grid item xs={12}>
                       <Typography variant='caption' color='text.secondary'>
-                        {t('radiology.orderedAt') || 'Ordered at'}: {formatDateToDDMMYYYY(order.ordered_at)}
+                        {t('radiology.orderedAt') || 'Ordered at'}: {order.ordered_at}
                       </Typography>
                     </Grid>
                   </Grid>

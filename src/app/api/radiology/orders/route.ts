@@ -107,7 +107,10 @@ export async function PUT(request: Request) {
     }
 
     if (result) {
-      updateData.result_date = result_date || formatDateToDDMMYYYY(new Date())
+      // Convert YYYY-MM-DD to DD/MM/YYYY if result_date is provided, otherwise use current date
+      const [year, month, day] = (result_date || '').split('-')
+
+      updateData.result_date = result_date ? `${day}/${month}/${year}` : formatDateToDDMMYYYY(new Date())
     }
 
     const order = await prisma.radiology_order.update({
