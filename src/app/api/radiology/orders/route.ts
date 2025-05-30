@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { prisma } from '@/prisma/prisma'
+import { formatDateToDDMMYYYY } from '@/utils/date'
 
 export async function GET(request: Request) {
   try {
@@ -34,13 +35,12 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { visit_id, exam_type_id, notes, status } = body
+    const { visit_id, exam_type_id, notes, status, ordered_at } = body
 
     if (!visit_id || typeof visit_id !== 'number') {
       return NextResponse.json({ error: 'Valid visit ID is required' }, { status: 400 })
     }
 
-    // Fetch visit data to get organisation_id and patient_id
     const visit = await prisma.patient_visit.findUnique({
       where: { id: visit_id },
       select: {
@@ -54,24 +54,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Visit not found' }, { status: 404 })
     }
 
-    const orderData = {
-      visit_id,
-      exam_type_id,
-      notes,
-      status: status || 'pending',
-      patient_id: visit.patient_id,
-      organisation_id: visit.organisation_id,
-      ...(visit.doctor_id ? { doctor_id: visit.doctor_id } : {})
-    }
-
     const order = await prisma.radiology_order.create({
-      data: orderData,
+      data: {
+        visit_id,
+        exam_type_id,
+        notes,
+        status: status || 'pending',
+        patient_id: visit.patient_id,
+        organisation_id: visit.organisation_id,
+        ordered_at: ordered_at || formatDateToDDMMYYYY(new Date()),
+        doctor_id: visit.doctor_id || undefined
+      },
       include: {
         exam_type: true
       }
     })
 
-    // Fetch the updated visit data with all relations
     const updatedVisit = await prisma.patient_visit.findUnique({
       where: { id: visit_id },
       include: {
@@ -100,21 +98,26 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Valid order ID is required' }, { status: 400 })
     }
 
+    // Only update result_date if result is provided
+    const updateData: any = {
+      exam_type_id,
+      notes,
+      status,
+      result
+    }
+
+    if (result) {
+      updateData.result_date = result_date || formatDateToDDMMYYYY(new Date())
+    }
+
     const order = await prisma.radiology_order.update({
       where: { id },
-      data: {
-        exam_type_id,
-        notes,
-        status,
-        result,
-        result_date: result_date ? new Date(result_date) : null
-      },
+      data: updateData,
       include: {
         exam_type: true
       }
     })
 
-    // Fetch the updated visit data
     const visit = await prisma.patient_visit.findUnique({
       where: { id: order.visit_id },
       include: {

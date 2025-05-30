@@ -20,6 +20,7 @@ import Alert from '@mui/material/Alert'
 import Autocomplete from '@mui/material/Autocomplete'
 
 import { useTranslation } from '@/contexts/translationContext'
+import { formatDateToDDMMYYYY } from '@/utils/date'
 
 // Form validation schema
 const formSchema = z.object({
@@ -110,7 +111,8 @@ const RadiologyOrderForm = ({ visitId, initialValues, onVisitUpdate }: Radiology
         body: JSON.stringify({
           ...data,
           visit_id: visitId,
-          id: initialValues?.id
+          id: initialValues?.id,
+          ordered_at: initialValues ? undefined : formatDateToDDMMYYYY(new Date())
         })
       })
 
