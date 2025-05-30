@@ -1067,6 +1067,7 @@
         "noServices": "Aucun service disponible"
     },
     "radiology": {
+        "title": "Radiologie",
         "noOrders": "Aucun ordre de radiologie enregistré",
         "orderForm": {
             "title": "Ordre de Radiologie",
