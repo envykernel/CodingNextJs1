@@ -919,6 +919,7 @@
             "success": "Radiology order saved successfully!",
             "error": "Failed to save radiology order",
             "create": "Create Radiology Order",
+            "update": "Update Order",
             "statusPending": "Order Pending",
             "statusInProgress": "Order In Progress",
             "statusCompleted": "Order Completed",

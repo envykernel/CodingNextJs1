@@ -1084,6 +1084,7 @@
             "success": "Ordre de radiologie enregistré avec succès !",
             "error": "Échec de l'enregistrement de l'ordre de radiologie",
             "create": "Créer un Ordre de Radiologie",
+            "update": "Mettre à jour l'Ordre",
             "statusPending": "Ordre en Attente",
             "statusInProgress": "Ordre en Cours",
             "statusCompleted": "Ordre Terminé",
