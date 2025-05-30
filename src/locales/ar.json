@@ -1069,6 +1069,14 @@
                 "completed": "مكتمل",
                 "cancelled": "ملغي"
             }
-        }
+        },
+        "status": {
+            "pending": "قيد الانتظار",
+            "in_progress": "قيد التنفيذ",
+            "completed": "مكتمل",
+            "cancelled": "ملغي"
+        },
+        "notes": "ملاحظات",
+        "orderedAt": "تم الطلب في"
     }
 }

@@ -60,6 +60,11 @@ export async function getVisitById(id: number) {
           lines: true,
           doctor: true
         }
+      },
+      radiology_orders: {
+        include: {
+          exam_type: true
+        }
       }
     }
   })

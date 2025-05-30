@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
 import dynamic from 'next/dynamic'
 
@@ -88,6 +88,14 @@ interface ClientVisitViewProps {
 export default function ClientVisitView({ data: initialData }: ClientVisitViewProps) {
   const [data, setData] = useState(initialData)
   const { visitData, dictionary } = data
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Add effect to handle loading state
+  useEffect(() => {
+    if (visitData) {
+      setIsLoading(false)
+    }
+  }, [visitData])
 
   const handleVisitUpdate = useCallback(
     async (updatedVisit?: any) => {
@@ -120,7 +128,13 @@ export default function ClientVisitView({ data: initialData }: ClientVisitViewPr
   )
 
   const tabContentList = {
-    overview: <VisitOverviewTab visitData={visitData} dictionary={dictionary} />,
+    overview: isLoading ? (
+      <div className='flex items-center justify-center p-4'>
+        <CircularProgress />
+      </div>
+    ) : (
+      <VisitOverviewTab visitData={visitData} dictionary={dictionary} />
+    ),
     measurements: (
       <PatientMeasurementsForm
         visitId={visitData.id}

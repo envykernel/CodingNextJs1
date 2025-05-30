@@ -103,6 +103,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
           include: {
             test_type: true
           }
+        },
+        radiology_orders: {
+          include: {
+            exam_type: true
+          }
         }
       }
     })

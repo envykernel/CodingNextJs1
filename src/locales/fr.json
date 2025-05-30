@@ -1081,16 +1081,24 @@
             "success": "Ordre de radiologie enregistré avec succès !",
             "error": "Échec de l'enregistrement de l'ordre de radiologie",
             "create": "Créer un Ordre de Radiologie",
-            "statusPending": "L'ordre est en attente",
-            "statusInProgress": "L'ordre est en cours",
-            "statusCompleted": "L'ordre est terminé",
-            "statusCancelled": "L'ordre est annulé",
+            "statusPending": "Ordre en Attente",
+            "statusInProgress": "Ordre en Cours",
+            "statusCompleted": "Ordre Terminé",
+            "statusCancelled": "Ordre Annulé",
             "statusOptions": {
                 "pending": "En Attente",
                 "in_progress": "En Cours",
                 "completed": "Terminé",
                 "cancelled": "Annulé"
             }
-        }
+        },
+        "status": {
+            "pending": "En Attente",
+            "in_progress": "En Cours",
+            "completed": "Terminé",
+            "cancelled": "Annulé"
+        },
+        "notes": "Notes",
+        "orderedAt": "Commandé Le"
     }
 }

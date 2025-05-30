@@ -19,6 +19,12 @@ import RadiologyBlock from './RadiologyBlock'
 
 const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionary: any }) => {
   const { t } = useTranslation()
+
+  // Add early return if visitData is not available
+  if (!visitData) {
+    return null
+  }
+
   const status = visitData.status
 
   const visitStatusObj: {
