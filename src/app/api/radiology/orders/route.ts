@@ -121,6 +121,10 @@ export async function PUT(request: Request) {
       }
     })
 
+    if (!order.visit_id) {
+      return NextResponse.json({ error: 'Visit ID not found' }, { status: 404 })
+    }
+
     const visit = await prisma.patient_visit.findUnique({
       where: { id: order.visit_id },
       include: {
