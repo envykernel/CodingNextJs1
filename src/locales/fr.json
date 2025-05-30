@@ -1065,5 +1065,31 @@
         "searchPlaceholder": "Rechercher des services...",
         "noResults": "Aucun service ne correspond à votre recherche",
         "noServices": "Aucun service disponible"
+    },
+    "radiology": {
+        "orderForm": {
+            "title": "Ordre de Radiologie",
+            "examType": "Type d'Examen",
+            "selectExamType": "Sélectionner le Type d'Examen",
+            "notes": "Notes",
+            "status": "Statut",
+            "result": "Résultat",
+            "resultDate": "Date du Résultat",
+            "save": "Enregistrer",
+            "saving": "Enregistrement...",
+            "success": "Ordre de radiologie enregistré avec succès !",
+            "error": "Échec de l'enregistrement de l'ordre de radiologie",
+            "create": "Créer un Ordre de Radiologie",
+            "statusPending": "L'ordre est en attente",
+            "statusInProgress": "L'ordre est en cours",
+            "statusCompleted": "L'ordre est terminé",
+            "statusCancelled": "L'ordre est annulé",
+            "statusOptions": {
+                "pending": "En Attente",
+                "in_progress": "En Cours",
+                "completed": "Terminé",
+                "cancelled": "Annulé"
+            }
+        }
     }
 }

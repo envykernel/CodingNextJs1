@@ -900,5 +900,31 @@
         "testType": "Test Type",
         "status": "Status"
     },
-    "cannotDeleteItemWithPayments": "This item cannot be deleted because it has one or more payments linked. Please remove all payments from this item before deleting."
+    "cannotDeleteItemWithPayments": "This item cannot be deleted because it has one or more payments linked. Please remove all payments from this item before deleting.",
+    "radiology": {
+        "orderForm": {
+            "title": "Radiology Order",
+            "examType": "Exam Type",
+            "selectExamType": "Select Exam Type",
+            "notes": "Notes",
+            "status": "Status",
+            "result": "Result",
+            "resultDate": "Result Date",
+            "save": "Save",
+            "saving": "Saving...",
+            "success": "Radiology order saved successfully!",
+            "error": "Failed to save radiology order",
+            "create": "Create Radiology Order",
+            "statusPending": "Order is pending",
+            "statusInProgress": "Order is in progress",
+            "statusCompleted": "Order is completed",
+            "statusCancelled": "Order is cancelled",
+            "statusOptions": {
+                "pending": "Pending",
+                "in_progress": "In Progress",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            }
+        }
+    }
 }
