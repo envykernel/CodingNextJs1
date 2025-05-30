@@ -87,6 +87,7 @@ model patient {
   patient_visits          patient_visit[]
   payments                payment[]
   prescriptions           prescription[]
+  radiology_orders        radiology_order[]
 
   @@index([organisation_id], map: "idx_patient_organisation_id")
   @@index([doctor_id], map: "idx_patient_doctor_id")
@@ -165,6 +166,7 @@ model doctor {
   patient_appointment patient_appointment[]
   patient_visits      patient_visit[]
   prescriptions       prescription[]
+  radiology_orders    radiology_order[]
 
   @@index([organisation_id], map: "idx_doctor_organisation_id")
   @@index([userId], map: "idx_doctor_user_id")
@@ -204,6 +206,7 @@ model organisation {
   payment_applications    payment_application[]
   prescriptions           prescription[]
   services                service[]
+  radiology_orders        radiology_order[]
 }
 
 model patient_appointment {
@@ -263,6 +266,7 @@ model patient_visit {
   organisation        organisation          @relation(fields: [organisation_id], references: [id])
   patient             patient               @relation(fields: [patient_id], references: [id])
   prescriptions       prescription[]
+  radiology_orders    radiology_order[]
 
   @@index([patient_id])
   @@index([doctor_id])
@@ -379,6 +383,50 @@ model lab_test_order {
   @@index([doctor_id])
   @@index([test_type_id])
   @@index([organisation_id])
+}
+
+// Modèle simplifié pour le référentiel des examens radiologiques
+model radiology_exam_type {
+  id               Int                 @id @default(autoincrement())
+  name             String              @unique @db.VarChar(255)
+  category         String?             @db.VarChar(100) // "Radiographie", "Scanner", "IRM", etc.
+  description      String?
+  notes            String?             // Remarques générales sur l'examen
+  created_at       DateTime?           @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?           @default(now()) @db.Timestamp(6)
+  radiology_orders radiology_order[]
+
+  @@index([category])
+}
+
+// Modèle simplifié pour les demandes d'examens radiologiques
+model radiology_order {
+  id               Int               @id @default(autoincrement())
+  patient_id       Int
+  visit_id         Int?
+  doctor_id        Int?
+  exam_type_id     Int
+  organisation_id  Int
+  ordered_at       DateTime?         @default(now()) @db.Timestamp(6)
+  status           String?           @default("pending") @db.VarChar(50) // "pending", "completed", "cancelled"
+  notes            String?           // Notes spécifiques pour cette demande
+  result           String?           // Résultat ou conclusion de l'examen
+  result_date      DateTime?         // Date du résultat
+  
+  // Relations
+  doctor           doctor?           @relation(fields: [doctor_id], references: [id])
+  organisation     organisation      @relation(fields: [organisation_id], references: [id], onDelete: Cascade)
+  patient          patient           @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  exam_type        radiology_exam_type @relation(fields: [exam_type_id], references: [id])
+  visit            patient_visit?    @relation(fields: [visit_id], references: [id])
+
+  // Index
+  @@index([patient_id])
+  @@index([visit_id])
+  @@index([doctor_id])
+  @@index([exam_type_id])
+  @@index([organisation_id])
+  @@index([status])
 }
 
 model service {
