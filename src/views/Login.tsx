@@ -128,17 +128,60 @@ const LogoWrapper = styled(Box)(({ theme }) => ({
   }
 }))
 
-const FeatureList = styled(Box)(({ theme }) => ({
+const ServiceList = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(6),
-  '& > div': {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: theme.spacing(3),
-    '& i': {
-      fontSize: '1.5rem',
-      marginRight: theme.spacing(2),
-      color: '#FFFFFF'
-    }
+  position: 'relative',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: '2px',
+    background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0.1))',
+    borderRadius: '2px'
+  }
+}))
+
+const ServiceItem = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(2, 0, 2, 4),
+  position: 'relative',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    left: -5,
+    top: '50%',
+    width: '12px',
+    height: '12px',
+    background: '#FFFFFF',
+    borderRadius: '50%',
+    transform: 'translateY(-50%)',
+    opacity: 0.5,
+    transition: 'all 0.3s ease'
+  },
+  '&:hover::before': {
+    opacity: 1,
+    transform: 'translateY(-50%) scale(1.2)'
+  },
+  '& i': {
+    fontSize: '1.25rem',
+    color: '#FFFFFF',
+    opacity: 0.9,
+    marginRight: theme.spacing(3),
+    width: '24px',
+    textAlign: 'center'
+  }
+}))
+
+const ServiceLabel = styled(Typography)(() => ({
+  fontWeight: 500,
+  fontSize: '1.1rem',
+  opacity: 0.9,
+  transition: 'all 0.2s ease',
+  '&:hover': {
+    opacity: 1
   }
 }))
 
@@ -150,42 +193,52 @@ const Login = () => {
           <Typography
             variant='h3'
             sx={{
-              fontWeight: 700,
+              fontWeight: 800,
               mb: 3,
-              fontSize: { xs: '2rem', md: '2.5rem' }
+              color: '#FFFFFF',
+              fontSize: { xs: '2rem', md: '2.5rem' },
+              letterSpacing: '-0.5px'
             }}
           >
             Healthcare Management Platform
           </Typography>
+
           <Typography
-            variant='h6'
+            variant='body1'
             sx={{
-              fontWeight: 400,
-              mb: 6,
               opacity: 0.9,
-              maxWidth: '80%'
+              maxWidth: '600px',
+              lineHeight: 1.6,
+              mb: 1,
+              fontSize: '1.1rem',
+              whiteSpace: 'nowrap'
             }}
           >
-            Streamline your medical center operations with our comprehensive management solution
+            A simple and efficient solution for managing your medical practice
           </Typography>
-          <FeatureList>
-            <Box>
-              <i className='tabler-calendar-check' />
-              <Typography variant='body1'>Appointment Management</Typography>
-            </Box>
-            <Box>
+
+          <ServiceList>
+            <ServiceItem>
               <i className='tabler-users' />
-              <Typography variant='body1'>Patient Records</Typography>
-            </Box>
-            <Box>
-              <i className='tabler-chart-bar' />
-              <Typography variant='body1'>Analytics & Reporting</Typography>
-            </Box>
-            <Box>
-              <i className='tabler-shield-check' />
-              <Typography variant='body1'>HIPAA Compliant</Typography>
-            </Box>
-          </FeatureList>
+              <ServiceLabel>Patient Management</ServiceLabel>
+            </ServiceItem>
+            <ServiceItem>
+              <i className='tabler-calendar-check' />
+              <ServiceLabel>Appointments</ServiceLabel>
+            </ServiceItem>
+            <ServiceItem>
+              <i className='tabler-file-invoice' />
+              <ServiceLabel>Invoices</ServiceLabel>
+            </ServiceItem>
+            <ServiceItem>
+              <i className='tabler-credit-card' />
+              <ServiceLabel>Payments</ServiceLabel>
+            </ServiceItem>
+            <ServiceItem>
+              <i className='tabler-dashboard' />
+              <ServiceLabel>Analytics Dashboard</ServiceLabel>
+            </ServiceItem>
+          </ServiceList>
         </Box>
       </LeftSection>
       <RightSection>
