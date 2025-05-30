@@ -15,6 +15,7 @@ import PatientMeasurementBlock from './PatientMeasurementBlock'
 import ClinicalExamBlock from './ClinicalExamBlock'
 import PrescriptionBlock from './PrescriptionBlock'
 import LabTestRecapBlock from './LabTestRecapBlock'
+import RadiologyBlock from './RadiologyBlock'
 
 const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionary: any }) => {
   const { t } = useTranslation()
@@ -173,6 +174,10 @@ const VisitOverviewTab = ({ visitData, dictionary }: { visitData: any; dictionar
 
       <Grid item xs={12}>
         <LabTestRecapBlock visitId={visitData.id} dictionary={dictionary} showOnlyIfTestsExist={true} />
+      </Grid>
+
+      <Grid item xs={12}>
+        <RadiologyBlock radiologyOrders={visitData.radiology_orders} />
       </Grid>
     </Grid>
   )

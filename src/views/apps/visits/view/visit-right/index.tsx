@@ -115,6 +115,12 @@ const VisitRight = ({
                 label={t.tests || 'Tests'}
                 iconPosition='start'
               />
+              <Tab
+                icon={<i className='tabler-scan' />}
+                value='radiology'
+                label={t.radiology || 'Radiology'}
+                iconPosition='start'
+              />
             </CustomTabList>
           </Grid>
           <Grid item xs={12}>

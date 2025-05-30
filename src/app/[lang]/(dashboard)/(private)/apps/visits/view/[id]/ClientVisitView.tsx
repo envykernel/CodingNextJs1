@@ -56,6 +56,15 @@ const LabTestOrderForm = dynamic(() => import('@/components/lab-test-order-form'
   ssr: false
 })
 
+const RadiologyOrderForm = dynamic(() => import('@/components/radiology-order-form'), {
+  loading: () => (
+    <div className='flex items-center justify-center p-4'>
+      <CircularProgress />
+    </div>
+  ),
+  ssr: false
+})
+
 // Import static components
 import VisitLeftOverview from '@/views/apps/visits/view/visit-left-overview'
 import VisitRight from '@/views/apps/visits/view/visit-right'
@@ -190,13 +199,18 @@ export default function ClientVisitView({ data: initialData }: ClientVisitViewPr
     ),
     tests: (
       <LabTestOrderForm
-        dictionary={dictionary}
         visitId={visitData.id}
-        patientId={visitData.patient_id}
-        doctorId={visitData.doctor?.id}
-        organisationId={visitData.organisation_id}
-        submitButtonText={dictionary?.navigation?.save || 'Save'}
-        title={dictionary?.navigation?.labTests || 'Lab Tests'}
+        dictionary={dictionary}
+        initialValues={visitData.lab_test_orders}
+        onVisitUpdate={handleVisitUpdate}
+      />
+    ),
+    radiology: (
+      <RadiologyOrderForm
+        visitId={visitData.id}
+        dictionary={dictionary}
+        initialValues={visitData.radiology_orders?.[0]}
+        onVisitUpdate={handleVisitUpdate}
       />
     )
   }
