@@ -1045,6 +1045,7 @@
         "noServices": "لا توجد خدمات متاحة"
     },
     "radiology": {
+        "noOrders": "لا توجد أوامر أشعة مسجلة",
         "orderForm": {
             "title": "طلب الأشعة",
             "examType": "نوع الفحص",

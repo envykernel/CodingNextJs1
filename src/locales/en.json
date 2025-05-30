@@ -902,6 +902,7 @@
     },
     "cannotDeleteItemWithPayments": "This item cannot be deleted because it has one or more payments linked. Please remove all payments from this item before deleting.",
     "radiology": {
+        "noOrders": "No radiology orders recorded",
         "orderForm": {
             "title": "Radiology Order",
             "examType": "Exam Type",
