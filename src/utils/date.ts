@@ -27,3 +27,20 @@ export function formatDateToDDMMYYYY(date: string | Date): string {
     year: 'numeric'
   })
 }
+
+/**
+ * Formats a date string to DD/MM/YYYY format, handling both YYYY-MM-DD and DD/MM/YYYY inputs
+ * @param dateStr - The date string to format (can be in YYYY-MM-DD or DD/MM/YYYY format)
+ * @returns The formatted date string in DD/MM/YYYY format, or empty string if invalid
+ */
+export function formatRadiologyDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return ''
+
+  // If date is already in DD/MM/YYYY format, return as is
+  if (dateStr.includes('/')) return dateStr
+
+  // Convert YYYY-MM-DD to DD/MM/YYYY
+  const [year, month, day] = dateStr.split('-')
+
+  return `${day}/${month}/${year}`
+}
