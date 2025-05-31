@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react'
 import React, { createContext, useContext } from 'react'
 
-type Dictionary = {
+export type Dictionary = {
   navigation: {
     [key: string]: string
   }

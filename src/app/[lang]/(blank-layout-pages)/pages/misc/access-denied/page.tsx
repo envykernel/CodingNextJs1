@@ -7,10 +7,16 @@ import { getDictionary } from '@/utils/getDictionary'
 import { TranslationProvider } from '@/contexts/translationContext'
 import type { Locale } from '@configs/i18n'
 
-const AccessDeniedPage = async ({ params }: { params: { lang: Locale } }) => {
+interface PageProps {
+  params: {
+    lang: Locale
+  }
+}
+
+const AccessDeniedPage = async ({ params }: PageProps) => {
   // Vars
   const mode = await getServerMode()
-  const dictionary = await getDictionary(params.lang)
+  const dictionary = (await getDictionary(params.lang)) as any
 
   return (
     <TranslationProvider dictionary={dictionary}>
