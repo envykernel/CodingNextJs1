@@ -80,6 +80,12 @@
             "of": "of",
             "showing": "Showing",
             "to": "to"
+        },
+        "statistics": {
+            "newPatients": "New Patients",
+            "disabledPatients": "Disabled Patients",
+            "monthlyComparison": "This month vs last month",
+            "yearlyComparison": "This year vs last year"
         }
     },
     "appointments": {

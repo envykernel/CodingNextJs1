@@ -237,6 +237,12 @@
             "of": "من",
             "showing": "عرض",
             "to": "إلى"
+        },
+        "statistics": {
+            "newPatients": "المرضى الجدد",
+            "disabledPatients": "المرضى المعطلون",
+            "monthlyComparison": "هذا الشهر مقارنة بالشهر الماضي",
+            "yearlyComparison": "هذا العام مقارنة بالعام الماضي"
         }
     },
     "appointments": {

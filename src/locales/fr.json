@@ -236,6 +236,12 @@
             "of": "sur",
             "showing": "Affichage",
             "to": "à"
+        },
+        "statistics": {
+            "newPatients": "Nouveaux Patients",
+            "disabledPatients": "Patients Désactivés",
+            "monthlyComparison": "Ce mois-ci vs mois dernier",
+            "yearlyComparison": "Cette année vs année dernière"
         }
     },
     "appointments": {
