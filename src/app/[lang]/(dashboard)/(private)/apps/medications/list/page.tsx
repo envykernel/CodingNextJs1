@@ -20,7 +20,7 @@ import { useSession } from 'next-auth/react'
 
 import { useTranslation } from '@/contexts/translationContext'
 
-import MedicationDrawer from './MedicationDrawer'
+import MedicationDrawer from '@/app/[lang]/(dashboard)/(private)/apps/medications/list/MedicationDrawer'
 
 interface Medication {
   id: number
@@ -121,7 +121,7 @@ export default function MedicationList() {
         <Card>
           <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', gap: 4 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant='h5'>{t('medications') || 'Medications'}</Typography>
+              <Typography variant='h5'>{t('medications.title')}</Typography>
               <Button
                 variant='contained'
                 onClick={() => {
@@ -130,7 +130,7 @@ export default function MedicationList() {
                 }}
                 startIcon={<i className='tabler-plus' />}
               >
-                {t('addMedication') || 'Add Medication'}
+                {t('medications.addMedication')}
               </Button>
             </Box>
 
@@ -143,11 +143,11 @@ export default function MedicationList() {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>{t('medication') || 'Medication'}</TableCell>
-                      <TableCell>{t('category') || 'Category'}</TableCell>
-                      <TableCell>{t('dosage') || 'Dosages'}</TableCell>
-                      <TableCell>{t('organization') || 'Organization'}</TableCell>
-                      <TableCell>{t('actions') || 'Actions'}</TableCell>
+                      <TableCell>{t('medications.medicationName')}</TableCell>
+                      <TableCell>{t('medications.category')}</TableCell>
+                      <TableCell>{t('medications.dosages')}</TableCell>
+                      <TableCell>{t('organization')}</TableCell>
+                      <TableCell>{t('actions')}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -170,10 +170,10 @@ export default function MedicationList() {
                         </TableCell>
                         <TableCell>
                           {medication.organisation_id === null
-                            ? t('global') || 'Global'
+                            ? t('global')
                             : medication.organisation_id === userOrgId
-                              ? t('yourOrganization') || 'Your Organization'
-                              : t('otherOrganization') || 'Other Organization'}
+                              ? t('yourOrganization')
+                              : t('otherOrganization')}
                         </TableCell>
                         <TableCell>
                           <Box sx={{ display: 'flex', gap: 1 }}>
@@ -185,7 +185,7 @@ export default function MedicationList() {
                                   onClick={() => handleEdit(medication)}
                                   startIcon={<i className='tabler-edit' />}
                                 >
-                                  {t('edit') || 'Edit'}
+                                  {t('medications.edit')}
                                 </Button>
                                 <Button
                                   variant='outlined'
@@ -194,7 +194,7 @@ export default function MedicationList() {
                                   onClick={() => handleDelete(medication.id)}
                                   startIcon={<i className='tabler-trash' />}
                                 >
-                                  {t('delete') || 'Delete'}
+                                  {t('medications.delete')}
                                 </Button>
                               </>
                             )}

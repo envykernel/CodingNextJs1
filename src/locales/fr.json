@@ -1144,5 +1144,10 @@
             "unknown": "Une erreur inattendue s'est produite",
             "fetch": "Échec de la récupération des médicaments"
         }
-    }
+    },
+    "organization": "Organisation",
+    "yourOrganization": "Votre Organisation",
+    "otherOrganization": "Autre Organisation",
+    "global": "Global",
+    "actions": "Actions"
 }

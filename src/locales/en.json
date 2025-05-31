@@ -978,5 +978,10 @@
         },
         "notes": "Notes",
         "orderedAt": "Ordered At"
-    }
+    },
+    "organization": "Organization",
+    "yourOrganization": "Your Organization",
+    "otherOrganization": "Other Organization",
+    "global": "Global",
+    "actions": "Actions"
 }
