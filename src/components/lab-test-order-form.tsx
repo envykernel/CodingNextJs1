@@ -26,24 +26,13 @@ interface LabTestType {
 }
 
 interface LabTestOrderFormProps {
-  dictionary: any
-  submitButtonText: string
-  title: string
   visitId: number
-  patientId: number
-  doctorId?: number | null
-  organisationId: number
+  dictionary: any
+  initialValues?: any
+  onVisitUpdate?: (updatedVisit: any) => void
 }
 
-const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
-  dictionary,
-  submitButtonText,
-  title,
-  visitId,
-  patientId,
-  doctorId,
-  organisationId
-}) => {
+const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary, initialValues, onVisitUpdate }) => {
   const [testTypes, setTestTypes] = useState<LabTestType[]>([])
   const [selectedTests, setSelectedTests] = useState<LabTestType[]>([])
   const [testDetails, setTestDetails] = useState<any>({})
@@ -132,6 +121,12 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
     setLoading(true)
 
     try {
+      // Get the visit data to include required fields
+      const visitRes = await fetch(`/api/visits/${visitId}`)
+
+      if (!visitRes.ok) throw new Error('Failed to fetch visit data')
+      const visitData = await visitRes.json()
+
       const tests = selectedTests.map(test => {
         const resultValue = testDetails[test.id]?.result_value || ''
 
@@ -150,17 +145,20 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           visitId,
-          patientId,
-          doctorId,
-          organisationId,
+          patientId: visitData.visit.patient_id,
+          doctorId: visitData.visit.doctor?.id,
+          organisationId: visitData.visit.organisation_id,
           tests
         })
       })
 
       if (res.ok) {
+        const data = await res.json()
         setSuccess(dictionary?.testForm?.savedSuccessfully || 'Test order saved successfully!')
 
-        // Don't reload the data, just update the success message
+        if (onVisitUpdate) {
+          onVisitUpdate(data.visit)
+        }
       } else {
         setError(dictionary?.testForm?.error || 'Error saving lab test orders')
       }
@@ -173,7 +171,7 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
 
   return (
     <Card>
-      <CardHeader title={title} />
+      <CardHeader title={dictionary?.testForm?.title || 'Test Order'} />
       <CardContent>
         {initialLoading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
@@ -282,7 +280,7 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
                   disabled={loading}
                   startIcon={loading ? <i className='tabler-loader animate-spin' /> : undefined}
                 >
-                  {loading ? dictionary?.testForm?.saving || 'Saving...' : submitButtonText}
+                  {loading ? dictionary?.testForm?.saving || 'Saving...' : dictionary?.testForm?.submit || 'Submit'}
                 </Button>
               </Box>
             </form>
