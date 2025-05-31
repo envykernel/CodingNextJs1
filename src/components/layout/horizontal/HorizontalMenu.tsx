@@ -143,7 +143,7 @@ const HorizontalMenu = () => {
             {t('sidebar.navigation.medications')}
           </MenuItem>
           {isAdmin && (
-            <MenuItem href={`/${locale}/apps/doctors/list`} icon={<i className='tabler-user-md' />}>
+            <MenuItem href={`/${locale}/apps/doctors/list`} icon={<i className='tabler-stethoscope' />}>
               {t('sidebar.navigation.doctors')}
             </MenuItem>
           )}
