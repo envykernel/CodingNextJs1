@@ -14,6 +14,9 @@ import Orders from '@views/apps/ecommerce/dashboard/Orders'
 import Transactions from '@views/apps/ecommerce/dashboard/Transactions'
 import InvoiceListTable from '@views/apps/ecommerce/dashboard/InvoiceListTable'
 
+// Type Imports
+import type { InvoiceType } from '@/types/apps/invoiceTypes'
+
 // Data Imports
 import { getInvoiceData } from '@/app/server/actions'
 
@@ -38,7 +41,40 @@ import { getInvoiceData } from '@/app/server/actions'
 
 const EcommerceDashboard = async () => {
   // Vars
-  const invoiceData = await getInvoiceData()
+  const data = await getInvoiceData()
+
+  // Transform data to include required fields
+  const invoiceData = data.map(invoice => {
+    // Map payment_status to invoiceStatus
+    let invoiceStatus: 'Paid' | 'Partial Payment' | 'Past Due' | 'Sent' | 'Draft' = 'Draft'
+
+    switch (invoice.payment_status) {
+      case 'PAID':
+        invoiceStatus = 'Paid'
+        break
+      case 'PARTIAL':
+        invoiceStatus = 'Partial Payment'
+        break
+      case 'PENDING':
+        // Check if due date is past
+        const dueDate = new Date(invoice.dueDate)
+        const today = new Date()
+
+        if (dueDate < today) {
+          invoiceStatus = 'Past Due'
+        } else {
+          invoiceStatus = 'Sent'
+        }
+
+        break
+    }
+
+    return {
+      ...invoice,
+      issuedDate: invoice.invoice_date || invoice.dueDate, // Use invoice_date if available, fallback to dueDate
+      invoiceStatus // Add the mapped status
+    }
+  }) as InvoiceType[]
 
   return (
     <Grid container spacing={6}>
