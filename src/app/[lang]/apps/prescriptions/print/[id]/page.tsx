@@ -8,12 +8,14 @@ import type { Locale } from '@configs/i18n'
 import { prisma } from '@/prisma/prisma'
 
 interface PrintPrescriptionPageProps {
-  params: { lang: Locale; id: string }
+  params: Promise<{
+    lang: Locale
+    id: string
+  }>
 }
 
 export default async function PrintPrescriptionPage({ params }: PrintPrescriptionPageProps) {
-  const awaitedParams = await params
-  const { lang, id } = awaitedParams
+  const { lang, id } = await params
   const dictionary = await getDictionary(lang)
 
   const prescription = await prisma.prescription.findUnique({
