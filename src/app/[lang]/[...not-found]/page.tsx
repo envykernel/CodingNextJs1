@@ -11,6 +11,7 @@ import { i18n } from '@configs/i18n'
 
 // Util Imports
 import { getServerMode, getSystemMode } from '@core/utils/serverHelpers'
+import { getDictionary } from '@/utils/getDictionary'
 
 const NotFoundPage = async (props: { params: Promise<{ lang: Locale }> }) => {
   const params = await props.params
@@ -19,9 +20,10 @@ const NotFoundPage = async (props: { params: Promise<{ lang: Locale }> }) => {
   const direction = i18n.langDirection[params.lang]
   const mode = await getServerMode()
   const systemMode = await getSystemMode()
+  const dictionary = await getDictionary(params.lang)
 
   return (
-    <Providers direction={direction}>
+    <Providers direction={direction} dictionary={dictionary}>
       <BlankLayout systemMode={systemMode}>
         <NotFound mode={mode} />
       </BlankLayout>
