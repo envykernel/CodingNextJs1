@@ -45,11 +45,7 @@ const Layout = async (props: ChildrenType & { params: Promise<{ lang: Locale }> 
         <LayoutWrapper
           systemMode={systemMode}
           verticalLayout={
-            <VerticalLayout
-              navigation={<Navigation dictionary={dictionary} mode={mode} />}
-              navbar={<Navbar />}
-              footer={<VerticalFooter />}
-            >
+            <VerticalLayout navigation={<Navigation mode={mode} />} navbar={<Navbar />} footer={<VerticalFooter />}>
               {children}
             </VerticalLayout>
           }
