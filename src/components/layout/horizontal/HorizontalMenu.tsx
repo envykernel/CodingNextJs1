@@ -10,9 +10,6 @@ import type { VerticalMenuContextProps } from '@menu/components/vertical-menu/Me
 // Component Imports
 import HorizontalNav, { Menu, SubMenu, MenuItem } from '@menu/horizontal-menu'
 import VerticalNavContent from './VerticalNavContent'
-import CustomChip from '@core/components/mui/Chip'
-
-// import { GenerateHorizontalMenu } from '@components/GenerateMenu'
 
 // Hook Imports
 import useVerticalNav from '@menu/hooks/useVerticalNav'
@@ -136,6 +133,9 @@ const HorizontalMenu = () => {
           </MenuItem>
           <MenuItem href={`/${locale}/administration/services`} icon={<i className='tabler-tools' />}>
             {t('sidebar.navigation.services')}
+          </MenuItem>
+          <MenuItem href={`/${locale}/apps/medications/list`} icon={<i className='tabler-pill' />}>
+            {t('medications')}
           </MenuItem>
         </SubMenu>
       </Menu>
