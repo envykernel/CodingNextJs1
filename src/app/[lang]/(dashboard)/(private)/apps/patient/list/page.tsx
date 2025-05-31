@@ -38,8 +38,13 @@ function transformPatientData(patients: any[]): PatientType[] {
   }))
 }
 
-const PatientListPage = async ({ params: { lang } }: { params: { lang: Locale } }) => {
+type PageProps = {
+  params: Promise<{ lang: Locale }>
+}
+
+const PatientListPage = async ({ params }: PageProps) => {
   // Vars
+  const { lang } = await params
   const dictionary = await getDictionary(lang)
   const { organisationId } = await getUserOrganisation()
 
