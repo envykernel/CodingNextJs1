@@ -27,7 +27,7 @@ type LanguageDataType = {
   langName: string
 }
 
-const getLocalePath = (pathName: string, locale: string) => {
+const getLocalePath = (pathName: string | null, locale: string) => {
   if (!pathName) return '/'
   const segments = pathName.split('/')
 
@@ -62,7 +62,8 @@ const LanguageDropdown = () => {
   // Hooks
   const pathName = usePathname()
   const { settings } = useSettings()
-  const { lang } = useParams()
+  const params = useParams() as { lang: string }
+  const lang = params?.lang ?? 'fr'
 
   const handleClose = () => {
     setOpen(false)
