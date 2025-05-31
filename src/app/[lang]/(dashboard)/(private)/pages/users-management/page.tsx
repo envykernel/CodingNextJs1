@@ -39,12 +39,18 @@ const UsersManagementPage = async ({
   const { organisationId } = await getUserOrganisation()
   const usersData = await getUsersList({ page, pageSize, name, organisationId: organisationId.toString() })
 
+  // Transform the users data to convert createdAt from string to Date
+  const transformedUsers = usersData.users.map(user => ({
+    ...user,
+    createdAt: new Date(user.createdAt)
+  }))
+
   const dictionary = await getDictionary(lang)
 
   return (
     <TranslationProvider dictionary={dictionary}>
       <UsersManagement
-        usersData={usersData.users}
+        usersData={transformedUsers}
         page={usersData.page}
         pageSize={usersData.pageSize}
         total={usersData.total}
