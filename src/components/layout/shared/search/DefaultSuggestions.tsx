@@ -125,7 +125,7 @@ const defaultSuggestions: DefaultSuggestionsType[] = [
 
 const DefaultSuggestions = ({ setOpen }: { setOpen: (value: boolean) => void }) => {
   // Hooks
-  const { lang: locale } = useParams()
+  const { lang: locale } = useParams() as { lang: string }
 
   return (
     <div className='flex grow flex-wrap gap-x-[48px] gap-y-8 plb-14 pli-16 overflow-y-auto overflow-x-hidden bs-full'>
