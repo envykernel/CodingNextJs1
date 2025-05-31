@@ -148,14 +148,14 @@ const NavSearch = () => {
   const router = useRouter()
   const pathName = usePathname()
   const { settings } = useSettings()
-  const { lang: locale } = useParams()
+  const { lang: locale } = useParams() as { lang: string }
   const { isBreakpointReached } = useVerticalNav()
 
   // When an item is selected from the search results
   const onSearchItemSelect = (item: Item) => {
     item.url.startsWith('http')
       ? window.open(item.url, '_blank')
-      : router.push(item.excludeLang ? item.url : getLocalizedUrl(item.url, locale as Locale))
+      : router.push(item.excludeLang ? item.url : getLocalizedUrl(item.url, locale))
     setOpen(false)
   }
 
@@ -244,7 +244,7 @@ const NavSearch = () => {
                         shortcut={item.shortcut}
                         key={index}
                         currentPath={pathName}
-                        url={getLocalizedUrl(item.url, locale as Locale)}
+                        url={getLocalizedUrl(item.url, locale)}
                         value={`${item.name} ${section.title} ${item.shortcut}`}
                         onSelect={() => onSearchItemSelect(item)}
                       >
