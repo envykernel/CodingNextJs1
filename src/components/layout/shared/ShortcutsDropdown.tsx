@@ -71,7 +71,7 @@ const ShortcutsDropdown = ({ shortcuts }: { shortcuts: ShortcutsType[] }) => {
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
   const { settings } = useSettings()
-  const { lang: locale } = useParams()
+  const { lang: locale } = useParams() as { lang: string }
 
   const handleClose = useCallback(() => {
     setOpen(false)
