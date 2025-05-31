@@ -19,6 +19,7 @@ import ScrollToTop from '@core/components/scroll-to-top'
 
 // Util Imports
 import { getSystemMode } from '@core/utils/serverHelpers'
+import { getDictionary } from '@/utils/getDictionary'
 
 // Style Imports
 import '@/app/globals.css'
@@ -34,13 +35,13 @@ export const metadata = {
 
 const Layout = async ({ children }: ChildrenType) => {
   // Vars
-  const systemMode = await getSystemMode()
+  const [systemMode, dictionary] = await Promise.all([getSystemMode(), getDictionary('fr')])
 
   return (
     <html id='__next' suppressHydrationWarning>
       <body className='flex is-full min-bs-full flex-auto flex-col'>
         <InitColorSchemeScript attribute='data' defaultMode={systemMode} />
-        <Providers direction='ltr'>
+        <Providers direction='ltr' dictionary={dictionary}>
           <BlankLayout systemMode={systemMode}>
             <IntersectionProvider>
               <FrontLayout>
