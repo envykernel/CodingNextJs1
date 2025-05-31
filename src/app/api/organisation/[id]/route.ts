@@ -27,7 +27,7 @@ import { prisma } from '@/prisma/prisma'
  * This change should be made only after thorough testing of all dependent components.
  */
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -35,15 +35,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    const resolvedParams = await params
-    const organisationId = parseInt(resolvedParams.id)
+    const { id } = await params
+    const organisationId = parseInt(id)
 
     if (isNaN(organisationId)) {
       return new NextResponse('Invalid organisation ID', { status: 400 })
     }
 
     // Verify that the user has access to this organization
-    if (session.user.organisationId !== resolvedParams.id) {
+    if (session.user.organisationId !== id) {
       return new NextResponse('Unauthorized', { status: 403 })
     }
 

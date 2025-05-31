@@ -3,10 +3,11 @@ import { NextResponse } from 'next/server'
 
 import { prisma } from '@/prisma/prisma'
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { status, action } = await req.json()
-    const visitId = parseInt(params.id)
+    const { id } = await params
+    const visitId = parseInt(id)
 
     // Get the current visit with its appointment
     const visit = await prisma.patient_visit.findUnique({
@@ -80,9 +81,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    // Await params before using them
     const { id } = await params
     const visitId = parseInt(id)
 

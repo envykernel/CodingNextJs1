@@ -5,7 +5,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/libs/auth'
 import { prisma } from '@/prisma/prisma'
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -13,7 +13,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    // Await params before using
     const { id } = await params
     const patientId = parseInt(id)
 

@@ -62,7 +62,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 // Delete medication
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -80,7 +80,8 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const medicationId = parseInt(params.id)
+    const { id } = await params
+    const medicationId = parseInt(id)
 
     // Check if medication exists and belongs to user's organization
     const existingMedication = await prisma.medication.findUnique({
