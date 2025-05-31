@@ -11,7 +11,7 @@ interface RouteParams {
   }
 }
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -19,12 +19,17 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
+    const { id } = await params
+    const doctorId = parseInt(id)
+
+    if (isNaN(doctorId)) {
+      return new NextResponse('Invalid doctor ID', { status: 400 })
+    }
+
     // Only admin users can access this endpoint
     if (session.user.role !== 'ADMIN') {
       return new NextResponse('Forbidden', { status: 403 })
     }
-
-    const doctorId = params.id
 
     const doctor = await prisma.doctor.findUnique({
       where: {
