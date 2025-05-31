@@ -7,7 +7,7 @@ import { authOptions } from '@/libs/auth'
 import { prisma } from '@/prisma/prisma'
 
 // Update medication
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -25,7 +25,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const medicationId = parseInt(params.id)
+    const { id } = await params
+    const medicationId = parseInt(id)
     const data = await request.json()
 
     // Check if medication exists and belongs to user's organization
