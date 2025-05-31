@@ -1,0 +1,13 @@
+src/app/[lang]/(dashboard)/(private)/apps/appointments/components/*
+src/app/[lang]/(dashboard)/(private)/apps/doctors/list/page.tsx
+src/app/[lang]/(dashboard)/(private)/apps/medications/list/page.tsx
+src/app/[lang]/(dashboard)/(private)/apps/visits/view/[id]/VisitDataProvider.tsx
+src/app/api/apps/invoice/route.ts
+src/app/dashboard/private/prescriptions/*
+src/components/LocalTime.tsx
+src/components/lab-test-order-form.tsx
+src/data/navigation/horizontalMenuData.tsx
+src/views/apps/invoice/*
+src/views/apps/patient/*
+src/views/dashboards/organization/*
+src/views/pages/users-management/index.tsx 

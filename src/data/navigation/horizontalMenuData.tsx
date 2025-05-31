@@ -1,8 +1,8 @@
 // Type Imports
-import type { HorizontalMenuDataType } from '@/types/menuTypes'
 import { useTranslation } from '@/contexts/translationContext'
+import type { HorizontalMenuDataType } from '@/types/menuTypes'
 
-const horizontalMenuData = (): HorizontalMenuDataType[] => {
+const useHorizontalMenuData = (): HorizontalMenuDataType[] => {
   const { t } = useTranslation()
 
   return [
@@ -712,4 +712,4 @@ const horizontalMenuData = (): HorizontalMenuDataType[] => {
   ]
 }
 
-export default horizontalMenuData
+export default useHorizontalMenuData

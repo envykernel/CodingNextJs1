@@ -1,5 +1,4 @@
 import { getVisitById } from '@/app/server/visitActions'
-import { getPrescriptionData } from '@/app/server/prescriptionActions'
 import { getDictionary } from '@/app/server/dictionaryActions'
 import type { Locale } from '@configs/i18n'
 
@@ -16,11 +15,7 @@ interface VisitDataProviderProps {
 }
 
 export default async function VisitDataProvider({ visitId, lang, children }: VisitDataProviderProps) {
-  const [visit, dict, prescriptionResult] = await Promise.all([
-    getVisitById(visitId),
-    getDictionary(lang),
-    getPrescriptionData(visitId)
-  ])
+  const [visit, dict] = await Promise.all([getVisitById(visitId), getDictionary(lang)])
 
   if (!visit) {
     return null
@@ -30,7 +25,22 @@ export default async function VisitDataProvider({ visitId, lang, children }: Vis
     visitData: visit,
     dictionary: dict,
     doctorName: visit.doctor?.name || '',
-    prescriptionInitialData: prescriptionResult.prescriptionData,
-    prescriptionExists: prescriptionResult.prescriptionExists
+    prescriptionInitialData: visit.prescriptions?.[0]
+      ? {
+          patientId: visit.patient_id,
+          doctor: visit.doctor?.name || '',
+          medications:
+            visit.prescriptions[0].lines?.map((line: any, idx: number) => ({
+              id: idx + 1,
+              name: line.drug_name,
+              dosage: line.dosage || '',
+              frequency: line.frequency || '',
+              duration: line.duration || '',
+              notes: line.instructions || ''
+            })) || [],
+          notes: visit.prescriptions[0].notes || ''
+        }
+      : undefined,
+    prescriptionExists: !!visit.prescriptions?.[0]
   })
 }
