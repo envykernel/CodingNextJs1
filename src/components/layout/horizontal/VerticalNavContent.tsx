@@ -48,7 +48,7 @@ const StyledBoxForShadow = styled('div')(({ theme }) => ({
 const VerticalNavContent = ({ children }: ChildrenType) => {
   // Hooks
   const { isBreakpointReached } = useHorizontalNav()
-  const { lang: locale } = useParams()
+  const { lang: locale } = useParams() as { lang: string }
 
   // Refs
   const shadowRef = useRef(null)
