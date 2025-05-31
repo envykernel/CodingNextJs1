@@ -103,7 +103,7 @@ const PatientDrawer = ({
       required_error: t('form.validation.required'),
       invalid_type_error: t('form.validation.birthdate.invalid')
     }),
-    doctor: z.string().optional(),
+    doctor: z.string().min(1, t('form.validation.required')),
     avatar: z.string().optional(),
     address: z.string().optional(),
     city: z.string().optional(),
