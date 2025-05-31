@@ -11,7 +11,6 @@ import { useParams } from 'next/navigation'
 import { styled, useColorScheme, useTheme } from '@mui/material/styles'
 
 // Type Imports
-import type { getDictionary } from '@/utils/getDictionary'
 import type { Mode } from '@core/types'
 import type { Locale } from '@configs/i18n'
 
@@ -31,7 +30,6 @@ import { getLocalizedUrl } from '@/utils/i18n'
 import navigationCustomStyles from '@core/styles/vertical/navigationCustomStyles'
 
 type Props = {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>
   mode: Mode
 }
 
@@ -55,12 +53,12 @@ const StyledBoxForShadow = styled('div')(({ theme }) => ({
 
 const Navigation = (props: Props) => {
   // Props
-  const { dictionary, mode } = props
+  const { mode } = props
 
   // Hooks
   const verticalNavOptions = useVerticalNav()
   const { updateSettings, settings } = useSettings()
-  const { lang: locale } = useParams()
+  const { lang: locale } = useParams() as { lang: string }
   const { mode: muiMode, systemMode: muiSystemMode } = useColorScheme()
   const theme = useTheme()
 
@@ -129,7 +127,7 @@ const Navigation = (props: Props) => {
         )}
       </NavHeader>
       <StyledBoxForShadow ref={shadowRef} />
-      <VerticalMenu dictionary={dictionary} scrollMenu={scrollMenu} />
+      <VerticalMenu scrollMenu={scrollMenu} />
     </VerticalNav>
   )
 }
