@@ -22,7 +22,7 @@ import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import TablePagination from '@mui/material/TablePagination'
-import IconButton from '@mui/material/IconButton'
+import Autocomplete from '@mui/material/Autocomplete'
 
 import { useSession } from 'next-auth/react'
 
@@ -235,24 +235,36 @@ export default function MedicationList() {
                 sx={{ minWidth: 200 }}
               />
 
-              <FormControl size='small' sx={{ minWidth: 200 }}>
-                <InputLabel>{t('medications.filters.categoryLabel')}</InputLabel>
-                <Select
-                  value={categoryFilter}
-                  label={t('medications.filters.categoryLabel')}
-                  onChange={e => {
-                    setCategoryFilter(e.target.value)
-                    setPage(0)
-                  }}
-                >
-                  <MenuItem value=''>{t('medications.filters.showAll')}</MenuItem>
-                  {categories.map(category => (
-                    <MenuItem key={category} value={category}>
-                      {category}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <Autocomplete
+                size='small'
+                options={categories}
+                value={categoryFilter}
+                onChange={(event, newValue) => {
+                  setCategoryFilter(newValue || '')
+                  setPage(0)
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label={t('medications.filters.categoryLabel')}
+                    placeholder={t('medications.filters.searchPlaceholder')}
+                  />
+                )}
+                sx={{ minWidth: 200 }}
+                clearOnBlur={false}
+                freeSolo
+                disableClearable={false}
+                isOptionEqualToValue={(option, value) => option === value}
+                renderOption={(props, option) => {
+                  const { key, ...otherProps } = props
+
+                  return (
+                    <li key={key} {...otherProps}>
+                      {option || t('medications.filters.showAll')}
+                    </li>
+                  )
+                }}
+              />
 
               <FormControl size='small' sx={{ minWidth: 200 }}>
                 <InputLabel>{t('medications.filters.organizationLabel')}</InputLabel>
@@ -378,7 +390,7 @@ export default function MedicationList() {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         medication={selectedMedication}
-        onSuccess={fetchMedications}
+        onSave={fetchMedications}
       />
     </Grid>
   )
