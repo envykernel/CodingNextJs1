@@ -16,7 +16,6 @@ import Chip from '@mui/material/Chip'
 import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
 import TablePagination from '@mui/material/TablePagination'
-import type { TextFieldProps } from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 
 // Third-party Imports
@@ -106,35 +105,6 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const DebouncedInput = ({
-  value: initialValue,
-  onChange,
-  debounce = 500,
-  ...props
-}: {
-  value: string | number
-  onChange: (value: string | number) => void
-  debounce?: number
-} & Omit<TextFieldProps, 'onChange'>) => {
-  // States
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
-
-  return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
-}
-
 // Vars
 const patientStatusObj: { [key: string]: ThemeColor } = {
   enabled: 'success',
@@ -178,7 +148,6 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
   const [data, setData] = useState<PatientType[]>(tableData || [])
 
   const [filteredData, setFilteredData] = useState(data)
-  const [globalFilter, setGlobalFilter] = useState('')
 
   // Sync data and filteredData with tableData prop
   useEffect(() => {
@@ -345,20 +314,17 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
       fuzzy: fuzzyFilter
     },
     state: {
-      rowSelection,
-      globalFilter
+      rowSelection
     },
     initialState: {
       pagination: {
         pageSize: 10
       }
     },
-    enableRowSelection: true, //enable row selection for all rows
-    // enableRowSelection: row => row.original.age > 18, // or enable row selection conditionally per row
+    enableRowSelection: true,
     globalFilterFn: fuzzyFilter,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    onGlobalFilterChange: setGlobalFilter,
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -409,12 +375,6 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
             <MenuItem value='50'>50</MenuItem>
           </CustomTextField>
           <div className='flex flex-col sm:flex-row max-sm:is-full items-start sm:items-center gap-4'>
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              placeholder={t('patient.searchPlaceholder')}
-              className='max-sm:is-full'
-            />
             <Button
               color='secondary'
               variant='tonal'
