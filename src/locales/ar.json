@@ -183,7 +183,8 @@
             "noClinicalExam": "لا يوجد فحص سريري مسجل",
             "noPrescriptions": "لا توجد وصفات طبية مسجلة"
         },
-        "medications": "الأدوية"
+        "medications": "الأدوية",
+        "doctors": "الأطباء"
     },
     "patient": {
         "name": "الاسم الكامل",
@@ -662,7 +663,8 @@
                     "cancelled": "ملغي"
                 }
             },
-            "medications": "الأدوية"
+            "medications": "الأدوية",
+            "doctors": "الأطباء"
         }
     },
     "patientView": {
@@ -1159,5 +1161,38 @@
     "yourOrganization": "منظمتك",
     "otherOrganization": "منظمة أخرى",
     "global": "عام",
-    "actions": "الإجراءات"
+    "actions": "الإجراءات",
+    "doctors": {
+        "title": "قائمة الأطباء",
+        "addDoctor": "إضافة طبيب",
+        "noDoctorsFound": "لم يتم العثور على أطباء",
+        "filters": {
+            "clearFilters": "مسح الفلاتر",
+            "searchPlaceholder": "البحث عن طبيب...",
+            "specialtyLabel": "التخصص",
+            "allSpecialties": "جميع التخصصات",
+            "statusLabel": "الحالة",
+            "allStatuses": "جميع الحالات"
+        },
+        "table": {
+            "name": "الاسم",
+            "specialty": "التخصص",
+            "email": "البريد الإلكتروني",
+            "phone": "الهاتف",
+            "status": "الحالة",
+            "actions": "الإجراءات"
+        },
+        "status": {
+            "enabled": "مفعل",
+            "disabled": "معطل"
+        },
+        "actions": {
+            "edit": "تعديل",
+            "delete": "حذف"
+        },
+        "confirmation": {
+            "deleteDoctor": "هل أنت متأكد أنك تريد حذف هذا الطبيب؟"
+        },
+        "errorDeletingDoctor": "خطأ في حذف الطبيب"
+    }
 }

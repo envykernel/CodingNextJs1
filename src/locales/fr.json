@@ -182,7 +182,8 @@
             "noMeasurements": "Aucune mesure enregistrée",
             "noClinicalExam": "Aucun examen clinique enregistré",
             "noPrescriptions": "Aucune ordonnance enregistrée"
-        }
+        },
+        "doctors": "Médecins"
     },
     "patient": {
         "name": "Nom complet",
@@ -483,7 +484,8 @@
             "itemWithBadge": "Élément avec badge",
             "externalLink": "Lien externe",
             "disabledMenu": "Menu désactivé",
-            "medications": "Médicaments"
+            "medications": "Médicaments",
+            "doctors": "Médecins"
         }
     },
     "invoice": {
@@ -595,5 +597,38 @@
         "emergencyContactEmail": "Email du contact d'urgence",
         "emergencyContactEmailPlaceholder": "Entrez l'email du contact d'urgence",
         "required": "Ce champ est requis"
+    },
+    "doctors": {
+        "title": "Liste des Médecins",
+        "addDoctor": "Ajouter un Médecin",
+        "noDoctorsFound": "Aucun médecin trouvé",
+        "filters": {
+            "clearFilters": "Effacer les filtres",
+            "searchPlaceholder": "Rechercher un médecin...",
+            "specialtyLabel": "Spécialité",
+            "allSpecialties": "Toutes les spécialités",
+            "statusLabel": "Statut",
+            "allStatuses": "Tous les statuts"
+        },
+        "table": {
+            "name": "Nom",
+            "specialty": "Spécialité",
+            "email": "Email",
+            "phone": "Téléphone",
+            "status": "Statut",
+            "actions": "Actions"
+        },
+        "status": {
+            "enabled": "Activé",
+            "disabled": "Désactivé"
+        },
+        "actions": {
+            "edit": "Modifier",
+            "delete": "Supprimer"
+        },
+        "confirmation": {
+            "deleteDoctor": "Êtes-vous sûr de vouloir supprimer ce médecin ?"
+        },
+        "errorDeletingDoctor": "Erreur lors de la suppression du médecin"
     }
 }

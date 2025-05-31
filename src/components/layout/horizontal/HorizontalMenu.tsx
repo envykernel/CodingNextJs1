@@ -137,6 +137,9 @@ const HorizontalMenu = () => {
           <MenuItem href={`/${locale}/apps/medications/list`} icon={<i className='tabler-pill' />}>
             {t('sidebar.navigation.medications')}
           </MenuItem>
+          <MenuItem href={`/${locale}/apps/doctors/list`} icon={<i className='tabler-user-md' />}>
+            {t('sidebar.navigation.doctors')}
+          </MenuItem>
         </SubMenu>
       </Menu>
       {/* <Menu
