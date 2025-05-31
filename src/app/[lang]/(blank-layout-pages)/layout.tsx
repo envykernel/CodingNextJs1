@@ -11,6 +11,7 @@ import { i18n } from '@configs/i18n'
 
 // Util Imports
 import { getSystemMode } from '@core/utils/serverHelpers'
+import { getDictionary } from '@/utils/getDictionary'
 
 type Props = ChildrenType & {
   params: Promise<{ lang: Locale }>
@@ -22,10 +23,10 @@ const Layout = async (props: Props) => {
 
   // Vars
   const direction = i18n.langDirection[params.lang]
-  const systemMode = await getSystemMode()
+  const [systemMode, dictionary] = await Promise.all([getSystemMode(), getDictionary(params.lang)])
 
   return (
-    <Providers direction={direction}>
+    <Providers direction={direction} dictionary={dictionary}>
       <BlankLayout systemMode={systemMode}>{children}</BlankLayout>
     </Providers>
   )
