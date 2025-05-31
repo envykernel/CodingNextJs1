@@ -12,7 +12,7 @@ import { useTranslation } from '@/contexts/translationContext'
 export default function NoOrganisationPage() {
   const { data: session } = useSession()
   const router = useRouter()
-  const t = useTranslation()
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!session) {
