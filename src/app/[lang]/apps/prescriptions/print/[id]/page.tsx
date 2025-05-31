@@ -16,7 +16,7 @@ interface PrintPrescriptionPageProps {
 
 export default async function PrintPrescriptionPage({ params }: PrintPrescriptionPageProps) {
   const { lang, id } = await params
-  const dictionary = await getDictionary(lang)
+  const dictionary = (await getDictionary(lang)) as any
 
   const prescription = await prisma.prescription.findUnique({
     where: { id: Number(id) },
