@@ -37,7 +37,7 @@ const UsersManagementPage = async ({
 
   // Get the logged-in user's organisationId
   const { organisationId } = await getUserOrganisation()
-  const usersData = await getUsersList({ page, pageSize, name, organisationId })
+  const usersData = await getUsersList({ page, pageSize, name, organisationId: organisationId.toString() })
 
   const dictionary = await getDictionary(lang)
 

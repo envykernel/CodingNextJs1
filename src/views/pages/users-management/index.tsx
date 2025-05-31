@@ -95,7 +95,7 @@ interface User {
   isApproved: boolean
   organisationId: number | null
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date
 }
 
 interface UsersManagementProps {
