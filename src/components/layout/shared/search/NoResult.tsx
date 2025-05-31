@@ -37,7 +37,7 @@ const noResultData: NoResultData[] = [
 
 const NoResult = ({ searchValue, setOpen }: { searchValue: string; setOpen: (value: boolean) => void }) => {
   // Hooks
-  const { lang: locale } = useParams()
+  const { lang: locale } = useParams() as { lang: string }
 
   return (
     <div className='flex items-center justify-center grow flex-wrap plb-14 pli-16 overflow-y-auto overflow-x-hidden bs-full'>
