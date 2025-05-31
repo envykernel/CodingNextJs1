@@ -1,72 +1,60 @@
 // Component Imports
-// import { getServerSession } from 'next-auth'
-
 import PatientList from '@views/apps/patient/list'
+
+// Type Imports
+import type { PatientType } from '@views/apps/patient/list/PatientListTable'
+import type { Locale } from '@configs/i18n'
 
 // Data Imports
 import { getPatientList } from '@/app/server/patientActions'
 import { getDictionary } from '@/utils/getDictionary'
-import type { Locale } from '@configs/i18n'
 import { TranslationProvider } from '@/contexts/translationContext'
-
-// import { authOptions } from '@/libs/auth'
 import { getUserOrganisation } from '@/utils/getUserOrganisation'
 
-/**
- * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
- * ! `.env` file found at root of your project and also update the API endpoints like `/apps/user-list` in below example.
- * ! Also, remove the above server action import and the action itself from the `src/app/server/actions.ts` file to clean up unused code
- * ! because we've used the server action for getting our static data.
- */
+// Helper function to transform null values to undefined
+function transformPatientData(patients: any[]): PatientType[] {
+  return patients.map(patient => ({
+    ...patient,
+    doctor: patient.doctor
+      ? {
+          id: patient.doctor.id,
+          name: patient.doctor.name,
+          specialty: patient.doctor.specialty || undefined,
+          email: patient.doctor.email || undefined,
+          phone_number: patient.doctor.phone_number || undefined
+        }
+      : undefined,
+    status: patient.status || undefined,
+    avatar: patient.avatar || undefined,
+    address: patient.address || undefined,
+    city: patient.city || undefined,
+    phone_number: patient.phone_number || undefined,
+    email: patient.email || undefined,
+    emergency_contact_name: patient.emergency_contact_name || undefined,
+    emergency_contact_phone: patient.emergency_contact_phone || undefined,
+    emergency_contact_email: patient.emergency_contact_email || undefined,
+    created_at: patient.created_at || undefined,
+    updated_at: patient.updated_at || undefined
+  }))
+}
 
-/* const getUserData = async () => {
+const PatientListPage = async ({ params: { lang } }: { params: { lang: Locale } }) => {
   // Vars
-  const res = await fetch(`${process.env.API_URL}/apps/user-list`)
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch userData')
-  }
-
-  return res.json()
-} */
-
-const PatientListApp = async ({
-  params,
-  searchParams
-}: {
-  params: Promise<{ lang: Locale }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) => {
-  const { lang } = await params
-  const resolvedSearchParams = await searchParams
-
-  // Parse pagination params
-  const page = resolvedSearchParams?.page
-    ? Number(Array.isArray(resolvedSearchParams.page) ? resolvedSearchParams.page[0] : resolvedSearchParams.page)
-    : 1
-
-  const pageSize = resolvedSearchParams?.pageSize
-    ? Number(
-        Array.isArray(resolvedSearchParams.pageSize) ? resolvedSearchParams.pageSize[0] : resolvedSearchParams.pageSize
-      )
-    : 10
-
-  const name = resolvedSearchParams?.name
-    ? Array.isArray(resolvedSearchParams.name)
-      ? resolvedSearchParams.name[0]
-      : resolvedSearchParams.name
-    : undefined
-
-  // Get the logged-in user's organisationId
-  const { organisationId } = await getUserOrganisation()
-  const patientData = await getPatientList({ page, pageSize, name, organisationId })
-
   const dictionary = await getDictionary(lang)
+  const { organisationId } = await getUserOrganisation()
+
+  // Fetch patient data
+  const patientData = await getPatientList({
+    organisationId: organisationId || 0
+  })
+
+  // Transform the data to match PatientType
+  const transformedPatients = transformPatientData(patientData.patients)
 
   return (
     <TranslationProvider dictionary={dictionary}>
       <PatientList
-        patientData={patientData.patients}
+        patientData={transformedPatients}
         page={patientData.page}
         pageSize={patientData.pageSize}
         total={patientData.total}
@@ -75,4 +63,4 @@ const PatientListApp = async ({
   )
 }
 
-export default PatientListApp
+export default PatientListPage
