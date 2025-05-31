@@ -42,9 +42,9 @@ interface DoctorDrawerProps {
 
 // Zod schema for doctor form
 const doctorSchema = z.object({
-  name: z.string().min(1, 'Doctor name is required'),
-  specialty: z.string().min(1, 'Specialty is required'),
-  email: z.string().email('Invalid email address').optional().or(z.literal('')),
+  name: z.string().min(1, 'doctors.error.required'),
+  specialty: z.string().min(1, 'doctors.error.required'),
+  email: z.string().email('form.validation.email.invalid').optional().or(z.literal('')),
   phone_number: z.string().optional().or(z.literal('')),
   status: z.enum(['enabled', 'disabled'])
 })
@@ -58,6 +58,7 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
   const [isLoadingSpecialties, setIsLoadingSpecialties] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
 
   const {
     control,
@@ -65,7 +66,13 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
     reset,
     formState: { errors }
   } = useForm<DoctorFormValues>({
-    resolver: zodResolver(doctorSchema),
+    resolver: zodResolver(doctorSchema, {
+      errorMap: issue => {
+        const message = issue.message as string
+
+        return { message: t(message) }
+      }
+    }),
     defaultValues: {
       name: '',
       specialty: '',
@@ -135,6 +142,7 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
   const handleClose = () => {
     setShowSuccess(false)
     setIsSubmitting(false)
+    setFormError(null)
     reset({
       name: '',
       specialty: '',
@@ -147,6 +155,7 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
 
   const onSubmit = async (data: DoctorFormValues) => {
     setIsSubmitting(true)
+    setFormError(null)
 
     try {
       const url = doctor ? `/api/doctors/${doctor.id}` : '/api/doctors'
@@ -163,8 +172,24 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
         })
       })
 
+      const responseData = await response.text()
+
       if (!response.ok) {
-        throw new Error('Failed to save doctor')
+        try {
+          const errorData = JSON.parse(responseData)
+
+          if (errorData.errorKey) {
+            setFormError(t(errorData.errorKey))
+          } else {
+            setFormError(responseData)
+          }
+        } catch {
+          setFormError(responseData)
+        }
+
+        setIsSubmitting(false)
+
+        return
       }
 
       // Show success message
@@ -177,7 +202,7 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
       }, 1500)
     } catch (error) {
       console.error('Error saving doctor:', error)
-      alert(t('errorSavingDoctor') || 'Error saving doctor')
+      setFormError(t('errorSavingDoctor') || 'Error saving doctor')
       setIsSubmitting(false)
     }
   }
@@ -210,6 +235,20 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
             }}
           >
             {doctor ? t('doctors.doctorUpdated') : t('doctors.doctorAdded')}
+          </Alert>
+        )}
+
+        {formError && (
+          <Alert
+            severity='error'
+            sx={{
+              mb: 4,
+              '& .MuiAlert-message': {
+                fontSize: '0.875rem'
+              }
+            }}
+          >
+            {formError}
           </Alert>
         )}
 
@@ -286,8 +325,8 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
             control={control}
             render={({ field }) => (
               <FormControl fullWidth error={!!errors.status} sx={{ mb: 4 }}>
-                <InputLabel>{t('doctors.status')}</InputLabel>
-                <Select {...field} label={t('doctors.status')}>
+                <InputLabel>{t('doctors.statusLabel')}</InputLabel>
+                <Select {...field} label={t('doctors.statusLabel')}>
                   <MenuItem value='enabled'>{t('doctors.status.enabled')}</MenuItem>
                   <MenuItem value='disabled'>{t('doctors.status.disabled')}</MenuItem>
                 </Select>

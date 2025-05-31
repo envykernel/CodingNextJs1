@@ -609,6 +609,7 @@
         "email": "Email",
         "phoneNumber": "Numéro de Téléphone",
         "status": "Statut",
+        "statusLabel": "Statut du Médecin",
         "noDoctorsFound": "Aucun médecin trouvé",
         "accessDenied": "Accès Refusé",
         "accessDeniedMessage": "Vous n'avez pas la permission d'accéder à cette page. Seuls les administrateurs peuvent gérer les médecins.",
@@ -642,6 +643,16 @@
         "errorDeletingDoctor": "Erreur lors de la suppression du médecin",
         "save": "Enregistrer le Médecin",
         "cancel": "Annuler",
-        "update": "Mettre à jour le Médecin"
+        "update": "Mettre à jour le Médecin",
+        "error": {
+            "nameExists": "Un médecin avec ce nom existe déjà dans votre organisation",
+            "emailExists": "Un médecin avec cet email existe déjà dans votre organisation",
+            "phoneExists": "Un médecin avec ce numéro de téléphone existe déjà dans votre organisation",
+            "save": "Erreur lors de l'enregistrement du médecin",
+            "update": "Erreur lors de la mise à jour du médecin",
+            "delete": "Erreur lors de la suppression du médecin",
+            "fetch": "Erreur lors de la récupération des médecins",
+            "required": "Ce champ est requis"
+        }
     }
 }

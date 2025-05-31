@@ -72,14 +72,13 @@ export async function POST(request: Request) {
     })
 
     if (existingDoctor) {
-      let errorMessage = 'A doctor with '
+      let errorKey = 'doctors.error.'
 
-      if (existingDoctor.name === name) errorMessage += 'this name'
-      else if (email && existingDoctor.email === email) errorMessage += 'this email'
-      else if (phone_number && existingDoctor.phone_number === phone_number) errorMessage += 'this phone number'
-      errorMessage += ' already exists in your organization'
+      if (existingDoctor.name === name) errorKey += 'nameExists'
+      else if (email && existingDoctor.email === email) errorKey += 'emailExists'
+      else if (phone_number && existingDoctor.phone_number === phone_number) errorKey += 'phoneExists'
 
-      return new NextResponse(errorMessage, { status: 400 })
+      return new NextResponse(JSON.stringify({ errorKey }), { status: 400 })
     }
 
     const doctor = await prisma.doctor.create({

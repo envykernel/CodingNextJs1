@@ -1027,6 +1027,7 @@
         "email": "Email",
         "phoneNumber": "Phone Number",
         "status": "Status",
+        "statusLabel": "Doctor Status",
         "noDoctorsFound": "No doctors found",
         "accessDenied": "Access Denied",
         "accessDeniedMessage": "You do not have permission to access this page. Only administrators can manage doctors.",
@@ -1060,6 +1061,16 @@
         "errorDeletingDoctor": "Error deleting doctor",
         "save": "Save Doctor",
         "cancel": "Cancel",
-        "update": "Update Doctor"
+        "update": "Update Doctor",
+        "error": {
+            "nameExists": "A doctor with this name already exists in your organization",
+            "emailExists": "A doctor with this email already exists in your organization",
+            "phoneExists": "A doctor with this phone number already exists in your organization",
+            "save": "Error saving doctor",
+            "update": "Error updating doctor",
+            "delete": "Error deleting doctor",
+            "fetch": "Error fetching doctors",
+            "required": "This field is required"
+        }
     }
 }

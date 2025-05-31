@@ -100,14 +100,13 @@ export async function PUT(request: Request, { params }: RouteParams) {
     })
 
     if (duplicateDoctor) {
-      let errorMessage = 'A doctor with '
+      let errorKey = 'doctors.error.'
 
-      if (duplicateDoctor.name === name) errorMessage += 'this name'
-      else if (email && duplicateDoctor.email === email) errorMessage += 'this email'
-      else if (phone_number && duplicateDoctor.phone_number === phone_number) errorMessage += 'this phone number'
-      errorMessage += ' already exists in your organization'
+      if (duplicateDoctor.name === name) errorKey += 'nameExists'
+      else if (email && duplicateDoctor.email === email) errorKey += 'emailExists'
+      else if (phone_number && duplicateDoctor.phone_number === phone_number) errorKey += 'phoneExists'
 
-      return new NextResponse(errorMessage, { status: 400 })
+      return new NextResponse(JSON.stringify({ errorKey }), { status: 400 })
     }
 
     const doctor = await prisma.doctor.update({
