@@ -23,6 +23,7 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import TablePagination from '@mui/material/TablePagination'
 import Alert from '@mui/material/Alert'
+import Chip from '@mui/material/Chip'
 
 import { useSession } from 'next-auth/react'
 
@@ -38,6 +39,18 @@ interface Doctor {
   email: string | null
   status: string
   organisation_id: number
+}
+
+// Add this before the DoctorList component
+const doctorStatusObj = {
+  enabled: {
+    color: 'success' as const,
+    icon: 'tabler-check'
+  },
+  disabled: {
+    color: 'error' as const,
+    icon: 'tabler-x'
+  }
 }
 
 export default function DoctorList() {
@@ -293,19 +306,18 @@ export default function DoctorList() {
                         <TableCell>{doctor.email || '-'}</TableCell>
                         <TableCell>{doctor.phone_number || '-'}</TableCell>
                         <TableCell>
-                          <Box
+                          <Chip
+                            label={t(`doctors.status.${doctor.status}`)}
+                            color={doctorStatusObj[doctor.status as keyof typeof doctorStatusObj].color}
+                            size='small'
+                            variant='tonal'
+                            icon={<i className={doctorStatusObj[doctor.status as keyof typeof doctorStatusObj].icon} />}
                             sx={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              px: 2,
-                              py: 0.5,
-                              borderRadius: 1,
-                              backgroundColor: doctor.status === 'enabled' ? 'success.light' : 'error.light',
-                              color: doctor.status === 'enabled' ? 'success.dark' : 'error.dark'
+                              '& .MuiChip-icon': {
+                                fontSize: '1rem'
+                              }
                             }}
-                          >
-                            {t(`doctors.status.${doctor.status}`)}
-                          </Box>
+                          />
                         </TableCell>
                         {isAdmin && (
                           <TableCell align='right'>
