@@ -74,7 +74,13 @@
         "errorCreating": "Error creating patient. Please try again.",
         "profile": "Patient Profile",
         "information": "Patient Information",
-        "emergencyContact": "Emergency Contact"
+        "emergencyContact": "Emergency Contact",
+        "pagination": {
+            "rowsPerPage": "Rows per page",
+            "of": "of",
+            "showing": "Showing",
+            "to": "to"
+        }
     },
     "appointments": {
         "typeOptions": {
@@ -120,7 +126,10 @@
         "billingPlans": "Billing & Plans",
         "notifications": "Notifications",
         "connections": "Connections",
-        "show": "Show"
+        "show": "Show",
+        "loading": "Loading...",
+        "goToVisit": "Go to Visit",
+        "noData": "No data available"
     },
     "appointmentsList": "Appointments List",
     "bookAppointment": "Book Appointment",
@@ -128,7 +137,6 @@
     "createAppointment": "Create New Appointment",
     "createVisit": "Create Visit",
     "createVisitSuccess": "Visit created successfully!",
-    "loading": "Loading...",
     "availabilityTitle": "Availability",
     "available": "Available",
     "unavailable": "Unavailable",
@@ -138,7 +146,6 @@
         "message": "You do not have permission to access this page. Please contact your administrator if you believe this is a mistake.",
         "button": "Back to Home"
     },
-    "goToVisit": "Go to Visit",
     "prescriptions": "Prescriptions",
     "savePrescription": "Save Prescription",
     "medication": "Medication",

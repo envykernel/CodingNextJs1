@@ -13,6 +13,7 @@ import type { PatientType } from './PatientListTable'
 
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
+import { useTranslation } from '@/contexts/translationContext'
 
 const PatientTableFilters = ({
   setData,
@@ -27,6 +28,7 @@ const PatientTableFilters = ({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { t } = useTranslation()
 
   useEffect(() => {
     // Only filter by gender and status client-side
@@ -52,10 +54,10 @@ const PatientTableFilters = ({
             onChange={e => setGender(e.target.value)}
             slotProps={{ select: { displayEmpty: true } }}
           >
-            <MenuItem value=''>Select Gender</MenuItem>
-            <MenuItem value='Male'>Male</MenuItem>
-            <MenuItem value='Female'>Female</MenuItem>
-            <MenuItem value='Other'>Other</MenuItem>
+            <MenuItem value=''>{t('form.selectGender')}</MenuItem>
+            <MenuItem value='male'>{t('form.male')}</MenuItem>
+            <MenuItem value='female'>{t('form.female')}</MenuItem>
+            <MenuItem value='other'>{t('form.other')}</MenuItem>
           </CustomTextField>
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
@@ -76,7 +78,7 @@ const PatientTableFilters = ({
 
               router.push(`${pathname}?${params.toString()}`)
             }}
-            placeholder='Patient Name'
+            placeholder={t('patient.name')}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
@@ -88,11 +90,11 @@ const PatientTableFilters = ({
             onChange={e => setStatus(e.target.value)}
             slotProps={{ select: { displayEmpty: true } }}
           >
-            <MenuItem value=''>Select Status</MenuItem>
-            <MenuItem value='admitted'>Admitted</MenuItem>
-            <MenuItem value='discharged'>Discharged</MenuItem>
-            <MenuItem value='critical'>Critical</MenuItem>
-            <MenuItem value='underObservation'>Under Observation</MenuItem>
+            <MenuItem value=''>{t('form.selectStatus')}</MenuItem>
+            <MenuItem value='enabled'>{t('form.enabled')}</MenuItem>
+            <MenuItem value='disabled'>{t('form.disabled')}</MenuItem>
+            <MenuItem value='blocked'>{t('form.blocked')}</MenuItem>
+            <MenuItem value='pending'>{t('form.pending')}</MenuItem>
           </CustomTextField>
         </Grid>
       </Grid>

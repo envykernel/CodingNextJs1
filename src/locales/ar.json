@@ -231,7 +231,13 @@
         "errorCreating": "خطأ في إنشاء المريض. يرجى المحاولة مرة أخرى.",
         "profile": "الملف الشخصي للمريض",
         "information": "معلومات المريض",
-        "emergencyContact": "جهة الاتصال في حالات الطوارئ"
+        "emergencyContact": "جهة الاتصال في حالات الطوارئ",
+        "pagination": {
+            "rowsPerPage": "الصفوف في الصفحة",
+            "of": "من",
+            "showing": "عرض",
+            "to": "إلى"
+        }
     },
     "appointments": {
         "typeOptions": {
@@ -277,7 +283,10 @@
         "billingPlans": "الفوترة والاشتراكات",
         "notifications": "الإشعارات",
         "connections": "الاتصالات",
-        "show": "عرض"
+        "show": "عرض",
+        "loading": "جارٍ التحميل...",
+        "goToVisit": "الذهاب إلى الزيارة",
+        "noData": "لا توجد بيانات متاحة"
     },
     "appointmentsList": "قائمة المواعيد",
     "bookAppointment": "حجز موعد",

@@ -230,7 +230,13 @@
         "errorCreating": "Erreur lors de la création du patient. Veuillez réessayer.",
         "profile": "Profil du Patient",
         "information": "Informations du Patient",
-        "emergencyContact": "Contact d'Urgence"
+        "emergencyContact": "Contact d'Urgence",
+        "pagination": {
+            "rowsPerPage": "Lignes par page",
+            "of": "sur",
+            "showing": "Affichage",
+            "to": "à"
+        }
     },
     "appointments": {
         "typeOptions": {
@@ -278,7 +284,8 @@
         "connections": "Connexions",
         "show": "Afficher",
         "loading": "Chargement...",
-        "goToVisit": "Aller à la visite"
+        "goToVisit": "Aller à la visite",
+        "noData": "Aucune donnée disponible"
     },
     "appointmentsList": "Liste des rendez-vous",
     "bookAppointment": "Prendre rendez-vous",
@@ -543,5 +550,43 @@
             "deleted": "Supprimé"
         },
         "list": "Liste des factures"
+    },
+    "form": {
+        "sectionPersonalInfo": "Informations personnelles",
+        "sectionContactInfo": "Informations de contact",
+        "sectionEmergencyContact": "Contact d'urgence",
+        "name": "Nom",
+        "namePlaceholder": "Entrez le nom du patient",
+        "birthdate": "Date de naissance",
+        "gender": "Genre",
+        "selectGender": "Sélectionner le genre",
+        "male": "Homme",
+        "female": "Femme",
+        "other": "Autre",
+        "doctor": "Médecin",
+        "doctorPlaceholder": "Sélectionner le médecin",
+        "status": "Statut",
+        "selectStatus": "Sélectionner le statut",
+        "enabled": "Activé",
+        "disabled": "Désactivé",
+        "blocked": "Bloqué",
+        "pending": "En attente",
+        "avatar": "URL de l'avatar",
+        "avatarPlaceholder": "Entrez l'URL de l'avatar",
+        "address": "Adresse",
+        "addressPlaceholder": "Entrez l'adresse",
+        "city": "Ville",
+        "cityPlaceholder": "Entrez la ville",
+        "phoneNumber": "Numéro de téléphone",
+        "phoneNumberPlaceholder": "Entrez le numéro de téléphone",
+        "email": "Email",
+        "emailPlaceholder": "Entrez l'email",
+        "emergencyContactName": "Nom du contact d'urgence",
+        "emergencyContactNamePlaceholder": "Entrez le nom du contact d'urgence",
+        "emergencyContactPhone": "Téléphone du contact d'urgence",
+        "emergencyContactPhonePlaceholder": "Entrez le téléphone du contact d'urgence",
+        "emergencyContactEmail": "Email du contact d'urgence",
+        "emergencyContactEmailPlaceholder": "Entrez l'email du contact d'urgence",
+        "required": "Ce champ est requis"
     }
 }

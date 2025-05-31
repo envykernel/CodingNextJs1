@@ -402,6 +402,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
               router.push(`${pathname}?${params.toString()}`)
             }}
             className='max-sm:is-full sm:is-[70px]'
+            label={t('patient.pagination.rowsPerPage')}
           >
             <MenuItem value='10'>10</MenuItem>
             <MenuItem value='25'>25</MenuItem>
@@ -465,7 +466,7 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
               <tbody>
                 <tr>
                   <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                    No data available
+                    {t('common.noData')}
                   </td>
                 </tr>
               </tbody>
@@ -501,6 +502,8 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
           count={total}
           rowsPerPage={pageSize}
           page={page - 1}
+          labelRowsPerPage={t('patient.pagination.rowsPerPage')}
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} ${t('patient.pagination.of')} ${count}`}
           onPageChange={(_, newPage) => {
             const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
 
