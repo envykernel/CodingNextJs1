@@ -307,7 +307,7 @@ const SubMenu: ForwardRefRenderFunction<HTMLLIElement, SubMenuProps> = (props, r
   // Change active state when the url changes
   useEffect(() => {
     // Check if the current url matches any of the children urls
-    if (confirmUrlInChildren(children, pathname)) {
+    if (pathname && confirmUrlInChildren(children, pathname)) {
       setActive(true)
     } else {
       setActive(false)
