@@ -316,7 +316,7 @@ const DropdownMenu = (props: Props) => {
               key={index}
               href={'/front-pages' + page.href}
               className={classnames('flex items-center gap-3 focus:outline-none hover:text-primary', {
-                'text-primary': pathname.includes('/front-pages' + page.href)
+                'text-primary': pathname?.includes('/front-pages' + page.href)
               })}
               onClick={handleLinkClick}
             >
