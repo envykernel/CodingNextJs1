@@ -13,11 +13,23 @@ interface RouteParams {
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = await getServerSession(authOptions)
+
+    if (!session) {
+      return new NextResponse('Unauthorized', { status: 401 })
+    }
+
+    // Only admin users can access this endpoint
+    if (session.user.role !== 'ADMIN') {
+      return new NextResponse('Forbidden', { status: 403 })
+    }
+
     const doctorId = params.id
 
     const doctor = await prisma.doctor.findUnique({
       where: {
-        id: Number(doctorId)
+        id: Number(doctorId),
+        organisation_id: Number(session.user.organisationId)
       },
       select: {
         id: true,

@@ -602,6 +602,8 @@
         "title": "Liste des Médecins",
         "addDoctor": "Ajouter un Médecin",
         "noDoctorsFound": "Aucun médecin trouvé",
+        "accessDenied": "Accès Refusé",
+        "accessDeniedMessage": "Vous n'avez pas la permission d'accéder à cette page. Seuls les administrateurs peuvent gérer les médecins.",
         "filters": {
             "clearFilters": "Effacer les filtres",
             "searchPlaceholder": "Rechercher un médecin...",

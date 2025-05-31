@@ -1166,6 +1166,8 @@
         "title": "قائمة الأطباء",
         "addDoctor": "إضافة طبيب",
         "noDoctorsFound": "لم يتم العثور على أطباء",
+        "accessDenied": "تم رفض الوصول",
+        "accessDeniedMessage": "ليس لديك إذن للوصول إلى هذه الصفحة. يمكن للمسؤولين فقط إدارة الأطباء.",
         "filters": {
             "clearFilters": "مسح الفلاتر",
             "searchPlaceholder": "البحث عن طبيب...",

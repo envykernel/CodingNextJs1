@@ -1020,6 +1020,8 @@
         "title": "Doctors List",
         "addDoctor": "Add Doctor",
         "noDoctorsFound": "No doctors found",
+        "accessDenied": "Access Denied",
+        "accessDeniedMessage": "You do not have permission to access this page. Only administrators can manage doctors.",
         "filters": {
             "searchPlaceholder": "Search doctors...",
             "specialtyLabel": "Specialty",

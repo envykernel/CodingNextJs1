@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react'
 
-import { useRouter } from 'next/navigation'
-
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
@@ -45,7 +43,6 @@ interface Doctor {
 export default function DoctorList() {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const router = useRouter()
   const [doctors, setDoctors] = useState<Doctor[]>([])
   const [loading, setLoading] = useState(true)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -62,13 +59,6 @@ export default function DoctorList() {
 
   const isAdmin = session?.user?.role === 'ADMIN'
   const userOrgId = Number(session?.user?.organisationId)
-
-  // Redirect if not admin
-  useEffect(() => {
-    if (!isAdmin) {
-      router.push('/')
-    }
-  }, [isAdmin, router])
 
   const fetchDoctors = async () => {
     try {
@@ -178,7 +168,20 @@ export default function DoctorList() {
   }
 
   if (!isAdmin) {
-    return null
+    return (
+      <Grid container spacing={6}>
+        <Grid item xs={12}>
+          <Card>
+            <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+              <Typography variant='h5' color='error'>
+                {t('doctors.accessDenied')}
+              </Typography>
+              <Typography variant='body1'>{t('doctors.accessDeniedMessage')}</Typography>
+            </Box>
+          </Card>
+        </Grid>
+      </Grid>
+    )
   }
 
   return (
@@ -188,16 +191,18 @@ export default function DoctorList() {
           <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', gap: 4 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Typography variant='h5'>{t('doctors.title')}</Typography>
-              <Button
-                variant='contained'
-                onClick={() => {
-                  setSelectedDoctor(null)
-                  setDrawerOpen(true)
-                }}
-                startIcon={<i className='tabler-plus' />}
-              >
-                {t('doctors.addDoctor')}
-              </Button>
+              {isAdmin && (
+                <Button
+                  variant='contained'
+                  onClick={() => {
+                    setSelectedDoctor(null)
+                    setDrawerOpen(true)
+                  }}
+                  startIcon={<i className='tabler-plus' />}
+                >
+                  {t('doctors.addDoctor')}
+                </Button>
+              )}
             </Box>
 
             {/* Filters Section */}
@@ -277,7 +282,7 @@ export default function DoctorList() {
                       <TableCell>{t('doctors.table.email')}</TableCell>
                       <TableCell>{t('doctors.table.phone')}</TableCell>
                       <TableCell>{t('doctors.table.status')}</TableCell>
-                      <TableCell align='right'>{t('doctors.table.actions')}</TableCell>
+                      {isAdmin && <TableCell align='right'>{t('doctors.table.actions')}</TableCell>}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -302,24 +307,26 @@ export default function DoctorList() {
                             {t(`doctors.status.${doctor.status}`)}
                           </Box>
                         </TableCell>
-                        <TableCell align='right'>
-                          <Button
-                            size='small'
-                            onClick={() => handleEdit(doctor)}
-                            sx={{ mr: 1 }}
-                            startIcon={<i className='tabler-edit' />}
-                          >
-                            {t('doctors.actions.edit')}
-                          </Button>
-                          <Button
-                            size='small'
-                            color='error'
-                            onClick={() => handleDelete(doctor.id)}
-                            startIcon={<i className='tabler-trash' />}
-                          >
-                            {t('doctors.actions.delete')}
-                          </Button>
-                        </TableCell>
+                        {isAdmin && (
+                          <TableCell align='right'>
+                            <Button
+                              size='small'
+                              onClick={() => handleEdit(doctor)}
+                              sx={{ mr: 1 }}
+                              startIcon={<i className='tabler-edit' />}
+                            >
+                              {t('doctors.actions.edit')}
+                            </Button>
+                            <Button
+                              size='small'
+                              color='error'
+                              onClick={() => handleDelete(doctor.id)}
+                              startIcon={<i className='tabler-trash' />}
+                            >
+                              {t('doctors.actions.delete')}
+                            </Button>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                   </TableBody>
@@ -339,12 +346,14 @@ export default function DoctorList() {
         </Card>
       </Grid>
 
-      <DoctorDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        doctor={selectedDoctor}
-        onSave={fetchDoctors}
-      />
+      {isAdmin && (
+        <DoctorDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          doctor={selectedDoctor}
+          onSave={fetchDoctors}
+        />
+      )}
     </Grid>
   )
 }

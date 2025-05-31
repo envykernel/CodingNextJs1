@@ -1,6 +1,9 @@
 // Next Imports
 import { useParams } from 'next/navigation'
 
+// Third-party Imports
+import { useSession } from 'next-auth/react'
+
 // MUI Imports
 import { useTheme } from '@mui/material/styles'
 
@@ -56,6 +59,8 @@ const HorizontalMenu = () => {
   const theme = useTheme()
   const params = useParams() as { lang: string }
   const { t } = useTranslation()
+  const { data: session } = useSession()
+  const isAdmin = session?.user?.role === 'ADMIN'
 
   // Vars
   const { transitionDuration } = verticalNavOptions
@@ -137,9 +142,11 @@ const HorizontalMenu = () => {
           <MenuItem href={`/${locale}/apps/medications/list`} icon={<i className='tabler-pill' />}>
             {t('sidebar.navigation.medications')}
           </MenuItem>
-          <MenuItem href={`/${locale}/apps/doctors/list`} icon={<i className='tabler-user-md' />}>
-            {t('sidebar.navigation.doctors')}
-          </MenuItem>
+          {isAdmin && (
+            <MenuItem href={`/${locale}/apps/doctors/list`} icon={<i className='tabler-user-md' />}>
+              {t('sidebar.navigation.doctors')}
+            </MenuItem>
+          )}
         </SubMenu>
       </Menu>
       {/* <Menu
