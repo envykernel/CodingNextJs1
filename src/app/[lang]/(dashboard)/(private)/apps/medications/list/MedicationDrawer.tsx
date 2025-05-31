@@ -19,6 +19,7 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction'
 import Divider from '@mui/material/Divider'
 import Paper from '@mui/material/Paper'
 import Autocomplete from '@mui/material/Autocomplete'
+import Alert from '@mui/material/Alert'
 
 import { useSession } from 'next-auth/react'
 
@@ -55,6 +56,8 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
   const [existingCategories, setExistingCategories] = useState<string[]>([])
   const [isLoadingCategories, setIsLoadingCategories] = useState(false)
   const [customCategory, setCustomCategory] = useState('')
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {
     control,
@@ -104,23 +107,45 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
     fetchCategories()
   }, [open])
 
+  // Reset form and states when drawer opens/closes
   useEffect(() => {
-    if (medication) {
-      reset({
-        name: medication.name,
-        category: medication.category || '',
-        dosages: medication.dosages
-      })
-    } else {
-      reset({
-        name: '',
-        category: '',
-        dosages: []
-      })
+    if (open) {
+      if (medication) {
+        reset({
+          name: medication.name,
+          category: medication.category || '',
+          dosages: medication.dosages
+        })
+      } else {
+        reset({
+          name: '',
+          category: '',
+          dosages: []
+        })
+      }
+
+      setCurrentDosage('')
+      setCustomCategory('')
     }
-  }, [medication, reset])
+  }, [open, medication, reset])
+
+  const handleClose = () => {
+    // Reset all states
+    setCurrentDosage('')
+    setCustomCategory('')
+    setShowSuccess(false)
+    setIsSubmitting(false)
+    reset({
+      name: '',
+      category: '',
+      dosages: []
+    })
+    onClose()
+  }
 
   const onSubmit = async (data: MedicationFormValues) => {
+    setIsSubmitting(true)
+
     try {
       const url = medication ? `/api/medications/${medication.id}` : '/api/medications'
       const method = medication ? 'PUT' : 'POST'
@@ -140,10 +165,18 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
         throw new Error('Failed to save medication')
       }
 
-      onSave()
+      // Show success message
+      setShowSuccess(true)
+
+      // Wait for 1.5 seconds to show the success message before closing
+      setTimeout(() => {
+        onSave()
+        handleClose()
+      }, 1500)
     } catch (error) {
       console.error('Error saving medication:', error)
       alert(t('errorSavingMedication') || 'Error saving medication')
+      setIsSubmitting(false)
     }
   }
 
@@ -163,7 +196,7 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
       open={open}
       anchor='right'
       variant='temporary'
-      onClose={onClose}
+      onClose={handleClose}
       ModalProps={{ keepMounted: true }}
       sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 400 } } }}
     >
@@ -172,10 +205,26 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
           <Typography variant='h5'>
             {medication ? t('editMedication') || 'Edit Medication' : t('addMedication') || 'Add Medication'}
           </Typography>
-          <IconButton size='small' onClick={onClose}>
+          <IconButton size='small' onClick={handleClose}>
             <i className='tabler-x' />
           </IconButton>
         </Box>
+
+        {showSuccess && (
+          <Alert
+            severity='success'
+            sx={{
+              mb: 4,
+              '& .MuiAlert-message': {
+                fontSize: '0.875rem'
+              }
+            }}
+          >
+            {medication
+              ? t('medicationUpdated') || 'Medication updated successfully'
+              : t('medicationAdded') || 'Medication added successfully'}
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Controller
@@ -342,11 +391,11 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
           />
 
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-            <Button variant='outlined' onClick={onClose}>
+            <Button variant='outlined' onClick={handleClose} disabled={isSubmitting}>
               {t('cancel') || 'Cancel'}
             </Button>
-            <Button type='submit' variant='contained'>
-              {medication ? t('save') || 'Save' : t('add') || 'Add'}
+            <Button type='submit' variant='contained' disabled={isSubmitting}>
+              {isSubmitting ? t('saving') || 'Saving...' : medication ? t('save') || 'Save' : t('add') || 'Add'}
             </Button>
           </Box>
         </form>
