@@ -135,7 +135,7 @@ const HorizontalMenu = () => {
             {t('sidebar.navigation.services')}
           </MenuItem>
           <MenuItem href={`/${locale}/apps/medications/list`} icon={<i className='tabler-pill' />}>
-            {t('medications')}
+            {t('sidebar.navigation.medications')}
           </MenuItem>
         </SubMenu>
       </Menu>

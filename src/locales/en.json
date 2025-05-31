@@ -485,7 +485,8 @@
             "others": "Others",
             "itemWithBadge": "Item with Badge",
             "externalLink": "External Link",
-            "disabledMenu": "Disabled Menu"
+            "disabledMenu": "Disabled Menu",
+            "medications": "Medications"
         }
     },
     "patientView": {
