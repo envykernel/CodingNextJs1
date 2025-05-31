@@ -4,15 +4,14 @@ import type { Locale } from '@configs/i18n'
 import ClientVisitView from '@/app/[lang]/(dashboard)/(private)/apps/visits/view/[id]/ClientVisitView'
 
 interface VisitPageProps {
-  params: {
+  params: Promise<{
     id: string
     lang: Locale
-  }
+  }>
 }
 
 export default async function VisitPage({ params }: VisitPageProps) {
-  const paramsPromise = Promise.resolve(params)
-  const { id, lang } = await paramsPromise
+  const { id, lang } = await params
   const visitId = parseInt(id)
 
   const [visitData, dictionary] = await Promise.all([getVisitById(visitId), getDictionary(lang)])
