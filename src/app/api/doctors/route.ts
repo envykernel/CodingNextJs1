@@ -51,10 +51,14 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
+
+    console.log('Received doctor creation request with body:', body)
     const { name, specialty, email, phone_number, status, organisation_id } = body
 
     // Validate required fields
     if (!name || !specialty || !organisation_id) {
+      console.log('Missing required fields:', { name, specialty, organisation_id })
+
       return new NextResponse('Missing required fields', { status: 400 })
     }
 
@@ -72,6 +76,7 @@ export async function POST(request: Request) {
     })
 
     if (existingDoctor) {
+      console.log('Found existing doctor:', existingDoctor)
       let errorKey = 'doctors.error.'
 
       if (existingDoctor.name === name) errorKey += 'nameExists'
@@ -81,18 +86,38 @@ export async function POST(request: Request) {
       return new NextResponse(JSON.stringify({ errorKey }), { status: 400 })
     }
 
-    const doctor = await prisma.doctor.create({
-      data: {
-        name,
+    try {
+      console.log('Attempting to create doctor with data:', {
+        name: `Dr. ${name.trim()}`,
         specialty,
         email,
         phone_number,
         status: status || 'enabled',
         organisation_id: Number(organisation_id)
-      }
-    })
+      })
 
-    return NextResponse.json(doctor)
+      const doctor = await prisma.doctor.create({
+        data: {
+          name: `Dr. ${name.trim()}`,
+          specialty,
+          email,
+          phone_number,
+          status: status || 'enabled',
+          organisation_id: Number(organisation_id)
+        }
+      })
+
+      console.log('Successfully created doctor:', doctor)
+
+      return NextResponse.json(doctor)
+    } catch (error) {
+      console.error('Error creating doctor:', error)
+
+      // Log the full error object to see more details
+      console.error('Full error object:', JSON.stringify(error, null, 2))
+
+      return new NextResponse('Internal Server Error', { status: 500 })
+    }
   } catch (error) {
     console.error('Error creating doctor:', error)
 

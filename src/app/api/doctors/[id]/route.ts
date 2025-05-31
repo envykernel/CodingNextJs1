@@ -114,7 +114,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
         id: Number(id)
       },
       data: {
-        name,
+        name: `Dr. ${name.trim()}`,
         specialty,
         email,
         phone_number,

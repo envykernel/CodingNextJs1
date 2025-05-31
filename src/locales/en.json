@@ -1023,6 +1023,7 @@
         "doctorAdded": "Doctor added successfully",
         "doctorUpdated": "Doctor updated successfully",
         "doctorName": "Doctor Name",
+        "namePrefixHint": "Note: 'Dr.' will be automatically added to the name",
         "specialty": "Specialty",
         "email": "Email",
         "phoneNumber": "Phone Number",
@@ -1071,6 +1072,10 @@
             "delete": "Error deleting doctor",
             "fetch": "Error fetching doctors",
             "required": "This field is required"
+        },
+        "deleteConfirmation": {
+            "title": "Delete Doctor",
+            "message": "Are you sure you want to delete this doctor? This action cannot be undone."
         }
     }
 }

@@ -24,6 +24,11 @@ import MenuItem from '@mui/material/MenuItem'
 import TablePagination from '@mui/material/TablePagination'
 import Alert from '@mui/material/Alert'
 import Chip from '@mui/material/Chip'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogActions from '@mui/material/DialogActions'
 
 import { useSession } from 'next-auth/react'
 
@@ -69,6 +74,9 @@ export default function DoctorList() {
   // Pagination states
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [doctorToDelete, setDoctorToDelete] = useState<number | null>(null)
 
   const isAdmin = session?.user?.role === 'ADMIN'
   const userOrgId = Number(session?.user?.organisationId)
@@ -152,13 +160,16 @@ export default function DoctorList() {
     setDrawerOpen(true)
   }
 
-  const handleDelete = async (id: number) => {
-    if (!confirm(t('confirmation.deleteDoctor') || 'Are you sure you want to delete this doctor?')) {
-      return
-    }
+  const handleDeleteClick = (id: number) => {
+    setDoctorToDelete(id)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!doctorToDelete) return
 
     try {
-      const response = await fetch(`/api/doctors/${id}`, {
+      const response = await fetch(`/api/doctors/${doctorToDelete}`, {
         method: 'DELETE'
       })
 
@@ -170,7 +181,15 @@ export default function DoctorList() {
     } catch (error) {
       console.error('Error deleting doctor:', error)
       alert(t('errorDeletingDoctor') || 'Error deleting doctor')
+    } finally {
+      setDeleteDialogOpen(false)
+      setDoctorToDelete(null)
     }
+  }
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false)
+    setDoctorToDelete(null)
   }
 
   const clearFilters = () => {
@@ -322,6 +341,8 @@ export default function DoctorList() {
                         {isAdmin && (
                           <TableCell align='right'>
                             <Button
+                              variant='outlined'
+                              color='primary'
                               size='small'
                               onClick={() => handleEdit(doctor)}
                               sx={{ mr: 1 }}
@@ -330,9 +351,10 @@ export default function DoctorList() {
                               {t('doctors.actions.edit')}
                             </Button>
                             <Button
-                              size='small'
+                              variant='outlined'
                               color='error'
-                              onClick={() => handleDelete(doctor.id)}
+                              size='small'
+                              onClick={() => handleDeleteClick(doctor.id)}
                               startIcon={<i className='tabler-trash' />}
                             >
                               {t('doctors.actions.delete')}
@@ -366,6 +388,28 @@ export default function DoctorList() {
           onSave={fetchDoctors}
         />
       )}
+
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby='delete-dialog-title'
+        aria-describedby='delete-dialog-description'
+      >
+        <DialogTitle id='delete-dialog-title'>{t('doctors.deleteConfirmation.title')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id='delete-dialog-description'>
+            {t('doctors.deleteConfirmation.message')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color='primary'>
+            {t('common.cancel')}
+          </Button>
+          <Button onClick={handleDeleteConfirm} color='error' autoFocus>
+            {t('common.delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   )
 }

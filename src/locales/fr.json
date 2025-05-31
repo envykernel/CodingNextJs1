@@ -632,6 +632,7 @@
         "doctorAdded": "Médecin ajouté avec succès",
         "doctorUpdated": "Médecin mis à jour avec succès",
         "doctorName": "Nom du Médecin",
+        "namePrefixHint": "Note : 'Dr.' sera automatiquement ajouté au nom",
         "specialty": "Spécialité",
         "email": "Email",
         "phoneNumber": "Numéro de Téléphone",
@@ -680,6 +681,10 @@
             "delete": "Erreur lors de la suppression du médecin",
             "fetch": "Erreur lors de la récupération des médecins",
             "required": "Ce champ est requis"
+        },
+        "deleteConfirmation": {
+            "title": "Supprimer le Médecin",
+            "message": "Êtes-vous sûr de vouloir supprimer ce médecin ? Cette action ne peut pas être annulée."
         }
     }
 }

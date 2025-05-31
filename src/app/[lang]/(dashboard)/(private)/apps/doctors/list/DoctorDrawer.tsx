@@ -158,15 +158,27 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
       const url = doctor ? `/api/doctors/${doctor.id}` : '/api/doctors'
       const method = doctor ? 'PUT' : 'POST'
 
+      // Explicitly specify which fields to send
+      const formattedData = {
+        name: data.name
+          .trim()
+          .replace(/^Dr\.\s*/i, '')
+          .replace(/^dr\.\s*/i, ''),
+        specialty: data.specialty,
+        email: data.email || '',
+        phone_number: data.phone_number || '',
+        status: data.status,
+        organisation_id: session?.user?.organisationId
+      }
+
+      console.log('Sending doctor data:', formattedData)
+
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          ...data,
-          organisation_id: session?.user?.organisationId
-        })
+        body: JSON.stringify(formattedData)
       })
 
       const responseData = await response.text()
@@ -250,6 +262,11 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
         )}
 
         <form onSubmit={handleSubmit(onSubmit)}>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant='caption' color='text.secondary'>
+              {t('doctors.namePrefixHint')}
+            </Typography>
+          </Box>
           <Controller
             name='name'
             control={control}
@@ -263,6 +280,8 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
                   errors.name?.message && typeof errors.name.message === 'string' ? t(errors.name.message) : ''
                 }
                 sx={{ mb: 4 }}
+                value={field.value.replace(/^Dr\.\s*/i, '')}
+                onChange={e => field.onChange(e.target.value)}
               />
             )}
           />
