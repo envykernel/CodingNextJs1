@@ -203,7 +203,7 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
       <Box sx={{ p: 5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
           <Typography variant='h5'>
-            {medication ? t('editMedication') || 'Edit Medication' : t('addMedication') || 'Add Medication'}
+            {medication ? t('medications.editMedication') : t('medications.addMedication')}
           </Typography>
           <IconButton size='small' onClick={handleClose}>
             <i className='tabler-x' />
@@ -220,9 +220,7 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
               }
             }}
           >
-            {medication
-              ? t('medicationUpdated') || 'Medication updated successfully'
-              : t('medicationAdded') || 'Medication added successfully'}
+            {medication ? t('medications.medicationUpdated') : t('medications.medicationAdded')}
           </Alert>
         )}
 
@@ -234,7 +232,7 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
               <TextField
                 {...field}
                 fullWidth
-                label={t('medication') || 'Medication Name'}
+                label={t('medications.medicationName')}
                 error={!!errors.name}
                 helperText={errors.name?.message}
                 sx={{ mb: 4 }}
@@ -256,7 +254,6 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
                   setCustomCategory(newValue)
                 }}
                 onChange={(_, value) => {
-                  // Only update the form value if it's an existing category
                   if (typeof value === 'string' && existingCategories.includes(value)) {
                     field.onChange(value)
                   }
@@ -265,12 +262,10 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
                   if (e.key === 'Enter' && customCategory.trim()) {
                     e.preventDefault()
 
-                    // Add the custom category to the list if it doesn't exist
                     if (!existingCategories.includes(customCategory.trim())) {
                       setExistingCategories(prev => [...prev, customCategory.trim()])
                     }
 
-                    // Update the form value
                     field.onChange(customCategory.trim())
                     setCustomCategory('')
                   }
@@ -278,15 +273,15 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
                 renderInput={params => (
                   <TextField
                     {...params}
-                    label={t('category') || 'Category'}
+                    label={t('medications.category')}
                     error={!!errors.category}
                     helperText={
                       errors.category?.message ||
                       (customCategory && !existingCategories.includes(customCategory)
-                        ? t('pressEnterToAdd') || 'Press Enter to add this category'
+                        ? t('medications.pressEnterToAdd')
                         : '')
                     }
-                    placeholder={t('selectOrTypeCategory') || 'Select or type a category and press Enter'}
+                    placeholder={t('medications.selectOrTypeCategory')}
                   />
                 )}
                 renderOption={(props, option) => {
@@ -314,7 +309,7 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
                 <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
                   <TextField
                     fullWidth
-                    label={t('dosage') || 'Add Dosage'}
+                    label={t('medications.addDosage')}
                     value={currentDosage}
                     onChange={e => setCurrentDosage(e.target.value)}
                     onKeyPress={e => {
@@ -323,7 +318,7 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
                         handleAddDosage(field.value, field.onChange)
                       }
                     }}
-                    placeholder={t('enterDosage') || 'Enter dosage (e.g., 500mg, 1 tablet)'}
+                    placeholder={t('medications.enterDosage')}
                   />
                   <Button
                     variant='contained'
@@ -331,7 +326,7 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
                     disabled={!currentDosage.trim()}
                     sx={{ minWidth: '100px' }}
                   >
-                    {t('add') || 'Add'}
+                    {t('medications.add')}
                   </Button>
                 </Box>
 
@@ -377,7 +372,7 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
                       borderRadius: 1
                     }}
                   >
-                    {t('noDosagesAdded') || 'No dosages added yet'}
+                    {t('medications.noDosagesAdded')}
                   </Typography>
                 )}
 
@@ -392,10 +387,10 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
 
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
             <Button variant='outlined' onClick={handleClose} disabled={isSubmitting}>
-              {t('cancel') || 'Cancel'}
+              {t('medications.cancel')}
             </Button>
             <Button type='submit' variant='contained' disabled={isSubmitting}>
-              {isSubmitting ? t('saving') || 'Saving...' : medication ? t('save') || 'Save' : t('add') || 'Add'}
+              {isSubmitting ? t('medications.saving') : medication ? t('medications.save') : t('medications.add')}
             </Button>
           </Box>
         </form>
