@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -12,11 +12,13 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import Chip from '@mui/material/Chip'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction'
+import Divider from '@mui/material/Divider'
+import Paper from '@mui/material/Paper'
+import Autocomplete from '@mui/material/Autocomplete'
 
 import { useSession } from 'next-auth/react'
 
@@ -50,6 +52,9 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
   const { t } = useTranslation()
   const { data: session } = useSession()
   const [currentDosage, setCurrentDosage] = useState('')
+  const [existingCategories, setExistingCategories] = useState<string[]>([])
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false)
+  const [customCategory, setCustomCategory] = useState('')
 
   const {
     control,
@@ -64,6 +69,40 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
       dosages: []
     }
   })
+
+  // Fetch existing categories when drawer opens
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (!open) return
+
+      setIsLoadingCategories(true)
+
+      try {
+        const response = await fetch('/api/medications')
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories')
+        }
+
+        const data = (await response.json()) as Medication[]
+
+        // Get unique categories, filtering out null values and ensuring they are strings
+        const categories = Array.from(
+          new Set(
+            data.map(med => med.category).filter((category: string | null): category is string => category !== null)
+          )
+        )
+
+        setExistingCategories(categories)
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+      } finally {
+        setIsLoadingCategories(false)
+      }
+    }
+
+    fetchCategories()
+  }, [open])
 
   useEffect(() => {
     if (medication) {
@@ -109,14 +148,14 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
   }
 
   const handleAddDosage = (dosages: string[], setValue: (value: string[]) => void) => {
-    if (currentDosage && !dosages.includes(currentDosage)) {
-      setValue([...dosages, currentDosage])
+    if (currentDosage.trim() && !dosages.includes(currentDosage.trim())) {
+      setValue([...dosages, currentDosage.trim()])
       setCurrentDosage('')
     }
   }
 
-  const handleRemoveDosage = (dosages: string[], setValue: (value: string[]) => void, dosageToRemove: string) => {
-    setValue(dosages.filter(dosage => dosage !== dosageToRemove))
+  const handleRemoveDosage = (dosages: string[], setValue: (value: string[]) => void, indexToRemove: number) => {
+    setValue(dosages.filter((_, index) => index !== indexToRemove))
   }
 
   return (
@@ -158,20 +197,63 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
             name='category'
             control={control}
             render={({ field }) => (
-              <FormControl fullWidth error={!!errors.category} sx={{ mb: 4 }}>
-                <InputLabel>{t('category') || 'Category'}</InputLabel>
-                <Select {...field} label={t('category') || 'Category'}>
-                  <MenuItem value='antibiotic'>{t('antibiotic') || 'Antibiotic'}</MenuItem>
-                  <MenuItem value='painRelief'>{t('painRelief') || 'Pain Relief'}</MenuItem>
-                  <MenuItem value='antacid'>{t('antacid') || 'Antacid'}</MenuItem>
-                  <MenuItem value='diabetes'>{t('diabetes') || 'Diabetes'}</MenuItem>
-                </Select>
-                {errors.category && (
-                  <Typography variant='caption' color='error'>
-                    {errors.category.message}
-                  </Typography>
+              <Autocomplete
+                {...field}
+                freeSolo
+                options={existingCategories}
+                loading={isLoadingCategories}
+                inputValue={customCategory}
+                onInputChange={(_, newValue) => {
+                  setCustomCategory(newValue)
+                }}
+                onChange={(_, value) => {
+                  // Only update the form value if it's an existing category
+                  if (typeof value === 'string' && existingCategories.includes(value)) {
+                    field.onChange(value)
+                  }
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && customCategory.trim()) {
+                    e.preventDefault()
+
+                    // Add the custom category to the list if it doesn't exist
+                    if (!existingCategories.includes(customCategory.trim())) {
+                      setExistingCategories(prev => [...prev, customCategory.trim()])
+                    }
+
+                    // Update the form value
+                    field.onChange(customCategory.trim())
+                    setCustomCategory('')
+                  }
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label={t('category') || 'Category'}
+                    error={!!errors.category}
+                    helperText={
+                      errors.category?.message ||
+                      (customCategory && !existingCategories.includes(customCategory)
+                        ? t('pressEnterToAdd') || 'Press Enter to add this category'
+                        : '')
+                    }
+                    placeholder={t('selectOrTypeCategory') || 'Select or type a category and press Enter'}
+                  />
                 )}
-              </FormControl>
+                renderOption={(props, option) => {
+                  const { key, ...otherProps } = props
+
+                  return (
+                    <li key={key} {...otherProps}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <i className='tabler-tag' />
+                        {option}
+                      </Box>
+                    </li>
+                  )
+                }}
+                sx={{ mb: 4 }}
+              />
             )}
           />
 
@@ -180,28 +262,76 @@ export default function MedicationDrawer({ open, onClose, medication, onSave }: 
             control={control}
             render={({ field }) => (
               <Box sx={{ mb: 4 }}>
-                <TextField
-                  fullWidth
-                  label={t('dosage') || 'Add Dosage'}
-                  value={currentDosage}
-                  onChange={e => setCurrentDosage(e.target.value)}
-                  onKeyPress={e => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault()
-                      handleAddDosage(field.value, field.onChange)
-                    }
-                  }}
-                  sx={{ mb: 2 }}
-                />
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {field.value.map((dosage, index) => (
-                    <Chip
-                      key={index}
-                      label={dosage}
-                      onDelete={() => handleRemoveDosage(field.value, field.onChange, dosage)}
-                    />
-                  ))}
+                <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                  <TextField
+                    fullWidth
+                    label={t('dosage') || 'Add Dosage'}
+                    value={currentDosage}
+                    onChange={e => setCurrentDosage(e.target.value)}
+                    onKeyPress={e => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        handleAddDosage(field.value, field.onChange)
+                      }
+                    }}
+                    placeholder={t('enterDosage') || 'Enter dosage (e.g., 500mg, 1 tablet)'}
+                  />
+                  <Button
+                    variant='contained'
+                    onClick={() => handleAddDosage(field.value, field.onChange)}
+                    disabled={!currentDosage.trim()}
+                    sx={{ minWidth: '100px' }}
+                  >
+                    {t('add') || 'Add'}
+                  </Button>
                 </Box>
+
+                {field.value.length > 0 ? (
+                  <Paper variant='outlined' sx={{ maxHeight: 200, overflow: 'auto' }}>
+                    <List dense>
+                      {field.value.map((dosage, index) => (
+                        <React.Fragment key={index}>
+                          <ListItem>
+                            <ListItemText
+                              primary={dosage}
+                              primaryTypographyProps={{
+                                sx: {
+                                  fontSize: '0.875rem',
+                                  color: 'text.primary'
+                                }
+                              }}
+                            />
+                            <ListItemSecondaryAction>
+                              <IconButton
+                                edge='end'
+                                size='small'
+                                onClick={() => handleRemoveDosage(field.value, field.onChange, index)}
+                                sx={{ color: 'error.main' }}
+                              >
+                                <i className='tabler-trash' />
+                              </IconButton>
+                            </ListItemSecondaryAction>
+                          </ListItem>
+                          {index < field.value.length - 1 && <Divider component='li' />}
+                        </React.Fragment>
+                      ))}
+                    </List>
+                  </Paper>
+                ) : (
+                  <Typography
+                    variant='body2'
+                    sx={{
+                      textAlign: 'center',
+                      color: 'text.secondary',
+                      py: 2,
+                      bgcolor: 'action.hover',
+                      borderRadius: 1
+                    }}
+                  >
+                    {t('noDosagesAdded') || 'No dosages added yet'}
+                  </Typography>
+                )}
+
                 {errors.dosages && (
                   <Typography variant='caption' color='error' sx={{ mt: 1, display: 'block' }}>
                     {errors.dosages.message}
