@@ -43,7 +43,7 @@ interface ExamType {
 interface RadiologyOrderFormProps {
   visitId: number
   initialValues?: any
-  onVisitUpdate: (updatedVisit: any) => void
+  onVisitUpdate: (updatedVisit?: any) => void
 }
 
 const RadiologyOrderForm = ({ visitId, initialValues, onVisitUpdate }: RadiologyOrderFormProps) => {

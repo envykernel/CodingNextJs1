@@ -222,7 +222,6 @@ export default function ClientVisitView({ data: initialData }: ClientVisitViewPr
     radiology: (
       <RadiologyOrderForm
         visitId={visitData.id}
-        dictionary={dictionary}
         initialValues={visitData.radiology_orders?.[0]}
         onVisitUpdate={handleVisitUpdate}
       />
