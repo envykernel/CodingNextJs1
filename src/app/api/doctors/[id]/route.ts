@@ -5,12 +5,6 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/libs/auth'
 import { prisma } from '@/libs/prisma'
 
-interface RouteParams {
-  params: {
-    id: string
-  }
-}
-
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
@@ -55,7 +49,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 }
 
 // PUT /api/doctors/[id]
-export async function PUT(request: Request, { params }: RouteParams) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -68,7 +62,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
       return new NextResponse('Forbidden', { status: 403 })
     }
 
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
     const { name, specialty, email, phone_number, status, organisation_id } = body
 
@@ -137,7 +131,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 // DELETE /api/doctors/[id]
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -150,7 +144,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       return new NextResponse('Forbidden', { status: 403 })
     }
 
-    const { id } = params
+    const { id } = await params
 
     // Check if doctor exists and belongs to user's organization
     const existingDoctor = await prisma.doctor.findFirst({
