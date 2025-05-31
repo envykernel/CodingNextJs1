@@ -15,9 +15,6 @@ import classnames from 'classnames'
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from 'cmdk'
 import { Title, Description } from '@radix-ui/react-dialog'
 
-// Type Imports
-import type { Locale } from '@configs/i18n'
-
 // Component Imports
 import DefaultSuggestions from './DefaultSuggestions'
 import NoResult from './NoResult'
@@ -146,7 +143,7 @@ const NavSearch = () => {
 
   // Hooks
   const router = useRouter()
-  const pathName = usePathname()
+  const pathName = usePathname() ?? ''
   const { settings } = useSettings()
   const { lang: locale } = useParams() as { lang: string }
   const { isBreakpointReached } = useVerticalNav()
