@@ -489,6 +489,7 @@
         "female": "أنثى",
         "other": "آخر",
         "doctor": "الطبيب",
+        "selectDoctor": "اختر الطبيب",
         "doctorPlaceholder": "أدخل اسم الطبيب",
         "status": "الحالة",
         "selectStatus": "اختر الحالة",

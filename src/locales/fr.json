@@ -570,6 +570,7 @@
         "female": "Femme",
         "other": "Autre",
         "doctor": "Médecin",
+        "selectDoctor": "Sélectionner le médecin",
         "doctorPlaceholder": "Sélectionner le médecin",
         "status": "Statut",
         "selectStatus": "Sélectionner le statut",

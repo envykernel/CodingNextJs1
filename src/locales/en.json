@@ -323,6 +323,7 @@
         "female": "Female",
         "other": "Other",
         "doctor": "Doctor",
+        "selectDoctor": "Select Doctor",
         "doctorPlaceholder": "Select doctor",
         "status": "Status",
         "selectStatus": "Select Status",
