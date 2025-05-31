@@ -23,7 +23,7 @@ export async function GET() {
 
     return NextResponse.json(statistics)
   } catch (error) {
-    console.error('Error fetching patient statistics:', error)
+    console.error('Error in patient-statistics API:', error)
 
     return new NextResponse('Internal Server Error', { status: 500 })
   }
