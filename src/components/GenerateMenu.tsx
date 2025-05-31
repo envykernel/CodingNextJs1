@@ -30,7 +30,8 @@ import { getLocalizedUrl } from '@/utils/i18n'
 // Generate a menu from the menu data array
 export const GenerateVerticalMenu = ({ menuData }: { menuData: VerticalMenuDataType[] }) => {
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams()
+  const locale = params?.lang as Locale
 
   const renderMenuItems = (data: VerticalMenuDataType[]) => {
     // Use the map method to iterate through the array of menu data
@@ -92,7 +93,7 @@ export const GenerateVerticalMenu = ({ menuData }: { menuData: VerticalMenuDataT
       // Localize the href
       const href = rest.href?.startsWith('http')
         ? rest.href
-        : rest.href && (excludeLang ? rest.href : getLocalizedUrl(rest.href, locale as Locale))
+        : rest.href && (excludeLang ? rest.href : getLocalizedUrl(rest.href, locale))
 
       const Icon = icon ? <i className={icon} /> : null
 
@@ -131,7 +132,8 @@ export const GenerateVerticalMenu = ({ menuData }: { menuData: VerticalMenuDataT
 // Generate a menu from the menu data array
 export const GenerateHorizontalMenu = ({ menuData }: { menuData: HorizontalMenuDataType[] }) => {
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams()
+  const locale = params?.lang as Locale
 
   const renderMenuItems = (data: HorizontalMenuDataType[]) => {
     // Use the map method to iterate through the array of menu data
@@ -179,7 +181,7 @@ export const GenerateHorizontalMenu = ({ menuData }: { menuData: HorizontalMenuD
       // Localize the href
       const href = rest.href?.startsWith('http')
         ? rest.href
-        : rest.href && (excludeLang ? rest.href : getLocalizedUrl(rest.href, locale as Locale))
+        : rest.href && (excludeLang ? rest.href : getLocalizedUrl(rest.href, locale))
 
       const Icon = icon ? <i className={icon} /> : null
 
