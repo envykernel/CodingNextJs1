@@ -9,8 +9,13 @@ import { getDictionary } from '@/utils/getDictionary'
 import { TranslationProvider } from '@/contexts/translationContext'
 import type { Locale } from '@configs/i18n'
 
-// @ts-expect-error - Next.js types are not properly exported
-const AccessDeniedPage = async ({ params }: { params: { lang: Locale } }) => {
+// @ts-ignore - Next.js types are not properly exported
+export default async function AccessDeniedPage({
+  params
+}: {
+  params: { lang: Locale }
+  searchParams?: { [key: string]: string | string[] | undefined }
+}) {
   // Vars
   const mode = await getServerMode()
   const dictionary = (await getDictionary(params.lang)) as any
@@ -21,5 +26,3 @@ const AccessDeniedPage = async ({ params }: { params: { lang: Locale } }) => {
     </TranslationProvider>
   )
 }
-
-export default AccessDeniedPage
