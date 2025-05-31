@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/libs/auth'
 import { prisma } from '@/prisma/prisma'
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, context: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -13,7 +14,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    const appointmentId = parseInt(params.id)
+    const appointmentId = parseInt(context.params.id)
 
     if (isNaN(appointmentId)) {
       return new NextResponse('Invalid appointment ID', { status: 400 })
