@@ -1165,9 +1165,17 @@
     "doctors": {
         "title": "قائمة الأطباء",
         "addDoctor": "إضافة طبيب",
+        "editDoctor": "تعديل الطبيب",
+        "doctorAdded": "تمت إضافة الطبيب بنجاح",
+        "doctorUpdated": "تم تحديث الطبيب بنجاح",
+        "doctorName": "اسم الطبيب",
+        "specialty": "التخصص",
+        "email": "البريد الإلكتروني",
+        "phoneNumber": "رقم الهاتف",
+        "status": "الحالة",
         "noDoctorsFound": "لم يتم العثور على أطباء",
         "accessDenied": "تم رفض الوصول",
-        "accessDeniedMessage": "ليس لديك إذن للوصول إلى هذه الصفحة. يمكن للمسؤولين فقط إدارة الأطباء.",
+        "accessDeniedMessage": "ليس لديك إذن للوصول إلى هذه الصفحة. فقط المسؤولون يمكنهم إدارة الأطباء.",
         "filters": {
             "clearFilters": "مسح الفلاتر",
             "searchPlaceholder": "البحث عن طبيب...",
@@ -1193,8 +1201,11 @@
             "delete": "حذف"
         },
         "confirmation": {
-            "deleteDoctor": "هل أنت متأكد أنك تريد حذف هذا الطبيب؟"
+            "deleteDoctor": "هل أنت متأكد من حذف هذا الطبيب؟"
         },
-        "errorDeletingDoctor": "خطأ في حذف الطبيب"
+        "errorDeletingDoctor": "خطأ في حذف الطبيب",
+        "save": "حفظ الطبيب",
+        "cancel": "إلغاء",
+        "update": "تحديث الطبيب"
     }
 }

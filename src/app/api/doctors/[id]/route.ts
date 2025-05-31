@@ -89,6 +89,27 @@ export async function PUT(request: Request, { params }: RouteParams) {
       return new NextResponse('Doctor not found', { status: 404 })
     }
 
+    // Check for duplicate doctor with same name, email, or phone number in the organization
+    // Exclude the current doctor from the check
+    const duplicateDoctor = await prisma.doctor.findFirst({
+      where: {
+        organisation_id: Number(organisation_id),
+        id: { not: Number(id) }, // Exclude current doctor
+        OR: [{ name }, ...(email ? [{ email }] : []), ...(phone_number ? [{ phone_number }] : [])]
+      }
+    })
+
+    if (duplicateDoctor) {
+      let errorMessage = 'A doctor with '
+
+      if (duplicateDoctor.name === name) errorMessage += 'this name'
+      else if (email && duplicateDoctor.email === email) errorMessage += 'this email'
+      else if (phone_number && duplicateDoctor.phone_number === phone_number) errorMessage += 'this phone number'
+      errorMessage += ' already exists in your organization'
+
+      return new NextResponse(errorMessage, { status: 400 })
+    }
+
     const doctor = await prisma.doctor.update({
       where: {
         id: Number(id)

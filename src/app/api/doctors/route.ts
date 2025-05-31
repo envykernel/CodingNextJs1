@@ -63,6 +63,25 @@ export async function POST(request: Request) {
       return new NextResponse('Invalid organization', { status: 403 })
     }
 
+    // Check for duplicate doctor with same name, email, or phone number in the organization
+    const existingDoctor = await prisma.doctor.findFirst({
+      where: {
+        organisation_id: Number(organisation_id),
+        OR: [{ name }, ...(email ? [{ email }] : []), ...(phone_number ? [{ phone_number }] : [])]
+      }
+    })
+
+    if (existingDoctor) {
+      let errorMessage = 'A doctor with '
+
+      if (existingDoctor.name === name) errorMessage += 'this name'
+      else if (email && existingDoctor.email === email) errorMessage += 'this email'
+      else if (phone_number && existingDoctor.phone_number === phone_number) errorMessage += 'this phone number'
+      errorMessage += ' already exists in your organization'
+
+      return new NextResponse(errorMessage, { status: 400 })
+    }
+
     const doctor = await prisma.doctor.create({
       data: {
         name,

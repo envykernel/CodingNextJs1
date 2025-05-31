@@ -601,6 +601,14 @@
     "doctors": {
         "title": "Liste des Médecins",
         "addDoctor": "Ajouter un Médecin",
+        "editDoctor": "Modifier le Médecin",
+        "doctorAdded": "Médecin ajouté avec succès",
+        "doctorUpdated": "Médecin mis à jour avec succès",
+        "doctorName": "Nom du Médecin",
+        "specialty": "Spécialité",
+        "email": "Email",
+        "phoneNumber": "Numéro de Téléphone",
+        "status": "Statut",
         "noDoctorsFound": "Aucun médecin trouvé",
         "accessDenied": "Accès Refusé",
         "accessDeniedMessage": "Vous n'avez pas la permission d'accéder à cette page. Seuls les administrateurs peuvent gérer les médecins.",
@@ -631,6 +639,9 @@
         "confirmation": {
             "deleteDoctor": "Êtes-vous sûr de vouloir supprimer ce médecin ?"
         },
-        "errorDeletingDoctor": "Erreur lors de la suppression du médecin"
+        "errorDeletingDoctor": "Erreur lors de la suppression du médecin",
+        "save": "Enregistrer le Médecin",
+        "cancel": "Annuler",
+        "update": "Mettre à jour le Médecin"
     }
 }

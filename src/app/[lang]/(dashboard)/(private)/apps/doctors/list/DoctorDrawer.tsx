@@ -17,6 +17,7 @@ import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
 
 import { useSession } from 'next-auth/react'
 
@@ -299,17 +300,18 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
             )}
           />
 
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-            <Button variant='outlined' onClick={handleClose}>
-              {t('common.cancel')}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+            <Button variant='outlined' color='secondary' onClick={onClose}>
+              {t('doctors.cancel')}
             </Button>
             <Button
               type='submit'
               variant='contained'
+              color='primary'
               disabled={isSubmitting}
-              startIcon={isSubmitting ? <i className='tabler-loader-2 animate-spin' /> : null}
+              startIcon={isSubmitting ? <CircularProgress size={20} color='inherit' /> : null}
             >
-              {doctor ? t('common.update') : t('common.save')}
+              {isSubmitting ? t('common.saving') : doctor ? t('doctors.update') : t('doctors.save')}
             </Button>
           </Box>
         </form>
