@@ -182,7 +182,8 @@
             "noMeasurements": "لا توجد قياسات مسجلة",
             "noClinicalExam": "لا يوجد فحص سريري مسجل",
             "noPrescriptions": "لا توجد وصفات طبية مسجلة"
-        }
+        },
+        "medications": "الأدوية"
     },
     "patient": {
         "name": "الاسم الكامل",
@@ -525,7 +526,8 @@
             "academy": "الأكاديمية",
             "logistics": "الخدمات اللوجستية",
             "organization": "المنظمة",
-            "medical": "الطبي",
+            "medical": "طبي",
+            "medications": "الأدوية",
             "financial": "المالي",
             "administration": "الإدارة",
             "createInvoice": "إنشاء فاتورة",
@@ -643,7 +645,8 @@
                     "completed": "مكتمل",
                     "cancelled": "ملغي"
                 }
-            }
+            },
+            "medications": "الأدوية"
         }
     },
     "patientView": {
