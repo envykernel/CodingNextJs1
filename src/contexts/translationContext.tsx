@@ -2,28 +2,10 @@
 import type { ReactNode } from 'react'
 import React, { createContext, useContext } from 'react'
 
+type TranslationValue = string | { [key: string]: TranslationValue }
+
 export type Dictionary = {
-  navigation: {
-    [key: string]: string
-  }
-  form: {
-    [key: string]: string
-  }
-  patient: {
-    [key: string]: string
-  }
-  patientMeasurementsForm: {
-    [key: string]: string
-  }
-  clinicalExamForm: {
-    [key: string]: string
-  }
-  invoice: {
-    [key: string]: string
-  }
-  [key: string]: {
-    [key: string]: string | Dictionary
-  }
+  [key: string]: TranslationValue
 }
 
 type TranslationContextType = {
