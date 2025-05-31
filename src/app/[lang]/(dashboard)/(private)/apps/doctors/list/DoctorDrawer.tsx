@@ -42,11 +42,14 @@ interface DoctorDrawerProps {
 
 // Zod schema for doctor form
 const doctorSchema = z.object({
-  name: z.string().min(1, 'doctors.error.required'),
-  specialty: z.string().min(1, 'doctors.error.required'),
-  email: z.string().email('form.validation.email.invalid').optional().or(z.literal('')),
+  name: z.string().min(1, { message: 'form.validation.required' }),
+  specialty: z.string().min(1, { message: 'form.validation.required' }),
+  email: z.string().email({ message: 'form.validation.email.invalid' }).optional().or(z.literal('')),
   phone_number: z.string().optional().or(z.literal('')),
-  status: z.enum(['enabled', 'disabled'])
+  status: z.enum(['enabled', 'disabled'], {
+    required_error: 'form.validation.status.required',
+    invalid_type_error: 'form.validation.status.required'
+  })
 })
 
 type DoctorFormValues = z.infer<typeof doctorSchema>
@@ -66,13 +69,7 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
     reset,
     formState: { errors }
   } = useForm<DoctorFormValues>({
-    resolver: zodResolver(doctorSchema, {
-      errorMap: issue => {
-        const message = issue.message as string
-
-        return { message: t(message) }
-      }
-    }),
+    resolver: zodResolver(doctorSchema),
     defaultValues: {
       name: '',
       specialty: '',
@@ -262,7 +259,9 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
                 fullWidth
                 label={t('doctors.doctorName')}
                 error={!!errors.name}
-                helperText={errors.name?.message}
+                helperText={
+                  errors.name?.message && typeof errors.name.message === 'string' ? t(errors.name.message) : ''
+                }
                 sx={{ mb: 4 }}
               />
             )}
@@ -281,9 +280,9 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.specialty && (
+                {errors.specialty && errors.specialty.message && typeof errors.specialty.message === 'string' && (
                   <Typography variant='caption' color='error' sx={{ mt: 1 }}>
-                    {errors.specialty.message}
+                    {t(errors.specialty.message)}
                   </Typography>
                 )}
               </FormControl>
@@ -299,7 +298,9 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
                 fullWidth
                 label={t('doctors.email')}
                 error={!!errors.email}
-                helperText={errors.email?.message}
+                helperText={
+                  errors.email?.message && typeof errors.email.message === 'string' ? t(errors.email.message) : ''
+                }
                 sx={{ mb: 4 }}
               />
             )}
@@ -314,7 +315,11 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
                 fullWidth
                 label={t('doctors.phoneNumber')}
                 error={!!errors.phone_number}
-                helperText={errors.phone_number?.message}
+                helperText={
+                  errors.phone_number?.message && typeof errors.phone_number.message === 'string'
+                    ? t(errors.phone_number.message)
+                    : ''
+                }
                 sx={{ mb: 4 }}
               />
             )}
@@ -330,9 +335,9 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
                   <MenuItem value='enabled'>{t('doctors.status.enabled')}</MenuItem>
                   <MenuItem value='disabled'>{t('doctors.status.disabled')}</MenuItem>
                 </Select>
-                {errors.status && (
+                {errors.status && errors.status.message && typeof errors.status.message === 'string' && (
                   <Typography variant='caption' color='error' sx={{ mt: 1 }}>
-                    {errors.status.message}
+                    {t(errors.status.message)}
                   </Typography>
                 )}
               </FormControl>

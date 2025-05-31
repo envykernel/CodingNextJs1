@@ -596,7 +596,34 @@
         "emergencyContactPhonePlaceholder": "Entrez le téléphone du contact d'urgence",
         "emergencyContactEmail": "Email du contact d'urgence",
         "emergencyContactEmailPlaceholder": "Entrez l'email du contact d'urgence",
-        "required": "Ce champ est requis"
+        "required": "Ce champ est requis",
+        "validation": {
+            "required": "Ce champ est requis",
+            "name": {
+                "minLength": "Le nom doit contenir au moins 4 caractères",
+                "invalidCharacters": "Le nom ne peut contenir que des lettres, des espaces, des tirets et des apostrophes"
+            },
+            "phone": {
+                "required": "Le numéro de téléphone est requis",
+                "invalidFormat": "Veuillez entrer un numéro de téléphone marocain valide (ex. 06XX-XXXXXX)"
+            },
+            "gender": {
+                "required": "Le genre est requis"
+            },
+            "status": {
+                "required": "Le statut est requis"
+            },
+            "birthdate": {
+                "required": "La date de naissance est requise",
+                "invalid": "Veuillez entrer une date valide"
+            },
+            "email": {
+                "invalid": "Veuillez entrer une adresse email valide"
+            },
+            "url": {
+                "invalid": "Veuillez entrer une URL valide"
+            }
+        }
     },
     "doctors": {
         "title": "Liste des Médecins",

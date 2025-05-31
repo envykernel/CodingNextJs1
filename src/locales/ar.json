@@ -514,12 +514,34 @@
         "emergencyContactPhonePlaceholder": "أدخل هاتف جهة الاتصال في حالات الطوارئ",
         "emergencyContactEmail": "البريد الإلكتروني لجهة الاتصال في حالات الطوارئ",
         "emergencyContactEmailPlaceholder": "أدخل البريد الإلكتروني لجهة الاتصال في حالات الطوارئ",
-        "required": "هذا الحقل مطلوب.",
-        "enabled": "مفعل",
-        "disabled": "معطل",
-        "blocked": "محظور",
-        "pending": "قيد الانتظار",
-        "birthdate": "تاريخ الميلاد"
+        "required": "هذا الحقل مطلوب",
+        "validation": {
+            "required": "هذا الحقل مطلوب",
+            "name": {
+                "minLength": "يجب أن يحتوي الاسم على 4 أحرف على الأقل",
+                "invalidCharacters": "يمكن أن يحتوي الاسم على أحرف ومسافات وشرطات وعلامات اقتباس فقط"
+            },
+            "phone": {
+                "required": "رقم الهاتف مطلوب",
+                "invalidFormat": "يرجى إدخال رقم هاتف مغربي صالح (مثال: 06XX-XXXXXX)"
+            },
+            "gender": {
+                "required": "الجنس مطلوب"
+            },
+            "status": {
+                "required": "الحالة مطلوبة"
+            },
+            "birthdate": {
+                "required": "تاريخ الميلاد مطلوب",
+                "invalid": "يرجى إدخال تاريخ صالح"
+            },
+            "email": {
+                "invalid": "يرجى إدخال عنوان بريد إلكتروني صالح"
+            },
+            "url": {
+                "invalid": "يرجى إدخال رابط صالح"
+            }
+        }
     },
     "messages": {
         "patientCreated": "تم إنشاء المريض بنجاح!",
