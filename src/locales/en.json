@@ -181,6 +181,21 @@
             "delete": "Failed to delete medication",
             "unknown": "An unexpected error occurred",
             "fetch": "Failed to fetch medications"
+        },
+        "filters": {
+            "title": "Filters",
+            "searchPlaceholder": "Search by medication name...",
+            "categoryLabel": "Category",
+            "organizationLabel": "Organization",
+            "showAll": "Show All",
+            "showMyOrg": "Show My Organization Only",
+            "showGlobal": "Show Global Only"
+        },
+        "pagination": {
+            "itemsPerPage": "Items per page",
+            "of": "of",
+            "showing": "Showing",
+            "to": "to"
         }
     },
     "dosage": "Dosage",

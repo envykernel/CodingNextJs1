@@ -1119,6 +1119,21 @@
             "delete": "فشل في حذف الدواء",
             "unknown": "حدث خطأ غير متوقع",
             "fetch": "فشل في جلب الأدوية"
+        },
+        "filters": {
+            "title": "التصفية",
+            "searchPlaceholder": "البحث عن طريق اسم الدواء...",
+            "categoryLabel": "الفئة",
+            "organizationLabel": "المنظمة",
+            "showAll": "عرض الكل",
+            "showMyOrg": "عرض منظمتي فقط",
+            "showGlobal": "عرض العام فقط"
+        },
+        "pagination": {
+            "itemsPerPage": "العناصر في الصفحة",
+            "of": "من",
+            "showing": "عرض",
+            "to": "إلى"
         }
     },
     "organization": "المنظمة",
