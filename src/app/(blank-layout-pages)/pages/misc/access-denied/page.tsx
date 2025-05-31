@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// @ts-nocheck
 // Component Imports
 import NotAuthorized from '@views/NotAuthorized'
 
