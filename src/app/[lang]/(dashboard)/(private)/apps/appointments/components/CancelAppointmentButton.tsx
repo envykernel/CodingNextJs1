@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+
 import {
   Button,
   Dialog,
@@ -9,6 +9,7 @@ import {
   DialogTitle,
   CircularProgress
 } from '@mui/material'
+
 import { useTranslation } from '@/contexts/translationContext'
 
 interface CancelAppointmentButtonProps {
@@ -26,7 +27,6 @@ const CancelAppointmentButton: React.FC<CancelAppointmentButtonProps> = ({
   className = '',
   onAppointmentCancelled
 }) => {
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const { t } = useTranslation()
@@ -53,6 +53,7 @@ const CancelAppointmentButton: React.FC<CancelAppointmentButtonProps> = ({
         if (onAppointmentCancelled) onAppointmentCancelled()
       } else {
         const data = await res.json()
+
         console.error(data.error || 'Error cancelling appointment')
       }
     } catch (e) {

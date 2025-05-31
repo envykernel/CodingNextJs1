@@ -2,10 +2,9 @@
 
 import React from 'react'
 
-import type { patient_visit } from '@prisma/client'
-import type { PatientType } from '@/views/apps/patient/list/PatientListTable'
-
 import Grid from '@mui/material/Grid'
+
+import type { patient_visit } from '@prisma/client'
 
 import AppointmentListCards from './AppointmentListCards'
 import AppointmentListTable from './AppointmentListTable'
@@ -37,6 +36,7 @@ const AppointmentsList = async ({
   error
 }: AppointmentsListProps) => {
   const doctors = (await getAllDoctors()).map(d => ({ ...d, id: String(d.id) }))
+
   const patients = (await getAllPatients()).map(p => ({
     id: p.id,
     name: p.name,

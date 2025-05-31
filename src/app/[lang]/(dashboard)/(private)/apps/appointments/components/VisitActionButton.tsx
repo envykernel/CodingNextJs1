@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
+
 import { useRouter } from 'next/navigation'
+
 import { Button, CircularProgress } from '@mui/material'
+
 import type { patient_visit } from '@prisma/client'
+
 import { useTranslation } from '@/contexts/translationContext'
 
 interface VisitActionButtonProps {
