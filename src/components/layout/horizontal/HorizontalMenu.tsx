@@ -9,6 +9,7 @@ import { useTheme } from '@mui/material/styles'
 
 // Type Imports
 import type { VerticalMenuContextProps } from '@menu/components/vertical-menu/Menu'
+import type { getDictionary } from '@/utils/getDictionary'
 
 // Component Imports
 import HorizontalNav, { Menu, SubMenu, MenuItem } from '@menu/horizontal-menu'
@@ -53,7 +54,8 @@ const RenderVerticalExpandIcon = ({ open, transitionDuration }: RenderVerticalEx
   </StyledVerticalNavExpandIcon>
 )
 
-const HorizontalMenu = () => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const HorizontalMenu = (props: { dictionary: Awaited<ReturnType<typeof getDictionary>> }) => {
   // Hooks
   const verticalNavOptions = useVerticalNav()
   const theme = useTheme()
