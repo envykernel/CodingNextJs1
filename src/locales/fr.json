@@ -253,10 +253,10 @@
     },
     "appointments": {
         "typeOptions": {
-            "Consultation": "Consultation",
-            "Medical Check": "Examen Médical",
-            "Clinical Procedure": "Procédure Clinique",
-            "Other": "Autre"
+            "consultation": "Consultation",
+            "medical_check": "Examen Médical",
+            "clinical_procedure": "Procédure Clinique",
+            "other": "Autre"
         },
         "statusOptions": {
             "scheduled": "Planifié",

@@ -97,10 +97,10 @@
     },
     "appointments": {
         "typeOptions": {
-            "Consultation": "Consultation",
-            "Medical Check": "Medical Check",
-            "Clinical Procedure": "Clinical Procedure",
-            "Other": "Other"
+            "consultation": "Consultation",
+            "medical_check": "Medical Check",
+            "clinical_procedure": "Clinical Procedure",
+            "other": "Other"
         },
         "statusOptions": {
             "scheduled": "Scheduled",

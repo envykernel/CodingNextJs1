@@ -254,10 +254,10 @@
     },
     "appointments": {
         "typeOptions": {
-            "Consultation": "استشارة",
-            "Medical Check": "فحص طبي",
-            "Clinical Procedure": "إجراء سريري",
-            "Other": "أخرى"
+            "consultation": "استشارة",
+            "medical_check": "فحص طبي",
+            "clinical_procedure": "إجراء سريري",
+            "other": "أخرى"
         },
         "statusOptions": {
             "scheduled": "مجدول",
