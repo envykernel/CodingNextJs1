@@ -32,7 +32,7 @@ const AddPaymentDrawer = ({ open, handleClose, invoice, refreshInvoice }: Props)
   const [services, setServices] = useState<any[]>([])
   const [refreshPayments, setRefreshPayments] = useState(0)
 
-  const t = useTranslation()
+  const { t } = useTranslation()
 
   useEffect(() => {
     fetch('/api/services')
@@ -96,7 +96,7 @@ const AddPaymentDrawer = ({ open, handleClose, invoice, refreshInvoice }: Props)
       sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 400 } } }}
     >
       <div className='flex items-center justify-between plb-5 pli-6'>
-        <Typography variant='h5'>{t.invoice?.addPayment || 'Add Payment'}</Typography>
+        <Typography variant='h5'>{t('invoice.addPayment')}</Typography>
         <IconButton size='small' onClick={handleDrawerClose}>
           <i className='tabler-x text-2xl text-textPrimary' />
         </IconButton>
@@ -105,12 +105,12 @@ const AddPaymentDrawer = ({ open, handleClose, invoice, refreshInvoice }: Props)
       <div className='p-6'>
         {success && (
           <Alert severity='success' sx={{ mb: 2 }}>
-            {t.invoice?.paymentSuccess || 'Payment added successfully!'}
+            {t('invoice.paymentSuccess')}
           </Alert>
         )}
         {error && (
           <Alert severity='error' sx={{ mb: 2 }}>
-            {t.invoice?.paymentError || 'Failed to add payment.'}
+            {t('invoice.paymentError')}
           </Alert>
         )}
         <PaymentsList
