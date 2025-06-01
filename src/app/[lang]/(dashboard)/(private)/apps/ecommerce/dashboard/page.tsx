@@ -71,7 +71,7 @@ const EcommerceDashboard = async () => {
 
     return {
       ...invoice,
-      issuedDate: invoice.invoice_date || invoice.dueDate, // Use invoice_date if available, fallback to dueDate
+      issuedDate: invoice.issuedDate || invoice.dueDate, // Use issuedDate if available, fallback to dueDate
       invoiceStatus // Add the mapped status
     }
   }) as InvoiceType[]
