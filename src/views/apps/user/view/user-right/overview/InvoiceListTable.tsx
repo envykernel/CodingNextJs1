@@ -89,12 +89,9 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 
 // Vars
 const invoiceStatusObj: InvoiceStatusObj = {
-  Sent: { color: 'secondary', icon: 'tabler-send-2' },
-  Paid: { color: 'success', icon: 'tabler-check' },
-  Draft: { color: 'primary', icon: 'tabler-mail' },
-  'Partial Payment': { color: 'warning', icon: 'tabler-chart-pie-2' },
-  'Past Due': { color: 'error', icon: 'tabler-alert-circle' },
-  Downloaded: { color: 'info', icon: 'tabler-arrow-down' }
+  PENDING: { color: 'error', icon: 'tabler-alert-circle' },
+  PAID: { color: 'success', icon: 'tabler-check' },
+  PARTIAL: { color: 'warning', icon: 'tabler-chart-pie-2' }
 }
 
 // Column Definitions
@@ -126,33 +123,37 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
           >{`#${row.original.id}`}</Typography>
         )
       }),
-      columnHelper.accessor('invoiceStatus', {
+      columnHelper.accessor('payment_status', {
         header: 'Status',
-        cell: ({ row }) => (
-          <Tooltip
-            title={
-              <div>
-                <Typography variant='body2' component='span' className='text-inherit'>
-                  {row.original.invoiceStatus}
-                </Typography>
-                <br />
-                <Typography variant='body2' component='span' className='text-inherit'>
-                  Balance:
-                </Typography>{' '}
-                {row.original.balance}
-                <br />
-                <Typography variant='body2' component='span' className='text-inherit'>
-                  Due Date:
-                </Typography>{' '}
-                {row.original.dueDate}
-              </div>
-            }
-          >
-            <CustomAvatar skin='light' color={invoiceStatusObj[row.original.invoiceStatus].color} size={28}>
-              <i className={classnames('text-base', invoiceStatusObj[row.original.invoiceStatus].icon)} />
-            </CustomAvatar>
-          </Tooltip>
-        )
+        cell: ({ row }) => {
+          const status = row.original.payment_status
+
+          return (
+            <Tooltip
+              title={
+                <div>
+                  <Typography variant='body2' component='span' className='text-inherit'>
+                    {status}
+                  </Typography>
+                  <br />
+                  <Typography variant='body2' component='span' className='text-inherit'>
+                    Balance:
+                  </Typography>{' '}
+                  {row.original.balance}
+                  <br />
+                  <Typography variant='body2' component='span' className='text-inherit'>
+                    Due Date:
+                  </Typography>{' '}
+                  {row.original.dueDate}
+                </div>
+              }
+            >
+              <CustomAvatar skin='light' color={invoiceStatusObj[status].color} size={28}>
+                <i className={classnames('text-base', invoiceStatusObj[status].icon)} />
+              </CustomAvatar>
+            </Tooltip>
+          )
+        }
       }),
       columnHelper.accessor('total', {
         header: 'Total',
