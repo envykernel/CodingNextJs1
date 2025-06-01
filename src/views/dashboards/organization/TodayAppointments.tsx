@@ -456,7 +456,6 @@ const TodayAppointments = () => {
                                   <VisitActionButton
                                     appointmentId={parseInt(appointment.id)}
                                     visit={visit}
-                                    t={t}
                                     lang='fr'
                                     size='small'
                                     variant='contained'
@@ -465,7 +464,6 @@ const TodayAppointments = () => {
                                   />
                                   <CancelAppointmentButton
                                     appointmentId={parseInt(appointment.id)}
-                                    t={t}
                                     size='small'
                                     variant='outlined'
                                     className='flex-1'
