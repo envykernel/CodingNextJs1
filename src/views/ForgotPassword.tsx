@@ -61,7 +61,8 @@ const ForgotPassword = ({ mode }: { mode: SystemMode }) => {
   const lightIllustration = '/images/illustrations/auth/v2-forgot-password-light.png'
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams() as { lang: string }
+  const { lang: locale } = params
   const { settings } = useSettings()
   const theme = useTheme()
   const hidden = useMediaQuery(theme.breakpoints.down('md'))

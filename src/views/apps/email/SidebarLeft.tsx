@@ -91,7 +91,8 @@ const SidebarLeft = (props: Props) => {
   const [openCompose, setOpenCompose] = useState(false)
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams() as { lang: string }
+  const { lang: locale } = params
 
   const folderCounts = store.emails.reduce((counts: Record<string, number>, email: Email) => {
     if (!email.isRead && email.folder !== 'trash') {

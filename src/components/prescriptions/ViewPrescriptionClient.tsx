@@ -23,7 +23,7 @@ const mockPrescription = {
 
 export default function ViewPrescriptionClient({ dictionary }: { dictionary: any }) {
   const [prescription] = useState(mockPrescription)
-  const params = useParams()
+  const params = useParams() as { lang: string }
   const { lang: locale } = params
 
   const handlePrint = () => {
