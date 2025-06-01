@@ -26,7 +26,13 @@
             },
             "noMeasurements": "No measurements recorded",
             "noClinicalExam": "No clinical exam recorded",
-            "noPrescriptions": "No prescriptions recorded"
+            "noPrescriptions": "No prescriptions recorded",
+            "overview": "Overview",
+            "measurements": "Patient Measurements",
+            "clinicalExam": "Clinical Exam",
+            "prescriptions": "Prescriptions",
+            "tests": "Tests",
+            "radiology": "Radiology"
         },
         "doctors": "Doctors"
     },

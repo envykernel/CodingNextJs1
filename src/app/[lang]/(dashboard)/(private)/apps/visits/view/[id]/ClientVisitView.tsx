@@ -135,7 +135,7 @@ export default function ClientVisitView({ data: initialData }: ClientVisitViewPr
     ) : (
       <VisitOverviewTab visitData={visitData} dictionary={dictionary} />
     ),
-    measurements: (
+    patientMeasurements: (
       <PatientMeasurementsForm
         visitId={visitData.id}
         dictionary={dictionary}

@@ -181,7 +181,13 @@
             },
             "noMeasurements": "لا توجد قياسات مسجلة",
             "noClinicalExam": "لا يوجد فحص سريري مسجل",
-            "noPrescriptions": "لا توجد وصفات طبية مسجلة"
+            "noPrescriptions": "لا توجد وصفات طبية مسجلة",
+            "overview": "نظرة عامة",
+            "measurements": "قياسات المريض",
+            "clinicalExam": "الفحص السريري",
+            "prescriptions": "الوصفات الطبية",
+            "tests": "التحاليل",
+            "radiology": "الأشعة"
         },
         "medications": "الأدوية",
         "doctors": "الأطباء"

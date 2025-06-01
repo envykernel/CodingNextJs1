@@ -49,7 +49,7 @@ const VisitRight = ({
 }) => {
   const [activeTab, setActiveTab] = useState('overview')
   const [isStatusChanging, setIsStatusChanging] = useState(false)
-  const t = useTranslation()
+  const { t } = useTranslation()
 
   const handleChange = (event: React.SyntheticEvent, value: string) => {
     setActiveTab(value)
@@ -88,37 +88,37 @@ const VisitRight = ({
               <Tab
                 icon={<i className='tabler-users' />}
                 value='overview'
-                label={t.overview || 'Overview'}
+                label={t('navigation.visitDetails.overview') || 'Overview'}
                 iconPosition='start'
               />
               <Tab
-                icon={<i className='tabler-activity' />}
-                value='measurements'
-                label={t.patientMeasurements || 'Patient Measurements'}
+                icon={<i className='tabler-ruler' />}
+                value='patientMeasurements'
+                label={t('navigation.visitDetails.measurements') || 'Patient Measurements'}
                 iconPosition='start'
               />
               <Tab
-                icon={<i className='tabler-clipboard-text' />}
+                icon={<i className='tabler-stethoscope' />}
                 value='clinicalExam'
-                label={t.clinicalExam || 'Clinical Exam'}
+                label={t('navigation.visitDetails.clinicalExam') || 'Clinical Exam'}
                 iconPosition='start'
               />
               <Tab
-                icon={<i className='tabler-prescription' />}
+                icon={<i className='tabler-pill' />}
                 value='prescriptions'
-                label={t.prescriptions || 'Prescriptions'}
+                label={t('navigation.visitDetails.prescriptions') || 'Prescriptions'}
                 iconPosition='start'
               />
               <Tab
-                icon={<i className='tabler-test-pipe' />}
+                icon={<i className='tabler-microscope' />}
                 value='tests'
-                label={t.tests || 'Tests'}
+                label={t('navigation.visitDetails.tests') || 'Tests'}
                 iconPosition='start'
               />
               <Tab
-                icon={<i className='tabler-scan' />}
+                icon={<i className='tabler-x-ray' />}
                 value='radiology'
-                label={t.radiology || 'Radiology'}
+                label={t('navigation.visitDetails.radiology') || 'Radiology'}
                 iconPosition='start'
               />
             </CustomTabList>

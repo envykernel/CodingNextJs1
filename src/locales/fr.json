@@ -181,7 +181,13 @@
             },
             "noMeasurements": "Aucune mesure enregistrée",
             "noClinicalExam": "Aucun examen clinique enregistré",
-            "noPrescriptions": "Aucune ordonnance enregistrée"
+            "noPrescriptions": "Aucune ordonnance enregistrée",
+            "overview": "Aperçu",
+            "measurements": "Mesures du Patient",
+            "clinicalExam": "Examen Clinique",
+            "prescriptions": "Ordonnances",
+            "tests": "Analyses",
+            "radiology": "Radiologie"
         },
         "doctors": "Médecins"
     },
