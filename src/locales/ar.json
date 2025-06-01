@@ -917,9 +917,9 @@
     },
     "thisWeekPayments": {
         "title": "مدفوعات هذا الأسبوع",
-        "total": "المجموع",
+        "total": "المبلغ الإجمالي",
         "receipt": "الإيصال",
-        "patientName": "المريض",
+        "patientName": "اسم المريض",
         "date": "التاريخ",
         "paymentMethod": "طريقة الدفع",
         "paymentAmount": "المبلغ",
@@ -932,6 +932,17 @@
             "insurance": "تأمين",
             "cheque": "شيك",
             "other": "أخرى"
+        },
+        "loading": "جاري تحميل المدفوعات...",
+        "error": "حدث خطأ أثناء تحميل المدفوعات",
+        "empty": {
+            "title": "لا توجد مدفوعات",
+            "description": "لا توجد مدفوعات مسجلة لهذا الأسبوع"
+        },
+        "summary": {
+            "totalAmount": "إجمالي المدفوعات",
+            "totalTransactions": "إجمالي المعاملات",
+            "averageAmount": "متوسط المبلغ"
         }
     },
     "paymentStatistics": {
@@ -940,25 +951,51 @@
         "dailyTotals": {
             "title": "إجماليات المدفوعات اليومية",
             "paid": "مدفوع",
-            "balance": "الرصيد"
+            "balance": "الرصيد",
+            "total": "المجموع"
         },
         "paymentMethods": {
-            "title": "طرق الدفع"
+            "title": "طرق الدفع",
+            "distribution": "توزيع طرق الدفع",
+            "percentage": "النسبة المئوية"
         },
         "services": {
-            "title": "الخدمات"
+            "title": "الخدمات",
+            "distribution": "توزيع الخدمات",
+            "amount": "المبلغ",
+            "count": "العدد"
         },
         "noData": {
             "title": "لا توجد بيانات مدفوعات متاحة",
-            "message": "لا توجد مدفوعات مسجلة لهذا الأسبوع."
+            "message": "لا توجد مدفوعات مسجلة لهذه الفترة. سيتم عرض الإحصائيات بمجرد تسجيل المدفوعات."
         },
         "chart": {
-            "totalAmount": "المبلغ الإجمالي"
+            "totalAmount": "المبلغ الإجمالي",
+            "daily": "يومي",
+            "weekly": "أسبوعي",
+            "monthly": "شهري",
+            "yearly": "سنوي"
+        },
+        "loading": "جاري تحميل الإحصائيات...",
+        "error": "حدث خطأ أثناء تحميل الإحصائيات",
+        "period": {
+            "today": "اليوم",
+            "thisWeek": "هذا الأسبوع",
+            "thisMonth": "هذا الشهر",
+            "thisYear": "هذا العام",
+            "custom": "فترة مخصصة"
+        },
+        "summary": {
+            "totalRevenue": "إجمالي الإيرادات",
+            "averageTransaction": "متوسط المعاملة",
+            "totalTransactions": "إجمالي المعاملات",
+            "successRate": "معدل النجاح"
         }
     },
     "appointmentStatistics": {
         "todayAppointments": {
-            "title": "جدول اليوم",
+            "title": "مواعيد اليوم",
+            "description": "عدد المواعيد المجدولة لليوم",
             "subtitle": "اليوم",
             "noAppointmentsInStatus": "لا توجد مواعيد {status}",
             "appointmentsCount": "{count} موعد",
@@ -993,7 +1030,7 @@
                 },
                 "empty": {
                     "title": "لا توجد مواعيد",
-                    "description": "لا توجد مواعيد {status} لهذا اليوم"
+                    "description": "لا توجد مواعيد {status} لليوم"
                 }
             },
             "column": {
@@ -1003,15 +1040,35 @@
                 }
             }
         },
+        "thisWeekAppointments": {
+            "title": "مواعيد هذا الأسبوع",
+            "description": "عدد المواعيد المجدولة هذا الأسبوع"
+        },
+        "thisMonthAppointments": {
+            "title": "مواعيد هذا الشهر",
+            "description": "عدد المواعيد المجدولة هذا الشهر"
+        },
+        "completedAppointments": {
+            "title": "المواعيد المكتملة",
+            "description": "عدد المواعيد المكتملة"
+        },
+        "cancelledAppointments": {
+            "title": "المواعيد الملغاة",
+            "description": "عدد المواعيد الملغاة"
+        },
+        "upcomingAppointments": {
+            "title": "المواعيد القادمة",
+            "description": "عدد المواعيد القادمة"
+        },
         "dayStats": {
             "title": "توزيع المواعيد",
             "subtitle": {
                 "week": "هذا الأسبوع",
                 "year": "هذا العام",
-                "custom": "نطاق مخصص"
+                "custom": "فترة مخصصة"
             },
-            "loading": "جاري تحميل إحصائيات المواعيد...",
-            "error": "فشل في تحميل إحصائيات المواعيد",
+            "loading": "جاري تحميل الإحصائيات...",
+            "error": "فشل في تحميل الإحصائيات",
             "noAppointments": "لا توجد مواعيد لهذه الفترة",
             "days": {
                 "monday": "الاثنين",

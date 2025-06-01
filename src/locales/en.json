@@ -737,13 +737,13 @@
     },
     "thisWeekPayments": {
         "title": "This Week's Payments",
-        "total": "Total",
+        "total": "Total Amount",
         "receipt": "Receipt",
-        "patientName": "Patient",
+        "patientName": "Patient Name",
         "date": "Date",
-        "paymentMethod": "Method",
+        "paymentMethod": "Payment Method",
         "paymentAmount": "Amount",
-        "noPayments": "No payments found for this week",
+        "noPayments": "No payments this week",
         "paymentMethods": {
             "cash": "Cash",
             "card": "Card",
@@ -752,33 +752,70 @@
             "insurance": "Insurance",
             "cheque": "Cheque",
             "other": "Other"
+        },
+        "loading": "Loading payments...",
+        "error": "Error loading payments",
+        "empty": {
+            "title": "No Payments",
+            "description": "No payments recorded this week"
+        },
+        "summary": {
+            "totalAmount": "Total Payments",
+            "totalTransactions": "Total Transactions",
+            "averageAmount": "Average Amount"
         }
     },
     "paymentStatistics": {
         "title": "Payment Statistics",
-        "subtitle": "This Week's Overview",
+        "subtitle": "Overview of this week",
         "dailyTotals": {
             "title": "Daily Payment Totals",
             "paid": "Paid",
-            "balance": "Balance"
+            "balance": "Balance",
+            "total": "Total"
         },
         "paymentMethods": {
-            "title": "Payment Methods"
+            "title": "Payment Methods",
+            "distribution": "Payment Methods Distribution",
+            "percentage": "Percentage"
         },
         "services": {
-            "title": "Services"
+            "title": "Services",
+            "distribution": "Services Distribution",
+            "amount": "Amount",
+            "count": "Count"
         },
         "noData": {
             "title": "No Payment Data Available",
-            "message": "There are no payments recorded for this week."
+            "message": "No payments recorded for this period. Statistics will be displayed once payments are recorded."
         },
         "chart": {
-            "totalAmount": "Total Amount"
+            "totalAmount": "Total Amount",
+            "daily": "Daily",
+            "weekly": "Weekly",
+            "monthly": "Monthly",
+            "yearly": "Yearly"
+        },
+        "loading": "Loading statistics...",
+        "error": "Error loading statistics",
+        "period": {
+            "today": "Today",
+            "thisWeek": "This Week",
+            "thisMonth": "This Month",
+            "thisYear": "This Year",
+            "custom": "Custom Period"
+        },
+        "summary": {
+            "totalRevenue": "Total Revenue",
+            "averageTransaction": "Average Transaction",
+            "totalTransactions": "Total Transactions",
+            "successRate": "Success Rate"
         }
     },
     "appointmentStatistics": {
         "todayAppointments": {
-            "title": "Today's Schedule",
+            "title": "Today's Appointments",
+            "description": "Number of appointments scheduled for today",
             "subtitle": "Today",
             "noAppointmentsInStatus": "No {status} appointments",
             "appointmentsCount": "{count} appointments",
@@ -799,7 +836,7 @@
                 "other": "Other"
             },
             "duration": "{minutes} min",
-            "timezone": "Time Zone",
+            "timezone": "Timezone",
             "card": {
                 "patient": "Patient",
                 "doctor": "Doctor",
@@ -823,15 +860,35 @@
                 }
             }
         },
+        "thisWeekAppointments": {
+            "title": "This Week's Appointments",
+            "description": "Number of appointments scheduled this week"
+        },
+        "thisMonthAppointments": {
+            "title": "This Month's Appointments",
+            "description": "Number of appointments scheduled this month"
+        },
+        "completedAppointments": {
+            "title": "Completed Appointments",
+            "description": "Number of completed appointments"
+        },
+        "cancelledAppointments": {
+            "title": "Cancelled Appointments",
+            "description": "Number of cancelled appointments"
+        },
+        "upcomingAppointments": {
+            "title": "Upcoming Appointments",
+            "description": "Number of upcoming appointments"
+        },
         "dayStats": {
             "title": "Appointment Distribution",
             "subtitle": {
                 "week": "This Week",
                 "year": "This Year",
-                "custom": "Custom Range"
+                "custom": "Custom Period"
             },
-            "loading": "Loading appointment statistics...",
-            "error": "Failed to load appointment statistics",
+            "loading": "Loading statistics...",
+            "error": "Failed to load statistics",
             "noAppointments": "No appointments for this period",
             "days": {
                 "monday": "Mon",

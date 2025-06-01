@@ -692,5 +692,185 @@
             "title": "Supprimer le Médecin",
             "message": "Êtes-vous sûr de vouloir supprimer ce médecin ? Cette action ne peut pas être annulée."
         }
+    },
+    "appointmentStatistics": {
+        "todayAppointments": {
+            "title": "Rendez-vous aujourd'hui",
+            "description": "Nombre de rendez-vous prévus pour aujourd'hui",
+            "subtitle": "Aujourd'hui",
+            "noAppointmentsInStatus": "Aucun rendez-vous {status}",
+            "appointmentsCount": "{count} rendez-vous",
+            "refresh": "Actualiser",
+            "loading": "Chargement des rendez-vous...",
+            "status": {
+                "scheduled": "Planifié",
+                "in_progress": "En cours",
+                "completed": "Terminé",
+                "cancelled": "Annulé"
+            },
+            "appointmentTypes": {
+                "consultation": "Consultation",
+                "follow-up": "Suivi",
+                "emergency": "Urgence",
+                "routine-check": "Contrôle de routine",
+                "specialist": "Spécialiste",
+                "other": "Autre"
+            },
+            "duration": "{minutes} min",
+            "timezone": "Fuseau horaire",
+            "card": {
+                "patient": "Patient",
+                "doctor": "Médecin",
+                "time": "Heure",
+                "duration": "Durée",
+                "type": "Type",
+                "actions": {
+                    "goToVisit": "Aller à la visite",
+                    "createVisit": "Créer une visite",
+                    "cancel": "Annuler le rendez-vous"
+                },
+                "empty": {
+                    "title": "Aucun rendez-vous",
+                    "description": "Aucun rendez-vous {status} pour aujourd'hui"
+                }
+            },
+            "column": {
+                "appointmentCount": {
+                    "singular": "{count} rendez-vous",
+                    "plural": "{count} rendez-vous"
+                }
+            }
+        },
+        "thisWeekAppointments": {
+            "title": "Rendez-vous cette semaine",
+            "description": "Nombre de rendez-vous prévus cette semaine"
+        },
+        "thisMonthAppointments": {
+            "title": "Rendez-vous ce mois",
+            "description": "Nombre de rendez-vous prévus ce mois"
+        },
+        "completedAppointments": {
+            "title": "Rendez-vous terminés",
+            "description": "Nombre de rendez-vous terminés"
+        },
+        "cancelledAppointments": {
+            "title": "Rendez-vous annulés",
+            "description": "Nombre de rendez-vous annulés"
+        },
+        "upcomingAppointments": {
+            "title": "Prochains rendez-vous",
+            "description": "Nombre de rendez-vous à venir"
+        },
+        "dayStats": {
+            "title": "Distribution des rendez-vous",
+            "subtitle": {
+                "week": "Cette semaine",
+                "year": "Cette année",
+                "custom": "Période personnalisée"
+            },
+            "loading": "Chargement des statistiques...",
+            "error": "Échec du chargement des statistiques",
+            "noAppointments": "Aucun rendez-vous pour cette période",
+            "days": {
+                "monday": "Lun",
+                "tuesday": "Mar",
+                "wednesday": "Mer",
+                "thursday": "Jeu",
+                "friday": "Ven",
+                "saturday": "Sam",
+                "sunday": "Dim"
+            },
+            "months": {
+                "january": "Jan",
+                "february": "Fév",
+                "march": "Mar",
+                "april": "Avr",
+                "may": "Mai",
+                "june": "Juin",
+                "july": "Juil",
+                "august": "Août",
+                "september": "Sep",
+                "october": "Oct",
+                "november": "Nov",
+                "december": "Déc"
+            }
+        }
+    },
+    "thisWeekPayments": {
+        "title": "Paiements de cette semaine",
+        "total": "Montant total",
+        "receipt": "Reçu",
+        "patientName": "Nom du patient",
+        "date": "Date",
+        "paymentMethod": "Mode de paiement",
+        "paymentAmount": "Montant",
+        "noPayments": "Aucun paiement cette semaine",
+        "paymentMethods": {
+            "cash": "Espèces",
+            "card": "Carte",
+            "bank_transfer": "Virement bancaire",
+            "mobile_money": "Portefeuille mobile",
+            "insurance": "Assurance",
+            "cheque": "Chèque",
+            "other": "Autre"
+        },
+        "loading": "Chargement des paiements...",
+        "error": "Erreur lors du chargement des paiements",
+        "empty": {
+            "title": "Aucun paiement",
+            "description": "Aucun paiement enregistré cette semaine"
+        },
+        "summary": {
+            "totalAmount": "Total des paiements",
+            "totalTransactions": "Total des transactions",
+            "averageAmount": "Montant moyen"
+        }
+    },
+    "paymentStatistics": {
+        "title": "Statistiques des paiements",
+        "subtitle": "Aperçu de cette semaine",
+        "dailyTotals": {
+            "title": "Totaux quotidiens des paiements",
+            "paid": "Payé",
+            "balance": "Solde",
+            "total": "Total"
+        },
+        "paymentMethods": {
+            "title": "Modes de paiement",
+            "distribution": "Distribution des modes de paiement",
+            "percentage": "Pourcentage"
+        },
+        "services": {
+            "title": "Services",
+            "distribution": "Distribution des services",
+            "amount": "Montant",
+            "count": "Nombre"
+        },
+        "noData": {
+            "title": "Aucune donnée de paiement disponible",
+            "message": "Aucun paiement enregistré pour cette période. Les statistiques s'afficheront dès que des paiements seront enregistrés."
+        },
+        "chart": {
+            "totalAmount": "Montant total",
+            "daily": "Quotidien",
+            "weekly": "Hebdomadaire",
+            "monthly": "Mensuel",
+            "yearly": "Annuel"
+        },
+        "loading": "Chargement des statistiques...",
+        "error": "Erreur lors du chargement des statistiques",
+        "period": {
+            "today": "Aujourd'hui",
+            "thisWeek": "Cette semaine",
+            "thisMonth": "Ce mois",
+            "thisYear": "Cette année",
+            "custom": "Période personnalisée"
+        },
+        "summary": {
+            "totalRevenue": "Revenu total",
+            "averageTransaction": "Transaction moyenne",
+            "totalTransactions": "Total des transactions",
+            "successRate": "Taux de réussite"
+        }
     }
 }
