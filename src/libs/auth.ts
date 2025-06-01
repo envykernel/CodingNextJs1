@@ -159,44 +159,15 @@ export const authOptions: NextAuthOptions = {
 
       return session
     },
-    async signIn({ user, account, profile }) {
-      console.log('SignIn attempt:', {
-        email: user.email,
-        account: account?.provider,
-        profile: profile?.email
-      })
-
+    async signIn({ user }) {
       // Check UserInternal approval and organisation
       const internalUser = await prisma.userInternal.findUnique({
         where: { email: safeString(user.email) }
       })
 
-      console.log('Internal user check:', {
-        exists: !!internalUser,
-        isApproved: internalUser?.isApproved,
-        hasOrg: !!internalUser?.organisationId,
-        email: internalUser?.email
-      })
-
-      if (!internalUser) {
-        console.log('User not found in database')
-
+      if (!internalUser || !internalUser.isApproved || !internalUser.organisationId) {
         return false
       }
-
-      if (!internalUser.isApproved) {
-        console.log('User not approved')
-
-        return false
-      }
-
-      if (!internalUser.organisationId) {
-        console.log('User has no organization')
-
-        return false
-      }
-
-      console.log('Sign in successful')
 
       return true
     }
