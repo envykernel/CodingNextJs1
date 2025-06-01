@@ -60,9 +60,6 @@ const NotAuthorized = ({
   const miscBackground = useImageVariant(mode, lightImg, darkImg)
   const t = useTranslation()
 
-  // Debug: log the accessDenied translation object
-  console.log('t.accessDenied:', t.accessDenied)
-
   return (
     <div className='flex items-center justify-center min-bs-[100dvh] relative p-6 overflow-x-hidden'>
       <div className='flex items-center flex-col text-center'>
@@ -72,9 +69,9 @@ const NotAuthorized = ({
               <Typography className='font-medium text-8xl' color='text.primary'>
                 403
               </Typography>
-              <Typography variant='h4'>{heading || t.accessDenied?.heading || 'You do not have access'}</Typography>
+              <Typography variant='h4'>{heading || t.t('accessDenied.heading') || 'You do not have access'}</Typography>
               <Typography>
-                {message || t.accessDenied?.message || 'You do not have permission to access this page.'}
+                {message || t.t('accessDenied.message') || 'You do not have permission to access this page.'}
               </Typography>
             </>
           ) : (
@@ -82,15 +79,15 @@ const NotAuthorized = ({
               <Typography className='font-medium text-8xl' color='text.primary'>
                 401
               </Typography>
-              <Typography variant='h4'>{heading || t.accessDenied?.heading || 'You do not have access'}</Typography>
+              <Typography variant='h4'>{heading || t.t('accessDenied.heading') || 'You do not have access'}</Typography>
               <Typography>
-                {message || t.accessDenied?.message || 'You do not have permission to access this page.'}
+                {message || t.t('accessDenied.message') || 'You do not have permission to access this page.'}
               </Typography>
             </>
           )}
         </div>
         <Button href={getLocalizedUrl('/', locale as Locale)} component={Link} variant='contained'>
-          {buttonText || t.accessDenied?.button || 'Back to Home'}
+          {buttonText || t.t('accessDenied.button') || 'Back to Home'}
         </Button>
         {!simple && (
           <img
