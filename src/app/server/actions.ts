@@ -73,7 +73,7 @@ export const getInvoiceData = async () => {
         record_status: inv.record_status,
         archived_at: inv.archived_at ? inv.archived_at.toISOString() : undefined,
         deleted_at: inv.deleted_at ? inv.deleted_at.toISOString() : undefined,
-        invoice_date: inv.invoice_date ? inv.invoice_date.toISOString().split('T')[0] : '',
+        issuedDate: inv.invoice_date ? inv.invoice_date.toISOString().split('T')[0] : '',
         invoice_number: inv.invoice_number
       }
     })
