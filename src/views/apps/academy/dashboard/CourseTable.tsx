@@ -115,7 +115,8 @@ const CourseTable = ({ courseData }: { courseData?: Course[] }) => {
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams()
+  const locale = (params?.lang as string) || 'fr'
 
   const columns = useMemo<ColumnDef<CourseWithProgress, any>[]>(
     () => [

@@ -148,7 +148,8 @@ const RolesTable = ({ tableData }: { tableData?: UsersType[] }) => {
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams()
+  const locale = (params?.lang as string) || 'fr'
 
   const columns = useMemo<ColumnDef<UsersTypeWithAction, any>[]>(
     () => [

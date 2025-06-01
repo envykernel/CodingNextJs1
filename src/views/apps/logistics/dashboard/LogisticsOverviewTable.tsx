@@ -93,7 +93,8 @@ const LogisticsOverviewTable = ({ vehicleData }: { vehicleData?: Vehicle[] }) =>
   const [data, setData] = useState(...[vehicleData])
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams()
+  const locale = (params?.lang as string) || 'fr'
 
   const columns = useMemo<ColumnDef<Vehicle, any>[]>(
     () => [

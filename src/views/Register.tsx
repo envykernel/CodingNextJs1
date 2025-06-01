@@ -73,7 +73,8 @@ const Register = ({ mode }: { mode: SystemMode }) => {
   const borderedLightIllustration = '/images/illustrations/auth/v2-register-light-border.png'
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams()
+  const locale = (params?.lang as string) || 'fr'
   const { settings } = useSettings()
   const theme = useTheme()
   const hidden = useMediaQuery(theme.breakpoints.down('md'))

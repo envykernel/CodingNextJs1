@@ -60,7 +60,8 @@ const Courses = (props: Props) => {
   const [activePage, setActivePage] = useState(0)
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams()
+  const locale = (params?.lang as string) || 'fr'
 
   useEffect(() => {
     let newData =
