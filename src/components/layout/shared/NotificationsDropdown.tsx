@@ -19,6 +19,7 @@ import Avatar from '@mui/material/Avatar'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Button from '@mui/material/Button'
 import type { Theme } from '@mui/material/styles'
+import CircularProgress from '@mui/material/CircularProgress'
 
 // Third Party Components
 import classnames from 'classnames'
@@ -41,33 +42,17 @@ import { useSettings } from '@core/hooks/useSettings'
 import { getInitials } from '@/utils/getInitials'
 
 export type NotificationsType = {
+  id: number
   title: string
   subtitle: string
   time: string
   read: boolean
-} & (
-  | {
-      avatarImage?: string
-      avatarIcon?: never
-      avatarText?: never
-      avatarColor?: never
-      avatarSkin?: never
-    }
-  | {
-      avatarIcon?: string
-      avatarColor?: ThemeColor
-      avatarSkin?: CustomAvatarProps['skin']
-      avatarImage?: never
-      avatarText?: never
-    }
-  | {
-      avatarText?: string
-      avatarColor?: ThemeColor
-      avatarSkin?: CustomAvatarProps['skin']
-      avatarImage?: never
-      avatarIcon?: never
-    }
-)
+  avatarIcon?: string
+  avatarColor?: ThemeColor
+  avatarSkin?: CustomAvatarProps['skin']
+  avatarImage?: string
+  avatarText?: string
+}
 
 const ScrollWrapper = ({ children, hidden }: { children: ReactNode; hidden: boolean }) => {
   if (hidden) {
@@ -103,14 +88,12 @@ const getAvatar = (
   }
 }
 
-const NotificationDropdown = ({ notifications }: { notifications: NotificationsType[] }) => {
+const NotificationDropdown = () => {
   // States
   const [open, setOpen] = useState(false)
-  const [notificationsState, setNotificationsState] = useState(notifications)
-
-  // Vars
-  const notificationCount = notificationsState.filter(notification => !notification.read).length
-  const readAll = notificationsState.every(notification => notification.read)
+  const [notifications, setNotifications] = useState<NotificationsType[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   // Refs
   const anchorRef = useRef<HTMLButtonElement>(null)
@@ -121,6 +104,45 @@ const NotificationDropdown = ({ notifications }: { notifications: NotificationsT
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
   const { settings } = useSettings()
 
+  // Fetch notifications
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch('/api/notifications')
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch notifications')
+      }
+
+      const data = await response.json()
+
+      setNotifications(data)
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch notifications')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Fetch notifications on mount and periodically
+  useEffect(() => {
+    // Initial fetch
+    fetchNotifications()
+
+    // Set up periodic refresh every 30 seconds
+    const intervalId = setInterval(fetchNotifications, 30000)
+
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId)
+  }, [])
+
+  // Also fetch when dropdown is opened to ensure fresh data
+  useEffect(() => {
+    if (open) {
+      fetchNotifications()
+    }
+  }, [open])
+
   const handleClose = () => {
     setOpen(false)
   }
@@ -129,38 +151,55 @@ const NotificationDropdown = ({ notifications }: { notifications: NotificationsT
     setOpen(prevOpen => !prevOpen)
   }
 
-  // Read notification when notification is clicked
-  const handleReadNotification = (event: MouseEvent<HTMLElement>, value: boolean, index: number) => {
+  // Mark notification as read
+  const handleReadNotification = async (event: MouseEvent<HTMLElement>, notificationId: number) => {
     event.stopPropagation()
-    const newNotifications = [...notificationsState]
 
-    newNotifications[index].read = value
-    setNotificationsState(newNotifications)
+    try {
+      const response = await fetch('/api/notifications/read', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ notificationId })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to mark notification as read')
+      }
+
+      // Remove the notification from the list instead of marking it as read
+      setNotifications(prev => prev.filter(notification => notification.id !== notificationId))
+    } catch (err) {
+      console.error('Error marking notification as read:', err)
+    }
   }
 
-  // Remove notification when close icon is clicked
-  const handleRemoveNotification = (event: MouseEvent<HTMLElement>, index: number) => {
-    event.stopPropagation()
-    const newNotifications = [...notificationsState]
+  // Mark all notifications as read
+  const readAllNotifications = async () => {
+    try {
+      const response = await fetch('/api/notifications/read', {
+        method: 'PUT'
+      })
 
-    newNotifications.splice(index, 1)
-    setNotificationsState(newNotifications)
+      if (!response.ok) {
+        throw new Error('Failed to mark all notifications as read')
+      }
+
+      // Clear all notifications from the list
+      setNotifications([])
+    } catch (err) {
+      console.error('Error marking all notifications as read:', err)
+    }
   }
 
-  // Read or unread all notifications when read all icon is clicked
-  const readAllNotifications = () => {
-    const newNotifications = [...notificationsState]
-
-    newNotifications.forEach(notification => {
-      notification.read = !readAll
-    })
-    setNotificationsState(newNotifications)
-  }
+  // Calculate notification count
+  const notificationCount = notifications.filter(notification => !notification.read).length
+  const readAll = notifications.every(notification => notification.read)
 
   useEffect(() => {
     const adjustPopoverHeight = () => {
       if (ref.current) {
-        // Calculate available height, subtracting any fixed UI elements' height as necessary
         const availableHeight = window.innerHeight - 100
 
         ref.current.style.height = `${Math.min(availableHeight, 550)}px`
@@ -168,6 +207,8 @@ const NotificationDropdown = ({ notifications }: { notifications: NotificationsT
     }
 
     window.addEventListener('resize', adjustPopoverHeight)
+
+    return () => window.removeEventListener('resize', adjustPopoverHeight)
   }, [])
 
   return (
@@ -234,67 +275,81 @@ const NotificationDropdown = ({ notifications }: { notifications: NotificationsT
                         }
                       }}
                     >
-                      {notificationsState.length > 0 ? (
-                        <IconButton size='small' onClick={() => readAllNotifications()} className='text-textPrimary'>
+                      {notifications.length > 0 ? (
+                        <IconButton size='small' onClick={readAllNotifications} className='text-textPrimary'>
                           <i className={readAll ? 'tabler-mail' : 'tabler-mail-opened'} />
                         </IconButton>
                       ) : (
-                        <></>
+                        <span>
+                          <IconButton size='small' className='text-textPrimary' disabled>
+                            <i className='tabler-mail' />
+                          </IconButton>
+                        </span>
                       )}
                     </Tooltip>
                   </div>
                   <Divider />
                   <ScrollWrapper hidden={hidden}>
-                    {notificationsState.map((notification, index) => {
-                      const {
-                        title,
-                        subtitle,
-                        time,
-                        read,
-                        avatarImage,
-                        avatarIcon,
-                        avatarText,
-                        avatarColor,
-                        avatarSkin
-                      } = notification
+                    {loading ? (
+                      <div className='flex items-center justify-center p-4'>
+                        <CircularProgress size={24} />
+                      </div>
+                    ) : error ? (
+                      <div className='flex items-center justify-center p-4'>
+                        <Typography color='error'>{error}</Typography>
+                      </div>
+                    ) : notifications.length === 0 ? (
+                      <div className='flex items-center justify-center p-4'>
+                        <Typography color='text.secondary'>No new notifications</Typography>
+                      </div>
+                    ) : (
+                      notifications.map((notification, index) => {
+                        const {
+                          id,
+                          title,
+                          subtitle,
+                          time,
+                          read,
+                          avatarImage,
+                          avatarIcon,
+                          avatarText,
+                          avatarColor,
+                          avatarSkin
+                        } = notification
 
-                      return (
-                        <div
-                          key={index}
-                          className={classnames('flex plb-3 pli-4 gap-3 cursor-pointer hover:bg-actionHover group', {
-                            'border-be': index !== notificationsState.length - 1
-                          })}
-                          onClick={e => handleReadNotification(e, true, index)}
-                        >
-                          {getAvatar({ avatarImage, avatarIcon, title, avatarText, avatarColor, avatarSkin })}
-                          <div className='flex flex-col flex-auto'>
-                            <Typography variant='body2' className='font-medium mbe-1' color='text.primary'>
-                              {title}
-                            </Typography>
-                            <Typography variant='caption' color='text.secondary' className='mbe-2'>
-                              {subtitle}
-                            </Typography>
-                            <Typography variant='caption' color='text.disabled'>
-                              {time}
-                            </Typography>
+                        return (
+                          <div
+                            key={id}
+                            className={classnames('flex plb-3 pli-4 gap-3 cursor-pointer hover:bg-actionHover group', {
+                              'border-be': index !== notifications.length - 1
+                            })}
+                            onClick={(e: MouseEvent<HTMLElement>) => handleReadNotification(e, id)}
+                          >
+                            {getAvatar({ avatarImage, avatarIcon, title, avatarText, avatarColor, avatarSkin })}
+                            <div className='flex flex-col flex-auto'>
+                              <Typography variant='body2' className='font-medium mbe-1' color='text.primary'>
+                                {title}
+                              </Typography>
+                              <Typography variant='caption' color='text.secondary' className='mbe-2'>
+                                {subtitle}
+                              </Typography>
+                              <Typography variant='caption' color='text.disabled'>
+                                {time}
+                              </Typography>
+                            </div>
+                            <div className='flex flex-col items-end gap-2'>
+                              <Badge
+                                variant='dot'
+                                color={read ? 'secondary' : 'primary'}
+                                className={classnames('mbs-1 mie-1', {
+                                  'invisible group-hover:visible': read
+                                })}
+                              />
+                            </div>
                           </div>
-                          <div className='flex flex-col items-end gap-2'>
-                            <Badge
-                              variant='dot'
-                              color={read ? 'secondary' : 'primary'}
-                              onClick={e => handleReadNotification(e, !read, index)}
-                              className={classnames('mbs-1 mie-1', {
-                                'invisible group-hover:visible': read
-                              })}
-                            />
-                            <i
-                              className='tabler-x text-xl invisible group-hover:visible'
-                              onClick={e => handleRemoveNotification(e, index)}
-                            />
-                          </div>
-                        </div>
-                      )
-                    })}
+                        )
+                      })
+                    )}
                   </ScrollWrapper>
                   <Divider />
                   <div className='p-4'>

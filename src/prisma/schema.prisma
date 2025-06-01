@@ -207,6 +207,7 @@ model organisation {
   prescriptions           prescription[]
   services                service[]
   radiology_orders        radiology_order[]
+  notifications           Notification[]
 }
 
 model patient_appointment {
@@ -243,6 +244,7 @@ model UserInternal {
   organisation   organisation? @relation(fields: [organisationId], references: [id])
   doctor         doctor?       // Simple relation without fields
   shortcuts      UserShortcut[]
+  notifications  NotificationRead[]
 }
 
 model patient_visit {
@@ -619,4 +621,37 @@ model FAQ {
 
   @@index([category])
   @@index([isActive])
+}
+
+model Notification {
+  id              Int           @id @default(autoincrement())
+  title           String        @db.VarChar(255)
+  message         String        @db.Text
+  type            String        @db.VarChar(50)  // e.g., "appointment", "payment", "system", etc.
+  priority        String        @db.VarChar(20)  // "high", "medium", "low"
+  isGlobal        Boolean       @default(false)  // true for notifications visible to all organizations
+  organisationId  Int?          // null for global notifications
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  organisation    organisation? @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  readStatus      NotificationRead[]
+
+  @@index([organisationId])
+  @@index([type])
+  @@index([isGlobal])
+  @@index([created_at])
+}
+
+model NotificationRead {
+  id              Int           @id @default(autoincrement())
+  notificationId  Int
+  userId          Int
+  readAt          DateTime      @default(now())
+  notification    Notification  @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user            UserInternal  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+  @@index([notificationId])
+  @@index([userId])
+  @@index([readAt])
 }
