@@ -118,12 +118,9 @@ const DebouncedInput = ({
 
 // Vars
 const invoiceStatusObj: InvoiceStatusObj = {
-  Sent: { color: 'secondary', icon: 'tabler-send-2' },
-  Paid: { color: 'success', icon: 'tabler-check' },
-  Draft: { color: 'primary', icon: 'tabler-mail' },
-  'Partial Payment': { color: 'warning', icon: 'tabler-chart-pie-2' },
-  'Past Due': { color: 'error', icon: 'tabler-alert-circle' },
-  Downloaded: { color: 'info', icon: 'tabler-arrow-down' }
+  PENDING: { color: 'error', icon: 'tabler-alert-circle' },
+  PAID: { color: 'success', icon: 'tabler-check' },
+  PARTIAL: { color: 'warning', icon: 'tabler-chart-pie-2' }
 }
 
 // Column Definitions
@@ -131,14 +128,14 @@ const columnHelper = createColumnHelper<InvoiceTypeWithAction>()
 
 const InvoiceListTable = ({ invoiceData }: { invoiceData: InvoiceType[] }) => {
   // States
-  const [status, setStatus] = useState<InvoiceType['invoiceStatus']>('')
+  const [status, setStatus] = useState<InvoiceType['payment_status'] | ''>('')
   const [rowSelection, setRowSelection] = useState({})
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [data, setData] = useState(...[invoiceData])
+  const [data, setData] = useState<InvoiceType[]>(invoiceData)
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams<{ lang: string }>()
+  const locale = params?.lang as Locale
 
   const columns = useMemo<ColumnDef<InvoiceTypeWithAction, any>[]>(
     () => [
@@ -169,19 +166,19 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData: InvoiceType[] }) => {
         cell: ({ row }) => (
           <Typography
             component={Link}
-            href={getLocalizedUrl(`apps/invoice/preview/${row.original.id}`, locale as Locale)}
+            href={getLocalizedUrl(`apps/invoice/preview/${row.original.id}`, locale)}
             color='primary.main'
           >{`#${row.original.id}`}</Typography>
         )
       }),
-      columnHelper.accessor('invoiceStatus', {
+      columnHelper.accessor('payment_status', {
         header: 'Status',
         cell: ({ row }) => (
           <Tooltip
             title={
               <div>
                 <Typography variant='body2' component='span' className='text-inherit'>
-                  {row.original.invoiceStatus}
+                  {row.original.payment_status}
                 </Typography>
                 <br />
                 <Typography variant='body2' component='span' className='text-inherit'>
@@ -196,8 +193,8 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData: InvoiceType[] }) => {
               </div>
             }
           >
-            <CustomAvatar skin='light' color={invoiceStatusObj[row.original.invoiceStatus].color} size={28}>
-              <i className={classnames('bs-4 is-4', invoiceStatusObj[row.original.invoiceStatus].icon)} />
+            <CustomAvatar skin='light' color={invoiceStatusObj[row.original.payment_status].color} size={28}>
+              <i className={classnames('bs-4 is-4', invoiceStatusObj[row.original.payment_status].icon)} />
             </CustomAvatar>
           </Tooltip>
         )
@@ -218,10 +215,7 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData: InvoiceType[] }) => {
               <i className='tabler-trash text-textSecondary' />
             </IconButton>
             <IconButton>
-              <Link
-                href={getLocalizedUrl(`apps/invoice/preview/${row.original.id}`, locale as Locale)}
-                className='flex'
-              >
+              <Link href={getLocalizedUrl(`apps/invoice/preview/${row.original.id}`, locale)} className='flex'>
                 <i className='tabler-eye text-textSecondary' />
               </Link>
             </IconButton>
@@ -237,7 +231,7 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData: InvoiceType[] }) => {
                 {
                   text: 'Edit',
                   icon: 'tabler-pencil',
-                  href: getLocalizedUrl(`apps/invoice/edit/${row.original.id}`, locale as Locale),
+                  href: getLocalizedUrl(`apps/invoice/edit/${row.original.id}`, locale),
                   linkProps: {
                     className: 'flex items-center is-full plb-2 pli-4 gap-2 text-textSecondary'
                   }
@@ -254,8 +248,7 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData: InvoiceType[] }) => {
         enableSorting: false
       })
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [locale]
   )
 
   const table = useReactTable({
@@ -289,13 +282,13 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData: InvoiceType[] }) => {
 
   useEffect(() => {
     const filteredData = invoiceData?.filter(invoice => {
-      if (status && invoice.invoiceStatus.toLowerCase().replace(/\s+/g, '-') !== status) return false
+      if (status && invoice.payment_status !== status) return false
 
       return true
     })
 
-    setData(filteredData)
-  }, [status, invoiceData, setData])
+    setData(filteredData || [])
+  }, [status, invoiceData])
 
   return (
     <Card>
@@ -335,19 +328,16 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData: InvoiceType[] }) => {
             select
             id='select-status'
             value={status}
-            onChange={e => setStatus(e.target.value)}
+            onChange={e => setStatus(e.target.value as InvoiceType['payment_status'] | '')}
             className='max-sm:is-full sm:is-[160px]'
             slotProps={{
               select: { displayEmpty: true }
             }}
           >
             <MenuItem value=''>Invoice Status</MenuItem>
-            <MenuItem value='downloaded'>Downloaded</MenuItem>
-            <MenuItem value='draft'>Draft</MenuItem>
-            <MenuItem value='paid'>Paid</MenuItem>
-            <MenuItem value='partial-payment'>Partial Payment</MenuItem>
-            <MenuItem value='past-due'>Past Due</MenuItem>
-            <MenuItem value='sent'>Sent</MenuItem>
+            <MenuItem value='PENDING'>Pending</MenuItem>
+            <MenuItem value='PAID'>Paid</MenuItem>
+            <MenuItem value='PARTIAL'>Partial Payment</MenuItem>
           </CustomTextField>
         </div>
       </CardContent>
