@@ -63,7 +63,14 @@ const LanguageDropdown = () => {
   const pathName = usePathname()
   const { settings } = useSettings()
   const params = useParams<{ lang: string }>()
-  const lang = (params?.lang as Locale) || 'fr'
+
+  if (!params?.lang) {
+    console.error('Language parameter is missing')
+
+    return null
+  }
+
+  const lang = params.lang as Locale
 
   const handleClose = () => {
     setOpen(false)

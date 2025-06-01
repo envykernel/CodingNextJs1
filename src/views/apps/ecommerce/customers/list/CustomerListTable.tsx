@@ -142,7 +142,8 @@ const CustomerListTable = ({ customerData }: { customerData?: Customer[] }) => {
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams<{ lang: string }>()
+  const locale = (params?.lang as Locale) || 'fr'
 
   const columns = useMemo<ColumnDef<ECommerceOrderTypeWithAction, any>[]>(
     () => [

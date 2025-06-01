@@ -8,12 +8,18 @@ import type { Locale } from '@configs/i18n'
 import { TranslationProvider } from '@/contexts/translationContext'
 import { getUserOrganisation } from '@/utils/getUserOrganisation'
 
+interface SearchParams {
+  page?: string | string[]
+  pageSize?: string | string[]
+  name?: string | string[]
+}
+
 const UsersManagementPage = async ({
   params,
   searchParams
 }: {
   params: Promise<{ lang: Locale }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<SearchParams>
 }) => {
   const { lang } = await params
   const resolvedSearchParams = await searchParams

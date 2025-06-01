@@ -6,19 +6,27 @@ import { useParams } from 'next/navigation'
 
 import { getDictionary } from '@/utils/getDictionary'
 import type { Locale } from '@configs/i18n'
-
-const DEFAULT_LOCALE: Locale = 'fr'
+import type { Dictionary } from '@/contexts/translationContext'
 
 const useDictionary = () => {
-  const params = useParams()
-  const [dictionary, setDictionary] = useState<any>(null)
+  const params = useParams<{ lang: string }>()
+  const [dictionary, setDictionary] = useState<Dictionary | null>(null)
 
   useEffect(() => {
     const loadDictionary = async () => {
-      const lang = (params?.lang as Locale) || DEFAULT_LOCALE
-      const dict = await getDictionary(lang)
+      if (!params?.lang) {
+        console.error('Language parameter is missing')
 
-      setDictionary(dict)
+        return
+      }
+
+      try {
+        const dict = await getDictionary(params.lang as Locale)
+
+        setDictionary(dict)
+      } catch (error) {
+        console.error('Error loading dictionary:', error)
+      }
     }
 
     loadDictionary()
