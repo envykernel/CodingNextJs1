@@ -200,7 +200,7 @@ const Login = () => {
               letterSpacing: '-0.5px'
             }}
           >
-            Healthcare Management Platform
+            Plateforme de Gestion Médicale
           </Typography>
 
           <Typography
@@ -214,29 +214,29 @@ const Login = () => {
               whiteSpace: 'nowrap'
             }}
           >
-            A simple and efficient solution for managing your medical practice
+            Une solution simple et efficace pour gérer votre cabinet médical
           </Typography>
 
           <ServiceList>
             <ServiceItem>
               <i className='tabler-users' />
-              <ServiceLabel>Patient Management</ServiceLabel>
+              <ServiceLabel>Gestion des Patients</ServiceLabel>
             </ServiceItem>
             <ServiceItem>
               <i className='tabler-calendar-check' />
-              <ServiceLabel>Appointments</ServiceLabel>
+              <ServiceLabel>Rendez-vous</ServiceLabel>
             </ServiceItem>
             <ServiceItem>
               <i className='tabler-file-invoice' />
-              <ServiceLabel>Invoices</ServiceLabel>
+              <ServiceLabel>Factures</ServiceLabel>
             </ServiceItem>
             <ServiceItem>
               <i className='tabler-credit-card' />
-              <ServiceLabel>Payments</ServiceLabel>
+              <ServiceLabel>Paiements</ServiceLabel>
             </ServiceItem>
             <ServiceItem>
               <i className='tabler-dashboard' />
-              <ServiceLabel>Analytics Dashboard</ServiceLabel>
+              <ServiceLabel>Tableau de Bord Analytique</ServiceLabel>
             </ServiceItem>
           </ServiceList>
         </Box>
@@ -259,7 +259,7 @@ const Login = () => {
                 letterSpacing: '-0.5px'
               }}
             >
-              Welcome Back
+              Bienvenue
             </Typography>
             <Typography
               variant='body1'
@@ -269,14 +269,14 @@ const Login = () => {
                 fontSize: '1.1rem'
               }}
             >
-              Access your medical center dashboard securely
+              Accédez à votre tableau de bord médical en toute sécurité
             </Typography>
             <GoogleButton
               fullWidth
               startIcon={<img src='/images/logos/google.png' alt='Google' width={22} />}
               onClick={() => signIn('google')}
             >
-              Sign in with Google
+              Se connecter avec Google
             </GoogleButton>
             <Box
               sx={{
@@ -300,13 +300,7 @@ const Login = () => {
                   gap: 0.5
                 }}
               >
-                <Box component='span' sx={{ color: 'primary.main', fontWeight: 500 }}>
-                  HIPAA Compliant
-                </Box>
-                <span>•</span>
-                <span>Secure Access</span>
-                <span>•</span>
-                <span>24/7 Support</span>
+                <span>Ne partagez jamais vos identifiants</span>
               </Typography>
             </Box>
           </Box>

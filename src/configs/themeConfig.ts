@@ -54,9 +54,9 @@ export type Config = {
 }
 
 const themeConfig: Config = {
-  templateName: 'MedSky',
+  templateName: 'Oryxus',
   homePageUrl: '/dashboards/organization',
-  settingsCookieName: 'vuexy-mui-next-demo-1',
+  settingsCookieName: 'oryxus-generation',
   mode: 'system', // 'system', 'light', 'dark'
   skin: 'default', // 'default', 'bordered'
   semiDark: false, // true, false
