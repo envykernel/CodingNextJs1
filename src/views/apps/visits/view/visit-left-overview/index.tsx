@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material'
+import { Grid as MuiGrid } from '@mui/material'
 
 import VisitDetails from './VisitDetails'
 
@@ -29,11 +29,11 @@ interface VisitLeftOverviewProps {
 }
 
 const VisitLeftOverview = ({ visitData }: VisitLeftOverviewProps) => (
-  <Grid container spacing={6}>
-    <Grid size={{ xs: 12 }}>
+  <MuiGrid container spacing={6}>
+    <MuiGrid item xs={12}>
       <VisitDetails visitData={visitData} />
-    </Grid>
-  </Grid>
+    </MuiGrid>
+  </MuiGrid>
 )
 
 export default VisitLeftOverview
