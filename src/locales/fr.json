@@ -920,5 +920,50 @@
         "pricing": "Tarification",
         "faq": "FAQ",
         "logout": "Déconnexion"
+    },
+    "services": {
+        "title": "Gestion des Services",
+        "addNew": "Ajouter un Nouveau Service",
+        "name": "Nom du Service",
+        "description": "Description",
+        "price": "Prix",
+        "amount": "Montant",
+        "duration": "Durée",
+        "minutes": "minutes",
+        "statusLabel": "Statut",
+        "status": "Statut",
+        "allStatus": "Tous les Statuts",
+        "sortBy": "Trier par",
+        "sortByName": "Trier par Nom",
+        "sortByAmount": "Trier par Montant",
+        "isActive": "Statut Actif",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "status": {
+            "active": "Actif",
+            "inactive": "Inactif",
+            "enabled": "Activé",
+            "disabled": "Désactivé",
+            "archived": "Archivé",
+            "deleted": "Supprimé",
+            "pending": "En attente",
+            "blocked": "Bloqué"
+        },
+        "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce service ?",
+        "error": {
+            "unauthorized": "Vous devez être connecté pour effectuer cette action",
+            "noOrganization": "Vous devez appartenir à une organisation pour créer des services",
+            "nameRequired": "Le nom du service est requis",
+            "nameExists": "Un service avec ce nom existe déjà",
+            "invalidAmount": "Le montant du service doit être supérieur à zéro",
+            "create": "Échec de la création du service",
+            "update": "Échec de la mise à jour du service",
+            "delete": "Échec de la suppression du service",
+            "unknown": "Une erreur inattendue s'est produite",
+            "fetch": "Échec de la récupération des services"
+        },
+        "searchPlaceholder": "Rechercher des services...",
+        "noResults": "Aucun service ne correspond à votre recherche",
+        "noServices": "Aucun service disponible"
     }
 }
