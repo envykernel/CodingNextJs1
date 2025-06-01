@@ -40,7 +40,7 @@ const mockPrescriptions = [
 
 export default function PrescriptionsListClient({ dictionary }: { dictionary: any }) {
   const [prescriptions] = useState(mockPrescriptions)
-  const params = useParams()
+  const params = useParams() as { lang: string }
   const { lang: locale } = params
 
   return (
