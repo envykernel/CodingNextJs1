@@ -14,8 +14,8 @@ import CustomAvatar from '@core/components/mui/Avatar'
 import { useTranslation } from '@/contexts/translationContext'
 
 const VisitDetails = ({ visitData }: { visitData: any }) => {
-  const t = useTranslation()
   const router = useRouter()
+  const { t } = useTranslation()
   const patient = visitData.patient || {}
   const [invoice, setInvoice] = useState<any>(null)
   const [loadingInvoice, setLoadingInvoice] = useState(true)
@@ -57,7 +57,7 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
           <div className='flex items-center gap-2 mb-1'>
             <i className='tabler-user text-lg text-primary' />
             <Typography variant='subtitle1' className='font-semibold'>
-              {t.form?.personalInfo || 'Personal Info'}
+              {t('form.sectionPersonalInfo')}
             </Typography>
           </div>
           <div className='flex items-center gap-2'>
@@ -70,7 +70,7 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
           <div className='flex items-center gap-2'>
             <i className='tabler-cake text-lg' />
             <Typography className='font-medium' color='text.secondary'>
-              {t.patient?.birthdate}
+              {t('patient.birthdate')}
             </Typography>
             <Typography color='text.primary'>
               {patient.birthdate && !isNaN(new Date(patient.birthdate).getTime())
@@ -81,21 +81,21 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
           <div className='flex items-center gap-2'>
             <i className='tabler-gender-bigender text-lg' />
             <Typography className='font-medium' color='text.secondary'>
-              {t.patient?.gender}
+              {t('patient.gender.label')}
             </Typography>
             <Typography color='text.primary'>{patient.gender || '-'}</Typography>
           </div>
           <div className='flex items-center gap-2'>
             <i className='tabler-stethoscope text-lg' />
             <Typography className='font-medium' color='text.secondary'>
-              {t.form?.doctor || 'Doctor'}
+              {t('form.doctor')}
             </Typography>
             <Typography color='text.primary'>{patient.doctor || '-'}</Typography>
           </div>
           <div className='flex items-center gap-2'>
             <i className='tabler-flag text-lg' />
             <Typography className='font-medium' color='text.secondary'>
-              {t.form?.status || 'Status'}
+              {t('form.status')}
             </Typography>
             <Typography color='text.primary'>{patient.status || '-'}</Typography>
           </div>
@@ -107,34 +107,34 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
           <div className='flex items-center gap-2 mb-1'>
             <i className='tabler-phone text-lg text-primary' />
             <Typography variant='subtitle1' className='font-semibold'>
-              {t.form?.contactInfo || 'Contact Info'}
+              {t('form.sectionContactInfo')}
             </Typography>
           </div>
           <div className='flex items-center gap-2'>
             <i className='tabler-phone text-lg' />
             <Typography className='font-medium' color='text.secondary'>
-              {t.patient?.phone}
+              {t('patient.phone')}
             </Typography>
             <Typography color='text.primary'>{patient.phone_number || '-'}</Typography>
           </div>
           <div className='flex items-center gap-2'>
             <i className='tabler-mail text-lg' />
             <Typography className='font-medium' color='text.secondary'>
-              {t.patient?.email}
+              {t('patient.email')}
             </Typography>
             <Typography color='text.primary'>{patient.email || '-'}</Typography>
           </div>
           <div className='flex items-center gap-2'>
             <i className='tabler-home text-lg' />
             <Typography className='font-medium' color='text.secondary'>
-              {t.patient?.address}
+              {t('patient.address')}
             </Typography>
             <Typography color='text.primary'>{patient.address || '-'}</Typography>
           </div>
           <div className='flex items-center gap-2'>
             <i className='tabler-building text-lg' />
             <Typography className='font-medium' color='text.secondary'>
-              {t.patient?.city}
+              {t('patient.city')}
             </Typography>
             <Typography color='text.primary'>{patient.city || '-'}</Typography>
           </div>
@@ -146,27 +146,27 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
           <div className='flex items-center gap-2 mb-1'>
             <i className='tabler-alert-triangle text-lg text-primary' />
             <Typography variant='subtitle1' className='font-semibold'>
-              {t.form?.emergencyContact || 'Emergency Contact'}
+              {t('form.sectionEmergencyContact')}
             </Typography>
           </div>
           <div className='flex items-center gap-2'>
             <i className='tabler-user text-lg' />
             <Typography className='font-medium' color='text.secondary'>
-              {t.form?.emergencyContactName || 'Name'}
+              {t('form.emergencyContactName')}
             </Typography>
             <Typography color='text.primary'>{patient.emergency_contact_name || '-'}</Typography>
           </div>
           <div className='flex items-center gap-2'>
             <i className='tabler-phone text-lg' />
             <Typography className='font-medium' color='text.secondary'>
-              {t.form?.emergencyContactPhone || 'Phone'}
+              {t('form.emergencyContactPhone')}
             </Typography>
             <Typography color='text.primary'>{patient.emergency_contact_phone || '-'}</Typography>
           </div>
           <div className='flex items-center gap-2'>
             <i className='tabler-mail text-lg' />
             <Typography className='font-medium' color='text.secondary'>
-              {t.form?.emergencyContactEmail || 'Email'}
+              {t('form.emergencyContactEmail')}
             </Typography>
             <Typography color='text.primary'>{patient.emergency_contact_email || '-'}</Typography>
           </div>
@@ -180,7 +180,7 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
           onClick={() => router.push(`/fr/apps/patient/view/${patient.id}`)}
           disabled={!patient.id}
         >
-          {t.patient?.label || 'Patient Profile'}
+          {t('patient.profile')}
         </Button>
       </div>
       {/* Invoice Button */}
@@ -192,16 +192,16 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
             onClick={() => router.push(`/fr/apps/invoice/edit/${invoice.id}`)}
             disabled={!invoice.id}
           >
-            {t.invoice?.editInvoice || 'Edit Invoice'}
+            {t('invoice.updateInvoice')}
           </Button>
         ) : (
           <Button
             variant='outlined'
             color='secondary'
-            onClick={() => router.push(`/fr/apps/invoice/add?visitId=${visitData.id}`)}
+            onClick={() => router.push(`/fr/apps/invoice/create?visitId=${visitData?.id}`)}
             disabled={!visitData?.id}
           >
-            {t.invoice?.createInvoice || 'Create Invoice'}
+            {t('invoice.createInvoice')}
           </Button>
         )}
       </div>
