@@ -386,6 +386,28 @@
     "otherOrganization": "Autre Organisation",
     "global": "Global",
     "actions": "Actions",
+    "organisation": {
+        "title": "Paramètres de l'Organisation",
+        "basicInfo": "Informations de Base",
+        "name": "Nom de l'Organisation",
+        "address": "Adresse",
+        "phoneNumber": "Numéro de Téléphone",
+        "email": "Email",
+        "status": "Statut",
+        "enabled": "Activé",
+        "disabled": "Désactivé",
+        "workingHours": "Heures de Travail",
+        "workingDays": "Jours de Travail",
+        "workHours": "Heures de Travail",
+        "breakHours": "Heures de Pause",
+        "startTime": "Heure de Début",
+        "endTime": "Heure de Fin",
+        "saveChanges": "Enregistrer les Modifications",
+        "cancel": "Annuler",
+        "saving": "Enregistrement...",
+        "success": "Organisation mise à jour avec succès",
+        "error": "Erreur lors de la mise à jour de l'organisation"
+    },
     "sidebar": {
         "navigation": {
             "dashboards": "Tableaux de bord",

@@ -1263,6 +1263,722 @@
     "otherOrganization": "منظمة أخرى",
     "global": "عام",
     "actions": "الإجراءات",
+    "organisation": {
+        "title": "إعدادات المنظمة",
+        "basicInfo": "المعلومات الأساسية",
+        "name": "اسم المنظمة",
+        "address": "العنوان",
+        "phoneNumber": "رقم الهاتف",
+        "email": "البريد الإلكتروني",
+        "status": "الحالة",
+        "enabled": "مفعل",
+        "disabled": "معطل",
+        "workingHours": "ساعات العمل",
+        "workingDays": "أيام العمل",
+        "workHours": "ساعات العمل",
+        "breakHours": "ساعات الراحة",
+        "startTime": "وقت البدء",
+        "endTime": "وقت الانتهاء",
+        "saveChanges": "حفظ التغييرات",
+        "cancel": "إلغاء",
+        "saving": "جاري الحفظ...",
+        "success": "تم تحديث المنظمة بنجاح",
+        "error": "خطأ في تحديث المنظمة"
+    },
+    "sidebar": {
+        "navigation": {
+            "dashboards": "لوحات المعلومات",
+            "crm": "إدارة علاقات العملاء",
+            "analytics": "التحليلات",
+            "eCommerce": "التجارة الإلكترونية",
+            "academy": "الأكاديمية",
+            "logistics": "الخدمات اللوجستية",
+            "organization": "المنظمة",
+            "medical": "طبي",
+            "medications": "الأدوية",
+            "financial": "المالي",
+            "administration": "الإدارة",
+            "createInvoice": "إنشاء فاتورة",
+            "invoices": "الفواتير",
+            "services": "الخدمات",
+            "userManagement": "إدارة المستخدمين",
+            "organisation": "المنظمة",
+            "frontPages": "الصفحات الأمامية",
+            "landing": "الصفحة الرئيسية",
+            "pricing": "التسعير",
+            "payment": "الدفع",
+            "checkout": "إتمام الطلب",
+            "helpCenter": "مركز المساعدة",
+            "appsPages": "التطبيقات والصفحات",
+            "products": "المنتجات",
+            "list": "القائمة",
+            "add": "إضافة",
+            "category": "الفئة",
+            "orders": "الطلبات",
+            "details": "التفاصيل",
+            "customers": "العملاء",
+            "manageReviews": "إدارة المراجعات",
+            "referrals": "الإحالات",
+            "settings": "الإعدادات",
+            "myCourses": "دوراتي",
+            "courseDetails": "تفاصيل الدورة",
+            "fleet": "الأسطول",
+            "email": "البريد الإلكتروني",
+            "chat": "المحادثة",
+            "calendar": "التقويم",
+            "kanban": "كانبان",
+            "invoice": "الفاتورة",
+            "preview": "معاينة",
+            "edit": "تعديل",
+            "user": "المستخدم",
+            "view": "عرض",
+            "rolesPermissions": "الأدوار والصلاحيات",
+            "roles": "الأدوار",
+            "permissions": "الصلاحيات",
+            "patients": "المرضى",
+            "appointments": "المواعيد",
+            "appointmentsList": "قائمة المواعيد",
+            "prescriptions": "الوصفات الطبية",
+            "allPrescriptions": "جميع الوصفات الطبية",
+            "createPrescription": "إنشاء وصفة طبية",
+            "pages": "الصفحات",
+            "userProfile": "الملف الشخصي",
+            "accountSettings": "إعدادات الحساب",
+            "faq": "الأسئلة الشائعة",
+            "miscellaneous": "متنوعات",
+            "comingSoon": "قريباً",
+            "underMaintenance": "قيد الصيانة",
+            "pageNotFound404": "404 - الصفحة غير موجودة",
+            "notAuthorized401": "401 - غير مصرح",
+            "authPages": "صفحات المصادقة",
+            "login": "تسجيل الدخول",
+            "loginV1": "تسجيل الدخول v1",
+            "loginV2": "تسجيل الدخول v2",
+            "register": "التسجيل",
+            "registerV1": "التسجيل v1",
+            "registerV2": "التسجيل v2",
+            "registerMultiSteps": "التسجيل متعدد الخطوات",
+            "verifyEmail": "التحقق من البريد الإلكتروني",
+            "verifyEmailV1": "التحقق من البريد الإلكتروني v1",
+            "verifyEmailV2": "التحقق من البريد الإلكتروني v2",
+            "forgotPassword": "نسيت كلمة المرور",
+            "forgotPasswordV1": "نسيت كلمة المرور v1",
+            "forgotPasswordV2": "نسيت كلمة المرور v2",
+            "resetPassword": "إعادة تعيين كلمة المرور",
+            "resetPasswordV1": "إعادة تعيين كلمة المرور v1",
+            "resetPasswordV2": "إعادة تعيين كلمة المرور v2",
+            "twoSteps": "خطوتان",
+            "twoStepsV1": "خطوتان v1",
+            "twoStepsV2": "خطوتان v2",
+            "wizardExamples": "أمثلة المعالج",
+            "propertyListing": "قائمة العقارات",
+            "createDeal": "إنشاء صفقة",
+            "dialogExamples": "أمثلة الحوار",
+            "widgetExamples": "أمثلة الأدوات",
+            "basic": "أساسي",
+            "advanced": "متقدم",
+            "statistics": "الإحصائيات",
+            "actions": "الإجراءات",
+            "formsAndTables": "النماذج والجداول",
+            "formLayouts": "تخطيطات النماذج",
+            "formValidation": "التحقق من صحة النموذج",
+            "formWizard": "معالج النموذج",
+            "reactTable": "جدول React",
+            "formELements": "عناصر النموذج",
+            "muiTables": "جداول MUI",
+            "chartsMisc": "الرسوم البيانية والمتنوعات",
+            "charts": "الرسوم البيانية",
+            "recharts": "Recharts",
+            "apex": "Apex",
+            "foundation": "الأساسيات",
+            "components": "المكونات",
+            "menuExamples": "أمثلة القائمة",
+            "raiseSupport": "طلب الدعم",
+            "documentation": "التوثيق",
+            "others": "أخرى",
+            "itemWithBadge": "عنصر مع شارة",
+            "externalLink": "رابط خارجي",
+            "disabledMenu": "قائمة معطلة",
+            "visitDetails": {
+                "title": "تفاصيل الزيارة",
+                "date": "التاريخ",
+                "startTime": "وقت البدء",
+                "endTime": "وقت الانتهاء",
+                "estimatedEndTime": "وقت الانتهاء المتوقع",
+                "estimatedEndTimeTooltip": "هذا هو وقت الانتهاء المتوقع بناءً على مدة الموعد",
+                "status": "الحالة",
+                "statusOptions": {
+                    "scheduled": "مجدول",
+                    "inProgress": "قيد التنفيذ",
+                    "completed": "مكتمل",
+                    "cancelled": "ملغي"
+                }
+            },
+            "medications": "الأدوية",
+            "doctors": "الأطباء"
+        }
+    },
+    "patientView": {
+        "tabs": {
+            "overview": "نظرة عامة",
+            "medicalData": "البيانات الطبية",
+            "appointments": "المواعيد",
+            "security": "الأمان",
+            "billingPlans": "الفوترة والاشتراكات",
+            "notifications": "الإشعارات",
+            "connections": "الاتصالات"
+        },
+        "medicalData": {
+            "title": "البيانات الطبية",
+            "allergies": "الحساسية",
+            "conditions": "الحالات الطبية",
+            "medications": "الأدوية الحالية",
+            "familyHistory": "التاريخ العائلي",
+            "immunizations": "التطعيمات",
+            "labResults": "نتائج المختبر",
+            "noData": "لا توجد بيانات طبية متاحة"
+        },
+        "appointments": {
+            "title": "المواعيد",
+            "upcoming": "المواعيد القادمة",
+            "past": "المواعيد السابقة",
+            "noAppointments": "لا توجد مواعيد مجدولة",
+            "bookNew": "حجز موعد جديد",
+            "cancel": "إلغاء الموعد",
+            "reschedule": "إعادة الجدولة",
+            "viewDetails": "عرض التفاصيل"
+        },
+        "security": {
+            "title": "إعدادات الأمان",
+            "password": "كلمة المرور",
+            "twoFactor": "المصادقة الثنائية",
+            "sessions": "الجلسات النشطة",
+            "privacy": "إعدادات الخصوصية"
+        },
+        "billingPlans": {
+            "title": "الفوترة والاشتراكات",
+            "currentPlan": "الخطة الحالية",
+            "billingHistory": "سجل الفواتير",
+            "paymentMethods": "طرق الدفع",
+            "invoices": "الفواتير"
+        },
+        "notifications": {
+            "title": "الإشعارات",
+            "email": "إشعارات البريد الإلكتروني",
+            "sms": "إشعارات الرسائل القصيرة",
+            "app": "إشعارات التطبيق",
+            "preferences": "تفضيلات الإشعارات"
+        },
+        "connections": {
+            "title": "الاتصالات",
+            "doctors": "الأطباء المتصلون",
+            "family": "أفراد العائلة",
+            "emergency": "جهات الاتصال في حالات الطوارئ",
+            "insurance": "شركات التأمين"
+        }
+    },
+    "userDrawer": {
+        "title": {
+            "add": "إضافة مستخدم جديد",
+            "edit": "تعديل المستخدم"
+        },
+        "form": {
+            "name": "الاسم الكامل",
+            "namePlaceholder": "أدخل الاسم الكامل",
+            "email": "البريد الإلكتروني",
+            "emailPlaceholder": "أدخل البريد الإلكتروني",
+            "role": "الدور",
+            "rolePlaceholder": "اختر الدور",
+            "isApproved": "معتمد",
+            "isApprovedDescription": "السماح للمستخدم بالوصول إلى النظام",
+            "cancel": "إلغاء",
+            "create": "إنشاء مستخدم",
+            "save": "حفظ التغييرات"
+        },
+        "validation": {
+            "nameRequired": "الاسم مطلوب",
+            "emailRequired": "البريد الإلكتروني مطلوب",
+            "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح",
+            "roleRequired": "الدور مطلوب"
+        },
+        "success": {
+            "create": "تم إنشاء المستخدم بنجاح",
+            "update": "تم تحديث المستخدم بنجاح",
+            "userDeleted": "تم حذف المستخدم بنجاح"
+        },
+        "error": {
+            "create": "فشل في إنشاء المستخدم",
+            "update": "فشل في تحديث المستخدم",
+            "emailExists": "عنوان البريد الإلكتروني هذا مستخدم بالفعل من قبل مستخدم آخر",
+            "emailCheck": "خطأ في التحقق من عنوان البريد الإلكتروني",
+            "nameExists": "هذا الاسم مستخدم بالفعل من قبل مستخدم آخر في هذه المنظمة",
+            "nameCheck": "خطأ في التحقق من اسم المستخدم"
+        },
+        "confirmation": {
+            "adminRole": {
+                "title": "تأكيد دور المسؤول",
+                "message": "أنت على وشك تعيين دور المسؤول لهذا المستخدم. يتمتع المسؤولون بصلاحيات متقدمة ويمكنهم إدارة جميع جوانب النظام. هل أنت متأكد من أنك تريد المتابعة؟",
+                "confirm": "تأكيد",
+                "cancel": "إلغاء"
+            },
+            "deleteUser": {
+                "title": "حذف المستخدم",
+                "message": "هل أنت متأكد أنك تريد حذف {name}؟ لا يمكن التراجع عن هذا الإجراء.",
+                "cancel": "إلغاء",
+                "confirm": "حذف",
+                "warning": "تحذير",
+                "description": "سيتم حذف المستخدم وجميع البيانات المرتبطة به نهائياً. لا يمكن التراجع عن هذا الإجراء."
+            }
+        }
+    },
+    "usersManagement": {
+        "title": "إدارة المستخدمين",
+        "searchPlaceholder": "البحث عن المستخدمين...",
+        "addUser": "إضافة مستخدم",
+        "editUser": "تعديل المستخدم",
+        "columns": {
+            "name": "الاسم",
+            "email": "البريد الإلكتروني",
+            "role": "الدور",
+            "organisation": "المنظمة",
+            "status": "الحالة",
+            "actions": "الإجراءات",
+            "approvalStatus": "حالة الموافقة",
+            "createdAt": "تاريخ الإنشاء",
+            "updatedAt": "آخر تعديل"
+        },
+        "roles": {
+            "ADMIN": "مدير النظام",
+            "DOCTOR": "طبيب",
+            "NURSE": "ممرض(ة)",
+            "RECEPTIONIST": "موظف استقبال",
+            "ACCOUNTANT": "محاسب",
+            "LAB_TECHNICIAN": "فني مختبر",
+            "PHARMACIST": "صيدلي(ة)",
+            "USER": "مستخدم"
+        },
+        "status": {
+            "active": "نشط",
+            "inactive": "غير نشط",
+            "approved": "تمت الموافقة",
+            "pending": "في انتظار الموافقة"
+        },
+        "actions": {
+            "edit": "تعديل المستخدم",
+            "view": "عرض المستخدم",
+            "delete": "حذف المستخدم"
+        },
+        "noUsers": "لم يتم العثور على مستخدمين"
+    },
+    "faq": {
+        "title": "الأسئلة الشائعة",
+        "searchPlaceholder": "البحث في الأسئلة الشائعة...",
+        "noResults": "لم يتم العثور على نتائج",
+        "contact": {
+            "title": "هل لا تزال لديك أسئلة؟",
+            "message": "إذا لم تتمكن من العثور على سؤال في الأسئلة الشائعة، يمكنك دائماً التواصل معنا. سنرد عليك قريباً!",
+            "phoneMessage": "نحن دائماً سعداء بالمساعدة!",
+            "emailMessage": "أفضل طريقة للحصول على إجابة أسرع!"
+        },
+        "categories": {
+            "patients": {
+                "title": "المرضى",
+                "subtitle": "الحصول على مساعدة في إدارة المرضى",
+                "icon": "tabler-users"
+            },
+            "appointments": {
+                "title": "المواعيد",
+                "subtitle": "الحصول على مساعدة في جدولة المواعيد",
+                "icon": "tabler-calendar"
+            },
+            "billing": {
+                "title": "الفوترة",
+                "subtitle": "الحصول على مساعدة في الفوترة والمدفوعات",
+                "icon": "tabler-credit-card"
+            },
+            "userManagement": {
+                "title": "إدارة المستخدمين",
+                "subtitle": "الحصول على مساعدة في حسابات المستخدمين والأدوار",
+                "icon": "tabler-user"
+            },
+            "system": {
+                "title": "النظام",
+                "subtitle": "الحصول على مساعدة في إعدادات النظام",
+                "icon": "tabler-settings"
+            },
+            "general": {
+                "title": "عام",
+                "subtitle": "أسئلة وأجوبة عامة",
+                "icon": "tabler-help"
+            },
+            "actions-courantes": {
+                "title": "الإجراءات الشائعة",
+                "subtitle": "الحصول على مساعدة في الإجراءات والعمليات الشائعة",
+                "icon": "tabler-click"
+            },
+            "bonnes-pratiques": {
+                "title": "الممارسات الجيدة",
+                "subtitle": "تعرف على الممارسات والإرشادات الموصى بها",
+                "icon": "tabler-checklist"
+            },
+            "gestion-des-patients": {
+                "title": "إدارة المرضى",
+                "subtitle": "الحصول على مساعدة في إدارة سجلات ومعلومات المرضى",
+                "icon": "tabler-user-plus"
+            },
+            "rôles-et-permissions": {
+                "title": "الأدوار والصلاحيات",
+                "subtitle": "تعرف على أدوار المستخدمين وحقوق الوصول وصلاحيات النظام",
+                "icon": "tabler-shield-lock"
+            },
+            "sécurité-et-accès": {
+                "title": "الأمان والوصول",
+                "subtitle": "تعرف على أمان النظام والمصادقة والتحكم في الوصول",
+                "icon": "tabler-lock"
+            }
+        }
+    },
+    "thisWeekPayments": {
+        "title": "مدفوعات هذا الأسبوع",
+        "total": "المبلغ الإجمالي",
+        "receipt": "الإيصال",
+        "patientName": "اسم المريض",
+        "date": "التاريخ",
+        "paymentMethod": "طريقة الدفع",
+        "paymentAmount": "المبلغ",
+        "noPayments": "لا توجد مدفوعات لهذا الأسبوع",
+        "paymentMethods": {
+            "cash": "نقداً",
+            "card": "بطاقة",
+            "bank_transfer": "تحويل بنكي",
+            "mobile_money": "محفظة إلكترونية",
+            "insurance": "تأمين",
+            "cheque": "شيك",
+            "other": "أخرى"
+        },
+        "loading": "جاري تحميل المدفوعات...",
+        "error": "حدث خطأ أثناء تحميل المدفوعات",
+        "empty": {
+            "title": "لا توجد مدفوعات",
+            "description": "لا توجد مدفوعات مسجلة لهذا الأسبوع"
+        },
+        "summary": {
+            "totalAmount": "إجمالي المدفوعات",
+            "totalTransactions": "إجمالي المعاملات",
+            "averageAmount": "متوسط المبلغ"
+        }
+    },
+    "paymentStatistics": {
+        "title": "إحصائيات المدفوعات",
+        "subtitle": "نظرة عامة على هذا الأسبوع",
+        "dailyTotals": {
+            "title": "إجماليات المدفوعات اليومية",
+            "paid": "مدفوع",
+            "balance": "الرصيد",
+            "total": "المجموع"
+        },
+        "paymentMethods": {
+            "title": "طرق الدفع",
+            "distribution": "توزيع طرق الدفع",
+            "percentage": "النسبة المئوية"
+        },
+        "services": {
+            "title": "الخدمات",
+            "distribution": "توزيع الخدمات",
+            "amount": "المبلغ",
+            "count": "العدد"
+        },
+        "noData": {
+            "title": "لا توجد بيانات مدفوعات متاحة",
+            "message": "لا توجد مدفوعات مسجلة لهذه الفترة. سيتم عرض الإحصائيات بمجرد تسجيل المدفوعات."
+        },
+        "chart": {
+            "totalAmount": "المبلغ الإجمالي",
+            "daily": "يومي",
+            "weekly": "أسبوعي",
+            "monthly": "شهري",
+            "yearly": "سنوي"
+        },
+        "loading": "جاري تحميل الإحصائيات...",
+        "error": "حدث خطأ أثناء تحميل الإحصائيات",
+        "period": {
+            "today": "اليوم",
+            "thisWeek": "هذا الأسبوع",
+            "thisMonth": "هذا الشهر",
+            "thisYear": "هذا العام",
+            "custom": "فترة مخصصة"
+        },
+        "summary": {
+            "totalRevenue": "إجمالي الإيرادات",
+            "averageTransaction": "متوسط المعاملة",
+            "totalTransactions": "إجمالي المعاملات",
+            "successRate": "معدل النجاح"
+        }
+    },
+    "appointmentStatistics": {
+        "totalAppointments": "إجمالي المواعيد",
+        "completedAppointments": "المواعيد المكتملة",
+        "scheduledAppointments": "المواعيد المجدولة",
+        "cancelledAppointments": "المواعيد الملغاة",
+        "monthlyComparison": "{currentMonth}: {current} | {previousMonth}: {previous}",
+        "months": {
+            "current": "ar-SA",
+            "previous": "ar-SA"
+        },
+        "todayAppointments": {
+            "title": "مواعيد اليوم",
+            "description": "عدد المواعيد المجدولة لليوم",
+            "subtitle": "اليوم",
+            "noAppointmentsInStatus": "لا توجد مواعيد {status}",
+            "appointmentsCount": "{count} موعد",
+            "refresh": "تحديث",
+            "loading": "جاري تحميل المواعيد...",
+            "status": {
+                "scheduled": "مجدول",
+                "in_progress": "قيد التنفيذ",
+                "completed": "مكتمل",
+                "cancelled": "ملغي"
+            },
+            "appointmentTypes": {
+                "consultation": "استشارة",
+                "follow-up": "متابعة",
+                "emergency": "طوارئ",
+                "routine-check": "فحص روتيني",
+                "specialist": "متخصص",
+                "other": "أخرى"
+            },
+            "duration": "{minutes} دقيقة",
+            "timezone": "المنطقة الزمنية",
+            "card": {
+                "patient": "المريض",
+                "doctor": "الطبيب",
+                "time": "الوقت",
+                "duration": "المدة",
+                "type": "النوع",
+                "actions": {
+                    "goToVisit": "الذهاب إلى الزيارة",
+                    "createVisit": "إنشاء زيارة",
+                    "cancel": "إلغاء الموعد"
+                },
+                "empty": {
+                    "title": "لا توجد مواعيد",
+                    "description": "لا توجد مواعيد {status} لليوم"
+                }
+            },
+            "column": {
+                "appointmentCount": {
+                    "singular": "موعد واحد",
+                    "plural": "{count} مواعيد"
+                }
+            }
+        },
+        "thisWeekAppointments": {
+            "title": "مواعيد هذا الأسبوع",
+            "description": "عدد المواعيد المجدولة هذا الأسبوع"
+        },
+        "thisMonthAppointments": {
+            "title": "مواعيد هذا الشهر",
+            "description": "عدد المواعيد المجدولة هذا الشهر"
+        },
+        "completedAppointmentsStats": {
+            "title": "المواعيد المكتملة",
+            "description": "عدد المواعيد المكتملة"
+        },
+        "cancelledAppointmentsStats": {
+            "title": "المواعيد الملغاة",
+            "description": "عدد المواعيد الملغاة"
+        },
+        "upcomingAppointments": {
+            "title": "المواعيد القادمة",
+            "description": "عدد المواعيد القادمة"
+        },
+        "dayStats": {
+            "title": "توزيع المواعيد",
+            "subtitle": {
+                "week": "هذا الأسبوع",
+                "year": "هذا العام",
+                "custom": "فترة مخصصة"
+            },
+            "loading": "جاري تحميل الإحصائيات...",
+            "error": "فشل في تحميل الإحصائيات",
+            "noAppointments": "لا توجد مواعيد لهذه الفترة",
+            "days": {
+                "monday": "الاثنين",
+                "tuesday": "الثلاثاء",
+                "wednesday": "الأربعاء",
+                "thursday": "الخميس",
+                "friday": "الجمعة",
+                "saturday": "السبت",
+                "sunday": "الأحد"
+            },
+            "months": {
+                "january": "يناير",
+                "february": "فبراير",
+                "march": "مارس",
+                "april": "أبريل",
+                "may": "مايو",
+                "june": "يونيو",
+                "july": "يوليو",
+                "august": "أغسطس",
+                "september": "سبتمبر",
+                "october": "أكتوبر",
+                "november": "نوفمبر",
+                "december": "ديسمبر"
+            }
+        }
+    },
+    "userMenu": {
+        "services": "الخدمات",
+        "myProfile": "الملف الشخصي",
+        "settings": "الإعدادات",
+        "organisation": "المؤسسة",
+        "usersManagement": "إدارة المستخدمين",
+        "pricing": "التسعير",
+        "faq": "الأسئلة الشائعة",
+        "logout": "تسجيل الخروج"
+    },
+    "services": {
+        "title": "إدارة الخدمات",
+        "addNew": "إضافة خدمة جديدة",
+        "name": "اسم الخدمة",
+        "description": "الوصف",
+        "price": "السعر",
+        "amount": "المبلغ",
+        "duration": "المدة",
+        "minutes": "دقائق",
+        "statusLabel": "الحالة",
+        "status": "الحالة",
+        "allStatus": "جميع الحالات",
+        "sortBy": "ترتيب حسب",
+        "sortByName": "ترتيب حسب الاسم",
+        "sortByAmount": "ترتيب حسب المبلغ",
+        "isActive": "الحالة النشطة",
+        "cancel": "إلغاء",
+        "save": "حفظ",
+        "status": {
+            "active": "نشط",
+            "inactive": "غير نشط",
+            "enabled": "مفعل",
+            "disabled": "معطل",
+            "archived": "مؤرشف",
+            "deleted": "محذوف",
+            "pending": "قيد الانتظار",
+            "blocked": "محظور"
+        },
+        "confirmDelete": "هل أنت متأكد من رغبتك في حذف هذه الخدمة؟",
+        "error": {
+            "unauthorized": "يجب عليك تسجيل الدخول لأداء هذا الإجراء",
+            "noOrganization": "يجب أن تكون عضواً في منظمة لإنشاء الخدمات",
+            "nameRequired": "اسم الخدمة مطلوب",
+            "nameExists": "يوجد خدمة بهذا الاسم بالفعل",
+            "invalidAmount": "يجب أن يكون مبلغ الخدمة أكبر من صفر",
+            "create": "فشل في إنشاء الخدمة",
+            "update": "فشل في تحديث الخدمة",
+            "delete": "فشل في حذف الخدمة",
+            "unknown": "حدث خطأ غير متوقع",
+            "fetch": "فشل في جلب الخدمات"
+        },
+        "searchPlaceholder": "البحث عن الخدمات...",
+        "noResults": "لا توجد خدمات تطابق بحثك",
+        "noServices": "لا توجد خدمات متاحة"
+    },
+    "radiology": {
+        "title": "الأشعة",
+        "result": "النتيجة",
+        "noOrders": "لا توجد أوامر أشعة مسجلة",
+        "orderForm": {
+            "title": "طلب الأشعة",
+            "examType": "نوع الفحص",
+            "selectExamType": "اختر نوع الفحص",
+            "notes": "ملاحظات",
+            "status": "الحالة",
+            "result": "النتيجة",
+            "resultDate": "تاريخ النتيجة",
+            "save": "حفظ",
+            "saving": "جاري الحفظ...",
+            "success": "تم حفظ طلب الأشعة بنجاح!",
+            "error": "فشل في حفظ طلب الأشعة",
+            "create": "إنشاء طلب أشعة",
+            "statusPending": "الطلب قيد الانتظار",
+            "statusInProgress": "الطلب قيد التنفيذ",
+            "statusCompleted": "الطلب مكتمل",
+            "statusCancelled": "الطلب ملغي",
+            "statusOptions": {
+                "pending": "قيد الانتظار",
+                "in_progress": "قيد التنفيذ",
+                "completed": "مكتمل",
+                "cancelled": "ملغي"
+            }
+        },
+        "status": {
+            "pending": "قيد الانتظار",
+            "in_progress": "قيد التنفيذ",
+            "completed": "مكتمل",
+            "cancelled": "ملغي"
+        },
+        "notes": "ملاحظات",
+        "orderedAt": "تم الطلب في"
+    },
+    "medications": {
+        "title": "إدارة الأدوية",
+        "list": "قائمة الأدوية",
+        "addMedication": "إضافة دواء",
+        "editMedication": "تعديل الدواء",
+        "medicationName": "اسم الدواء",
+        "category": "الفئة",
+        "dosages": "الجرعات",
+        "addDosage": "إضافة جرعة",
+        "enterDosage": "أدخل الجرعة (مثال: 500 ملغ، قرص واحد)",
+        "noDosagesAdded": "لم يتم إضافة جرعات بعد",
+        "pressEnterToAdd": "اضغط على Enter لإضافة هذه الفئة",
+        "selectOrTypeCategory": "اختر أو اكتب فئة واضغط على Enter",
+        "save": "حفظ",
+        "saving": "جاري الحفظ...",
+        "cancel": "إلغاء",
+        "add": "إضافة",
+        "medicationAdded": "تمت إضافة الدواء بنجاح",
+        "medicationUpdated": "تم تحديث الدواء بنجاح",
+        "errorSavingMedication": "خطأ في حفظ الدواء",
+        "confirmDelete": "هل أنت متأكد من رغبتك في حذف هذا الدواء؟",
+        "delete": "حذف",
+        "edit": "تعديل",
+        "searchPlaceholder": "البحث عن أدوية...",
+        "noResults": "لم يتم العثور على أدوية تطابق بحثك",
+        "noMedications": "لا توجد أدوية متاحة",
+        "loading": "جاري تحميل الأدوية...",
+        "error": {
+            "unauthorized": "يجب تسجيل الدخول لأداء هذا الإجراء",
+            "noOrganization": "يجب أن تنتمي إلى مؤسسة لإدارة الأدوية",
+            "nameRequired": "اسم الدواء مطلوب",
+            "categoryRequired": "الفئة مطلوبة",
+            "dosagesRequired": "يجب إضافة جرعة واحدة على الأقل",
+            "create": "فشل في إنشاء الدواء",
+            "update": "فشل في تحديث الدواء",
+            "delete": "فشل في حذف الدواء",
+            "unknown": "حدث خطأ غير متوقع",
+            "fetch": "فشل في جلب الأدوية"
+        },
+        "filters": {
+            "title": "التصفية",
+            "searchPlaceholder": "البحث عن طريق اسم الدواء...",
+            "categoryLabel": "الفئة",
+            "organizationLabel": "المنظمة",
+            "showAll": "عرض الكل",
+            "showMyOrg": "عرض منظمتي فقط",
+            "showGlobal": "عرض العام فقط"
+        },
+        "pagination": {
+            "itemsPerPage": "العناصر في الصفحة",
+            "of": "من",
+            "showing": "عرض",
+            "to": "إلى"
+        }
+    },
+    "organization": "المنظمة",
+    "yourOrganization": "منظمتك",
+    "otherOrganization": "منظمة أخرى",
+    "global": "عام",
+    "actions": "الإجراءات",
     "doctors": {
         "title": "قائمة الأطباء",
         "addDoctor": "إضافة طبيب",
