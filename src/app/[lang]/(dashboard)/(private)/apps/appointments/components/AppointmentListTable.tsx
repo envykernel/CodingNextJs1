@@ -403,7 +403,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                       onClick={() => router.push(`/${lang}/apps/appointments/details?id=${row.id}`)}
                       startIcon={<i className='tabler-eye text-lg' />}
                     >
-                      {t('patientView.appointments.viewDetails')}
+                      {t('appointments.actions.viewDetails')}
                     </Button>
                     {/* Show VisitActionButton if there's a linked visit */}
                     {visitsByAppointmentId[row.id] && (

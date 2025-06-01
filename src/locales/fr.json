@@ -270,7 +270,8 @@
             "confirm": "Confirmer",
             "loading": "Chargement...",
             "confirmCancellation": "Confirmer l'Annulation",
-            "cancelAppointmentConfirmation": "Êtes-vous sûr de vouloir annuler ce rendez-vous ?"
+            "cancelAppointmentConfirmation": "Êtes-vous sûr de vouloir annuler ce rendez-vous ?",
+            "viewDetails": "Voir les détails"
         },
         "pagination": {
             "rowsPerPage": "Lignes par page",

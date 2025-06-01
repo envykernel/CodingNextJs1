@@ -114,7 +114,8 @@
             "confirm": "Confirm",
             "loading": "Loading...",
             "confirmCancellation": "Confirm Cancellation",
-            "cancelAppointmentConfirmation": "Are you sure you want to cancel this appointment?"
+            "cancelAppointmentConfirmation": "Are you sure you want to cancel this appointment?",
+            "viewDetails": "View Details"
         },
         "pagination": {
             "rowsPerPage": "Rows per page",

@@ -271,7 +271,8 @@
             "confirm": "تأكيد",
             "loading": "جاري التحميل...",
             "confirmCancellation": "تأكيد الإلغاء",
-            "cancelAppointmentConfirmation": "هل أنت متأكد أنك تريد إلغاء هذا الموعد؟"
+            "cancelAppointmentConfirmation": "هل أنت متأكد أنك تريد إلغاء هذا الموعد؟",
+            "viewDetails": "عرض التفاصيل"
         },
         "pagination": {
             "rowsPerPage": "الصفوف في الصفحة",
