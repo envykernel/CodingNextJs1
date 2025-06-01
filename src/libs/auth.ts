@@ -25,7 +25,9 @@ function safeString(val: unknown): string | undefined {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma), //PrismaAdapter(prisma) as Adapter,
+  adapter: PrismaAdapter(prisma),
+  debug: process.env.NODE_ENV === 'development',
+  secret: process.env.NEXTAUTH_SECRET,
 
   // ** Configure one or more authentication providers
   // ** Please refer to https://next-auth.js.org/configuration/options#providers for more `providers` options

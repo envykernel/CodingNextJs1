@@ -31,7 +31,7 @@ const Providers = async (props: Props) => {
 
   return (
     <TranslationProvider dictionary={dictionary}>
-      <NextAuthProvider basePath={process.env.NEXTAUTH_BASEPATH}>
+      <NextAuthProvider>
         <VerticalNavProvider>
           <SettingsProvider settingsCookie={settingsCookie} mode={mode}>
             <ThemeProvider direction={direction} systemMode={systemMode}>
