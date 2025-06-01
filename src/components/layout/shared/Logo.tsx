@@ -13,7 +13,7 @@ import { useSession } from 'next-auth/react'
 import type { VerticalNavContextProps } from '@menu/contexts/verticalNavContext'
 
 // Component Imports
-import VuexyLogo from '@core/svg/Logo'
+import OryxusLogo from '@core/svg/Logo'
 
 // Config Imports
 import themeConfig from '@configs/themeConfig'
@@ -74,7 +74,7 @@ const Logo = ({ color }: { color?: CSSProperties['color'] }) => {
 
   return (
     <div className='flex items-center'>
-      <VuexyLogo className='text-2xl text-primary' />
+      <OryxusLogo className='text-2xl text-primary' />
       <LogoText
         color={color}
         ref={logoTextRef}

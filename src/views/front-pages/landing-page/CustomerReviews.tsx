@@ -32,7 +32,7 @@ import styles from './styles.module.css'
 // Data
 const data = [
   {
-    desc: "I've never used a theme as versatile and flexible as Vuexy. It's my go to for building dashboard sites on almost any project.",
+    desc: "I've never used a theme as versatile and flexible as Oryxus. It's my go to for building dashboard sites on almost any project.",
     svg: <Pinterest color='#ee7676' />,
     rating: 5,
     name: 'Eugenia Moore',
@@ -64,7 +64,7 @@ const data = [
     avatarSrc: '/images/avatars/4.png'
   },
   {
-    desc: "I've never used a theme as versatile and flexible as Vuexy. It's my go to for building dashboard sites on almost any project.",
+    desc: "I've never used a theme as versatile and flexible as Oryxus. It's my go to for building dashboard sites on almost any project.",
     svg: <Dribbble color='#ea4c89' />,
     rating: 5,
     name: 'Tommy haffman',
@@ -72,7 +72,7 @@ const data = [
     avatarSrc: '/images/avatars/5.png'
   },
   {
-    desc: "I've never used a theme as versatile and flexible as Vuexy. It's my go to for building dashboard sites on almost any project.",
+    desc: "I've never used a theme as versatile and flexible as Oryxus. It's my go to for building dashboard sites on almost any project.",
     svg: <Pinterest color='#ee7676' />,
     rating: 5,
     name: 'Eugenia Moore',

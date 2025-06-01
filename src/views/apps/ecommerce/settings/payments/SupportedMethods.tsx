@@ -25,7 +25,7 @@ const SupportedMethods = () => {
     <Card>
       <CardHeader
         title='Supported payment methods'
-        subheader={`Payment methods that are available with one of Vuexy's approved payment providers.`}
+        subheader={`Payment methods that are available with one of Oryxus's approved payment providers.`}
       />
       <CardContent className='flex flex-col items-start gap-5'>
         <Typography className='font-medium' color='text.primary'>
