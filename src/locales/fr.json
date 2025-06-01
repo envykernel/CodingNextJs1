@@ -872,5 +872,15 @@
             "totalTransactions": "Total des transactions",
             "successRate": "Taux de réussite"
         }
+    },
+    "userMenu": {
+        "services": "Services",
+        "myProfile": "Mon Profil",
+        "settings": "Paramètres",
+        "organisation": "Organisation",
+        "usersManagement": "Gestion des Utilisateurs",
+        "pricing": "Tarification",
+        "faq": "FAQ",
+        "logout": "Déconnexion"
     }
 }
