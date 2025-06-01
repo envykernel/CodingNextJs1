@@ -18,7 +18,8 @@ export const db: InvoiceType[] = [
     total: 3428,
     avatar: '',
     avatarColor: 'primary',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: '$724',
     dueDate: `23 ${currentMonth} ${now.getFullYear()}`
   },
@@ -34,7 +35,8 @@ export const db: InvoiceType[] = [
     service: 'UI/UX Design & Development',
     total: 5219,
     avatar: '/images/avatars/1.png',
-    invoiceStatus: 'Downloaded',
+    payment_status: 'PENDING',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `15 ${currentMonth} ${now.getFullYear()}`
   },
@@ -50,7 +52,8 @@ export const db: InvoiceType[] = [
     service: 'Unlimited Extended License',
     total: 3719,
     avatar: '/images/avatars/2.png',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `03 ${currentMonth} ${now.getFullYear()}`
   },
@@ -66,7 +69,8 @@ export const db: InvoiceType[] = [
     service: 'Software Development',
     total: 4749,
     avatar: '/images/avatars/3.png',
-    invoiceStatus: 'Sent',
+    payment_status: 'PENDING',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `11 ${currentMonth} ${now.getFullYear()}`
   },
@@ -82,7 +86,8 @@ export const db: InvoiceType[] = [
     service: 'UI/UX Design & Development',
     total: 4056,
     avatar: '/images/avatars/4.png',
-    invoiceStatus: 'Draft',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: '$815',
     dueDate: `30 ${currentMonth} ${now.getFullYear()}`
   },
@@ -99,7 +104,8 @@ export const db: InvoiceType[] = [
     total: 2771,
     avatar: '',
     avatarColor: 'secondary',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `24 ${currentMonth} ${now.getFullYear()}`
   },
@@ -116,7 +122,8 @@ export const db: InvoiceType[] = [
     total: 2713,
     avatar: '',
     avatarColor: 'success',
-    invoiceStatus: 'Draft',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: '$407',
     dueDate: `22 ${currentMonth} ${now.getFullYear()}`
   },
@@ -132,7 +139,8 @@ export const db: InvoiceType[] = [
     service: 'Template Customization',
     total: 4309,
     avatar: '/images/avatars/5.png',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: '-$205',
     dueDate: `10 ${currentMonth} ${now.getFullYear()}`
   },
@@ -148,7 +156,8 @@ export const db: InvoiceType[] = [
     service: 'Software Development',
     total: 3367,
     avatar: '/images/avatars/6.png',
-    invoiceStatus: 'Downloaded',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `24 ${currentMonth} ${now.getFullYear()}`
   },
@@ -164,7 +173,8 @@ export const db: InvoiceType[] = [
     service: 'Software Development',
     total: 4776,
     avatar: '/images/avatars/7.png',
-    invoiceStatus: 'Downloaded',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: '$305',
     dueDate: `02 ${currentMonth} ${now.getFullYear()}`
   },
@@ -180,7 +190,8 @@ export const db: InvoiceType[] = [
     service: 'Unlimited Extended License',
     total: 3789,
     avatar: '/images/avatars/8.png',
-    invoiceStatus: 'Partial Payment',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: '$666',
     dueDate: `18 ${currentMonth} ${now.getFullYear()}`
   },
@@ -196,7 +207,8 @@ export const db: InvoiceType[] = [
     service: 'Unlimited Extended License',
     total: 5200,
     avatar: '/images/avatars/1.png',
-    invoiceStatus: 'Partial Payment',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `17 ${currentMonth} ${now.getFullYear()}`
   },
@@ -212,7 +224,8 @@ export const db: InvoiceType[] = [
     service: 'Software Development',
     total: 4558,
     avatar: '/images/avatars/2.png',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `01 ${currentMonth} ${now.getFullYear()}`
   },
@@ -228,7 +241,8 @@ export const db: InvoiceType[] = [
     service: 'Template Customization',
     total: 3503,
     avatar: '/images/avatars/3.png',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `22 ${currentMonth} ${now.getFullYear()}`
   },
@@ -244,7 +258,8 @@ export const db: InvoiceType[] = [
     service: 'Unlimited Extended License',
     total: 5285,
     avatar: '/images/avatars/4.png',
-    invoiceStatus: 'Partial Payment',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: '-$202',
     dueDate: `02 ${currentMonth} ${now.getFullYear()}`
   },
@@ -260,7 +275,8 @@ export const db: InvoiceType[] = [
     service: 'UI/UX Design & Development',
     total: 3668,
     avatar: '/images/avatars/5.png',
-    invoiceStatus: 'Downloaded',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: '$731',
     dueDate: `15 ${currentMonth} ${now.getFullYear()}`
   },
@@ -277,7 +293,8 @@ export const db: InvoiceType[] = [
     total: 4372,
     avatar: '',
     avatarColor: 'warning',
-    invoiceStatus: 'Sent',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: '-$344',
     dueDate: `17 ${currentMonth} ${now.getFullYear()}`
   },
@@ -293,7 +310,8 @@ export const db: InvoiceType[] = [
     service: 'Template Customization',
     total: 3198,
     avatar: '/images/avatars/6.png',
-    invoiceStatus: 'Partial Payment',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: '-$253',
     dueDate: `16 ${currentMonth} ${now.getFullYear()}`
   },
@@ -310,7 +328,8 @@ export const db: InvoiceType[] = [
     total: 5293,
     avatar: '',
     avatarColor: 'error',
-    invoiceStatus: 'Past Due',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `01 ${currentMonth} ${now.getFullYear()}`
   },
@@ -326,7 +345,8 @@ export const db: InvoiceType[] = [
     service: 'Template Customization',
     total: 5612,
     avatar: '/images/avatars/7.png',
-    invoiceStatus: 'Downloaded',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: '$883',
     dueDate: `12 ${currentMonth} ${now.getFullYear()}`
   },
@@ -342,7 +362,8 @@ export const db: InvoiceType[] = [
     service: 'Software Development',
     total: 2230,
     avatar: '/images/avatars/8.png',
-    invoiceStatus: 'Sent',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `19 ${currentMonth} ${now.getFullYear()}`
   },
@@ -358,7 +379,8 @@ export const db: InvoiceType[] = [
     service: 'Unlimited Extended License',
     total: 2032,
     avatar: '/images/avatars/1.png',
-    invoiceStatus: 'Partial Payment',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `30 ${currentMonth} ${now.getFullYear()}`
   },
@@ -374,7 +396,8 @@ export const db: InvoiceType[] = [
     service: 'UI/UX Design & Development',
     total: 3128,
     avatar: '/images/avatars/2.png',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `10 ${currentMonth} ${now.getFullYear()}`
   },
@@ -390,7 +413,8 @@ export const db: InvoiceType[] = [
     service: 'Software Development',
     total: 2060,
     avatar: '/images/avatars/3.png',
-    invoiceStatus: 'Downloaded',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `08 ${currentMonth} ${now.getFullYear()}`
   },
@@ -407,7 +431,8 @@ export const db: InvoiceType[] = [
     total: 4077,
     avatar: '',
     avatarColor: 'info',
-    invoiceStatus: 'Draft',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `01 ${currentMonth} ${now.getFullYear()}`
   },
@@ -423,7 +448,8 @@ export const db: InvoiceType[] = [
     service: 'Template Customization',
     total: 2872,
     avatar: '/images/avatars/4.png',
-    invoiceStatus: 'Partial Payment',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `18 ${currentMonth} ${now.getFullYear()}`
   },
@@ -439,7 +465,8 @@ export const db: InvoiceType[] = [
     service: 'Software Development',
     total: 3740,
     avatar: '/images/avatars/5.png',
-    invoiceStatus: 'Draft',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `01 ${currentMonth} ${now.getFullYear()}`
   },
@@ -456,7 +483,8 @@ export const db: InvoiceType[] = [
     total: 3623,
     avatar: '',
     avatarColor: 'primary',
-    invoiceStatus: 'Downloaded',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `23 ${currentMonth} ${now.getFullYear()}`
   },
@@ -472,7 +500,8 @@ export const db: InvoiceType[] = [
     service: 'Software Development',
     total: 2477,
     avatar: '/images/avatars/6.png',
-    invoiceStatus: 'Draft',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `01 ${currentMonth} ${now.getFullYear()}`
   },
@@ -489,7 +518,8 @@ export const db: InvoiceType[] = [
     total: 3904,
     avatar: '',
     avatarColor: 'secondary',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: '$951',
     dueDate: `30 ${currentMonth} ${now.getFullYear()}`
   },
@@ -505,7 +535,8 @@ export const db: InvoiceType[] = [
     service: 'UI/UX Design & Development',
     total: 3102,
     avatar: '/images/avatars/7.png',
-    invoiceStatus: 'Partial Payment',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: '-$153',
     dueDate: `25 ${currentMonth} ${now.getFullYear()}`
   },
@@ -521,7 +552,8 @@ export const db: InvoiceType[] = [
     service: 'UI/UX Design & Development',
     total: 2483,
     avatar: '/images/avatars/8.png',
-    invoiceStatus: 'Draft',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `10 ${currentMonth} ${now.getFullYear()}`
   },
@@ -537,7 +569,8 @@ export const db: InvoiceType[] = [
     service: 'Unlimited Extended License',
     total: 2825,
     avatar: '/images/avatars/1.png',
-    invoiceStatus: 'Partial Payment',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: '-$459',
     dueDate: `14 ${currentMonth} ${now.getFullYear()}`
   },
@@ -553,7 +586,8 @@ export const db: InvoiceType[] = [
     service: 'Unlimited Extended License',
     total: 2029,
     avatar: '/images/avatars/2.png',
-    invoiceStatus: 'Past Due',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `28 ${currentMonth} ${now.getFullYear()}`
   },
@@ -570,7 +604,8 @@ export const db: InvoiceType[] = [
     total: 3208,
     avatar: '',
     avatarColor: 'success',
-    invoiceStatus: 'Sent',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `06 ${currentMonth} ${now.getFullYear()}`
   },
@@ -587,7 +622,8 @@ export const db: InvoiceType[] = [
     total: 3077,
     avatar: '',
     avatarColor: 'error',
-    invoiceStatus: 'Sent',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `09 ${currentMonth} ${now.getFullYear()}`
   },
@@ -603,7 +639,8 @@ export const db: InvoiceType[] = [
     service: 'Software Development',
     total: 5578,
     avatar: '/images/avatars/3.png',
-    invoiceStatus: 'Draft',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `23 ${currentMonth} ${now.getFullYear()}`
   },
@@ -619,7 +656,8 @@ export const db: InvoiceType[] = [
     service: 'Software Development',
     total: 2787,
     avatar: '/images/avatars/4.png',
-    invoiceStatus: 'Partial Payment',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `25 ${currentMonth} ${now.getFullYear()}`
   },
@@ -636,7 +674,8 @@ export const db: InvoiceType[] = [
     total: 5591,
     avatar: '',
     avatarColor: 'warning',
-    invoiceStatus: 'Downloaded',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `07 ${currentMonth} ${now.getFullYear()}`
   },
@@ -652,7 +691,8 @@ export const db: InvoiceType[] = [
     service: 'Template Customization',
     total: 2783,
     avatar: '/images/avatars/5.png',
-    invoiceStatus: 'Draft',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `22 ${currentMonth} ${now.getFullYear()}`
   },
@@ -669,7 +709,8 @@ export const db: InvoiceType[] = [
     total: 2719,
     avatar: '',
     avatarColor: 'info',
-    invoiceStatus: 'Sent',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `04 ${currentMonth} ${now.getFullYear()}`
   },
@@ -686,7 +727,8 @@ export const db: InvoiceType[] = [
     total: 3325,
     avatar: '',
     avatarColor: 'primary',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: '$361',
     dueDate: `02 ${currentMonth} ${now.getFullYear()}`
   },
@@ -703,7 +745,8 @@ export const db: InvoiceType[] = [
     total: 3851,
     avatar: '',
     avatarColor: 'secondary',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `25 ${currentMonth} ${now.getFullYear()}`
   },
@@ -720,7 +763,8 @@ export const db: InvoiceType[] = [
     total: 5565,
     avatar: '',
     avatarColor: 'success',
-    invoiceStatus: 'Draft',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `06 ${currentMonth} ${now.getFullYear()}`
   },
@@ -736,7 +780,8 @@ export const db: InvoiceType[] = [
     service: 'Template Customization',
     total: 3313,
     avatar: '/images/avatars/6.png',
-    invoiceStatus: 'Partial Payment',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `09 ${currentMonth} ${now.getFullYear()}`
   },
@@ -753,7 +798,8 @@ export const db: InvoiceType[] = [
     total: 5181,
     avatar: '',
     avatarColor: 'error',
-    invoiceStatus: 'Past Due',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `22 ${currentMonth} ${now.getFullYear()}`
   },
@@ -769,7 +815,8 @@ export const db: InvoiceType[] = [
     service: 'Template Customization',
     total: 2869,
     avatar: '/images/avatars/7.png',
-    invoiceStatus: 'Partial Payment',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `22 ${currentMonth} ${now.getFullYear()}`
   },
@@ -786,7 +833,8 @@ export const db: InvoiceType[] = [
     total: 4836,
     avatar: '',
     avatarColor: 'warning',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: 0,
     dueDate: `22 ${currentMonth} ${now.getFullYear()}`
   },
@@ -803,7 +851,8 @@ export const db: InvoiceType[] = [
     total: 4263,
     avatar: '',
     avatarColor: 'info',
-    invoiceStatus: 'Draft',
+    payment_status: 'PARTIAL',
+    record_status: 'ACTIVE',
     balance: '$762',
     dueDate: `12 ${currentMonth} ${now.getFullYear()}`
   },
@@ -819,7 +868,8 @@ export const db: InvoiceType[] = [
     service: 'Unlimited Extended License',
     total: 3171,
     avatar: '/images/avatars/8.png',
-    invoiceStatus: 'Paid',
+    payment_status: 'PAID',
+    record_status: 'ACTIVE',
     balance: '-$205',
     dueDate: `25 ${currentMonth} ${now.getFullYear()}`
   }
