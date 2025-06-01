@@ -153,7 +153,8 @@ const ProductListTable = ({ productData }: { productData?: ProductType[] }) => {
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams<{ lang: string }>()
+  const locale = params?.lang as Locale
 
   const columns = useMemo<ColumnDef<ProductWithActionsType, any>[]>(
     () => [
