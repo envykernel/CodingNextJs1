@@ -39,7 +39,8 @@ const LoginV1 = () => {
   const [isPasswordShown, setIsPasswordShown] = useState(false)
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams<{ lang: string }>()
+  const locale = params?.lang as Locale
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 

@@ -76,7 +76,8 @@ const LoginV2 = ({ mode }: { mode: SystemMode }) => {
   const borderedLightIllustration = '/images/illustrations/auth/v2-login-light-border.png'
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams<{ lang: string }>()
+  const locale = params?.lang as Locale
   const { settings } = useSettings()
   const theme = useTheme()
   const hidden = useMediaQuery(theme.breakpoints.down('md'))

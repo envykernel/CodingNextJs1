@@ -41,6 +41,7 @@ import { LocalDate, LocalTime } from '@/components/LocalTime'
 import VisitActionButton from './VisitActionButton'
 import CancelAppointmentButton from './CancelAppointmentButton'
 import type { PatientType } from '@/views/apps/patient/list/PatientListTable'
+import type { Locale } from '@configs/i18n'
 
 interface AppointmentListTableProps {
   appointmentData: any[]
@@ -83,8 +84,8 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const params = useParams()
-  const lang = (params?.lang as string) || 'en'
+  const params = useParams<{ lang: string }>()
+  const lang = params?.lang as Locale
   const filter = searchParams?.get('filter') || ''
   const status = searchParams?.get('status') || ''
   const type = searchParams?.get('type') || ''

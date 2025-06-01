@@ -156,8 +156,8 @@ const PatientListTable = ({ tableData, page = 1, pageSize = 10, total = 0 }: Pat
   }, [tableData])
 
   // Hooks
-  const params = useParams()
-  const locale = params && 'lang' in params ? (params.lang as string) : 'en'
+  const params = useParams<{ lang: string }>()
+  const locale = params?.lang as Locale
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()

@@ -93,7 +93,8 @@ const ReferredUsersTable = ({ referralsData }: { referralsData?: ReferralsType[]
   const [data, setData] = useState(...[referralsData])
 
   // Hooks
-  const { lang: locale } = useParams()
+  const params = useParams<{ lang: string }>()
+  const locale = params?.lang as Locale
 
   const columns = useMemo<ColumnDef<ReferralsType, any>[]>(
     () => [

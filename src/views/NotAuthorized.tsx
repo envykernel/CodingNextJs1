@@ -54,8 +54,8 @@ const NotAuthorized = ({
 
   // Hooks
   const theme = useTheme()
-  const params = useParams()
-  const locale = params?.lang || 'en'
+  const params = useParams<{ lang: string }>()
+  const locale = params?.lang as Locale
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
   const miscBackground = useImageVariant(mode, lightImg, darkImg)
   const t = useTranslation()
