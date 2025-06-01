@@ -1000,6 +1000,15 @@
         }
     },
     "appointmentStatistics": {
+        "totalAppointments": "إجمالي المواعيد",
+        "completedAppointments": "المواعيد المكتملة",
+        "scheduledAppointments": "المواعيد المجدولة",
+        "cancelledAppointments": "المواعيد الملغاة",
+        "monthlyComparison": "{currentMonth}: {current} | {previousMonth}: {previous}",
+        "months": {
+            "current": "ar-SA",
+            "previous": "ar-SA"
+        },
         "todayAppointments": {
             "title": "مواعيد اليوم",
             "description": "عدد المواعيد المجدولة لليوم",
@@ -1055,11 +1064,11 @@
             "title": "مواعيد هذا الشهر",
             "description": "عدد المواعيد المجدولة هذا الشهر"
         },
-        "completedAppointments": {
+        "completedAppointmentsStats": {
             "title": "المواعيد المكتملة",
             "description": "عدد المواعيد المكتملة"
         },
-        "cancelledAppointments": {
+        "cancelledAppointmentsStats": {
             "title": "المواعيد الملغاة",
             "description": "عدد المواعيد الملغاة"
         },

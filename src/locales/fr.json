@@ -701,6 +701,15 @@
         }
     },
     "appointmentStatistics": {
+        "totalAppointments": "Total des Rendez-vous",
+        "completedAppointments": "Rendez-vous Terminés",
+        "scheduledAppointments": "Rendez-vous Planifiés",
+        "cancelledAppointments": "Rendez-vous Annulés",
+        "monthlyComparison": "{currentMonth}: {current} | {previousMonth}: {previous}",
+        "months": {
+            "current": "fr-FR",
+            "previous": "fr-FR"
+        },
         "todayAppointments": {
             "title": "Rendez-vous aujourd'hui",
             "description": "Nombre de rendez-vous prévus pour aujourd'hui",
@@ -756,11 +765,11 @@
             "title": "Rendez-vous ce mois",
             "description": "Nombre de rendez-vous prévus ce mois"
         },
-        "completedAppointments": {
+        "completedAppointmentsStats": {
             "title": "Rendez-vous terminés",
             "description": "Nombre de rendez-vous terminés"
         },
-        "cancelledAppointments": {
+        "cancelledAppointmentsStats": {
             "title": "Rendez-vous annulés",
             "description": "Nombre de rendez-vous annulés"
         },

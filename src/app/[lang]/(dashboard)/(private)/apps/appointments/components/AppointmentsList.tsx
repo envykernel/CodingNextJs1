@@ -11,6 +11,7 @@ import AppointmentListTable from './AppointmentListTable'
 import { APPOINTMENT_STATUS_OPTIONS, APPOINTMENT_TYPE_OPTIONS } from '../constants'
 import { getAllDoctors } from '@/app/server/doctorActions'
 import { getAllPatients } from '@/app/server/patientActions'
+import { TranslationProvider } from '@/contexts/translationContext'
 
 interface AppointmentsListProps {
   appointmentData: any[]
@@ -47,22 +48,26 @@ const AppointmentsList = async ({
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
-        <AppointmentListCards />
+        <TranslationProvider dictionary={dictionary}>
+          <AppointmentListCards />
+        </TranslationProvider>
       </Grid>
       <Grid item xs={12}>
-        <AppointmentListTable
-          appointmentData={appointmentData}
-          page={page - 1} // TablePagination expects 0-based page
-          pageSize={pageSize}
-          total={total}
-          statusOptions={APPOINTMENT_STATUS_OPTIONS}
-          typeOptions={APPOINTMENT_TYPE_OPTIONS}
-          doctors={doctors}
-          patients={patients}
-          dictionary={dictionary}
-          visitsByAppointmentId={visitsByAppointmentId}
-          error={error}
-        />
+        <TranslationProvider dictionary={dictionary}>
+          <AppointmentListTable
+            appointmentData={appointmentData}
+            page={page - 1} // TablePagination expects 0-based page
+            pageSize={pageSize}
+            total={total}
+            statusOptions={APPOINTMENT_STATUS_OPTIONS}
+            typeOptions={APPOINTMENT_TYPE_OPTIONS}
+            doctors={doctors}
+            patients={patients}
+            dictionary={dictionary}
+            visitsByAppointmentId={visitsByAppointmentId}
+            error={error}
+          />
+        </TranslationProvider>
       </Grid>
     </Grid>
   )

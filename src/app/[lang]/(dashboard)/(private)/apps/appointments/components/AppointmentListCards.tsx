@@ -3,9 +3,12 @@
 
 import { useEffect, useState } from 'react'
 
+import { useParams } from 'next/navigation'
+
 import Grid from '@mui/material/Grid'
 
 import HorizontalWithSubtitle from '@components/card-statistics/HorizontalWithSubtitle'
+import { useTranslation } from '@/contexts/translationContext'
 
 interface AppointmentStats {
   current: {
@@ -29,6 +32,9 @@ interface AppointmentStats {
 }
 
 const AppointmentListCards = () => {
+  const { t } = useTranslation()
+  const params = useParams<{ lang: string }>()
+
   const [stats, setStats] = useState<AppointmentStats>({
     current: {
       total: 0,
@@ -66,18 +72,28 @@ const AppointmentListCards = () => {
   }, [])
 
   const formatSubtitle = (current: number, previous: number) => {
-    const currentMonth = new Date().toLocaleString('default', { month: 'short' })
+    if (!params?.lang) {
+      return ''
+    }
 
-    const previousMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleString('default', {
+    const currentMonth = new Date().toLocaleDateString(params.lang, { month: 'short' })
+
+    const previousMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleDateString(params.lang, {
       month: 'short'
     })
 
-    return `${currentMonth}: ${current} | ${previousMonth}: ${previous}`
+    const template = t('appointmentStatistics.monthlyComparison')
+
+    return template
+      .replace('{currentMonth}', currentMonth)
+      .replace('{current}', current.toString())
+      .replace('{previousMonth}', previousMonth)
+      .replace('{previous}', previous.toString())
   }
 
   const data = [
     {
-      title: 'Total Appointments',
+      title: t('appointmentStatistics.totalAppointments'),
       stats: stats.current.total.toString(),
       avatarIcon: 'tabler-calendar-event',
       avatarColor: 'primary',
@@ -86,7 +102,7 @@ const AppointmentListCards = () => {
       subtitle: formatSubtitle(stats.current.total, stats.previous.total)
     },
     {
-      title: 'Completed',
+      title: t('appointmentStatistics.completedAppointments'),
       stats: stats.current.completed.toString(),
       avatarIcon: 'tabler-check',
       avatarColor: 'success',
@@ -95,7 +111,7 @@ const AppointmentListCards = () => {
       subtitle: formatSubtitle(stats.current.completed, stats.previous.completed)
     },
     {
-      title: 'Scheduled',
+      title: t('appointmentStatistics.scheduledAppointments'),
       stats: stats.current.scheduled.toString(),
       avatarIcon: 'tabler-clock',
       avatarColor: 'warning',
@@ -104,7 +120,7 @@ const AppointmentListCards = () => {
       subtitle: formatSubtitle(stats.current.scheduled, stats.previous.scheduled)
     },
     {
-      title: 'Cancelled',
+      title: t('appointmentStatistics.cancelledAppointments'),
       stats: stats.current.cancelled.toString(),
       avatarIcon: 'tabler-x',
       avatarColor: 'error',

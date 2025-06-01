@@ -820,6 +820,15 @@
         }
     },
     "appointmentStatistics": {
+        "totalAppointments": "Total Appointments",
+        "completedAppointments": "Completed Appointments",
+        "scheduledAppointments": "Scheduled Appointments",
+        "cancelledAppointments": "Cancelled Appointments",
+        "monthlyComparison": "{currentMonth}: {current} | {previousMonth}: {previous}",
+        "months": {
+            "current": "en-US",
+            "previous": "en-US"
+        },
         "todayAppointments": {
             "title": "Today's Appointments",
             "description": "Number of appointments scheduled for today",
@@ -843,7 +852,7 @@
                 "other": "Other"
             },
             "duration": "{minutes} min",
-            "timezone": "Timezone",
+            "timezone": "Time Zone",
             "card": {
                 "patient": "Patient",
                 "doctor": "Doctor",
@@ -875,11 +884,11 @@
             "title": "This Month's Appointments",
             "description": "Number of appointments scheduled this month"
         },
-        "completedAppointments": {
+        "completedAppointmentsStats": {
             "title": "Completed Appointments",
             "description": "Number of completed appointments"
         },
-        "cancelledAppointments": {
+        "cancelledAppointmentsStats": {
             "title": "Cancelled Appointments",
             "description": "Number of cancelled appointments"
         },
