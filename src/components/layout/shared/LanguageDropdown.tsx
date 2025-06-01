@@ -25,6 +25,7 @@ import { useSettings } from '@core/hooks/useSettings'
 type LanguageDataType = {
   langCode: Locale
   langName: string
+  flag: string
 }
 
 const getLocalePath = (pathName: string | null, locale: string) => {
@@ -40,15 +41,13 @@ const getLocalePath = (pathName: string | null, locale: string) => {
 const languageData: LanguageDataType[] = [
   {
     langCode: 'en',
-    langName: 'English'
+    langName: 'English',
+    flag: '🇬🇧'
   },
   {
     langCode: 'fr',
-    langName: 'French'
-  },
-  {
-    langCode: 'ar',
-    langName: 'Arabic'
+    langName: 'French',
+    flag: '🇫🇷'
   }
 ]
 
@@ -108,7 +107,9 @@ const LanguageDropdown = () => {
                       href={getLocalePath(pathName, locale.langCode)}
                       onClick={handleClose}
                       selected={lang === locale.langCode}
+                      className='gap-2'
                     >
+                      <span className='text-lg'>{locale.flag}</span>
                       {locale.langName}
                     </MenuItem>
                   ))}
