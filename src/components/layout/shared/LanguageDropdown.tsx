@@ -62,8 +62,8 @@ const LanguageDropdown = () => {
   // Hooks
   const pathName = usePathname()
   const { settings } = useSettings()
-  const params = useParams() as { lang: string }
-  const lang = params?.lang ?? 'fr'
+  const params = useParams<{ lang: string }>()
+  const lang = (params?.lang as Locale) || 'fr'
 
   const handleClose = () => {
     setOpen(false)

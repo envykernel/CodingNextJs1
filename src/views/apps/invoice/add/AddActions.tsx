@@ -31,8 +31,8 @@ const AddActions = () => {
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false)
 
   // Hooks
-  const params = useParams() as { lang: string }
-  const { lang: locale } = params
+  const params = useParams<{ lang: string }>()
+  const locale = (params?.lang as Locale) || 'fr'
 
   return (
     <Grid container spacing={6}>
