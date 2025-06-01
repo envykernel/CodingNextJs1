@@ -110,7 +110,7 @@ export const authOptions: NextAuthOptions = {
 
   // ** Please refer to https://next-auth.js.org/configuration/options#pages for more `pages` options
   pages: {
-    signIn: '/login',
+    signIn: '/fr/login',
 
     // NOTE: This is hardcoded to English. For full i18n, handle language prefix dynamically (middleware or custom logic).
     error: '/en/pages/misc/access-denied'
