@@ -21,6 +21,7 @@ import PaymentsList from '../shared/PaymentsList'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
+import { useTranslation } from '@/contexts/translationContext'
 
 const PreviewActions = ({
   id,
@@ -41,6 +42,7 @@ const PreviewActions = ({
   // Hooks
   const params = useParams() as Record<string, string | string[]> | null
   const locale = params && typeof params === 'object' && 'lang' in params ? params['lang'] : 'en'
+  const { t } = useTranslation()
 
   useEffect(() => {
     fetch('/api/services')
@@ -54,10 +56,7 @@ const PreviewActions = ({
     <>
       <Card>
         <CardContent className='flex flex-col gap-4'>
-          <PaymentProgress
-            invoice={invoice}
-            t={{ invoice: { totalAmount: 'Total', paid: 'Paid', remaining: 'Remaining' } }}
-          />
+          <PaymentProgress invoice={invoice} t={t} />
           <div className='flex items-center gap-4'>
             <Button
               fullWidth
@@ -67,7 +66,7 @@ const PreviewActions = ({
               onClick={onButtonClick}
               startIcon={<i className='tabler-printer' />}
             >
-              Print
+              {t('invoice.print')}
             </Button>
             <Button
               fullWidth
@@ -78,7 +77,7 @@ const PreviewActions = ({
               href={getLocalizedUrl(`/apps/invoice/edit/${id}`, locale as Locale)}
               startIcon={<i className='tabler-edit' />}
             >
-              Edit
+              {t('invoice.edit')}
             </Button>
           </div>
           <Button
@@ -89,7 +88,7 @@ const PreviewActions = ({
             onClick={() => setPaymentDrawerOpen(true)}
             startIcon={<i className='tabler-currency-dollar' />}
           >
-            Add Payment
+            {t('invoice.addPayment')}
           </Button>
         </CardContent>
       </Card>
@@ -101,21 +100,7 @@ const PreviewActions = ({
       />
       <SendInvoiceDrawer open={sendDrawerOpen} handleClose={() => setSendDrawerOpen(false)} />
       <div className='mt-6'>
-        <PaymentsList
-          payments={payments}
-          invoice={invoice}
-          services={services}
-          t={{
-            invoice: {
-              payments: 'Payments',
-              item: 'Item',
-              deletePayment: 'Delete Payment',
-              confirmDeletePayment: 'Are you sure you want to delete this payment?',
-              cancel: 'Cancel',
-              delete: 'Delete'
-            }
-          }}
-        />
+        <PaymentsList payments={payments} invoice={invoice} services={services} t={t} />
       </div>
     </>
   )
