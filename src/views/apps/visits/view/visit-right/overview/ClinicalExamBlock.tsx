@@ -15,8 +15,7 @@ function isFilled(val: any) {
 }
 
 const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
-  const t = useTranslation()
-  const tForm = t.clinicalExamForm
+  const { t } = useTranslation()
 
   if (!exam) return null
 
@@ -25,7 +24,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <div className='flex items-center gap-3'>
           <i className='tabler-clipboard-text text-xl text-primary' />
-          <Typography variant='subtitle1'>{tForm.title}</Typography>
+          <Typography variant='subtitle1'>{t('clinicalExamForm.title')}</Typography>
         </div>
       </AccordionSummary>
       <AccordionDetails>
@@ -35,7 +34,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.chiefComplaint}
+                  {t('clinicalExamForm.chiefComplaint')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -48,7 +47,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.historyIllness}
+                  {t('clinicalExamForm.historyIllness')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -61,7 +60,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.medicalHistory}
+                  {t('clinicalExamForm.medicalHistory')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -74,7 +73,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.generalAppearance}
+                  {t('clinicalExamForm.generalAppearance')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -87,7 +86,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.cardiovascular}
+                  {t('clinicalExamForm.cardiovascular')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -100,7 +99,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.respiratory}
+                  {t('clinicalExamForm.respiratory')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -113,7 +112,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.gastrointestinal}
+                  {t('clinicalExamForm.gastrointestinal')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -126,7 +125,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.neurological}
+                  {t('clinicalExamForm.neurological')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -139,7 +138,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.musculoskeletal}
+                  {t('clinicalExamForm.musculoskeletal')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -152,7 +151,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.skin}
+                  {t('clinicalExamForm.skin')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -165,7 +164,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.ent}
+                  {t('clinicalExamForm.ent')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -178,7 +177,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.assessment}
+                  {t('clinicalExamForm.assessment')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -191,7 +190,7 @@ const ClinicalExamBlock: React.FC<ClinicalExamBlockProps> = ({ exam }) => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant='subtitle2' className='font-semibold text-primary'>
-                  {tForm.plan}
+                  {t('clinicalExamForm.plan')}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
