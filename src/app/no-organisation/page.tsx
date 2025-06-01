@@ -1,6 +1,5 @@
 // Add dynamic route configuration
 export const dynamic = 'force-dynamic'
-
 ;('use client')
 import { useEffect } from 'react'
 
