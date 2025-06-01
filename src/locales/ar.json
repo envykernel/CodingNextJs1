@@ -262,7 +262,8 @@
         "statusOptions": {
             "scheduled": "مجدول",
             "completed": "مكتمل",
-            "cancelled": "ملغي"
+            "cancelled": "ملغي",
+            "in_progress": "قيد التنفيذ"
         },
         "actions": {
             "goToVisit": "الذهاب إلى الزيارة",
@@ -283,7 +284,12 @@
         "noAppointments": "لا توجد مواعيد متاحة.",
         "past": "المواعيد السابقة",
         "thisMonth": "هذا الشهر",
-        "upcoming": "المواعيد القادمة"
+        "upcoming": "المواعيد القادمة",
+        "filters": {
+            "all": "الكل",
+            "startDate": "تاريخ البداية",
+            "endDate": "تاريخ النهاية"
+        }
     },
     "date": "التاريخ:",
     "time": "الوقت",

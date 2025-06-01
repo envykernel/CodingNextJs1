@@ -261,7 +261,8 @@
         "statusOptions": {
             "scheduled": "Planifié",
             "completed": "Terminé",
-            "cancelled": "Annulé"
+            "cancelled": "Annulé",
+            "in_progress": "En cours"
         },
         "actions": {
             "goToVisit": "Aller à la Visite",
@@ -282,7 +283,12 @@
         "noAppointments": "Aucun rendez-vous disponible.",
         "past": "Rendez-vous Passés",
         "thisMonth": "Ce Mois",
-        "upcoming": "Rendez-vous à Venir"
+        "upcoming": "Rendez-vous à Venir",
+        "filters": {
+            "all": "Tous",
+            "startDate": "Date de début",
+            "endDate": "Date de fin"
+        }
     },
     "date": "Date :",
     "time": "Heure",

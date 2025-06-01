@@ -105,7 +105,8 @@
         "statusOptions": {
             "scheduled": "Scheduled",
             "completed": "Completed",
-            "cancelled": "Cancelled"
+            "cancelled": "Cancelled",
+            "in_progress": "In Progress"
         },
         "actions": {
             "goToVisit": "Go to Visit",
@@ -126,7 +127,12 @@
         "noAppointments": "No appointments available.",
         "past": "Past Appointments",
         "thisMonth": "This Month",
-        "upcoming": "Upcoming Appointments"
+        "upcoming": "Upcoming Appointments",
+        "filters": {
+            "all": "All",
+            "startDate": "Start Date",
+            "endDate": "End Date"
+        }
     },
     "date": "Date:",
     "time": "Time",

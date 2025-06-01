@@ -270,6 +270,11 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
     return type.toLowerCase().replace(/\s+/g, '_')
   }
 
+  // Add this new helper function
+  const getTypeOptionTranslationKey = (option: string) => {
+    return mapAppointmentTypeToKey(option)
+  }
+
   return (
     <Card>
       {errorState && (
@@ -299,10 +304,10 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
           <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%' }}>
             <InputLabel shrink>{t('status')}</InputLabel>
             <Select value={status} label={t('status')} onChange={handleStatusChange} displayEmpty>
-              <MenuItem value=''>{t('all')}</MenuItem>
+              <MenuItem value=''>{t('appointments.filters.all')}</MenuItem>
               {statusOptions.map(option => (
                 <MenuItem key={option} value={option}>
-                  {t(`appointmentStatistics.todayAppointments.status.${option}`)}
+                  {t(`appointments.statusOptions.${option}`)}
                 </MenuItem>
               ))}
             </Select>
@@ -310,10 +315,10 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
           <FormControl size='small' sx={{ minWidth: 160, maxWidth: 220, width: '100%' }}>
             <InputLabel shrink>{t('type')}</InputLabel>
             <Select value={type} label={t('type')} onChange={handleTypeChange} displayEmpty>
-              <MenuItem value=''>{t('all')}</MenuItem>
+              <MenuItem value=''>{t('appointments.filters.all')}</MenuItem>
               {typeOptions.map(option => (
                 <MenuItem key={option} value={option}>
-                  {t(`appointments.typeOptions.${option}`)}
+                  {t(`appointments.typeOptions.${getTypeOptionTranslationKey(option)}`)}
                 </MenuItem>
               ))}
             </Select>
@@ -325,7 +330,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
               selectsStart
               startDate={startDate || undefined}
               endDate={endDate || undefined}
-              placeholderText='Start Date'
+              placeholderText={t('appointments.filters.startDate')}
               customInput={<CustomTextField fullWidth size='small' />}
             />
             <AppReactDatepicker
@@ -335,7 +340,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
               startDate={startDate || undefined}
               endDate={endDate || undefined}
               minDate={startDate || undefined}
-              placeholderText='End Date'
+              placeholderText={t('appointments.filters.endDate')}
               customInput={<CustomTextField fullWidth size='small' />}
             />
             {(startDate || endDate) && (
