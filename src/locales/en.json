@@ -680,9 +680,29 @@
         "noResults": "No results found",
         "contact": {
             "title": "Still have questions?",
-            "message": "If you cannot find a question in our FAQ, you can always contact us. We will answer you shortly!",
-            "phoneMessage": "We are always happy to help!",
-            "emailMessage": "Best way to get answer faster!"
+            "message": "Can't find the answer you're looking for? Please send us a message.",
+            "form": {
+                "title": "Contact Us",
+                "name": "Your Name",
+                "email": "Your Email",
+                "category": "Category",
+                "categories": {
+                    "general": "General Inquiry",
+                    "technical": "Technical Support",
+                    "billing": "Billing Question",
+                    "feedback": "Feedback",
+                    "other": "Other"
+                },
+                "subject": "Subject",
+                "message": "Your Message",
+                "messageHelper": "Message must be at least 10 characters long",
+                "send": "Send Message",
+                "sending": "Sending...",
+                "success": "Thank you for your message! We will get back to you soon.",
+                "error": "An error occurred while sending your message. Please try again.",
+                "errorNoOrganisation": "You need to be associated with an organisation to send messages. Please contact your administrator.",
+                "loginRequired": "Please log in to send a message."
+            }
         },
         "categories": {
             "patients": {

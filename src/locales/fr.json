@@ -927,9 +927,29 @@
         "noResults": "Aucun résultat trouvé",
         "contact": {
             "title": "Vous avez encore des questions ?",
-            "message": "Si vous ne trouvez pas votre question dans nos FAQ, vous pouvez toujours nous contacter. Nous vous répondrons dans les plus brefs délais !",
-            "phoneMessage": "Nous sommes toujours heureux de vous aider !",
-            "emailMessage": "La meilleure façon d'obtenir une réponse rapidement !"
+            "message": "Vous ne trouvez pas la réponse que vous cherchez ? Envoyez-nous un message.",
+            "form": {
+                "title": "Contactez-nous",
+                "name": "Votre Nom",
+                "email": "Votre Email",
+                "category": "Catégorie",
+                "categories": {
+                    "general": "Question Générale",
+                    "technical": "Support Technique",
+                    "billing": "Question de Facturation",
+                    "feedback": "Retour d'Expérience",
+                    "other": "Autre"
+                },
+                "subject": "Sujet",
+                "message": "Votre message",
+                "messageHelper": "Le message doit contenir au moins 10 caractères",
+                "send": "Envoyer le message",
+                "sending": "Envoi en cours...",
+                "success": "Merci pour votre message ! Nous vous répondrons bientôt.",
+                "error": "Une erreur s'est produite lors de l'envoi de votre message. Veuillez réessayer.",
+                "errorNoOrganisation": "Vous devez être associé à une organisation pour envoyer des messages. Veuillez contacter votre administrateur.",
+                "loginRequired": "Veuillez vous connecter pour envoyer un message."
+            }
         },
         "categories": {
             "patients": {

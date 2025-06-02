@@ -208,6 +208,7 @@ model organisation {
   services                service[]
   radiology_orders        radiology_order[]
   notifications           Notification[]
+  contacts                Contact[]
 }
 
 model patient_appointment {
@@ -245,6 +246,7 @@ model UserInternal {
   doctor         doctor?       // Simple relation without fields
   shortcuts      UserShortcut[]
   notifications  NotificationRead[]
+  contacts       Contact[]
 }
 
 model patient_visit {
@@ -654,4 +656,33 @@ model NotificationRead {
   @@index([notificationId])
   @@index([userId])
   @@index([readAt])
+}
+
+enum ContactCategory {
+  GENERAL
+  TECHNICAL
+  BILLING
+  FEEDBACK
+  OTHER
+}
+
+model Contact {
+  id              Int            @id @default(autoincrement())
+  name            String         @db.VarChar(100)
+  email           String         @db.VarChar(255)
+  subject         String         @db.VarChar(200)
+  message         String         @db.Text
+  category        ContactCategory @default(GENERAL)
+  status          String         @db.VarChar(50) @default("pending")
+  organisation_id Int
+  user_id         Int?
+  created_at      DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime       @default(now()) @db.Timestamptz(6)
+  organisation    organisation   @relation(fields: [organisation_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user            UserInternal?  @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([organisation_id], map: "idx_contact_organisation_id")
+  @@index([status], map: "idx_contact_status")
+  @@index([created_at], map: "idx_contact_created_at")
+  @@index([user_id], map: "idx_contact_user_id")
 }
