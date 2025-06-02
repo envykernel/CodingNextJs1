@@ -933,11 +933,11 @@
     },
     "userMenu": {
         "services": "Services",
-        "myProfile": "My Profile",
-        "settings": "Settings",
+        "myProfile": "My Profile (beta)",
+        "settings": "Settings (beta)",
         "organisation": "Organisation",
         "usersManagement": "Users Management",
-        "pricing": "Pricing",
+        "pricing": "Pricing (beta)",
         "faq": "FAQ",
         "logout": "Logout"
     },

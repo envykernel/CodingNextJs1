@@ -913,11 +913,11 @@
     },
     "userMenu": {
         "services": "Services",
-        "myProfile": "Mon Profil",
-        "settings": "Paramètres",
+        "myProfile": "Mon Profil (beta)",
+        "settings": "Paramètres (beta)",
         "organisation": "Organisation",
         "usersManagement": "Gestion des Utilisateurs",
-        "pricing": "Tarification",
+        "pricing": "Tarification (beta)",
         "faq": "FAQ",
         "logout": "Déconnexion"
     },

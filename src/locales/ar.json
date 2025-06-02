@@ -1113,11 +1113,11 @@
     },
     "userMenu": {
         "services": "الخدمات",
-        "myProfile": "الملف الشخصي",
-        "settings": "الإعدادات",
+        "myProfile": "الملف الشخصي (beta)",
+        "settings": "الإعدادات (beta)",
         "organisation": "المؤسسة",
         "usersManagement": "إدارة المستخدمين",
-        "pricing": "التسعير",
+        "pricing": "التسعير (beta)",
         "faq": "الأسئلة الشائعة",
         "logout": "تسجيل الخروج"
     },
@@ -1829,11 +1829,11 @@
     },
     "userMenu": {
         "services": "الخدمات",
-        "myProfile": "الملف الشخصي",
-        "settings": "الإعدادات",
+        "myProfile": "الملف الشخصي (beta)",
+        "settings": "الإعدادات (beta)",
         "organisation": "المؤسسة",
         "usersManagement": "إدارة المستخدمين",
-        "pricing": "التسعير",
+        "pricing": "التسعير (beta)",
         "faq": "الأسئلة الشائعة",
         "logout": "تسجيل الخروج"
     },
