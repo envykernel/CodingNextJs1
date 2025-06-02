@@ -1,4 +1,6 @@
 // Next Imports
+import { useState } from 'react'
+
 import { useParams } from 'next/navigation'
 
 // Third-party Imports
@@ -14,6 +16,8 @@ import type { getDictionary } from '@/utils/getDictionary'
 // Component Imports
 import HorizontalNav, { Menu, SubMenu, MenuItem } from '@menu/horizontal-menu'
 import VerticalNavContent from './VerticalNavContent'
+import EditOrganisationDrawer from '@/components/organisation/EditOrganisationDrawer'
+import ServicesDrawer from '@/components/services/ServicesDrawer'
 
 // Hook Imports
 import useVerticalNav from '@menu/hooks/useVerticalNav'
@@ -64,9 +68,29 @@ const HorizontalMenu = (props: { dictionary: Awaited<ReturnType<typeof getDictio
   const { data: session } = useSession()
   const isAdmin = session?.user?.role === 'ADMIN'
 
+  // State
+  const [organisationDrawerOpen, setOrganisationDrawerOpen] = useState(false)
+  const [servicesDrawerOpen, setServicesDrawerOpen] = useState(false)
+
   // Vars
   const { transitionDuration } = verticalNavOptions
   const { lang: locale } = params
+
+  const handleOrganisationClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setOrganisationDrawerOpen(true)
+  }
+
+  const handleServicesClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setServicesDrawerOpen(true)
+  }
+
+  const handleOrganisationUpdated = () => {
+    // Update the session with new organisation data
+    // This will trigger a re-render with updated data
+    window.location.reload()
+  }
 
   return (
     <HorizontalNav
@@ -131,25 +155,25 @@ const HorizontalMenu = (props: { dictionary: Awaited<ReturnType<typeof getDictio
             {t('sidebar.navigation.createInvoice')}
           </MenuItem>
         </SubMenu>
-        <SubMenu label={t('sidebar.navigation.administration')} icon={<i className='tabler-settings' />}>
-          <MenuItem href={`/${locale}/pages/users-management`} icon={<i className='tabler-users' />}>
-            {t('sidebar.navigation.userManagement')}
-          </MenuItem>
-          <MenuItem href={`/${locale}/administration/organisation`} icon={<i className='tabler-building' />}>
-            {t('sidebar.navigation.organisation')}
-          </MenuItem>
-          <MenuItem href={`/${locale}/administration/services`} icon={<i className='tabler-tools' />}>
-            {t('sidebar.navigation.services')}
-          </MenuItem>
-          <MenuItem href={`/${locale}/apps/medications/list`} icon={<i className='tabler-pill' />}>
-            {t('sidebar.navigation.medications')}
-          </MenuItem>
-          {isAdmin && (
+        {isAdmin && (
+          <SubMenu label={t('sidebar.navigation.administration')} icon={<i className='tabler-settings' />}>
+            <MenuItem href={`/${locale}/pages/users-management`} icon={<i className='tabler-users' />}>
+              {t('sidebar.navigation.userManagement')}
+            </MenuItem>
+            <MenuItem onClick={handleOrganisationClick} icon={<i className='tabler-building' />}>
+              {t('sidebar.navigation.organisation')}
+            </MenuItem>
+            <MenuItem onClick={handleServicesClick} icon={<i className='tabler-tools' />}>
+              {t('sidebar.navigation.services')}
+            </MenuItem>
+            <MenuItem href={`/${locale}/apps/medications/list`} icon={<i className='tabler-pill' />}>
+              {t('sidebar.navigation.medications')}
+            </MenuItem>
             <MenuItem href={`/${locale}/apps/doctors/list`} icon={<i className='tabler-stethoscope' />}>
               {t('sidebar.navigation.doctors')}
             </MenuItem>
-          )}
-        </SubMenu>
+          </SubMenu>
+        )}
       </Menu>
       {/* <Menu
         rootStyles={menuRootStyles(theme)}
@@ -171,6 +195,14 @@ const HorizontalMenu = (props: { dictionary: Awaited<ReturnType<typeof getDictio
       >
         <GenerateHorizontalMenu menuData={menuData(dictionary)} />
       </Menu> */}
+
+      <EditOrganisationDrawer
+        open={organisationDrawerOpen}
+        onClose={() => setOrganisationDrawerOpen(false)}
+        onOrganisationUpdated={handleOrganisationUpdated}
+      />
+
+      <ServicesDrawer open={servicesDrawerOpen} onClose={() => setServicesDrawerOpen(false)} />
     </HorizontalNav>
   )
 }
