@@ -921,6 +921,74 @@
         "faq": "FAQ",
         "logout": "Déconnexion"
     },
+    "faq": {
+        "title": "Questions Fréquemment Posées",
+        "searchPlaceholder": "Rechercher dans les FAQ...",
+        "noResults": "Aucun résultat trouvé",
+        "contact": {
+            "title": "Vous avez encore des questions ?",
+            "message": "Si vous ne trouvez pas votre question dans nos FAQ, vous pouvez toujours nous contacter. Nous vous répondrons dans les plus brefs délais !",
+            "phoneMessage": "Nous sommes toujours heureux de vous aider !",
+            "emailMessage": "La meilleure façon d'obtenir une réponse rapidement !"
+        },
+        "categories": {
+            "patients": {
+                "title": "Patients",
+                "subtitle": "Obtenez de l'aide pour la gestion des patients",
+                "icon": "tabler-users"
+            },
+            "appointments": {
+                "title": "Rendez-vous",
+                "subtitle": "Obtenez de l'aide pour la planification des rendez-vous",
+                "icon": "tabler-calendar"
+            },
+            "billing": {
+                "title": "Facturation",
+                "subtitle": "Obtenez de l'aide pour la facturation et les paiements",
+                "icon": "tabler-credit-card"
+            },
+            "userManagement": {
+                "title": "Gestion des Utilisateurs",
+                "subtitle": "Obtenez de l'aide pour les comptes utilisateurs et les rôles",
+                "icon": "tabler-user"
+            },
+            "system": {
+                "title": "Système",
+                "subtitle": "Obtenez de l'aide pour les paramètres système",
+                "icon": "tabler-settings"
+            },
+            "general": {
+                "title": "Général",
+                "subtitle": "Questions et réponses générales",
+                "icon": "tabler-help"
+            },
+            "actions-courantes": {
+                "title": "Actions Courantes",
+                "subtitle": "Obtenez de l'aide pour les actions et opérations courantes",
+                "icon": "tabler-click"
+            },
+            "bonnes-pratiques": {
+                "title": "Bonnes Pratiques",
+                "subtitle": "Découvrez les pratiques et directives recommandées",
+                "icon": "tabler-checklist"
+            },
+            "gestion-des-patients": {
+                "title": "Gestion des Patients",
+                "subtitle": "Obtenez de l'aide pour la gestion des dossiers et informations des patients",
+                "icon": "tabler-user-plus"
+            },
+            "rôles-et-permissions": {
+                "title": "Rôles et Permissions",
+                "subtitle": "Découvrez les rôles utilisateurs, les droits d'accès et les permissions système",
+                "icon": "tabler-shield-lock"
+            },
+            "sécurité-et-accès": {
+                "title": "Sécurité et Accès",
+                "subtitle": "Découvrez la sécurité système, l'authentification et le contrôle d'accès",
+                "icon": "tabler-lock"
+            }
+        }
+    },
     "services": {
         "title": "Gestion des Services",
         "addNew": "Ajouter un Nouveau Service",
