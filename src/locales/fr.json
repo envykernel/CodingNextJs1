@@ -1053,5 +1053,91 @@
         "searchPlaceholder": "Rechercher des services...",
         "noResults": "Aucun service ne correspond à votre recherche",
         "noServices": "Aucun service disponible"
+    },
+    "usersManagement": {
+        "title": "Gestion des Utilisateurs",
+        "searchPlaceholder": "Rechercher des utilisateurs...",
+        "addUser": "Ajouter un Utilisateur",
+        "noUsers": "Aucun utilisateur trouvé",
+        "columns": {
+            "name": "Nom",
+            "email": "Email",
+            "role": "Rôle",
+            "organisation": "Organisation",
+            "status": "Statut",
+            "actions": "Actions"
+        },
+        "roles": {
+            "ADMIN": "Administrateur",
+            "DOCTOR": "Médecin",
+            "NURSE": "Infirmier(ère)",
+            "RECEPTIONIST": "Réceptionniste",
+            "ACCOUNTANT": "Comptable",
+            "LAB_TECHNICIAN": "Technicien de Laboratoire",
+            "PHARMACIST": "Pharmacien(ne)",
+            "USER": "Utilisateur"
+        },
+        "status": {
+            "approved": "Approuvé",
+            "pending": "En attente"
+        },
+        "actions": {
+            "edit": "Modifier",
+            "delete": "Supprimer"
+        },
+        "errors": {
+            "organizationAccess": "Vous n'avez pas accès à cette organisation",
+            "notAuthorized": "Vous n'êtes pas autorisé à effectuer cette action",
+            "generic": "Une erreur est survenue. Veuillez réessayer."
+        },
+        "success": {
+            "userDeleted": "Utilisateur supprimé avec succès"
+        },
+        "pagination": {
+            "rowsPerPage": "Lignes par page",
+            "showing": "Affichage de",
+            "of": "sur"
+        }
+    },
+    "userDrawer": {
+        "title": {
+            "add": "Ajouter un Nouvel Utilisateur",
+            "edit": "Modifier l'Utilisateur"
+        },
+        "form": {
+            "name": "Nom",
+            "namePlaceholder": "Entrez le nom de l'utilisateur",
+            "email": "Email",
+            "emailPlaceholder": "Entrez l'email de l'utilisateur",
+            "role": "Rôle",
+            "isApproved": "Approuver l'Utilisateur",
+            "isApprovedDescription": "Les utilisateurs approuvés peuvent accéder au système immédiatement",
+            "cancel": "Annuler",
+            "save": "Enregistrer les Modifications",
+            "create": "Créer l'Utilisateur"
+        },
+        "error": {
+            "emailCheck": "Erreur lors de la vérification de la disponibilité de l'email",
+            "nameCheck": "Erreur lors de la vérification de la disponibilité du nom d'utilisateur",
+            "nameExists": "Ce nom d'utilisateur existe déjà dans votre organisation",
+            "emailExists": "Cet email est déjà enregistré",
+            "createUser": "Erreur lors de la création de l'utilisateur. Veuillez réessayer."
+        },
+        "confirmation": {
+            "adminRole": {
+                "title": "Confirmer l'Attribution du Rôle Administrateur",
+                "message": "Êtes-vous sûr de vouloir attribuer le rôle d'Administrateur ? Cet utilisateur aura accès à toutes les fonctionnalités du système.",
+                "cancel": "Annuler",
+                "confirm": "Confirmer"
+            },
+            "deleteUser": {
+                "title": "Supprimer l'Utilisateur",
+                "warning": "Attention : Cette action ne peut pas être annulée",
+                "message": "Êtes-vous sûr de vouloir supprimer l'utilisateur {name} ?",
+                "description": "Cela supprimera définitivement l'utilisateur du système et révoquera tous ses accès.",
+                "cancel": "Annuler",
+                "confirm": "Supprimer l'Utilisateur"
+            }
+        }
     }
 }
