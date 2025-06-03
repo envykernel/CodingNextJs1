@@ -637,7 +637,7 @@
         },
         "roles": {
             "ADMIN": "Administrator",
-            "DOCTOR_OWNER": "Cabinet Manager",
+            "DOCTOR_MANAGER": "Cabinet Manager",
             "DOCTOR": "Doctor",
             "NURSE": "Nurse",
             "RECEPTIONIST": "Receptionist",
