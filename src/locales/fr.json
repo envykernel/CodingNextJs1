@@ -1069,6 +1069,7 @@
         },
         "roles": {
             "ADMIN": "Administrateur",
+            "DOCTOR_OWNER": "Gestionnaire du Cabinet",
             "DOCTOR": "Médecin",
             "NURSE": "Infirmier(ère)",
             "RECEPTIONIST": "Réceptionniste",

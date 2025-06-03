@@ -35,6 +35,7 @@ import { useTranslation } from '@/contexts/translationContext'
 // Constants
 const ROLE_CONFIG: Record<UserRole, { icon: string; color: string }> = {
   ADMIN: { icon: 'tabler-user-shield', color: 'error' },
+  DOCTOR_MANAGER: { icon: 'tabler-stethoscope', color: 'warning' },
   DOCTOR: { icon: 'tabler-user-md', color: 'primary' },
   NURSE: { icon: 'tabler-nurse', color: 'info' },
   RECEPTIONIST: { icon: 'tabler-receipt', color: 'success' },

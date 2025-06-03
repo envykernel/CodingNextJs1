@@ -829,9 +829,10 @@
             "actions": "الإجراءات"
         },
         "roles": {
-            "ADMIN": "مدير النظام",
+            "ADMIN": "المدير",
+            "DOCTOR_OWNER": "مدير العيادة",
             "DOCTOR": "طبيب",
-            "NURSE": "ممرض(ة)",
+            "NURSE": "ممرض",
             "RECEPTIONIST": "موظف استقبال",
             "ACCOUNTANT": "محاسب",
             "LAB_TECHNICIAN": "فني مختبر",

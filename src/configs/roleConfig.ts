@@ -14,6 +14,11 @@ export const roleConfig: Record<UserRole, RoleConfig> = {
     icon: 'tabler-crown',
     label: 'Administrator'
   },
+  DOCTOR_MANAGER: {
+    color: 'warning',
+    icon: 'tabler-stethoscope',
+    label: 'Cabinet Manager'
+  },
   DOCTOR: {
     color: 'primary',
     icon: 'tabler-stethoscope',

@@ -571,6 +571,7 @@ enum PaymentMethod {
 
 enum UserRole {
   ADMIN
+  DOCTOR_MANAGER
   DOCTOR
   NURSE
   RECEPTIONIST
