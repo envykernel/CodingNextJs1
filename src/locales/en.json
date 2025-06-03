@@ -626,17 +626,14 @@
         "title": "User Management",
         "searchPlaceholder": "Search users...",
         "addUser": "Add User",
-        "editUser": "Edit User",
+        "noUsers": "No users found",
         "columns": {
             "name": "Name",
             "email": "Email",
             "role": "Role",
             "organisation": "Organization",
             "status": "Status",
-            "actions": "Actions",
-            "approvalStatus": "Approval Status",
-            "createdAt": "Created At",
-            "updatedAt": "Last Modified"
+            "actions": "Actions"
         },
         "roles": {
             "ADMIN": "Administrator",
@@ -649,17 +646,26 @@
             "USER": "User"
         },
         "status": {
-            "active": "Active",
-            "inactive": "Inactive",
             "approved": "Approved",
-            "pending": "Pending Approval"
+            "pending": "Pending"
         },
         "actions": {
-            "edit": "Edit User",
-            "view": "View User",
-            "delete": "Delete User"
+            "edit": "Edit",
+            "delete": "Delete"
         },
-        "noUsers": "No users found"
+        "errors": {
+            "organizationAccess": "You don't have access to this organization",
+            "notAuthorized": "You are not authorized to perform this action",
+            "generic": "An error occurred. Please try again."
+        },
+        "success": {
+            "userDeleted": "User successfully deleted"
+        },
+        "pagination": {
+            "rowsPerPage": "Rows per page",
+            "showing": "Showing",
+            "of": "of"
+        }
     },
     "confirmation": {
         "deleteUser": {
