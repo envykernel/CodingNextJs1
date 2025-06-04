@@ -159,7 +159,7 @@ const HorizontalMenu = (props: { dictionary: Awaited<ReturnType<typeof getDictio
         </SubMenu>
         {canManageOrg && (
           <SubMenu label={t('sidebar.navigation.administration')} icon={<i className='tabler-settings' />}>
-            {isAdmin && (
+            {(isAdmin || isCabinetManager) && (
               <MenuItem href={`/${locale}/pages/users-management`} icon={<i className='tabler-users' />}>
                 {t('sidebar.navigation.userManagement')}
               </MenuItem>

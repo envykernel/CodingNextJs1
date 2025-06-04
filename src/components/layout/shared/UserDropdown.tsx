@@ -288,7 +288,7 @@ const UserDropdown = () => {
                       <Typography color='text.primary'>{t('userMenu.organisation')}</Typography>
                     </MenuItem>
                   )}
-                  {userRole === 'ADMIN' && (
+                  {(isAdmin || isCabinetManager) && (
                     <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/users-management')}>
                       <i className='tabler-users' />
                       <Typography color='text.primary'>{t('userMenu.usersManagement')}</Typography>

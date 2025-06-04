@@ -162,6 +162,8 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
   const translateConfirmation = (key: string) => t(`userDrawer.confirmation.${key}`)
 
   const isAdmin = session?.user?.role === 'ADMIN'
+  const isCabinetManager = session?.user?.role === 'CABINET_MANAGER'
+  const canManageUsers = isAdmin || isCabinetManager
   const userOrgId = Number(session?.user?.organisationId)
 
   const [searchValue, setSearchValue] = useState('')
@@ -186,6 +188,15 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
   })
 
   const columnHelper = createColumnHelper<User>()
+
+  const canEditUser = (user: User) => {
+    // Admin can edit any user
+    if (isAdmin) return true
+    // Cabinet manager can edit any user except admins
+    if (isCabinetManager) return user.role !== 'ADMIN'
+    // Other roles cannot edit users
+    return false
+  }
 
   const columns = useMemo(
     () => [
@@ -243,35 +254,40 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
       }),
       columnHelper.accessor('id', {
         header: translate('columns.actions'),
-        cell: info => (
-          <div className='flex items-center gap-2'>
-            {isAdmin && (
-              <>
-                <Button
-                  onClick={() => handleEditUser(info.row.original)}
-                  size='small'
-                  color='primary'
-                  variant='text'
-                  startIcon={<i className='tabler-edit' />}
-                >
-                  {translate('actions.edit')}
-                </Button>
-                <Button
-                  onClick={() => handleDeleteClick(info.row.original)}
-                  size='small'
-                  color='error'
-                  variant='text'
-                  startIcon={<i className='tabler-trash' />}
-                >
-                  {translate('actions.delete')}
-                </Button>
-              </>
-            )}
-          </div>
-        )
+        cell: info => {
+          const user = info.row.original
+          const canEdit = canEditUser(user)
+
+          return (
+            <div className='flex items-center gap-2'>
+              {canManageUsers && canEdit && (
+                <>
+                  <Button
+                    onClick={() => handleEditUser(user)}
+                    size='small'
+                    color='primary'
+                    variant='text'
+                    startIcon={<i className='tabler-edit' />}
+                  >
+                    {translate('actions.edit')}
+                  </Button>
+                  <Button
+                    onClick={() => handleDeleteClick(user)}
+                    size='small'
+                    color='error'
+                    variant='text'
+                    startIcon={<i className='tabler-trash' />}
+                  >
+                    {translate('actions.delete')}
+                  </Button>
+                </>
+              )}
+            </div>
+          )
+        }
       })
     ],
-    [translate, router, isAdmin]
+    [translate, router, canManageUsers, isAdmin, isCabinetManager]
   )
 
   const table = useReactTable({
@@ -315,7 +331,7 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
 
   const handleSubmitUser = async (data: UserFormData) => {
     try {
-      if (!isAdmin) {
+      if (!canManageUsers) {
         throw new Error('Not authorized')
       }
 
@@ -412,7 +428,7 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
                 }}
                 sx={{ mr: 4 }}
               />
-              {isAdmin && (
+              {canManageUsers && (
                 <Button variant='contained' startIcon={<i className='tabler-plus' />} onClick={handleAddUser}>
                   {translate('addUser')}
                 </Button>
@@ -516,7 +532,7 @@ const UsersManagement = ({ usersData, page, pageSize, total }: UsersManagementPr
         </Alert>
       </Snackbar>
 
-      {isAdmin && (
+      {canManageUsers && (
         <UserDrawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}

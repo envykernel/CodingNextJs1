@@ -30,6 +30,8 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 // Hook Imports
 import type { UserRole } from '@prisma/client'
 
+import { useSession } from 'next-auth/react'
+
 import { useTranslation } from '@/contexts/translationContext'
 
 // Constants
@@ -70,8 +72,12 @@ export interface UserFormData {
 
 const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawerProps) => {
   const { t } = useTranslation()
+  const { data: session } = useSession()
   const translate = (key: string) => t(`userDrawer.${key}`)
   const translateRole = (key: string) => t(`usersManagement.roles.${key}`)
+
+  const isAdmin = session?.user?.role === 'ADMIN'
+  const isCabinetManager = session?.user?.role === 'CABINET_MANAGER'
 
   const [formData, setFormData] = useState<UserFormData>({
     name: '',
@@ -284,15 +290,27 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
     setPendingSubmit(null)
   }
 
+  // Filter available roles based on user's role
+  const availableRoles = Object.entries(ROLE_CONFIG).filter(([role]) => {
+    // If user is admin, they can assign any role
+    if (isAdmin) return true
+
+    // If user is cabinet manager, they cannot assign ADMIN role
+    if (isCabinetManager) return role !== 'ADMIN'
+
+    // Other roles cannot assign any roles
+    return false
+  })
+
   return (
     <>
       <Drawer
         open={open}
         onClose={onClose}
         anchor='right'
-        PaperProps={{
-          sx: { width: { xs: '100%', sm: 400 } }
-        }}
+        variant='temporary'
+        ModalProps={{ keepMounted: true }}
+        sx={{ '& .MuiDrawer-paper': { width: { xs: '100%', sm: 400 } } }}
       >
         <Box sx={{ p: 5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
@@ -344,18 +362,20 @@ const UserDrawer = ({ open, onClose, user, onSubmit, organisationId }: UserDrawe
               />
 
               <FormControl fullWidth>
-                <InputLabel>{translate('form.role')}</InputLabel>
+                <InputLabel id='role-select-label'>{translate('form.role')}</InputLabel>
                 <Select
+                  labelId='role-select-label'
+                  id='role-select'
                   value={formData.role}
                   label={translate('form.role')}
                   onChange={e => setFormData(prev => ({ ...prev, role: e.target.value as UserRole }))}
                   required
                 >
-                  {Object.entries(ROLE_CONFIG).map(([role, config]) => (
-                    <MenuItem key={role} value={role}>
+                  {availableRoles.map(([role, config]) => (
+                    <MenuItem key={role} value={role} disabled={!isAdmin && role === 'ADMIN'}>
                       <div className='flex items-center gap-2'>
                         <i className={config.icon} style={{ color: `var(--mui-palette-${config.color}-main)` }} />
-                        <span>{translateRole(role)}</span>
+                        <Typography>{translateRole(role)}</Typography>
                       </div>
                     </MenuItem>
                   ))}

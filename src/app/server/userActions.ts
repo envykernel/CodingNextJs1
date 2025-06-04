@@ -35,8 +35,8 @@ export async function getUsersList({ page, pageSize, name, organisationId }: Get
       throw new Error('Not authenticated')
     }
 
-    // Check if the user is an admin
-    if ((session.user as any).role !== 'ADMIN') {
+    // Check if the user is an admin or cabinet manager
+    if ((session.user as any).role !== 'ADMIN' && (session.user as any).role !== 'CABINET_MANAGER') {
       throw new Error('Not authorized')
     }
 
@@ -124,8 +124,8 @@ export async function createUser(data: CreateUserParams) {
       throw new Error('Not authenticated')
     }
 
-    // Check if the user is an admin
-    if ((session.user as any).role !== 'ADMIN') {
+    // Check if the user is an admin or cabinet manager
+    if ((session.user as any).role !== 'ADMIN' && (session.user as any).role !== 'CABINET_MANAGER') {
       throw new Error('Not authorized')
     }
 
@@ -163,8 +163,8 @@ export async function updateUser(data: UpdateUserParams) {
       throw new Error('Not authenticated')
     }
 
-    // Check if the user is an admin
-    if ((session.user as any).role !== 'ADMIN') {
+    // Check if the user is an admin or cabinet manager
+    if ((session.user as any).role !== 'ADMIN' && (session.user as any).role !== 'CABINET_MANAGER') {
       throw new Error('Not authorized')
     }
 
@@ -218,8 +218,8 @@ export async function deleteUser(userId: string) {
       throw new Error('Not authenticated')
     }
 
-    // Check if the user is an admin
-    if ((session.user as any).role !== 'ADMIN') {
+    // Check if the user is an admin or cabinet manager
+    if ((session.user as any).role !== 'ADMIN' && (session.user as any).role !== 'CABINET_MANAGER') {
       throw new Error('Not authorized')
     }
 
