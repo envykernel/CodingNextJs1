@@ -112,10 +112,10 @@ const roleConfig = {
     icon: 'tabler-crown',
     label: 'Administrator'
   },
-  DOCTOR_MANAGER: {
+  CABINET_MANAGER: {
     color: 'primary',
     icon: 'tabler-building-hospital',
-    label: 'Doctor Manager'
+    label: 'Cabinet Manager'
   },
   DOCTOR: {
     color: 'primary',
