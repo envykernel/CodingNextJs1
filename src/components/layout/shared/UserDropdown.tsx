@@ -274,14 +274,25 @@ const UserDropdown = () => {
                     </div>
                   </div>
                   <Divider className='mlb-1' />
-                  <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/user-profile')}>
-                    <i className='tabler-user' />
-                    <Typography color='text.primary'>{t('userMenu.myProfile')}</Typography>
-                  </MenuItem>
-                  <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/account-settings')}>
-                    <i className='tabler-settings' />
-                    <Typography color='text.primary'>{t('userMenu.settings')}</Typography>
-                  </MenuItem>
+                  {isAdmin && (
+                    <>
+                      <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/user-profile')}>
+                        <i className='tabler-user' />
+                        <Typography color='text.primary'>{t('userMenu.myProfile')}</Typography>
+                      </MenuItem>
+                      <MenuItem
+                        className='mli-2 gap-3'
+                        onClick={e => handleDropdownClose(e, '/pages/account-settings')}
+                      >
+                        <i className='tabler-settings' />
+                        <Typography color='text.primary'>{t('userMenu.settings')}</Typography>
+                      </MenuItem>
+                      <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/pricing')}>
+                        <i className='tabler-currency-dollar' />
+                        <Typography color='text.primary'>{t('userMenu.pricing')}</Typography>
+                      </MenuItem>
+                    </>
+                  )}
                   {canManageOrg && (
                     <MenuItem className='mli-2 gap-3' onClick={handleOrganisationClick}>
                       <i className='tabler-building' />
@@ -300,10 +311,6 @@ const UserDropdown = () => {
                       <Typography color='text.primary'>{t('userMenu.services')}</Typography>
                     </MenuItem>
                   )}
-                  <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/pricing')}>
-                    <i className='tabler-currency-dollar' />
-                    <Typography color='text.primary'>{t('userMenu.pricing')}</Typography>
-                  </MenuItem>
                   <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/faq')}>
                     <i className='tabler-help-circle' />
                     <Typography color='text.primary'>{t('userMenu.faq')}</Typography>

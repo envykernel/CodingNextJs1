@@ -122,21 +122,25 @@ const HorizontalMenu = (props: { dictionary: Awaited<ReturnType<typeof getDictio
         }}
       >
         <SubMenu label={t('sidebar.navigation.dashboards')} icon={<i className='tabler-smart-home' />}>
-          <MenuItem href={`/${locale}/dashboards/crm`} icon={<i className='tabler-chart-pie-2' />}>
-            {t('sidebar.navigation.crm')}
-          </MenuItem>
-          <MenuItem href={`/${locale}/dashboards/analytics`} icon={<i className='tabler-trending-up' />}>
-            {t('sidebar.navigation.analytics')}
-          </MenuItem>
-          <MenuItem href={`/${locale}/dashboards/ecommerce`} icon={<i className='tabler-shopping-cart' />}>
-            {t('sidebar.navigation.eCommerce')}
-          </MenuItem>
-          <MenuItem href={`/${locale}/dashboards/academy`} icon={<i className='tabler-school' />}>
-            {t('sidebar.navigation.academy')}
-          </MenuItem>
-          <MenuItem href={`/${locale}/dashboards/logistics`} icon={<i className='tabler-truck' />}>
-            {t('sidebar.navigation.logistics')}
-          </MenuItem>
+          {isAdmin && (
+            <>
+              <MenuItem href={`/${locale}/dashboards/crm`} icon={<i className='tabler-chart-pie-2' />}>
+                {t('sidebar.navigation.crm')}
+              </MenuItem>
+              <MenuItem href={`/${locale}/dashboards/analytics`} icon={<i className='tabler-trending-up' />}>
+                {t('sidebar.navigation.analytics')}
+              </MenuItem>
+              <MenuItem href={`/${locale}/dashboards/ecommerce`} icon={<i className='tabler-shopping-cart' />}>
+                {t('sidebar.navigation.eCommerce')}
+              </MenuItem>
+              <MenuItem href={`/${locale}/dashboards/academy`} icon={<i className='tabler-school' />}>
+                {t('sidebar.navigation.academy')}
+              </MenuItem>
+              <MenuItem href={`/${locale}/dashboards/logistics`} icon={<i className='tabler-truck' />}>
+                {t('sidebar.navigation.logistics')}
+              </MenuItem>
+            </>
+          )}
           <MenuItem href={`/${locale}/dashboards/organization`} icon={<i className='tabler-building' />}>
             {t('sidebar.navigation.organization')}
           </MenuItem>

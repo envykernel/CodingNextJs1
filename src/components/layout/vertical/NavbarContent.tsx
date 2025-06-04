@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 
 import classnames from 'classnames'
+import { useSession } from 'next-auth/react'
 
 // Type Imports
 import type { ShortcutsType } from '@components/layout/shared/ShortcutsDropdown'
@@ -21,9 +22,14 @@ import UserDropdown from '@components/layout/shared/UserDropdown'
 import { verticalLayoutClasses } from '@layouts/utils/layoutClasses'
 
 const NavbarContent = () => {
+  // States
   const [shortcuts, setShortcuts] = useState<ShortcutsType[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // Hooks
+  const { data: session } = useSession()
+  const isAdmin = session?.user?.role === 'ADMIN'
 
   useEffect(() => {
     const fetchShortcuts = async () => {
@@ -68,7 +74,7 @@ const NavbarContent = () => {
     <div className={classnames(verticalLayoutClasses.navbarContent, 'flex items-center justify-between gap-4 is-full')}>
       <div className='flex items-center gap-4'>
         <NavToggle />
-        <NavSearch />
+        {isAdmin && <NavSearch />}
       </div>
       <div className='flex items-center'>
         <LanguageDropdown />

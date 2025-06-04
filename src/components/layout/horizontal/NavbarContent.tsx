@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation'
 
 // Third-party Imports
 import classnames from 'classnames'
+import { useSession } from 'next-auth/react'
 
 // Type Imports
 import type { Locale } from '@configs/i18n'
@@ -87,6 +88,8 @@ const NavbarContent = () => {
   const { isBreakpointReached } = useHorizontalNav()
   const params = useParams()
   const locale = (params?.lang as Locale) || 'en'
+  const { data: session } = useSession()
+  const isAdmin = session?.user?.role === 'ADMIN'
 
   useEffect(() => {
     const fetchShortcuts = async () => {
@@ -139,7 +142,7 @@ const NavbarContent = () => {
       </div>
 
       <div className='flex items-center'>
-        <NavSearch />
+        {isAdmin && <NavSearch />}
         <LanguageDropdown />
         <ModeDropdown />
         {!loading && <ShortcutsDropdown shortcuts={shortcuts} />}
