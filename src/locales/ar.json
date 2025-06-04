@@ -830,7 +830,7 @@
         },
         "roles": {
             "ADMIN": "المدير",
-            "DOCTOR_MANAGER": "مدير العيادة",
+            "CABINET_MANAGER": "مدير العيادة",
             "DOCTOR": "طبيب",
             "NURSE": "ممرض",
             "RECEPTIONIST": "موظف استقبال",

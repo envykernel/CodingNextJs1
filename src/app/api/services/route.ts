@@ -27,6 +27,11 @@ export async function GET() {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
+    // Check if user has appropriate role
+    if ((session.user as any).role !== 'ADMIN' && (session.user as any).role !== 'CABINET_MANAGER') {
+      return new NextResponse('Not authorized', { status: 403 })
+    }
+
     const services = await prisma.service.findMany({
       where: {
         organisation_id: session.user.organisationId ? parseInt(session.user.organisationId) : undefined
@@ -55,6 +60,11 @@ export async function POST(request: Request) {
 
     if (!session) {
       return new NextResponse(JSON.stringify({ error: 'services.error.unauthorized' }), { status: 401 })
+    }
+
+    // Check if user has appropriate role
+    if ((session.user as any).role !== 'ADMIN' && (session.user as any).role !== 'CABINET_MANAGER') {
+      return new NextResponse(JSON.stringify({ error: 'services.error.unauthorized' }), { status: 403 })
     }
 
     if (!session.user.organisationId) {

@@ -69,6 +69,11 @@ const roleConfig = {
     icon: 'tabler-crown',
     label: 'Administrator'
   },
+  CABINET_MANAGER: {
+    color: 'warning',
+    icon: 'tabler-building-hospital',
+    label: 'Cabinet Manager'
+  },
   DOCTOR: {
     color: 'primary',
     icon: 'tabler-stethoscope',
@@ -286,7 +291,7 @@ const UserDropdown = () => {
                       <Typography color='text.primary'>{t('userMenu.usersManagement')}</Typography>
                     </MenuItem>
                   )}
-                  {userRole === 'ADMIN' && (
+                  {(userRole === 'ADMIN' || userRole === 'CABINET_MANAGER') && (
                     <MenuItem className='mli-2 gap-3' onClick={handleServicesClick}>
                       <i className='tabler-clipboard-list' />
                       <Typography color='text.primary'>{t('userMenu.services')}</Typography>
