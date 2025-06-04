@@ -15,13 +15,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if user is admin
+    // Check if user is admin or cabinet manager
     const user = await prisma.userInternal.findUnique({
       where: { email: session.user?.email ?? '' },
       include: { organisation: true }
     })
 
-    if (!user || user.role !== 'ADMIN') {
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'CABINET_MANAGER')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
@@ -29,7 +29,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const medicationId = parseInt(id)
     const data = await request.json()
 
-    // Check if medication exists and belongs to user's organization
+    // Check if medication exists
     const existingMedication = await prisma.medication.findUnique({
       where: { id: medicationId }
     })
@@ -38,7 +38,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Medication not found' }, { status: 404 })
     }
 
-    if (existingMedication.organisation_id !== user.organisationId) {
+    // For cabinet managers, only allow updating medications that belong to their organization or have no organization
+    if (
+      user.role === 'CABINET_MANAGER' &&
+      existingMedication.organisation_id !== null &&
+      existingMedication.organisation_id !== user.organisationId
+    ) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
@@ -49,7 +54,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         name: data.name,
         category: data.category,
         dosages: data.dosages,
-        organisation_id: user.organisationId
+
+        // If user is cabinet manager, always set the organization_id to their organization
+        // If user is admin, keep the existing organization_id
+        organisation_id: user.role === 'CABINET_MANAGER' ? user.organisationId : existingMedication.organisation_id
       }
     })
 
@@ -70,13 +78,13 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if user is admin
+    // Check if user is admin or cabinet manager
     const user = await prisma.userInternal.findUnique({
       where: { email: session.user?.email ?? '' },
       include: { organisation: true }
     })
 
-    if (!user || user.role !== 'ADMIN') {
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'CABINET_MANAGER')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

@@ -23,6 +23,11 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import TablePagination from '@mui/material/TablePagination'
 import Autocomplete from '@mui/material/Autocomplete'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogActions from '@mui/material/DialogActions'
 
 import { useSession } from 'next-auth/react'
 
@@ -56,6 +61,9 @@ export default function MedicationList() {
   // Pagination states
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [medicationToDelete, setMedicationToDelete] = useState<number | null>(null)
 
   const isAdmin = session?.user?.role === 'ADMIN'
   const userOrgId = Number(session?.user?.organisationId)
@@ -156,7 +164,7 @@ export default function MedicationList() {
     setDrawerOpen(true)
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDeleteClick = (id: number) => {
     // Find the medication to check organization
     const medication = medications.find(med => med.id === id)
 
@@ -169,12 +177,15 @@ export default function MedicationList() {
       return
     }
 
-    if (!confirm(t('confirmation.deleteMedication') || 'Are you sure you want to delete this medication?')) {
-      return
-    }
+    setMedicationToDelete(id)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!medicationToDelete) return
 
     try {
-      const response = await fetch(`/api/medications/${id}`, {
+      const response = await fetch(`/api/medications/${medicationToDelete}`, {
         method: 'DELETE'
       })
 
@@ -186,7 +197,15 @@ export default function MedicationList() {
     } catch (error) {
       console.error('Error deleting medication:', error)
       alert(t('errorDeletingMedication') || 'Error deleting medication')
+    } finally {
+      setDeleteDialogOpen(false)
+      setMedicationToDelete(null)
     }
+  }
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false)
+    setMedicationToDelete(null)
   }
 
   const clearFilters = () => {
@@ -347,7 +366,7 @@ export default function MedicationList() {
                                     variant='outlined'
                                     color='error'
                                     size='small'
-                                    onClick={() => handleDelete(medication.id)}
+                                    onClick={() => handleDeleteClick(medication.id)}
                                     startIcon={<i className='tabler-trash' />}
                                   >
                                     {t('medications.delete')}
@@ -392,6 +411,27 @@ export default function MedicationList() {
         medication={selectedMedication}
         onSave={fetchMedications}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby='delete-dialog-title'
+        aria-describedby='delete-dialog-description'
+      >
+        <DialogTitle id='delete-dialog-title'>{t('medications.confirmDelete')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id='delete-dialog-description'>{t('medications.confirmDelete')}</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color='primary'>
+            {t('medications.cancel')}
+          </Button>
+          <Button onClick={handleDeleteConfirm} color='error' autoFocus>
+            {t('medications.delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   )
 }

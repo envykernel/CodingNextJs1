@@ -79,6 +79,8 @@ export default function DoctorList() {
   const [doctorToDelete, setDoctorToDelete] = useState<number | null>(null)
 
   const isAdmin = session?.user?.role === 'ADMIN'
+  const isCabinetManager = session?.user?.role === 'CABINET_MANAGER'
+  const canManageDoctors = isAdmin || isCabinetManager
   const userOrgId = Number(session?.user?.organisationId)
 
   const fetchDoctors = async () => {
@@ -103,10 +105,10 @@ export default function DoctorList() {
   }
 
   useEffect(() => {
-    if (isAdmin) {
+    if (canManageDoctors) {
       fetchDoctors()
     }
-  }, [isAdmin, userOrgId])
+  }, [canManageDoctors, userOrgId])
 
   // Get unique specialties from doctors
   const specialties = useMemo(() => {
@@ -199,7 +201,7 @@ export default function DoctorList() {
     setPage(0)
   }
 
-  if (!isAdmin) {
+  if (!canManageDoctors) {
     return (
       <Grid container spacing={6}>
         <Grid item xs={12}>
@@ -223,7 +225,7 @@ export default function DoctorList() {
           <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', gap: 4 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Typography variant='h5'>{t('doctors.title')}</Typography>
-              {isAdmin && (
+              {canManageDoctors && (
                 <Button
                   variant='contained'
                   onClick={() => {
@@ -314,7 +316,7 @@ export default function DoctorList() {
                       <TableCell>{t('doctors.table.email')}</TableCell>
                       <TableCell>{t('doctors.table.phone')}</TableCell>
                       <TableCell>{t('doctors.table.status')}</TableCell>
-                      {isAdmin && <TableCell align='right'>{t('doctors.table.actions')}</TableCell>}
+                      {canManageDoctors && <TableCell align='right'>{t('doctors.table.actions')}</TableCell>}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -338,7 +340,7 @@ export default function DoctorList() {
                             }}
                           />
                         </TableCell>
-                        {isAdmin && (
+                        {canManageDoctors && (
                           <TableCell align='right'>
                             <Button
                               variant='outlined'
@@ -380,7 +382,7 @@ export default function DoctorList() {
         </Card>
       </Grid>
 
-      {isAdmin && (
+      {canManageDoctors && (
         <DoctorDrawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}

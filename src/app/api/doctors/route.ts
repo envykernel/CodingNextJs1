@@ -14,8 +14,8 @@ export async function GET() {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    // Only admin users can access this endpoint
-    if (session.user.role !== 'ADMIN') {
+    // Only admin or cabinet manager users can access this endpoint
+    if (session.user.role !== 'ADMIN' && session.user.role !== 'CABINET_MANAGER') {
       return new NextResponse('Forbidden', { status: 403 })
     }
 
@@ -45,8 +45,8 @@ export async function POST(request: Request) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    // Only admin users can access this endpoint
-    if (session.user.role !== 'ADMIN') {
+    // Only admin or cabinet manager users can access this endpoint
+    if (session.user.role !== 'ADMIN' && session.user.role !== 'CABINET_MANAGER') {
       return new NextResponse('Forbidden', { status: 403 })
     }
 

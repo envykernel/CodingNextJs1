@@ -26,9 +26,17 @@ export async function GET() {
     }
 
     // If user is admin, return all medications
+    // If user is cabinet manager, return medications for their organization and medications with no organization
     // Otherwise, return only medications for user's organization
     const medications = await prisma.medication.findMany({
-      where: user.role === 'ADMIN' ? {} : { organisation_id: user.organisationId },
+      where:
+        user.role === 'ADMIN'
+          ? {}
+          : user.role === 'CABINET_MANAGER'
+            ? {
+                OR: [{ organisation_id: user.organisationId }, { organisation_id: null }]
+              }
+            : { organisation_id: user.organisationId },
       orderBy: { name: 'asc' }
     })
 
@@ -49,13 +57,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if user is admin
+    // Check if user is admin or cabinet manager
     const user = await prisma.userInternal.findUnique({
       where: { email: session.user?.email ?? '' },
       include: { organisation: true }
     })
 
-    if (!user || user.role !== 'ADMIN') {
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'CABINET_MANAGER')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
