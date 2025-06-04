@@ -380,7 +380,7 @@ export default function MedicationList() {
                       {paginatedMedications.length === 0 && (
                         <TableRow>
                           <TableCell colSpan={5} align='center'>
-                            {t('noResultsFound')}
+                            {t('medications.noResults')}
                           </TableCell>
                         </TableRow>
                       )}
