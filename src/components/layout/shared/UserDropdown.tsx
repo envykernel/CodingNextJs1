@@ -138,10 +138,13 @@ const UserDropdown = () => {
   }
 
   const organisationName = (session?.user as any)?.organisationName
-  const userRole = (session?.user as any)?.role as keyof typeof roleConfig
+  const userRole = session?.user?.role as keyof typeof roleConfig
   const roleInfo = userRole ? roleConfig[userRole] : null
   const orgLabel = translations[lang || 'en']?.organisation || 'Organisation'
   const roleLabel = translations[lang || 'en']?.role || 'Role'
+  const isAdmin = userRole === 'ADMIN'
+  const isCabinetManager = userRole === 'CABINET_MANAGER'
+  const canManageOrg = isAdmin || isCabinetManager
 
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
@@ -279,7 +282,7 @@ const UserDropdown = () => {
                     <i className='tabler-settings' />
                     <Typography color='text.primary'>{t('userMenu.settings')}</Typography>
                   </MenuItem>
-                  {userRole === 'ADMIN' && (
+                  {canManageOrg && (
                     <MenuItem className='mli-2 gap-3' onClick={handleOrganisationClick}>
                       <i className='tabler-building' />
                       <Typography color='text.primary'>{t('userMenu.organisation')}</Typography>

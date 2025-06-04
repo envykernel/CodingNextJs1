@@ -67,6 +67,8 @@ const HorizontalMenu = (props: { dictionary: Awaited<ReturnType<typeof getDictio
   const { t } = useTranslation()
   const { data: session } = useSession()
   const isAdmin = session?.user?.role === 'ADMIN'
+  const isCabinetManager = session?.user?.role === 'CABINET_MANAGER'
+  const canManageOrg = isAdmin || isCabinetManager
 
   // State
   const [organisationDrawerOpen, setOrganisationDrawerOpen] = useState(false)
@@ -155,11 +157,13 @@ const HorizontalMenu = (props: { dictionary: Awaited<ReturnType<typeof getDictio
             {t('sidebar.navigation.createInvoice')}
           </MenuItem>
         </SubMenu>
-        {isAdmin && (
+        {canManageOrg && (
           <SubMenu label={t('sidebar.navigation.administration')} icon={<i className='tabler-settings' />}>
-            <MenuItem href={`/${locale}/pages/users-management`} icon={<i className='tabler-users' />}>
-              {t('sidebar.navigation.userManagement')}
-            </MenuItem>
+            {isAdmin && (
+              <MenuItem href={`/${locale}/pages/users-management`} icon={<i className='tabler-users' />}>
+                {t('sidebar.navigation.userManagement')}
+              </MenuItem>
+            )}
             <MenuItem onClick={handleOrganisationClick} icon={<i className='tabler-building' />}>
               {t('sidebar.navigation.organisation')}
             </MenuItem>

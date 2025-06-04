@@ -96,9 +96,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       return new NextResponse('Unauthorized', { status: 403 })
     }
 
-    // Verify that the user is an admin
-    if (session.user.role !== 'ADMIN') {
-      return new NextResponse('Only administrators can update organisation details', { status: 403 })
+    // Verify that the user is an admin or cabinet manager
+    if (session.user.role !== 'ADMIN' && session.user.role !== 'CABINET_MANAGER') {
+      return new NextResponse('Only administrators and cabinet managers can update organisation details', {
+        status: 403
+      })
     }
 
     const body = await request.json()
