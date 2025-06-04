@@ -1010,7 +1010,17 @@
         },
         "searchPlaceholder": "Search services...",
         "noResults": "No services found matching your search",
-        "noServices": "No services available"
+        "noServices": "No services available",
+        "confirmation": {
+            "delete": {
+                "title": "Delete Service",
+                "warning": "Warning: This action cannot be undone",
+                "message": "Are you sure you want to delete the service {name}?",
+                "description": "This service will be permanently removed from the system. If this service has been used in any invoices, it cannot be deleted.",
+                "cancel": "Cancel",
+                "confirm": "Delete Service"
+            }
+        }
     },
     "patientMeasurementsForm": {
         "title": "Patient Measurements",

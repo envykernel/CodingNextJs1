@@ -1052,7 +1052,17 @@
         },
         "searchPlaceholder": "Rechercher des services...",
         "noResults": "Aucun service ne correspond à votre recherche",
-        "noServices": "Aucun service disponible"
+        "noServices": "Aucun service disponible",
+        "confirmation": {
+            "delete": {
+                "title": "Supprimer le Service",
+                "warning": "Attention : Cette action ne peut pas être annulée",
+                "message": "Êtes-vous sûr de vouloir supprimer le service {name} ?",
+                "description": "Ce service sera définitivement supprimé du système. Si ce service a été utilisé dans des factures, il ne peut pas être supprimé.",
+                "cancel": "Annuler",
+                "confirm": "Supprimer le Service"
+            }
+        }
     },
     "usersManagement": {
         "title": "Gestion des Utilisateurs",
