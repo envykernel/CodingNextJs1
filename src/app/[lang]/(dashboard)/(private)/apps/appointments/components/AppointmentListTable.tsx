@@ -404,14 +404,6 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
                 </TableCell>
                 <TableCell>
                   <div className='flex items-center gap-2'>
-                    <Button
-                      variant='outlined'
-                      size='small'
-                      onClick={() => router.push(`/${lang}/apps/appointments/details?id=${row.id}`)}
-                      startIcon={<i className='tabler-eye text-lg' />}
-                    >
-                      {t('appointments.actions.viewDetails')}
-                    </Button>
                     {/* Show VisitActionButton if there's a linked visit */}
                     {visitsByAppointmentId[row.id] && (
                       <VisitActionButton
