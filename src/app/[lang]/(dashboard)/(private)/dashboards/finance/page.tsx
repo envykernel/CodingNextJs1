@@ -167,15 +167,6 @@ const FinanceDashboard = async () => {
     labels: Object.keys(paymentMethodsData)
   }
 
-  // Prepare invoice status data
-  const invoiceStatusData = {
-    series: [
-      invoices.filter(inv => inv.payment_status === 'PAID').length,
-      invoices.filter(inv => inv.payment_status === 'PARTIAL').length,
-      invoices.filter(inv => inv.payment_status === 'PENDING').length
-    ]
-  }
-
   return (
     <Grid container spacing={6}>
       {/* Statistics Cards */}
@@ -211,11 +202,7 @@ const FinanceDashboard = async () => {
       </Grid>
 
       {/* Charts */}
-      <FinanceCharts
-        chartData={chartData}
-        paymentMethodsData={paymentMethodsDataForCharts}
-        invoiceStatusData={invoiceStatusData}
-      />
+      <FinanceCharts chartData={chartData} paymentMethodsData={paymentMethodsDataForCharts} />
     </Grid>
   )
 }

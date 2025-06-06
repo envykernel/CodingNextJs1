@@ -24,12 +24,9 @@ interface FinanceChartsProps {
     series: number[]
     labels: string[]
   }
-  invoiceStatusData: {
-    series: number[]
-  }
 }
 
-const FinanceCharts = ({ chartData, paymentMethodsData, invoiceStatusData }: FinanceChartsProps) => {
+const FinanceCharts = ({ chartData, paymentMethodsData }: FinanceChartsProps) => {
   const theme = useTheme()
 
   const formatCurrency = (val: string | number | number[]): string => {
@@ -74,7 +71,7 @@ const FinanceCharts = ({ chartData, paymentMethodsData, invoiceStatusData }: Fin
   ]
 
   return (
-    <>
+    <Grid container spacing={6}>
       {/* Monthly Revenue Chart */}
       <Grid size={{ xs: 12 }}>
         <Card>
@@ -229,8 +226,8 @@ const FinanceCharts = ({ chartData, paymentMethodsData, invoiceStatusData }: Fin
       <PaymentMethodsChart data={paymentMethodsData} />
 
       {/* Invoice Status Chart */}
-      <InvoiceStatusChart data={invoiceStatusData} />
-    </>
+      <InvoiceStatusChart />
+    </Grid>
   )
 }
 

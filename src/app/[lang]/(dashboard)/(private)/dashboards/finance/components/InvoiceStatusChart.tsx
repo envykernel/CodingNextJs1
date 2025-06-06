@@ -1,21 +1,33 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import Grid from '@mui/material/Grid2'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import { useTheme } from '@mui/material/styles'
+import { useSession } from 'next-auth/react'
 
 import AppReactApexCharts from '@/libs/styles/AppReactApexCharts'
+import { getInvoiceStatusData } from '../actions'
 
-interface InvoiceStatusChartProps {
-  data: {
-    series: number[]
-  }
-}
-
-const InvoiceStatusChart = ({ data }: InvoiceStatusChartProps) => {
+const InvoiceStatusChart = () => {
   const theme = useTheme()
+  const { data: session } = useSession()
+  const [data, setData] = useState<{ series: number[] }>({ series: [0, 0, 0] })
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (session?.user?.organisationId) {
+        const invoiceStatusData = await getInvoiceStatusData(Number(session.user.organisationId))
+
+        setData(invoiceStatusData)
+      }
+    }
+
+    fetchData()
+  }, [session?.user?.organisationId])
 
   // Define chart colors with fallback hex values
   const chartColors = {
