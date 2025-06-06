@@ -1150,5 +1150,16 @@
                 "confirm": "Supprimer l'Utilisateur"
             }
         }
+    },
+    "notifications": {
+        "all": "Toutes les notifications",
+        "markAllAsRead": "Tout marquer comme lu",
+        "viewAll": "Voir toutes les notifications",
+        "noNotifications": "Aucune notification",
+        "loading": "Chargement des notifications...",
+        "error": "Échec du chargement des notifications",
+        "markAsRead": "Marquer comme lu",
+        "read": "Lu",
+        "unread": "Non lu"
     }
 }

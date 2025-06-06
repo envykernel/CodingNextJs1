@@ -31,12 +31,14 @@ import type { CustomAvatarProps } from '@core/components/mui/Avatar'
 
 // Component Imports
 import CustomAvatar from '@core/components/mui/Avatar'
+import NotificationsDrawer from './NotificationsDrawer'
 
 // Config Imports
 import themeConfig from '@configs/themeConfig'
 
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
+import { useTranslation } from '@/contexts/translationContext'
 
 // Util Imports
 import { getInitials } from '@/utils/getInitials'
@@ -94,6 +96,8 @@ const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState<NotificationsType[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const { t } = useTranslation()
 
   // Refs
   const anchorRef = useRef<HTMLButtonElement>(null)
@@ -259,13 +263,13 @@ const NotificationDropdown = () => {
                 <div className='bs-full flex flex-col'>
                   <div className='flex items-center justify-between plb-3.5 pli-4 is-full gap-2'>
                     <Typography variant='h6' className='flex-auto'>
-                      Notifications
+                      {t('notifications.all')}
                     </Typography>
                     {notificationCount > 0 && (
                       <Chip size='small' variant='tonal' color='primary' label={notificationCount} />
                     )}
                     <Tooltip
-                      title={readAll ? 'Mark all as unread' : 'Mark all as read'}
+                      title={readAll ? t('notifications.markAsRead') : t('notifications.markAllAsRead')}
                       placement={placement === 'bottom-end' ? 'left' : 'right'}
                       slotProps={{
                         popper: {
@@ -296,14 +300,15 @@ const NotificationDropdown = () => {
                     {loading ? (
                       <div className='flex items-center justify-center p-4'>
                         <CircularProgress size={24} />
+                        <Typography className='ml-2'>{t('notifications.loading')}</Typography>
                       </div>
                     ) : error ? (
                       <div className='flex items-center justify-center p-4'>
-                        <Typography color='error'>{error}</Typography>
+                        <Typography color='error'>{t('notifications.error')}</Typography>
                       </div>
                     ) : notifications.length === 0 ? (
                       <div className='flex items-center justify-center p-4'>
-                        <Typography color='text.secondary'>No new notifications</Typography>
+                        <Typography color='text.secondary'>{t('notifications.noNotifications')}</Typography>
                       </div>
                     ) : (
                       notifications.map((notification, index) => {
@@ -347,6 +352,7 @@ const NotificationDropdown = () => {
                                 className={classnames('mbs-1 mie-1', {
                                   'invisible group-hover:visible': read
                                 })}
+                                title={read ? t('notifications.read') : t('notifications.unread')}
                               />
                             </div>
                           </div>
@@ -356,8 +362,16 @@ const NotificationDropdown = () => {
                   </ScrollWrapper>
                   <Divider />
                   <div className='p-4'>
-                    <Button fullWidth variant='contained' size='small'>
-                      View All Notifications
+                    <Button
+                      fullWidth
+                      variant='contained'
+                      size='small'
+                      onClick={() => {
+                        setDrawerOpen(true)
+                        handleClose()
+                      }}
+                    >
+                      {t('notifications.viewAll')}
                     </Button>
                   </div>
                 </div>
@@ -366,6 +380,7 @@ const NotificationDropdown = () => {
           </Fade>
         )}
       </Popper>
+      <NotificationsDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </>
   )
 }

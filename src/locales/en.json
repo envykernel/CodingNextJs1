@@ -1215,5 +1215,16 @@
             "title": "Delete Doctor",
             "message": "Are you sure you want to delete this doctor? This action cannot be undone."
         }
+    },
+    "notifications": {
+        "all": "All Notifications",
+        "markAllAsRead": "Mark all as read",
+        "viewAll": "View All Notifications",
+        "noNotifications": "No notifications",
+        "loading": "Loading notifications...",
+        "error": "Failed to load notifications",
+        "markAsRead": "Mark as read",
+        "read": "Read",
+        "unread": "Unread"
     }
 }
