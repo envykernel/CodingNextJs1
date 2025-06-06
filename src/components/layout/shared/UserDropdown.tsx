@@ -244,7 +244,7 @@ const UserDropdown = () => {
             <Paper className={settings.skin === 'bordered' ? 'border shadow-none' : 'shadow-lg'}>
               <ClickAwayListener onClickAway={e => handleDropdownClose(e as MouseEvent | TouchEvent)}>
                 <MenuList>
-                  <div className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
+                  <MenuItem className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
                     {roleInfo ? (
                       <RoleAvatar
                         alt={session?.user?.name || ''}
@@ -272,27 +272,34 @@ const UserDropdown = () => {
                         </Typography>
                       )}
                     </div>
-                  </div>
+                  </MenuItem>
                   <Divider className='mlb-1' />
-                  {isAdmin && (
-                    <>
-                      <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/user-profile')}>
-                        <i className='tabler-user' />
-                        <Typography color='text.primary'>{t('userMenu.myProfile')}</Typography>
-                      </MenuItem>
-                      <MenuItem
-                        className='mli-2 gap-3'
-                        onClick={e => handleDropdownClose(e, '/pages/account-settings')}
-                      >
-                        <i className='tabler-settings' />
-                        <Typography color='text.primary'>{t('userMenu.settings')}</Typography>
-                      </MenuItem>
-                      <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/pricing')}>
-                        <i className='tabler-currency-dollar' />
-                        <Typography color='text.primary'>{t('userMenu.pricing')}</Typography>
-                      </MenuItem>
-                    </>
-                  )}
+                  {isAdmin && [
+                    <MenuItem
+                      key='profile'
+                      className='mli-2 gap-3'
+                      onClick={e => handleDropdownClose(e, '/pages/user-profile')}
+                    >
+                      <i className='tabler-user' />
+                      <Typography color='text.primary'>{t('userMenu.myProfile')}</Typography>
+                    </MenuItem>,
+                    <MenuItem
+                      key='settings'
+                      className='mli-2 gap-3'
+                      onClick={e => handleDropdownClose(e, '/pages/account-settings')}
+                    >
+                      <i className='tabler-settings' />
+                      <Typography color='text.primary'>{t('userMenu.settings')}</Typography>
+                    </MenuItem>,
+                    <MenuItem
+                      key='pricing'
+                      className='mli-2 gap-3'
+                      onClick={e => handleDropdownClose(e, '/pages/pricing')}
+                    >
+                      <i className='tabler-currency-dollar' />
+                      <Typography color='text.primary'>{t('userMenu.pricing')}</Typography>
+                    </MenuItem>
+                  ]}
                   {canManageOrg && (
                     <MenuItem className='mli-2 gap-3' onClick={handleOrganisationClick}>
                       <i className='tabler-building' />
@@ -315,7 +322,7 @@ const UserDropdown = () => {
                     <i className='tabler-help-circle' />
                     <Typography color='text.primary'>{t('userMenu.faq')}</Typography>
                   </MenuItem>
-                  <div className='flex items-center plb-2 pli-3'>
+                  <MenuItem className='flex items-center plb-2 pli-3'>
                     <Button
                       fullWidth
                       variant='contained'
@@ -327,7 +334,7 @@ const UserDropdown = () => {
                     >
                       {t('userMenu.logout')}
                     </Button>
-                  </div>
+                  </MenuItem>
                 </MenuList>
               </ClickAwayListener>
             </Paper>

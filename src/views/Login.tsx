@@ -1,11 +1,14 @@
 'use client'
 
 // MUI Imports
+import { useSearchParams } from 'next/navigation'
+
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
+import Alert from '@mui/material/Alert'
 
 // Third-party Imports
 import { signIn } from 'next-auth/react'
@@ -118,6 +121,26 @@ const GoogleButton = styled(Button)(({ theme }) => ({
   }
 }))
 
+const AzureADButton = styled(Button)(({ theme }) => ({
+  padding: theme.spacing(1.75),
+  borderRadius: 12,
+  textTransform: 'none',
+  fontSize: '1rem',
+  fontWeight: 500,
+  background: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#FFFFFF',
+  color: theme.palette.mode === 'dark' ? '#FFFFFF' : '#1F2937',
+  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#E5E7EB'}`,
+  boxShadow: theme.palette.mode === 'dark' ? '0 1px 2px rgba(0, 0, 0, 0.05)' : '0 1px 3px rgba(0, 0, 0, 0.1)',
+  transition: 'all 0.2s ease-in-out',
+  marginTop: theme.spacing(2),
+  '&:hover': {
+    background: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#F9FAFB',
+    transform: 'translateY(-1px)',
+    boxShadow:
+      theme.palette.mode === 'dark' ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+  }
+}))
+
 const LogoWrapper = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(5),
   display: 'flex',
@@ -186,6 +209,17 @@ const ServiceLabel = styled(Typography)(() => ({
 }))
 
 const Login = () => {
+  const searchParams = useSearchParams()
+  const error = searchParams?.get('error')
+
+  const getErrorMessage = (errorCode: string | null) => {
+    if (errorCode === 'AccessDenied') {
+      return 'Accès refusé. Veuillez contacter votre administrateur pour obtenir les autorisations nécessaires.'
+    }
+
+    return 'Une erreur est survenue lors de la connexion. Veuillez réessayer.'
+  }
+
   return (
     <LoginContainer>
       <LeftSection>
@@ -278,6 +312,43 @@ const Login = () => {
             >
               Se connecter avec Google
             </GoogleButton>
+            <AzureADButton
+              fullWidth
+              startIcon={
+                <img
+                  src='/images/logos/microsoft.svg'
+                  alt='Microsoft'
+                  width={22}
+                  height={22}
+                  style={{
+                    filter: 'brightness(0.9)',
+                    objectFit: 'contain'
+                  }}
+                />
+              }
+              onClick={() => signIn('azure-ad')}
+            >
+              Se connecter avec Microsoft
+            </AzureADButton>
+            {error && (
+              <Alert
+                severity='error'
+                sx={{
+                  mt: 3,
+                  '& .MuiAlert-message': {
+                    fontSize: '0.9rem',
+                    textAlign: 'center',
+                    width: '100%'
+                  },
+                  '& .MuiAlert-icon': {
+                    display: 'flex',
+                    alignItems: 'center'
+                  }
+                }}
+              >
+                {getErrorMessage(error)}
+              </Alert>
+            )}
             <Box
               sx={{
                 mt: 4,

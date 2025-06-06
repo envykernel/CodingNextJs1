@@ -1,6 +1,7 @@
 // Third-party Imports
 import CredentialProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
+import AzureADProvider from 'next-auth/providers/azure-ad'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import type { NextAuthOptions } from 'next-auth'
 
@@ -19,7 +20,6 @@ declare module 'next-auth' {
   }
 }
 
-// Helper to ensure string or undefined (never null)
 function safeString(val: unknown): string | undefined {
   return typeof val === 'string' ? val : undefined
 }
@@ -28,54 +28,25 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET,
-
-  // ** Configure one or more authentication providers
-  // ** Please refer to https://next-auth.js.org/configuration/options#providers for more `providers` options
   providers: [
     CredentialProvider({
-      // ** The name to display on the sign in form (e.g. 'Sign in with...')
-      // ** For more details on Credentials Provider, visit https://next-auth.js.org/providers/credentials
       name: 'Credentials',
       type: 'credentials',
-
-      /*
-       * As we are using our own Sign-in page, we do not need to change
-       * username or password attributes manually in following credentials object.
-       */
       credentials: {},
       async authorize(credentials) {
-        /*
-         * You need to provide your own logic here that takes the credentials submitted and returns either
-         * an object representing a user or value that is false/null if the credentials are invalid.
-         * For e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-         * You can also use the `req` object to obtain additional parameters (i.e., the request IP address)
-         */
         const { email, password } = credentials as { email: string; password: string }
 
         try {
-          // ** Login API Call to match the user credentials and receive user data in response along with his role
           const res = await fetch(`${process.env.API_URL}/login`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
           })
 
           const data = await res.json()
 
-          if (res.status === 401) {
-            throw new Error(JSON.stringify(data))
-          }
-
-          if (res.status === 200) {
-            /*
-             * Please unset all the sensitive information of the user either from API response or before returning
-             * user data below. Below return statement will set the user object in the token and the same is set in
-             * the session which will be accessible all over the app.
-             */
-            return data
-          }
+          if (res.status === 401) throw new Error(JSON.stringify(data))
+          if (res.status === 200) return data
 
           return null
         } catch (e: any) {
@@ -87,56 +58,36 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
-    })
+    }),
 
-    // ** ...add more providers here
+    AzureADProvider({
+      clientId: process.env.AZURE_AD_CLIENT_ID as string,
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET as string,
+      tenantId: process.env.AZURE_AD_TENANT_ID as string,
+      allowDangerousEmailAccountLinking: true
+    })
   ],
 
-  // ** Please refer to https://next-auth.js.org/configuration/options#session for more `session` options
   session: {
-    /*
-     * Choose how you want to save the user session.
-     * The default is `jwt`, an encrypted JWT (JWE) stored in the session cookie.
-     * If you use an `adapter` however, NextAuth default it to `database` instead.
-     * You can still force a JWT session by explicitly defining `jwt`.
-     * When using `database`, the session cookie will only contain a `sessionToken` value,
-     * which is used to look up the session in the database.
-     * If you use a custom credentials provider, user accounts will not be persisted in a database by NextAuth.js (even if one is configured).
-     * The option to use JSON Web Tokens for session tokens must be enabled to use a custom credentials provider.
-     */
     strategy: 'jwt',
-
-    // ** Seconds - How long until an idle session expires and is no longer valid
-    maxAge: 30 * 24 * 60 * 60 // ** 30 days
+    maxAge: 30 * 24 * 60 * 60 // 30 days
   },
 
-  // ** Please refer to https://next-auth.js.org/configuration/options#pages for more `pages` options
   pages: {
     signIn: '/fr/login',
-
-    // NOTE: This is hardcoded to English. For full i18n, handle language prefix dynamically (middleware or custom logic).
     error: '/en/pages/misc/access-denied'
   },
 
-  // ** Please refer to https://next-auth.js.org/configuration/options#callbacks for more `callbacks` options
   callbacks: {
-    /*
-     * While using `jwt` as a strategy, `jwt()` callback will be called before
-     * the `session()` callback. So we have to add custom parameters in `token`
-     * via `jwt()` callback to make them accessible in the `session()` callback
-     */
     async jwt({ token, user }) {
-      // If user is present (on sign in), fetch from UserInternal to get organisationId and organisation name
       if (user) {
         const internalUser = await prisma.userInternal.findUnique({
           where: { email: safeString(user.email) },
           include: { organisation: true }
         })
 
-        token.name = safeString(user.name)
+        token.name = internalUser?.name || safeString(user.name)
         token.email = safeString(user.email)
-
-        // Always convert organisationId to string if not null/undefined
         token.organisationId = internalUser?.organisationId != null ? String(internalUser.organisationId) : undefined
         token.organisationName = internalUser?.organisation?.name
           ? safeString(internalUser.organisation.name)
@@ -146,12 +97,11 @@ export const authOptions: NextAuthOptions = {
 
       return token
     },
+
     async session({ session, token }) {
       if (session.user) {
         session.user.name = safeString(token.name)
         session.user.email = safeString(token.email)
-
-        // Always convert organisationId to string if not null/undefined
         ;(session.user as any).organisationId = token.organisationId != null ? String(token.organisationId) : undefined
         ;(session.user as any).organisationName = token.organisationName
           ? safeString(token.organisationName)
@@ -161,14 +111,83 @@ export const authOptions: NextAuthOptions = {
 
       return session
     },
-    async signIn({ user }) {
-      // Check UserInternal approval and organisation
+
+    async signIn({ user, account }) {
       const internalUser = await prisma.userInternal.findUnique({
-        where: { email: safeString(user.email) }
+        where: { email: safeString(user.email) },
+        include: { organisation: true }
       })
 
       if (!internalUser || !internalUser.isApproved || !internalUser.organisationId) {
-        return false
+        return '/fr/login?error=AccessDenied'
+      }
+
+      const existingUser = await prisma.user.findUnique({
+        where: { email: user.email! },
+        include: { accounts: true }
+      })
+
+      if (existingUser) {
+        const existingAccount = existingUser.accounts.find(
+          acc => acc.provider === account?.provider && acc.providerAccountId === account?.providerAccountId
+        )
+
+        if (existingAccount) return true
+
+        if (account) {
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              name: internalUser.name || user.name,
+              image: user.image
+            }
+          })
+
+          await prisma.account.create({
+            data: {
+              userId: existingUser.id,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              type: account.type,
+              access_token: account.access_token,
+              expires_at: account.expires_at,
+              id_token: account.id_token,
+              refresh_token: account.refresh_token,
+              session_state: account.session_state,
+              token_type: account.token_type,
+              scope: account.scope,
+              organisationId: internalUser.organisationId
+            }
+          })
+
+          return true
+        }
+      }
+
+      if (account) {
+        await prisma.user.create({
+          data: {
+            name: internalUser.name || user.name,
+            email: user.email,
+            image: user.image,
+            organisationId: internalUser.organisationId,
+            accounts: {
+              create: {
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+                type: account.type,
+                access_token: account.access_token,
+                expires_at: account.expires_at,
+                id_token: account.id_token,
+                refresh_token: account.refresh_token,
+                session_state: account.session_state,
+                token_type: account.token_type,
+                scope: account.scope,
+                organisationId: internalUser.organisationId
+              }
+            }
+          }
+        })
       }
 
       return true
