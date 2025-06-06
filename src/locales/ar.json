@@ -1206,7 +1206,8 @@
     "radiology": {
         "title": "الأشعة",
         "result": "النتيجة",
-        "noOrders": "لا توجد أوامر أشعة مسجلة",
+        "resultDate": "تاريخ النتيجة",
+        "noOrders": "لا توجد طلبات أشعة مسجلة",
         "orderForm": {
             "title": "طلب الأشعة",
             "examType": "نوع الفحص",
@@ -1220,6 +1221,7 @@
             "success": "تم حفظ طلب الأشعة بنجاح!",
             "error": "فشل في حفظ طلب الأشعة",
             "create": "إنشاء طلب أشعة",
+            "update": "تحديث الطلب",
             "statusPending": "الطلب قيد الانتظار",
             "statusInProgress": "الطلب قيد التنفيذ",
             "statusCompleted": "الطلب مكتمل",

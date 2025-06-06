@@ -1182,5 +1182,44 @@
             "fetchFailed": "Échec de la récupération des paramètres",
             "saveFailed": "Échec de l'enregistrement des paramètres"
         }
+    },
+    "radiology": {
+        "title": "Radiologie",
+        "result": "Résultat",
+        "resultDate": "Date du résultat",
+        "noOrders": "Aucun ordre de radiologie enregistré",
+        "orderForm": {
+            "title": "Ordre de Radiologie",
+            "examType": "Type d'Examen",
+            "selectExamType": "Sélectionner le Type d'Examen",
+            "notes": "Notes",
+            "status": "Statut",
+            "result": "Résultat",
+            "resultDate": "Date du Résultat",
+            "save": "Enregistrer",
+            "saving": "Enregistrement...",
+            "success": "Ordre de radiologie enregistré avec succès !",
+            "error": "Échec de l'enregistrement de l'ordre de radiologie",
+            "create": "Créer un Ordre de Radiologie",
+            "update": "Mettre à Jour l'Ordre",
+            "statusPending": "Ordre en Attente",
+            "statusInProgress": "Ordre en Cours",
+            "statusCompleted": "Ordre Terminé",
+            "statusCancelled": "Ordre Annulé",
+            "statusOptions": {
+                "pending": "En Attente",
+                "in_progress": "En Cours",
+                "completed": "Terminé",
+                "cancelled": "Annulé"
+            }
+        },
+        "status": {
+            "pending": "En Attente",
+            "in_progress": "En Cours",
+            "completed": "Terminé",
+            "cancelled": "Annulé"
+        },
+        "notes": "Notes",
+        "orderedAt": "Commandé le"
     }
 }
