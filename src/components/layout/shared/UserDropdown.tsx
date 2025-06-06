@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
+import { useTheme } from '@mui/material/styles'
 
 // Third-party Imports
 import { signOut, useSession } from 'next-auth/react'
@@ -110,6 +111,7 @@ const UserDropdown = () => {
   const { settings } = useSettings()
   const { lang } = useParams() as { lang?: string }
   const { t } = useTranslation()
+  const theme = useTheme()
 
   // Translation for organisation label only (removed role translation)
   const translations: Record<string, Record<string, string>> = {
@@ -177,7 +179,17 @@ const UserDropdown = () => {
       <Avatar
         ref={anchorRef}
         onClick={handleDropdownOpen}
-        className='cursor-pointer bs-[38px] is-[38px] bg-primary bg-opacity-10 mis-2'
+        className='cursor-pointer bs-[38px] is-[38px] mis-2'
+        sx={{
+          backgroundColor:
+            theme.palette.mode === 'dark'
+              ? 'rgba(var(--mui-palette-primary-mainChannel) / 0.12)'
+              : 'rgba(var(--mui-palette-primary-mainChannel) / 0.08)',
+          '& i': {
+            color: theme.palette.primary.main,
+            opacity: 1
+          }
+        }}
       >
         <i className={`${roleIcon} text-[20px]`} />
       </Avatar>
@@ -200,7 +212,18 @@ const UserDropdown = () => {
               <ClickAwayListener onClickAway={e => handleDropdownClose(e as MouseEvent | TouchEvent)}>
                 <MenuList>
                   <MenuItem className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
-                    <Avatar className='bg-primary bg-opacity-10'>
+                    <Avatar
+                      sx={{
+                        backgroundColor:
+                          theme.palette.mode === 'dark'
+                            ? 'rgba(var(--mui-palette-primary-mainChannel) / 0.12)'
+                            : 'rgba(var(--mui-palette-primary-mainChannel) / 0.08)',
+                        '& i': {
+                          color: theme.palette.primary.main,
+                          opacity: 1
+                        }
+                      }}
+                    >
                       <i className={`${roleIcon} text-[20px]`} />
                     </Avatar>
                     <div className='flex items-start flex-col'>
