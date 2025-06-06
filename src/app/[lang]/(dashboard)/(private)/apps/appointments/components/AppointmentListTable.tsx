@@ -374,6 +374,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell sx={{ fontWeight: 700 }}>{t('patient')}</TableCell>
               <TableCell sx={{ fontWeight: 700 }}>{t('date')}</TableCell>
               <TableCell sx={{ fontWeight: 700 }}>{t('time')}</TableCell>
               <TableCell sx={{ fontWeight: 700 }}>{t('type')}</TableCell>
@@ -384,6 +385,7 @@ const AppointmentListTable: React.FC<AppointmentListTableProps> = ({
           <TableBody>
             {appointmentData.map(row => (
               <TableRow key={row.id}>
+                <TableCell>{row.patientName || t('appointments.unknownPatient')}</TableCell>
                 <TableCell>
                   <LocalDate iso={row.appointmentDate} />
                 </TableCell>
