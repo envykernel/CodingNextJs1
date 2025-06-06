@@ -16,6 +16,7 @@ import Box from '@mui/material/Box'
 import Switch from '@mui/material/Switch'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid2'
+import { useTheme } from '@mui/material/styles'
 
 import { useTranslation } from '@/contexts/translationContext'
 
@@ -43,6 +44,7 @@ const SettingsTab = () => {
 
   // Hooks
   const { t } = useTranslation()
+  const theme = useTheme()
 
   // Fetch available shortcuts and user's shortcuts
   useEffect(() => {
@@ -205,22 +207,35 @@ const SettingsTab = () => {
                             <Box
                               className={classnames(
                                 'flex items-center justify-center rounded-lg p-2',
-                                shortcut.isEnabled ? 'bg-primary bg-opacity-10' : 'bg-actionHover'
+                                shortcut.isEnabled
+                                  ? theme.palette.mode === 'dark'
+                                    ? 'bg-primary'
+                                    : 'bg-primary'
+                                  : 'bg-actionHover'
                               )}
+                              sx={{
+                                backgroundColor: shortcut.isEnabled
+                                  ? theme.palette.mode === 'dark'
+                                    ? 'rgba(255, 255, 255, 0.15)'
+                                    : 'rgba(0, 0, 0, 0.08)'
+                                  : 'transparent'
+                              }}
                             >
                               <span
-                                className={classnames(
-                                  'inline-flex items-center justify-center',
-                                  shortcut.icon,
-                                  'text-textPrimary'
-                                )}
+                                className={classnames('inline-flex items-center justify-center', shortcut.icon)}
                                 style={{
                                   fontSize: '1.5rem',
                                   width: '1.5rem',
                                   height: '1.5rem',
                                   display: 'inline-flex',
                                   alignItems: 'center',
-                                  justifyContent: 'center'
+                                  justifyContent: 'center',
+                                  color: shortcut.isEnabled
+                                    ? '#fff' // White in all cases for enabled shortcuts
+                                    : theme.palette.mode === 'dark'
+                                      ? theme.palette.text.disabled
+                                      : theme.palette.text.secondary,
+                                  opacity: 1
                                 }}
                                 aria-hidden='true'
                               />

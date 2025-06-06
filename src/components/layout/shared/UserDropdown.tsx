@@ -175,7 +175,7 @@ const UserDropdown = () => {
   }
 
   return (
-    <>
+    <div>
       <Avatar
         ref={anchorRef}
         onClick={handleDropdownOpen}
@@ -312,7 +312,7 @@ const UserDropdown = () => {
       />
 
       <ServicesDrawer open={servicesDrawerOpen} onClose={() => setServicesDrawerOpen(false)} />
-    </>
+    </div>
   )
 }
 

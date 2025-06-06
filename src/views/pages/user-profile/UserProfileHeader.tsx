@@ -27,8 +27,8 @@ const UserProfileHeader = ({ data }: { data?: ProfileHeaderType }) => {
       />
       <CardContent className='flex gap-5 justify-center flex-col items-center md:items-end md:flex-row !pt-0 md:justify-start'>
         <div className='flex rounded-bs-md mbs-[-40px] border-[5px] mis-[-5px] border-be-0 border-backgroundPaper bg-backgroundPaper'>
-          <div className='flex items-center justify-center bs-[120px] is-[120px] bg-primary bg-opacity-10 rounded'>
-            <i className={`${data?.profileImg} text-[64px]`} />
+          <div className='flex items-center justify-center bs-[120px] is-[120px] bg-primary rounded'>
+            <i className={`${data?.profileImg} text-[64px] text-white`} />
           </div>
         </div>
         <div className='flex is-full justify-start self-end flex-col items-center gap-6 sm-gap-0 sm:flex-row sm:justify-between sm:items-end '>
