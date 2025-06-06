@@ -3,16 +3,19 @@
 // React Imports
 import { useState, useEffect } from 'react'
 
+import classnames from 'classnames'
+
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
-import Checkbox from '@mui/material/Checkbox'
-import FormControlLabel from '@mui/material/FormControlLabel'
+import Box from '@mui/material/Box'
+import Switch from '@mui/material/Switch'
+import Divider from '@mui/material/Divider'
+import Grid from '@mui/material/Grid2'
 
 type ShortcutReference = {
   id: number
@@ -24,7 +27,6 @@ type ShortcutReference = {
 type UserShortcut = {
   id: number
   shortcutId: number
-  displayOrder: number
   isActive: boolean
 }
 
@@ -81,32 +83,11 @@ const SettingsTab = () => {
           {
             id: 0,
             shortcutId,
-            displayOrder: prev.length,
             isActive: true
           }
         ]
       }
     })
-  }
-
-  // Handle reordering
-  const moveShortcut = (index: number, direction: 'up' | 'down') => {
-    if ((direction === 'up' && index === 0) || (direction === 'down' && index === userShortcuts.length - 1)) {
-      return
-    }
-
-    const newShortcuts = [...userShortcuts]
-    const newIndex = direction === 'up' ? index - 1 : index + 1
-    const temp = newShortcuts[index]
-
-    newShortcuts[index] = newShortcuts[newIndex]
-    newShortcuts[newIndex] = temp
-
-    newShortcuts.forEach((shortcut, idx) => {
-      shortcut.displayOrder = idx
-    })
-
-    setUserShortcuts(newShortcuts)
   }
 
   // Save shortcuts
@@ -151,91 +132,134 @@ const SettingsTab = () => {
       <Card>
         <CardContent>
           <div className='flex flex-col gap-6'>
-            <Typography variant='h5'>Shortcuts Settings</Typography>
+            <div className='flex items-center justify-between'>
+              <div>
+                <Typography variant='h5' className='mbe-1'>
+                  Shortcuts Settings
+                </Typography>
+                <Typography variant='body2' color='text.secondary'>
+                  Customize your quick access shortcuts
+                </Typography>
+              </div>
+              <Button
+                variant='contained'
+                onClick={handleSave}
+                disabled={saving}
+                startIcon={saving ? <CircularProgress size={20} /> : <i className='tabler-device-floppy' />}
+              >
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
 
             {error && (
-              <Alert severity='error' onClose={() => setError(null)}>
+              <Alert severity='error' onClose={() => setError(null)} className='mbe-4'>
                 {error}
               </Alert>
             )}
 
             {success && (
-              <Alert severity='success' onClose={() => setSuccess(null)}>
+              <Alert severity='success' onClose={() => setSuccess(null)} className='mbe-4'>
                 {success}
               </Alert>
             )}
 
-            <Typography variant='body2' color='text.secondary'>
-              Select the shortcuts you want to use and arrange them in your preferred order. Use the arrow buttons to
-              reorder your shortcuts.
-            </Typography>
+            <Divider />
 
-            <div className='flex flex-col gap-4'>
-              {availableShortcuts.map(shortcut => {
-                const userShortcut = userShortcuts.find(us => us.shortcutId === shortcut.id)
-                const isEnabled = userShortcut?.isActive ?? false
-                const index = userShortcuts.findIndex(us => us.shortcutId === shortcut.id)
+            <Grid container spacing={3}>
+              {availableShortcuts
+                .map(shortcut => {
+                  const userShortcut = userShortcuts.find(us => us.shortcutId === shortcut.id)
+                  const isEnabled = userShortcut?.isActive ?? false
 
-                return (
-                  <Card key={shortcut.id} className='border border-divider'>
-                    <CardContent>
-                      <div className='flex items-center gap-4'>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={isEnabled}
+                  return { ...shortcut, isEnabled }
+                })
+                .sort((a, b) => {
+                  // First sort by enabled status (enabled first)
+                  if (a.isEnabled !== b.isEnabled) {
+                    return a.isEnabled ? -1 : 1
+                  }
+
+                  // For items with same status, sort by title
+                  return a.title.localeCompare(b.title)
+                })
+                .map(shortcut => (
+                  <Grid key={shortcut.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+                    <Card
+                      className={classnames(
+                        'transition-all duration-200 h-full',
+                        'shadow-sm hover:shadow-md',
+                        !shortcut.isEnabled && 'opacity-60'
+                      )}
+                    >
+                      <CardContent className='flex flex-col h-full'>
+                        <div className='flex flex-col gap-3 h-full'>
+                          <div className='flex items-center gap-3'>
+                            <Box
+                              className={classnames(
+                                'flex items-center justify-center rounded-lg p-2',
+                                shortcut.isEnabled ? 'bg-primary bg-opacity-10' : 'bg-actionHover'
+                              )}
+                            >
+                              <span
+                                className={classnames(
+                                  'inline-flex items-center justify-center',
+                                  shortcut.icon,
+                                  'text-textPrimary'
+                                )}
+                                style={{
+                                  fontSize: '1.5rem',
+                                  width: '1.5rem',
+                                  height: '1.5rem',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}
+                                aria-hidden='true'
+                              />
+                            </Box>
+                            <div className='flex-grow'>
+                              <Typography
+                                variant='subtitle1'
+                                className={classnames(!shortcut.isEnabled && 'text-textDisabled')}
+                              >
+                                {shortcut.title}
+                              </Typography>
+                              <Typography variant='body2' color='text.secondary' className='line-clamp-2'>
+                                {shortcut.subtitle}
+                              </Typography>
+                            </div>
+                          </div>
+
+                          <div className='flex items-center justify-between mt-auto pt-3 border-t border-divider'>
+                            <Switch
+                              checked={shortcut.isEnabled}
                               onChange={() => handleShortcutToggle(shortcut.id)}
                               color='primary'
                             />
-                          }
-                          label={
-                            <div className='flex items-center gap-2'>
-                              <i className={`${shortcut.icon} text-2xl`} />
-                              <div className='flex-grow'>
-                                <Typography variant='subtitle1'>{shortcut.title}</Typography>
-                                <Typography variant='body2' color='text.secondary'>
-                                  {shortcut.subtitle}
-                                </Typography>
-                              </div>
-                            </div>
-                          }
-                          className='flex-grow'
-                        />
-                        {isEnabled && (
-                          <div className='flex flex-col gap-1'>
-                            <IconButton size='small' onClick={() => moveShortcut(index, 'up')} disabled={index === 0}>
-                              <i className='tabler-chevron-up' />
-                            </IconButton>
-                            <IconButton
-                              size='small'
-                              onClick={() => moveShortcut(index, 'down')}
-                              disabled={index === userShortcuts.length - 1}
+                            <Typography
+                              variant='body2'
+                              className={classnames(
+                                'font-medium',
+                                shortcut.isEnabled ? 'text-primary' : 'text-textDisabled'
+                              )}
                             >
-                              <i className='tabler-chevron-down' />
-                            </IconButton>
+                              {shortcut.isEnabled ? 'Active' : 'Inactive'}
+                            </Typography>
                           </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+            </Grid>
+
+            <div className='flex items-center gap-2 text-textSecondary'>
+              <i className='tabler-info-circle text-lg' />
+              <Typography variant='body2'>Disabled shortcuts will not appear in your quick access menu.</Typography>
             </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* Save Button */}
-      <div className='flex justify-end'>
-        <Button
-          variant='contained'
-          onClick={handleSave}
-          disabled={saving}
-          startIcon={saving ? <CircularProgress size={20} /> : null}
-        >
-          {saving ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </div>
     </div>
   )
 }
