@@ -28,9 +28,11 @@ const AddPaymentDrawer = ({ open, handleClose, invoice, refreshInvoice }: Props)
 
   const [success, setSuccess] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
   let timeoutId: NodeJS.Timeout | null = null
   const [services, setServices] = useState<any[]>([])
   const [refreshPayments, setRefreshPayments] = useState(0)
+  const [formData, setFormData] = useState<any>(null)
 
   const { t } = useTranslation()
 
@@ -40,48 +42,65 @@ const AddPaymentDrawer = ({ open, handleClose, invoice, refreshInvoice }: Props)
       .then(setServices)
   }, [refreshPayments])
 
-  const handleFormSubmit = async (formData: any) => {
+  const handleFormSubmit = async (data: any) => {
     if (!invoice) return handleClose()
+
+    setLoading(true)
+    setError(null)
+    setSuccess(null)
+    setFormData(data)
 
     try {
       const res = await fetch('/api/apps/payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          organisation_id: invoice.organisation_id,
-          patient_id: invoice.patient_id,
+          organisation_id: invoice.organisation?.id,
+          patient_id: invoice.patient?.id,
           invoice_id: invoice.id,
-          invoice_line_id: formData.itemId,
-          amount: formData.paymentAmount,
-          payment_date: formData.paymentDate,
-          payment_method: formData.paymentMethod,
-          notes: formData.paymentNote
+          invoice_line_id: data.itemId,
+          amount: data.paymentAmount,
+          payment_date: data.paymentDate,
+          payment_method: data.paymentMethod,
+          notes: data.paymentNote
         })
       })
 
       if (res.ok) {
         setSuccess('Payment added successfully!')
         setError(null)
-        timeoutId = setTimeout(() => setSuccess(null), 3000)
-        if (refreshInvoice) await refreshInvoice()
-        handleClose()
+
+        // First refresh the invoice data
+        if (refreshInvoice) {
+          await refreshInvoice()
+        }
+
+        // Then close the drawer after a short delay to show the success message
+        setTimeout(() => {
+          setLoading(false)
+          setFormData(null)
+          handleClose()
+        }, 1500)
       } else {
-        setError('Failed to add payment.')
+        const errorData = await res.json()
+        setError(errorData.error || 'Failed to add payment.')
         setSuccess(null)
-        timeoutId = setTimeout(() => setError(null), 3000)
+        setLoading(false)
       }
     } catch (e) {
       setError('Failed to add payment.')
       setSuccess(null)
-      timeoutId = setTimeout(() => setError(null), 3000)
-      handleClose()
+      setLoading(false)
     }
   }
 
-  // Clear messages on drawer close
+  // Clear messages and form data on drawer close
   const handleDrawerClose = () => {
-    setSuccess(null)
-    setError(null)
+    // Only clear messages if there's no success state
+    if (!success) {
+      setError(null)
+      setFormData(null)
+    }
     if (timeoutId) clearTimeout(timeoutId)
     handleClose()
   }
@@ -125,6 +144,8 @@ const AddPaymentDrawer = ({ open, handleClose, invoice, refreshInvoice }: Props)
           payments={payments}
           invoiceBalance={invoiceBalance}
           onSubmit={handleFormSubmit}
+          loading={loading}
+          initialData={formData}
         />
       </div>
     </Drawer>

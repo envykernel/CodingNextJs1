@@ -15,6 +15,7 @@ type PaymentFormProps = {
   onSubmit: (data: PaymentFormData) => void
   invoice?: any
   payments?: any[]
+  loading?: boolean
 }
 
 export type PaymentFormData = {
@@ -33,7 +34,7 @@ const initialData: PaymentFormData = {
   itemId: ''
 }
 
-const PaymentForm = ({ invoiceBalance, onSubmit, invoice }: PaymentFormProps) => {
+const PaymentForm = ({ invoiceBalance, onSubmit, invoice, loading = false }: PaymentFormProps) => {
   const [formData, setFormData] = useState<PaymentFormData>(initialData)
   const [services, setServices] = useState<any[]>([])
   const { t } = useTranslation()
@@ -145,8 +146,8 @@ const PaymentForm = ({ invoiceBalance, onSubmit, invoice }: PaymentFormProps) =>
         onChange={e => setFormData({ ...formData, paymentNote: e.target.value })}
       />
       <div className='flex items-center gap-4'>
-        <Button variant='contained' type='submit'>
-          {t('invoice.addPayment')}
+        <Button variant='contained' type='submit' disabled={loading}>
+          {loading ? t('invoice.addingPayment') : t('invoice.addPayment')}
         </Button>
       </div>
     </form>

@@ -23,14 +23,24 @@ import PaymentsList from '../shared/PaymentsList'
 import { getLocalizedUrl } from '@/utils/i18n'
 import { useTranslation } from '@/contexts/translationContext'
 
+type Invoice = {
+  id: number
+  total_amount: number
+  payment_apps: any[]
+  organisation?: {
+    id: number
+    currency: string
+  }
+}
+
 const PreviewActions = ({
   id,
-  invoice,
+  invoice: initialInvoice,
   refreshInvoice,
   onButtonClick
 }: {
   id: string
-  invoice: any
+  invoice: Invoice
   refreshInvoice?: () => void
   onButtonClick: () => void
 }) => {
@@ -38,6 +48,7 @@ const PreviewActions = ({
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false)
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false)
   const [services, setServices] = useState<any[]>([])
+  const [invoice, setInvoice] = useState<Invoice>(initialInvoice)
 
   // Hooks
   const params = useParams() as Record<string, string | string[]> | null
@@ -49,6 +60,22 @@ const PreviewActions = ({
       .then(res => res.json())
       .then(setServices)
   }, [])
+
+  // Update invoice state when initialInvoice changes
+  useEffect(() => {
+    setInvoice(initialInvoice)
+  }, [initialInvoice])
+
+  const refreshPaymentData = async () => {
+    try {
+      const res = await fetch(`/api/apps/invoice/payments?id=${id}`)
+      if (!res.ok) throw new Error('Failed to fetch payment data')
+      const data = await res.json()
+      setInvoice((prev: Invoice) => ({ ...prev, ...data }))
+    } catch (error) {
+      console.error('Error refreshing payment data:', error)
+    }
+  }
 
   const payments = Array.isArray(invoice?.payment_apps) ? invoice.payment_apps : []
 
@@ -96,11 +123,17 @@ const PreviewActions = ({
         open={paymentDrawerOpen}
         handleClose={() => setPaymentDrawerOpen(false)}
         invoice={invoice}
-        refreshInvoice={refreshInvoice}
+        refreshInvoice={refreshPaymentData}
       />
       <SendInvoiceDrawer open={sendDrawerOpen} handleClose={() => setSendDrawerOpen(false)} />
       <div className='mt-6'>
-        <PaymentsList payments={payments} invoice={invoice} services={services} t={t} />
+        <PaymentsList
+          payments={payments}
+          invoice={invoice}
+          services={services}
+          t={t}
+          onPaymentDeleted={refreshPaymentData}
+        />
       </div>
     </>
   )

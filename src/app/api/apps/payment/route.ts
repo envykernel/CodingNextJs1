@@ -5,8 +5,60 @@ import { prisma } from '../../../../prisma/prisma'
 
 export async function POST(req: NextRequest) {
   try {
+    const requestData = await req.json()
+
+    console.log('Payment request data:', requestData)
+
     const { organisation_id, patient_id, invoice_id, invoice_line_id, amount, payment_date, payment_method, notes } =
-      await req.json()
+      requestData
+
+    // Log the extracted values
+    console.log('Extracted values:', {
+      organisation_id,
+      patient_id,
+      invoice_id,
+      invoice_line_id,
+      amount,
+      payment_date,
+      payment_method,
+      notes
+    })
+
+    // Validate required fields
+    if (!organisation_id) {
+      console.log('Missing organisation_id in request')
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Organisation ID is required',
+          receivedData: requestData // Include the received data in the error response
+        },
+        { status: 400 }
+      )
+    }
+
+    if (!patient_id) {
+      return NextResponse.json({ success: false, error: 'Patient ID is required' }, { status: 400 })
+    }
+
+    if (!invoice_id) {
+      return NextResponse.json({ success: false, error: 'Invoice ID is required' }, { status: 400 })
+    }
+
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+      return NextResponse.json({ success: false, error: 'Valid amount is required' }, { status: 400 })
+    }
+
+    // Parse IDs as numbers
+    const parsedOrgId = Number(organisation_id)
+    const parsedPatientId = Number(patient_id)
+    const parsedInvoiceId = Number(invoice_id)
+    const parsedInvoiceLineId = invoice_line_id ? Number(invoice_line_id) : undefined
+
+    if (isNaN(parsedOrgId) || isNaN(parsedPatientId) || isNaN(parsedInvoiceId)) {
+      return NextResponse.json({ success: false, error: 'Invalid ID format' }, { status: 400 })
+    }
 
     // Map frontend payment_method to Prisma enum
     const paymentMethodMap: Record<string, string> = {
@@ -24,7 +76,7 @@ export async function POST(req: NextRequest) {
 
     // Get the invoice and its existing payments
     const invoice = await prisma.invoice.findUnique({
-      where: { id: invoice_id },
+      where: { id: parsedInvoiceId },
       include: {
         payment_apps: true
       }
@@ -50,12 +102,12 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // 1. Create payment
+    // 1. Create payment with proper organisation connection
     const payment = await prisma.payment.create({
       data: {
-        organisation_id,
-        patient_id,
-        amount,
+        organisation: { connect: { id: parsedOrgId } },
+        patient: { connect: { id: parsedPatientId } },
+        amount: Number(amount),
         payment_date: new Date(payment_date),
         payment_method: mappedPaymentMethod as any,
         notes,
@@ -66,28 +118,27 @@ export async function POST(req: NextRequest) {
     // 2. Create payment_application
     await prisma.payment_application.create({
       data: {
-        organisation_id,
-        payment_id: payment.id,
-        invoice_id,
-        invoice_line_id,
-        amount_applied: amount,
+        organisation: { connect: { id: parsedOrgId } },
+        payment: { connect: { id: payment.id } },
+        invoice: { connect: { id: parsedInvoiceId } },
+        invoice_line: parsedInvoiceLineId ? { connect: { id: parsedInvoiceLineId } } : undefined,
+        amount_applied: Number(amount),
         applied_date: new Date(payment_date)
       }
     })
 
     // 3. Update invoice status based on new total paid
     const newTotalPaid = totalPaid + Number(amount)
-
     const newStatus = newTotalPaid >= Number(invoice.total_amount) ? 'PAID' : newTotalPaid > 0 ? 'PARTIAL' : 'PENDING'
 
     await prisma.invoice.update({
-      where: { id: invoice_id },
+      where: { id: parsedInvoiceId },
       data: { payment_status: newStatus }
     })
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true, payment })
   } catch (error) {
-    console.error(error)
+    console.error('Error creating payment:', error)
 
     return NextResponse.json(
       { success: false, error: error instanceof Error ? error.message : String(error) },
