@@ -12,6 +12,7 @@ import type { ApexOptions } from 'apexcharts'
 import CustomTextField from '@core/components/mui/TextField'
 import AppReactApexCharts from '@/libs/styles/AppReactApexCharts'
 import InvoiceStatusChart from '@/app/[lang]/(dashboard)/(private)/dashboards/finance/components/InvoiceStatusChart'
+import PaymentMethodsChart from '@/app/[lang]/(dashboard)/(private)/dashboards/finance/components/PaymentMethodsChart'
 
 interface FinanceChartsProps {
   chartData: {
@@ -31,7 +32,19 @@ interface FinanceChartsProps {
 const FinanceCharts = ({ chartData, paymentMethodsData, invoiceStatusData }: FinanceChartsProps) => {
   const theme = useTheme()
 
-  const formatCurrency = (value: number) => value.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })
+  const formatCurrency = (val: string | number | number[]): string => {
+    if (typeof val === 'number') {
+      if (isNaN(val)) return '€0.00'
+
+      return val.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })
+    }
+
+    if (Array.isArray(val)) {
+      return val.map(v => (typeof v === 'number' ? formatCurrency(v) : '€0.00')).join(', ')
+    }
+
+    return '€0.00'
+  }
 
   const formatDate = (value: string) => {
     const date = new Date(value)
@@ -213,29 +226,7 @@ const FinanceCharts = ({ chartData, paymentMethodsData, invoiceStatusData }: Fin
       </Grid>
 
       {/* Payment Methods Distribution */}
-      <Grid size={{ xs: 12, md: 6 }}>
-        <Card>
-          <CardHeader title='Payment Methods' />
-          <CardContent>
-            <AppReactApexCharts
-              type='donut'
-              height={350}
-              series={paymentMethodsData.series}
-              options={{
-                labels: paymentMethodsData.labels,
-                legend: {
-                  position: 'bottom'
-                },
-                tooltip: {
-                  y: {
-                    formatter: formatCurrency
-                  }
-                }
-              }}
-            />
-          </CardContent>
-        </Card>
-      </Grid>
+      <PaymentMethodsChart data={paymentMethodsData} />
 
       {/* Invoice Status Chart */}
       <InvoiceStatusChart data={invoiceStatusData} />
