@@ -27,6 +27,10 @@ import { signOut, useSession } from 'next-auth/react'
 // Type Imports
 import type { Locale } from '@configs/i18n'
 
+// Component Imports
+import EditOrganisationDrawer from '@/components/organisation/EditOrganisationDrawer'
+import ServicesDrawer from '@/components/services/ServicesDrawer'
+
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
 import { useTranslation } from '@/contexts/translationContext'
@@ -111,8 +115,15 @@ const roleConfig = {
   }
 } as const
 
-import EditOrganisationDrawer from '@/components/organisation/EditOrganisationDrawer'
-import ServicesDrawer from '@/components/services/ServicesDrawer'
+// Role to icon mapping
+const roleIcons: Record<string, string> = {
+  ADMIN: 'tabler-shield-check',
+  DOCTOR: 'tabler-stethoscope',
+  NURSE: 'tabler-nurse',
+  CABINET_MANAGER: 'tabler-building-hospital',
+  RECEPTIONIST: 'tabler-clipboard-check',
+  PATIENT: 'tabler-user'
+}
 
 const UserDropdown = () => {
   // States
@@ -140,6 +151,7 @@ const UserDropdown = () => {
   const organisationName = (session?.user as any)?.organisationName
   const userRole = session?.user?.role as keyof typeof roleConfig
   const roleInfo = userRole ? roleConfig[userRole] : null
+  const roleIcon = userRole ? roleIcons[userRole] || 'tabler-user' : 'tabler-user'
   const orgLabel = translations[lang || 'en']?.organisation || 'Organisation'
   const roleLabel = translations[lang || 'en']?.role || 'Role'
   const isAdmin = userRole === 'ADMIN'
@@ -210,20 +222,20 @@ const UserDropdown = () => {
         {roleInfo ? (
           <RoleAvatar
             ref={anchorRef}
-            alt={session?.user?.name || ''}
-            src={session?.user?.image || ''}
             onClick={handleDropdownOpen}
             color={roleInfo.color}
-            className='cursor-pointer bs-[38px] is-[38px]'
-          />
+            className='cursor-pointer bs-[38px] is-[38px] bg-primary bg-opacity-10'
+          >
+            <i className={`${roleIcon} text-[20px]`} />
+          </RoleAvatar>
         ) : (
           <Avatar
             ref={anchorRef}
-            alt={session?.user?.name || ''}
-            src={session?.user?.image || ''}
             onClick={handleDropdownOpen}
-            className='cursor-pointer bs-[38px] is-[38px]'
-          />
+            className='cursor-pointer bs-[38px] is-[38px] bg-primary bg-opacity-10'
+          >
+            <i className='tabler-user text-[20px]' />
+          </Avatar>
         )}
       </Badge>
       <Popper
@@ -246,13 +258,13 @@ const UserDropdown = () => {
                 <MenuList>
                   <MenuItem className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
                     {roleInfo ? (
-                      <RoleAvatar
-                        alt={session?.user?.name || ''}
-                        src={session?.user?.image || ''}
-                        color={roleInfo.color}
-                      />
+                      <RoleAvatar color={roleInfo.color} className='bg-primary bg-opacity-10'>
+                        <i className={`${roleIcon} text-[20px]`} />
+                      </RoleAvatar>
                     ) : (
-                      <Avatar alt={session?.user?.name || ''} src={session?.user?.image || ''} />
+                      <Avatar className='bg-primary bg-opacity-10'>
+                        <i className='tabler-user text-[20px]' />
+                      </Avatar>
                     )}
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>

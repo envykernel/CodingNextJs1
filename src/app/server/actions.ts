@@ -269,31 +269,39 @@ export const getCurrentUserProfile = async () => {
     throw new Error('Not authenticated')
   }
 
-  const [internalUser, user] = await Promise.all([
-    prisma.userInternal.findUnique({
-      where: { email: session.user.email },
-      include: {
-        organisation: true
-      }
-    }),
-    prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
-  ])
+  const internalUser = await prisma.userInternal.findUnique({
+    where: { email: session.user.email },
+    include: {
+      organisation: true
+    }
+  })
 
   if (!internalUser) {
     throw new Error('User not found')
   }
 
+  // Map roles to icons
+  const roleIcons: Record<string, string> = {
+    ADMIN: 'tabler-shield-check',
+    DOCTOR: 'tabler-stethoscope',
+    NURSE: 'tabler-nurse',
+    CABINET_MANAGER: 'tabler-building-hospital',
+    RECEPTIONIST: 'tabler-clipboard-check',
+    PATIENT: 'tabler-user'
+  }
+
+  const userRole = internalUser.role || 'PATIENT'
+  const roleIcon = roleIcons[userRole] || 'tabler-user'
+
   // Format the data to match the ProfileHeaderType
   const profileHeader = {
     fullName: internalUser.name || '',
-    designation: internalUser.role || '',
-    designationIcon: 'tabler-user',
+    designation: userRole,
+    designationIcon: roleIcon,
     location: internalUser.organisation?.name || '',
     locationIcon: 'tabler-building', // Always use building icon for organization
     joiningDate: formatDateToDDMMYYYY(internalUser.createdAt),
-    profileImg: user?.image || '/images/avatars/1.png', // Use User model's image field
+    profileImg: roleIcon, // Use role icon instead of profile image
     coverImg: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' // Blue gradient similar to login page
   }
 
