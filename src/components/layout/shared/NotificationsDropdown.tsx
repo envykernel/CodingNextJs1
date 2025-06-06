@@ -178,16 +178,19 @@ const NotificationDropdown = () => {
   // Mark all notifications as read
   const readAllNotifications = async () => {
     try {
-      const response = await fetch('/api/notifications/read', {
-        method: 'PUT'
+      const response = await fetch('/api/notifications/read-all', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       })
 
       if (!response.ok) {
         throw new Error('Failed to mark all notifications as read')
       }
 
-      // Clear all notifications from the list
-      setNotifications([])
+      // Update notifications in state to mark all as read
+      setNotifications(prev => prev.map(notification => ({ ...notification, read: true })))
     } catch (err) {
       console.error('Error marking all notifications as read:', err)
     }
@@ -259,7 +262,7 @@ const NotificationDropdown = () => {
                       Notifications
                     </Typography>
                     {notificationCount > 0 && (
-                      <Chip size='small' variant='tonal' color='primary' label={`${notificationCount} New`} />
+                      <Chip size='small' variant='tonal' color='primary' label={notificationCount} />
                     )}
                     <Tooltip
                       title={readAll ? 'Mark all as unread' : 'Mark all as read'}
