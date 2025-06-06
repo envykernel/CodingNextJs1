@@ -11,7 +11,15 @@ import type { ProfileHeaderType } from '@/types/pages/profileTypes'
 const UserProfileHeader = ({ data }: { data?: ProfileHeaderType }) => {
   return (
     <Card>
-      <CardMedia image={data?.coverImg} className='bs-[250px]' />
+      <CardMedia
+        sx={{
+          background: data?.coverImg?.startsWith('linear-gradient') ? data.coverImg : undefined,
+          backgroundImage: data?.coverImg?.startsWith('linear-gradient') ? undefined : `url(${data?.coverImg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+        className='bs-[250px]'
+      />
       <CardContent className='flex gap-5 justify-center flex-col items-center md:items-end md:flex-row !pt-0 md:justify-start'>
         <div className='flex rounded-bs-md mbs-[-40px] border-[5px] mis-[-5px] border-be-0  border-backgroundPaper bg-backgroundPaper'>
           <img height={120} width={120} src={data?.profileImg} className='rounded' alt='Profile Background' />
@@ -25,7 +33,7 @@ const UserProfileHeader = ({ data }: { data?: ProfileHeaderType }) => {
                 <Typography className='font-medium'>{data?.designation}</Typography>
               </div>
               <div className='flex items-center gap-2'>
-                <i className='tabler-map-pin' />
+                <i className={data?.locationIcon || 'tabler-building'} />
                 <Typography className='font-medium'>{data?.location}</Typography>
               </div>
               <div className='flex items-center gap-2'>

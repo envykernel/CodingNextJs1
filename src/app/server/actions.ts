@@ -6,6 +6,10 @@
 'use server'
 
 // Data Imports
+import { getServerSession } from 'next-auth'
+
+import { authOptions } from '@/libs/auth'
+
 import { db as eCommerceData } from '@/fake-db/apps/ecommerce'
 import { db as academyData } from '@/fake-db/apps/academy'
 import { db as vehicleData } from '@/fake-db/apps/logistics'
@@ -15,6 +19,7 @@ import { db as profileData } from '@/fake-db/pages/userProfile'
 import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
 import { prisma } from '@/prisma/prisma'
+import { formatDateToDDMMYYYY } from '@/utils/date'
 
 export const getEcommerceData = async () => {
   return eCommerceData
@@ -255,4 +260,42 @@ export async function updatePatientAction(patientId: number, data: any) {
     console.error('Error updating patient:', error)
     throw error
   }
+}
+
+export const getCurrentUserProfile = async () => {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user?.email) {
+    throw new Error('Not authenticated')
+  }
+
+  const [internalUser, user] = await Promise.all([
+    prisma.userInternal.findUnique({
+      where: { email: session.user.email },
+      include: {
+        organisation: true
+      }
+    }),
+    prisma.user.findUnique({
+      where: { email: session.user.email }
+    })
+  ])
+
+  if (!internalUser) {
+    throw new Error('User not found')
+  }
+
+  // Format the data to match the ProfileHeaderType
+  const profileHeader = {
+    fullName: internalUser.name || '',
+    designation: internalUser.role || '',
+    designationIcon: 'tabler-user',
+    location: internalUser.organisation?.name || '',
+    locationIcon: 'tabler-building', // Always use building icon for organization
+    joiningDate: formatDateToDDMMYYYY(internalUser.createdAt),
+    profileImg: user?.image || '/images/avatars/1.png', // Use User model's image field
+    coverImg: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' // Blue gradient similar to login page
+  }
+
+  return { profileHeader }
 }

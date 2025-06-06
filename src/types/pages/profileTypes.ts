@@ -15,6 +15,7 @@ export type ProfileHeaderType = {
   fullName: string
   coverImg: string
   location: string
+  locationIcon?: string
   profileImg: string
   joiningDate: string
   designation: string
@@ -101,7 +102,6 @@ export type UserProfileActiveTab = ProfileTabType | TeamsTabType[] | ProjectsTab
 
 export type DataType = {
   profile: ProfileTabType
-  teams: TeamsTabType[]
   projects: ProjectsTabType[]
   connections: ConnectionsTabType[]
 }

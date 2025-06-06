@@ -311,53 +311,58 @@ const NotificationDropdown = () => {
                         <Typography color='text.secondary'>{t('notifications.noNotifications')}</Typography>
                       </div>
                     ) : (
-                      notifications.map((notification, index) => {
-                        const {
-                          id,
-                          title,
-                          subtitle,
-                          time,
-                          read,
-                          avatarImage,
-                          avatarIcon,
-                          avatarText,
-                          avatarColor,
-                          avatarSkin
-                        } = notification
+                      <div>
+                        {notifications.map((notification, index) => {
+                          const {
+                            id,
+                            title,
+                            subtitle,
+                            time,
+                            read,
+                            avatarImage,
+                            avatarIcon,
+                            avatarText,
+                            avatarColor,
+                            avatarSkin
+                          } = notification
 
-                        return (
-                          <div
-                            key={id}
-                            className={classnames('flex plb-3 pli-4 gap-3 cursor-pointer hover:bg-actionHover group', {
-                              'border-be': index !== notifications.length - 1
-                            })}
-                            onClick={(e: MouseEvent<HTMLElement>) => handleReadNotification(e, id)}
-                          >
-                            {getAvatar({ avatarImage, avatarIcon, title, avatarText, avatarColor, avatarSkin })}
-                            <div className='flex flex-col flex-auto'>
-                              <Typography variant='body2' className='font-medium mbe-1' color='text.primary'>
-                                {title}
-                              </Typography>
-                              <Typography variant='caption' color='text.secondary' className='mbe-2'>
-                                {subtitle}
-                              </Typography>
-                              <Typography variant='caption' color='text.disabled'>
-                                {time}
-                              </Typography>
+                          return (
+                            <div
+                              key={id}
+                              className={classnames(
+                                'flex plb-3 pli-4 gap-3 cursor-pointer hover:bg-actionHover group',
+                                {
+                                  'border-be': index !== notifications.length - 1
+                                }
+                              )}
+                              onClick={(e: MouseEvent<HTMLElement>) => handleReadNotification(e, id)}
+                            >
+                              {getAvatar({ avatarImage, avatarIcon, title, avatarText, avatarColor, avatarSkin })}
+                              <div className='flex flex-col flex-auto'>
+                                <Typography variant='body2' className='font-medium mbe-1' color='text.primary'>
+                                  {title}
+                                </Typography>
+                                <Typography variant='caption' color='text.secondary' className='mbe-2'>
+                                  {subtitle}
+                                </Typography>
+                                <Typography variant='caption' color='text.disabled'>
+                                  {time}
+                                </Typography>
+                              </div>
+                              <div className='flex flex-col items-end gap-2'>
+                                <Badge
+                                  variant='dot'
+                                  color={read ? 'secondary' : 'primary'}
+                                  className={classnames('mbs-1 mie-1', {
+                                    'invisible group-hover:visible': read
+                                  })}
+                                  title={read ? t('notifications.read') : t('notifications.unread')}
+                                />
+                              </div>
                             </div>
-                            <div className='flex flex-col items-end gap-2'>
-                              <Badge
-                                variant='dot'
-                                color={read ? 'secondary' : 'primary'}
-                                className={classnames('mbs-1 mie-1', {
-                                  'invisible group-hover:visible': read
-                                })}
-                                title={read ? t('notifications.read') : t('notifications.unread')}
-                              />
-                            </div>
-                          </div>
-                        )
-                      })
+                          )
+                        })}
+                      </div>
                     )}
                   </ScrollWrapper>
                   <Divider />

@@ -2,9 +2,11 @@
 
 // React Imports
 import { useState } from 'react'
-import type { ReactElement, SyntheticEvent } from 'react'
+import type { SyntheticEvent } from 'react'
 
 // MUI Imports
+import dynamic from 'next/dynamic'
+
 import Grid from '@mui/material/Grid2'
 import Tab from '@mui/material/Tab'
 import TabContext from '@mui/lab/TabContext'
@@ -17,12 +19,27 @@ import type { Data } from '@/types/pages/profileTypes'
 import UserProfileHeader from './UserProfileHeader'
 import CustomTabList from '@core/components/mui/TabList'
 
-const UserProfile = ({ tabContentList, data }: { tabContentList: { [key: string]: ReactElement }; data?: Data }) => {
+// Dynamic Imports
+const ProfileTab = dynamic(() => import('./profile/index'))
+const SettingsTab = dynamic(() => import('./SettingsTab'))
+
+const UserProfile = ({ data }: { data?: Data }) => {
   // States
   const [activeTab, setActiveTab] = useState('profile')
 
   const handleChange = (event: SyntheticEvent, value: string) => {
     setActiveTab(value)
+  }
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'profile':
+        return <ProfileTab data={data?.users.profile} />
+      case 'settings':
+        return <SettingsTab />
+      default:
+        return null
+    }
   }
 
   return (
@@ -46,34 +63,15 @@ const UserProfile = ({ tabContentList, data }: { tabContentList: { [key: string]
               <Tab
                 label={
                   <div className='flex items-center gap-1.5'>
-                    <i className='tabler-users text-lg' />
-                    Teams
+                    <i className='tabler-settings text-lg' />
+                    Settings
                   </div>
                 }
-                value='teams'
-              />
-              <Tab
-                label={
-                  <div className='flex items-center gap-1.5'>
-                    <i className='tabler-layout-grid text-lg' />
-                    Projects
-                  </div>
-                }
-                value='projects'
-              />
-              <Tab
-                label={
-                  <div className='flex items-center gap-1.5'>
-                    <i className='tabler-link text-lg' />
-                    Connections
-                  </div>
-                }
-                value='connections'
+                value='settings'
               />
             </CustomTabList>
-
             <TabPanel value={activeTab} className='p-0'>
-              {tabContentList[activeTab]}
+              {renderTabContent()}
             </TabPanel>
           </TabContext>
         </Grid>

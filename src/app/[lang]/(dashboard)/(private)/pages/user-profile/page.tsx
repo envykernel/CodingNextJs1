@@ -1,9 +1,3 @@
-// React Imports
-import type { ReactElement } from 'react'
-
-// Next Imports
-import dynamic from 'next/dynamic'
-
 // Type Imports
 import type { Data } from '@/types/pages/profileTypes'
 
@@ -11,44 +5,31 @@ import type { Data } from '@/types/pages/profileTypes'
 import UserProfile from '@views/pages/user-profile'
 
 // Data Imports
-import { getProfileData } from '@/app/server/actions'
-
-const ProfileTab = dynamic(() => import('@views/pages/user-profile/profile'))
-const TeamsTab = dynamic(() => import('@views/pages/user-profile/teams'))
-const ProjectsTab = dynamic(() => import('@views/pages/user-profile/projects'))
-const ConnectionsTab = dynamic(() => import('@views/pages/user-profile/connections'))
-
-// Vars
-const tabContentList = (data?: Data): { [key: string]: ReactElement } => ({
-  profile: <ProfileTab data={data?.users.profile} />,
-  teams: <TeamsTab data={data?.users.teams} />,
-  projects: <ProjectsTab data={data?.users.projects} />,
-  connections: <ConnectionsTab data={data?.users.connections} />
-})
-
-/**
- * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
- * ! `.env` file found at root of your project and also update the API endpoints like `/pages/profile` in below example.
- * ! Also, remove the above server action import and the action itself from the `src/app/server/actions.ts` file to clean up unused code
- * ! because we've used the server action for getting our static data.
- */
-
-/* const getProfileData = async () => {
-  // Vars
-  const res = await fetch(`${process.env.API_URL}/pages/profile`)
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch profileData')
-  }
-
-  return res.json()
-} */
+import { getCurrentUserProfile } from '@/app/server/actions'
 
 const ProfilePage = async () => {
-  // Vars
-  const data = await getProfileData()
+  // Get user profile data
+  const { profileHeader } = await getCurrentUserProfile()
 
-  return <UserProfile data={data} tabContentList={tabContentList(data)} />
+  // Create data object with profile header and empty arrays for tabs
+  const data: Data = {
+    profileHeader,
+    users: {
+      profile: {
+        teams: [],
+        about: [],
+        contacts: [],
+        overview: [],
+        teamsTech: [],
+        connections: [],
+        projectTable: []
+      },
+      projects: [],
+      connections: []
+    }
+  }
+
+  return <UserProfile data={data} />
 }
 
 export default ProfilePage
