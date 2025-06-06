@@ -13,6 +13,7 @@ import CustomTextField from '@core/components/mui/TextField'
 import AppReactApexCharts from '@/libs/styles/AppReactApexCharts'
 import InvoiceStatusChart from '@/app/[lang]/(dashboard)/(private)/dashboards/finance/components/InvoiceStatusChart'
 import PaymentMethodsChart from '@/app/[lang]/(dashboard)/(private)/dashboards/finance/components/PaymentMethodsChart'
+import ServiceRevenueChart from '@/app/[lang]/(dashboard)/(private)/dashboards/finance/components/ServiceRevenueChart'
 
 interface FinanceChartsProps {
   chartData: {
@@ -227,6 +228,9 @@ const FinanceCharts = ({ chartData, paymentMethodsData }: FinanceChartsProps) =>
 
       {/* Invoice Status Chart */}
       <InvoiceStatusChart />
+
+      {/* Service Revenue Chart */}
+      <ServiceRevenueChart />
     </Grid>
   )
 }
