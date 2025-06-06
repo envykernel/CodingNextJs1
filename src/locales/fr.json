@@ -189,7 +189,8 @@
             "tests": "Analyses",
             "radiology": "Radiologie"
         },
-        "doctors": "Médecins"
+        "doctors": "Médecins",
+        "finance": "Finance"
     },
     "patient": {
         "name": "Nom complet",
@@ -417,6 +418,7 @@
             "academy": "Académie",
             "logistics": "Logistique",
             "organization": "Organisation",
+            "finance": "Finance",
             "medical": "Médical",
             "financial": "Financier",
             "administration": "Administration",

@@ -515,7 +515,8 @@
             "externalLink": "External Link",
             "disabledMenu": "Disabled Menu",
             "medications": "Medications",
-            "doctors": "Doctors"
+            "doctors": "Doctors",
+            "finance": "Finance"
         }
     },
     "patientView": {
