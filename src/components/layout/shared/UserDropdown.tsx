@@ -8,8 +8,6 @@ import type { MouseEvent } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
 // MUI Imports
-import { styled } from '@mui/material/styles'
-import Badge from '@mui/material/Badge'
 import Avatar from '@mui/material/Avatar'
 import Popper from '@mui/material/Popper'
 import Fade from '@mui/material/Fade'
@@ -37,34 +35,6 @@ import { useTranslation } from '@/contexts/translationContext'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
-
-// Styled component for badge content
-const BadgeContentSpan = styled('span')({
-  width: 8,
-  height: 8,
-  borderRadius: '50%',
-  cursor: 'pointer',
-  backgroundColor: 'var(--mui-palette-success-main)',
-  boxShadow: '0 0 0 2px var(--mui-palette-background-paper)'
-})
-
-// Role-specific badge components
-const RoleBadgeContentSpan = styled('span')<{ color: string }>(({ color }) => ({
-  width: 8,
-  height: 8,
-  borderRadius: '50%',
-  cursor: 'pointer',
-  backgroundColor: `var(--mui-palette-${color}-main)`,
-  boxShadow: '0 0 0 2px var(--mui-palette-background-paper)'
-}))
-
-// Role-specific avatar components
-const RoleAvatar = styled(Avatar)<{ color: string }>(({ color }) => ({
-  border: `2px solid var(--mui-palette-${color}-main)`,
-  '&:hover': {
-    border: `2px solid var(--mui-palette-${color}-dark)`
-  }
-}))
 
 // Role configuration
 const roleConfig = {
@@ -141,19 +111,17 @@ const UserDropdown = () => {
   const { lang } = useParams() as { lang?: string }
   const { t } = useTranslation()
 
-  // Translation for organisation label
+  // Translation for organisation label only (removed role translation)
   const translations: Record<string, Record<string, string>> = {
-    en: { organisation: 'Organisation', role: 'Role' },
-    fr: { organisation: 'Organisation', role: 'Rôle' },
-    ar: { organisation: 'المؤسسة', role: 'الدور' }
+    en: { organisation: 'Organisation' },
+    fr: { organisation: 'Organisation' },
+    ar: { organisation: 'المؤسسة' }
   }
 
   const organisationName = (session?.user as any)?.organisationName
   const userRole = session?.user?.role as keyof typeof roleConfig
-  const roleInfo = userRole ? roleConfig[userRole] : null
   const roleIcon = userRole ? roleIcons[userRole] || 'tabler-user' : 'tabler-user'
   const orgLabel = translations[lang || 'en']?.organisation || 'Organisation'
-  const roleLabel = translations[lang || 'en']?.role || 'Role'
   const isAdmin = userRole === 'ADMIN'
   const isCabinetManager = userRole === 'CABINET_MANAGER'
   const canManageOrg = isAdmin || isCabinetManager
@@ -206,38 +174,13 @@ const UserDropdown = () => {
 
   return (
     <>
-      <Badge
+      <Avatar
         ref={anchorRef}
-        overlap='circular'
-        badgeContent={
-          roleInfo ? (
-            <RoleBadgeContentSpan color={roleInfo.color} onClick={handleDropdownOpen} />
-          ) : (
-            <BadgeContentSpan onClick={handleDropdownOpen} />
-          )
-        }
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        className='mis-2'
+        onClick={handleDropdownOpen}
+        className='cursor-pointer bs-[38px] is-[38px] bg-primary bg-opacity-10 mis-2'
       >
-        {roleInfo ? (
-          <RoleAvatar
-            ref={anchorRef}
-            onClick={handleDropdownOpen}
-            color={roleInfo.color}
-            className='cursor-pointer bs-[38px] is-[38px] bg-primary bg-opacity-10'
-          >
-            <i className={`${roleIcon} text-[20px]`} />
-          </RoleAvatar>
-        ) : (
-          <Avatar
-            ref={anchorRef}
-            onClick={handleDropdownOpen}
-            className='cursor-pointer bs-[38px] is-[38px] bg-primary bg-opacity-10'
-          >
-            <i className='tabler-user text-[20px]' />
-          </Avatar>
-        )}
-      </Badge>
+        <i className={`${roleIcon} text-[20px]`} />
+      </Avatar>
       <Popper
         open={open}
         transition
@@ -257,15 +200,9 @@ const UserDropdown = () => {
               <ClickAwayListener onClickAway={e => handleDropdownClose(e as MouseEvent | TouchEvent)}>
                 <MenuList>
                   <MenuItem className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
-                    {roleInfo ? (
-                      <RoleAvatar color={roleInfo.color} className='bg-primary bg-opacity-10'>
-                        <i className={`${roleIcon} text-[20px]`} />
-                      </RoleAvatar>
-                    ) : (
-                      <Avatar className='bg-primary bg-opacity-10'>
-                        <i className='tabler-user text-[20px]' />
-                      </Avatar>
-                    )}
+                    <Avatar className='bg-primary bg-opacity-10'>
+                      <i className={`${roleIcon} text-[20px]`} />
+                    </Avatar>
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
                         {userRole === 'DOCTOR' ? `Dr. ${session?.user?.name || ''}` : session?.user?.name || ''}
@@ -274,15 +211,6 @@ const UserDropdown = () => {
                       <Typography variant='caption' color={organisationName ? 'text.secondary' : 'error'}>
                         {orgLabel}: {organisationName ? organisationName : 'No Organisation'}
                       </Typography>
-                      {userRole && roleInfo && (
-                        <Typography variant='caption' color='text.secondary' className='flex items-center gap-1'>
-                          {roleLabel}: {roleInfo.label}
-                          <i
-                            className={`${roleInfo.icon} text-[14px]`}
-                            style={{ color: `var(--mui-palette-${roleInfo.color}-main)` }}
-                          />
-                        </Typography>
-                      )}
                     </div>
                   </MenuItem>
                   <Divider className='mlb-1' />
