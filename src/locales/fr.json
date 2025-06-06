@@ -1161,5 +1161,26 @@
         "markAsRead": "Marquer comme lu",
         "read": "Lu",
         "unread": "Non lu"
+    },
+    "userProfile": {
+        "settings": "Paramètres",
+        "connected": "Connecté",
+        "joinedOn": "Inscrit le"
+    },
+    "settingsTab": {
+        "title": "Paramètres",
+        "subtitle": "Gérer les paramètres de votre compte",
+        "disabledShortcutsInfo": "Les raccourcis sont désactivés pour votre rôle",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "saving": "Enregistrement...",
+        "saveChanges": "Enregistrer les modifications",
+        "success": {
+            "settingsSaved": "Paramètres enregistrés avec succès"
+        },
+        "errors": {
+            "fetchFailed": "Échec de la récupération des paramètres",
+            "saveFailed": "Échec de l'enregistrement des paramètres"
+        }
     }
 }

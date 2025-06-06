@@ -1226,5 +1226,26 @@
         "markAsRead": "Mark as read",
         "read": "Read",
         "unread": "Unread"
+    },
+    "userProfile": {
+        "settings": "Settings",
+        "connected": "Connected",
+        "joinedOn": "Joined on"
+    },
+    "settingsTab": {
+        "title": "Settings",
+        "subtitle": "Manage your account settings",
+        "disabledShortcutsInfo": "Shortcuts are disabled for your role",
+        "active": "Active",
+        "inactive": "Inactive",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "success": {
+            "settingsSaved": "Settings saved successfully"
+        },
+        "errors": {
+            "fetchFailed": "Failed to fetch settings",
+            "saveFailed": "Failed to save settings"
+        }
     }
 }

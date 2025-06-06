@@ -17,6 +17,8 @@ import Switch from '@mui/material/Switch'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid2'
 
+import { useTranslation } from '@/contexts/translationContext'
+
 type ShortcutReference = {
   id: number
   title: string
@@ -39,6 +41,9 @@ const SettingsTab = () => {
   const [success, setSuccess] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
+  // Hooks
+  const { t } = useTranslation()
+
   // Fetch available shortcuts and user's shortcuts
   useEffect(() => {
     const fetchShortcuts = async () => {
@@ -46,7 +51,7 @@ const SettingsTab = () => {
         // Fetch available shortcuts
         const shortcutsResponse = await fetch('/api/shortcuts/references')
 
-        if (!shortcutsResponse.ok) throw new Error('Failed to fetch available shortcuts')
+        if (!shortcutsResponse.ok) throw new Error(t('settingsTab.errors.fetchFailed'))
         const shortcutsData = await shortcutsResponse.json()
 
         setAvailableShortcuts(shortcutsData)
@@ -54,21 +59,21 @@ const SettingsTab = () => {
         // Fetch user's shortcuts
         const userShortcutsResponse = await fetch('/api/shortcuts/user')
 
-        if (!userShortcutsResponse.ok) throw new Error('Failed to fetch user shortcuts')
+        if (!userShortcutsResponse.ok) throw new Error(t('settingsTab.errors.fetchFailed'))
         const userShortcutsData = await userShortcutsResponse.json()
 
         setUserShortcuts(userShortcutsData)
 
         setError(null)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch shortcuts')
+        setError(err instanceof Error ? err.message : t('settingsTab.errors.fetchFailed'))
       } finally {
         setLoading(false)
       }
     }
 
     fetchShortcuts()
-  }, [])
+  }, [t])
 
   // Handle shortcut toggle
   const handleShortcutToggle = (shortcutId: number) => {
@@ -103,9 +108,9 @@ const SettingsTab = () => {
         body: JSON.stringify(userShortcuts)
       })
 
-      if (!response.ok) throw new Error('Failed to save shortcuts')
+      if (!response.ok) throw new Error(t('settingsTab.errors.saveFailed'))
 
-      setSuccess('Settings saved successfully')
+      setSuccess(t('settingsTab.success.settingsSaved'))
 
       // Dispatch a custom event to notify navbar components
       window.dispatchEvent(new CustomEvent('shortcutsUpdated'))
@@ -115,7 +120,7 @@ const SettingsTab = () => {
         setSuccess(null)
       }, 3000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save settings')
+      setError(err instanceof Error ? err.message : t('settingsTab.errors.saveFailed'))
     } finally {
       setSaving(false)
     }
@@ -138,10 +143,10 @@ const SettingsTab = () => {
             <div className='flex items-center justify-between'>
               <div>
                 <Typography variant='h5' className='mbe-1'>
-                  Shortcuts Settings
+                  {t('settingsTab.title')}
                 </Typography>
                 <Typography variant='body2' color='text.secondary'>
-                  Customize your quick access shortcuts
+                  {t('settingsTab.subtitle')}
                 </Typography>
               </div>
               <Button
@@ -150,7 +155,7 @@ const SettingsTab = () => {
                 disabled={saving}
                 startIcon={saving ? <CircularProgress size={20} /> : <i className='tabler-device-floppy' />}
               >
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? t('settingsTab.saving') : t('settingsTab.saveChanges')}
               </Button>
             </div>
 
@@ -246,7 +251,7 @@ const SettingsTab = () => {
                                 shortcut.isEnabled ? 'text-primary' : 'text-textDisabled'
                               )}
                             >
-                              {shortcut.isEnabled ? 'Active' : 'Inactive'}
+                              {shortcut.isEnabled ? t('settingsTab.active') : t('settingsTab.inactive')}
                             </Typography>
                           </div>
                         </div>
@@ -258,7 +263,7 @@ const SettingsTab = () => {
 
             <div className='flex items-center gap-2 text-textSecondary'>
               <i className='tabler-info-circle text-lg' />
-              <Typography variant='body2'>Disabled shortcuts will not appear in your quick access menu.</Typography>
+              <Typography variant='body2'>{t('settingsTab.disabledShortcutsInfo')}</Typography>
             </div>
           </div>
         </CardContent>

@@ -1639,5 +1639,21 @@
         "markAsRead": "تحديد كمقروء",
         "read": "مقروء",
         "unread": "غير مقروء"
+    },
+    "settingsTab": {
+        "title": "الإعدادات",
+        "subtitle": "إدارة إعدادات حسابك",
+        "disabledShortcutsInfo": "الاختصارات معطلة لدورك",
+        "active": "مفعل",
+        "inactive": "معطل",
+        "saving": "جاري الحفظ...",
+        "saveChanges": "حفظ التغييرات",
+        "success": {
+            "settingsSaved": "تم حفظ الإعدادات بنجاح"
+        },
+        "errors": {
+            "fetchFailed": "فشل في جلب الإعدادات",
+            "saveFailed": "فشل في حفظ الإعدادات"
+        }
     }
 }
