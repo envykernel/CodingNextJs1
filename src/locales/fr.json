@@ -1221,5 +1221,20 @@
         },
         "notes": "Notes",
         "orderedAt": "Commandé le"
+    },
+    "patientMeasurementsForm": {
+        "title": "Mesures du Patient",
+        "weight": "Poids (kg)",
+        "height": "Taille (cm)",
+        "temperature": "Température (°C)",
+        "bloodPressureSystolic": "Pression Artérielle Systolique",
+        "bloodPressureDiastolic": "Pression Artérielle Diastolique",
+        "pulse": "Pouls (bpm)",
+        "oxygenSaturation": "Saturation en Oxygène (%)",
+        "respiratoryRate": "Fréquence Respiratoire",
+        "notes": "Notes",
+        "save": "Enregistrer",
+        "saving": "Enregistrement...",
+        "savedSuccessfully": "Enregistré avec succès !"
     }
 }
