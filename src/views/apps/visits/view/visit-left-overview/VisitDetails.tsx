@@ -46,7 +46,32 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
   return (
     <Card>
       <CardContent className='flex flex-col items-center gap-6 pbs-12'>
-        <CustomAvatar alt='user-profile' src={patient.avatar || '/images/avatars/1.png'} variant='rounded' size={120} />
+        <CustomAvatar
+          color={patient.gender === 'male' ? 'primary' : patient.gender === 'female' ? 'error' : 'info'}
+          skin='filled'
+          variant='rounded'
+          size={120}
+          sx={{
+            '& i': {
+              color: 'white',
+              fontSize: '3rem'
+            },
+            ...(patient.gender === 'female' && {
+              backgroundColor: '#FF69B4 !important', // Pink color
+              '&:hover': {
+                backgroundColor: '#FF69B4 !important'
+              }
+            })
+          }}
+        >
+          {patient.gender === 'male' ? (
+            <i className='tabler-user' />
+          ) : patient.gender === 'female' ? (
+            <i className='tabler-user-circle' />
+          ) : (
+            <i className='tabler-user' />
+          )}
+        </CustomAvatar>
         <Typography variant='h5' className='font-bold text-center'>
           {patient.name || '-'}
         </Typography>
