@@ -67,7 +67,20 @@ const NavbarContent = () => {
       }
     }
 
+    // Initial fetch
     fetchShortcuts()
+
+    // Listen for shortcuts updates
+    const handleShortcutsUpdate = () => {
+      fetchShortcuts()
+    }
+
+    window.addEventListener('shortcutsUpdated', handleShortcutsUpdate)
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('shortcutsUpdated', handleShortcutsUpdate)
+    }
   }, [])
 
   return (

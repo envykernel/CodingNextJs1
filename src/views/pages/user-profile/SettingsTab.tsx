@@ -107,6 +107,9 @@ const SettingsTab = () => {
 
       setSuccess('Settings saved successfully')
 
+      // Dispatch a custom event to notify navbar components
+      window.dispatchEvent(new CustomEvent('shortcutsUpdated'))
+
       // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccess(null)
