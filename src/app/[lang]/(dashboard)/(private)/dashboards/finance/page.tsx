@@ -62,37 +62,10 @@ const FinanceDashboard = async () => {
   const totalInvoices = invoices.length
   const totalPayments = payments.length
 
-  // Prepare data for charts
-  const monthlyData = invoices.reduce((acc: any, inv) => {
-    const month = inv.invoice_date.toISOString().slice(0, 7) // YYYY-MM
-
-    if (!acc[month]) {
-      acc[month] = { invoiced: 0, paid: 0 }
-    }
-
-    acc[month].invoiced += Number(inv.total_amount)
-
-    return acc
-  }, {})
-
-  // Add payment data to monthly stats
-  payments.forEach(pay => {
-    const month = pay.payment_date.toISOString().slice(0, 7)
-
-    if (!monthlyData[month]) {
-      monthlyData[month] = { invoiced: 0, paid: 0 }
-    }
-
-    monthlyData[month].paid += Number(pay.amount)
-  })
-
-  // Sort months and get last 12 months
-  const sortedMonths = Object.keys(monthlyData).sort().slice(-12)
-
-  const chartData = {
-    months: sortedMonths,
-    invoiced: sortedMonths.map(month => monthlyData[month].invoiced),
-    paid: sortedMonths.map(month => monthlyData[month].paid)
+  // Prepare data for payment methods chart
+  const paymentMethodsData = {
+    series: [totalPaid, totalPending],
+    labels: ['Paid', 'Pending']
   }
 
   // Prepare statistics cards data
@@ -155,18 +128,6 @@ const FinanceDashboard = async () => {
     }
   ]
 
-  // Prepare payment methods data
-  const paymentMethodsData = payments.reduce((acc: any, pay) => {
-    acc[pay.payment_method] = (acc[pay.payment_method] || 0) + Number(pay.amount)
-
-    return acc
-  }, {})
-
-  const paymentMethodsDataForCharts = {
-    series: Object.values(paymentMethodsData) as number[],
-    labels: Object.keys(paymentMethodsData)
-  }
-
   return (
     <Grid container spacing={6}>
       {/* Statistics Cards */}
@@ -202,7 +163,7 @@ const FinanceDashboard = async () => {
       </Grid>
 
       {/* Charts */}
-      <FinanceCharts chartData={chartData} paymentMethodsData={paymentMethodsDataForCharts} />
+      <FinanceCharts paymentMethodsData={paymentMethodsData} />
     </Grid>
   )
 }
