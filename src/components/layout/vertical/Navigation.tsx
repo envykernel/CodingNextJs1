@@ -58,7 +58,8 @@ const Navigation = (props: Props) => {
   // Hooks
   const verticalNavOptions = useVerticalNav()
   const { updateSettings, settings } = useSettings()
-  const { lang: locale } = useParams() as { lang: string }
+  const params = useParams<{ lang: string }>()
+  const locale = params?.lang as Locale
   const { mode: muiMode, systemMode: muiSystemMode } = useColorScheme()
   const theme = useTheme()
 
@@ -114,7 +115,7 @@ const Navigation = (props: Props) => {
     >
       {/* Nav Header including Logo & nav toggle icons  */}
       <NavHeader>
-        <Link href={getLocalizedUrl('/', locale as Locale)}>
+        <Link href={getLocalizedUrl('/dashboards/organization', locale)}>
           <Logo />
         </Link>
         {!(isCollapsed && !isHovered) && (

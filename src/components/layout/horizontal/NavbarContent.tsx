@@ -36,8 +36,8 @@ const NavbarContent = () => {
 
   // Hooks
   const { isBreakpointReached } = useHorizontalNav()
-  const params = useParams()
-  const locale = (params?.lang as Locale) || 'en'
+  const params = useParams<{ lang: string }>()
+  const locale = params?.lang as Locale
   const { data: session } = useSession()
   const isAdmin = session?.user?.role === 'ADMIN'
 
@@ -98,7 +98,7 @@ const NavbarContent = () => {
         <NavToggle />
         {/* Hide Logo on Smaller screens */}
         {!isBreakpointReached && (
-          <Link href={getLocalizedUrl('/', locale)}>
+          <Link href={getLocalizedUrl('/dashboards/organization', locale)}>
             <Logo />
           </Link>
         )}
