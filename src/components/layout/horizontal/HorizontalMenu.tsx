@@ -157,6 +157,9 @@ const HorizontalMenu = (props: { dictionary: Awaited<ReturnType<typeof getDictio
           <MenuItem href={`/${locale}/apps/appointments/list`} icon={<i className='tabler-calendar-event' />}>
             {t('sidebar.navigation.appointments')}
           </MenuItem>
+          <MenuItem href={`/${locale}/apps/medical-certificates/list`} icon={<i className='tabler-file-certificate' />}>
+            {t('sidebar.navigation.medicalCertificates')}
+          </MenuItem>
         </SubMenu>
         <SubMenu label={t('sidebar.navigation.financial')} icon={<i className='tabler-cash' />}>
           <MenuItem href={`/${locale}/apps/invoice/list`} icon={<i className='tabler-file-invoice' />}>

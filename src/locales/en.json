@@ -420,6 +420,7 @@
             "logistics": "Logistics",
             "organization": "Organization",
             "medical": "Medical",
+            "medicalCertificates": "Medical Certificates",
             "financial": "Financial",
             "administration": "Administration",
             "createInvoice": "Create Invoice",

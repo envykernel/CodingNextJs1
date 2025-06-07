@@ -190,7 +190,8 @@
             "radiology": "Radiologie"
         },
         "doctors": "Médecins",
-        "finance": "Finance"
+        "finance": "Finance",
+        "medicalCertificates": "Certificats Médicaux"
     },
     "patient": {
         "name": "Nom complet",
@@ -427,6 +428,7 @@
             "organization": "Organisation",
             "finance": "Finance",
             "medical": "Médical",
+            "medicalCertificates": "Certificats Médicaux",
             "financial": "Financier",
             "administration": "Administration",
             "createInvoice": "Créer une facture",
