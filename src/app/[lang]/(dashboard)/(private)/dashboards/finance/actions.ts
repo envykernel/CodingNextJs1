@@ -3,6 +3,7 @@
 import { prisma } from '@/libs/prisma'
 
 type Period = 'This Week' | 'This Month' | 'This Year'
+type FilterType = 'daily' | 'weekly' | 'monthly'
 type ComparisonType = 'average_monthly' | 'previous_period'
 
 export async function getInvoiceStatusData(organisationId: number) {
@@ -244,5 +245,304 @@ export const getMonthlyRevenueData = async (organisationId: number, period: Peri
   } catch (error) {
     console.error('Error in getMonthlyRevenueData:', error)
     throw new Error('Failed to fetch monthly revenue data')
+  }
+}
+
+type PaymentBreakdown = {
+  period: string
+  totalPaid: number
+  date: Date
+}
+
+type PaymentTrendsData = {
+  breakdown: PaymentBreakdown[]
+  totalPaid: number
+  growth: number
+  period: Period
+  comparisonType: ComparisonType
+}
+
+export const getPaymentTrendsData = async (
+  organisationId: number,
+  period: Period,
+  filter: FilterType = 'monthly'
+): Promise<PaymentTrendsData> => {
+  try {
+    const now = new Date()
+    let startDate: Date
+    const endDate: Date = now
+    let previousStartDate: Date
+    let previousEndDate: Date
+    const breakdown: PaymentBreakdown[] = []
+
+    // Calculate start date based on period
+    switch (period) {
+      case 'This Week':
+        // Start of current week (Sunday)
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - now.getDay())
+        startDate.setHours(0, 0, 0, 0)
+
+        // Previous week for comparison
+        previousStartDate = new Date(startDate)
+        previousStartDate.setDate(startDate.getDate() - 7)
+        previousEndDate = new Date(startDate)
+        previousEndDate.setDate(startDate.getDate() - 1)
+        break
+
+      case 'This Month':
+        // Start of current month
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+
+        // For monthly comparison, get all previous months of the current year
+        previousStartDate = new Date(now.getFullYear(), 0, 1)
+        previousEndDate = new Date(now.getFullYear(), now.getMonth(), 0)
+        break
+
+      case 'This Year':
+        // Start of current year
+        startDate = new Date(now.getFullYear(), 0, 1)
+
+        // Previous year for comparison
+        previousStartDate = new Date(now.getFullYear() - 1, 0, 1)
+        previousEndDate = new Date(now.getFullYear() - 1, 11, 31)
+        break
+
+      default:
+        throw new Error('Invalid period type')
+    }
+
+    // Get data based on period and filter
+    switch (period) {
+      case 'This Week':
+        // For weekly period, always show daily breakdown
+        for (let i = 0; i < 7; i++) {
+          const dayStart = new Date(startDate)
+
+          dayStart.setDate(startDate.getDate() + i)
+          const dayEnd = new Date(dayStart)
+
+          dayEnd.setHours(23, 59, 59, 999)
+
+          const dayPayments = await prisma.payment.findMany({
+            where: {
+              organisation_id: organisationId,
+              payment_date: {
+                gte: dayStart,
+                lte: dayEnd
+              }
+            }
+          })
+
+          const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+
+          breakdown.push({
+            period: dayStart.toLocaleDateString('en-US', { weekday: 'short' }),
+            totalPaid,
+            date: dayStart
+          })
+        }
+
+        break
+
+      case 'This Month':
+        if (filter === 'daily') {
+          // Show daily breakdown for the month
+          const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+
+          for (let i = 0; i < daysInMonth; i++) {
+            const dayStart = new Date(startDate)
+
+            dayStart.setDate(startDate.getDate() + i)
+            const dayEnd = new Date(dayStart)
+
+            dayEnd.setHours(23, 59, 59, 999)
+
+            const dayPayments = await prisma.payment.findMany({
+              where: {
+                organisation_id: organisationId,
+                payment_date: {
+                  gte: dayStart,
+                  lte: dayEnd
+                }
+              }
+            })
+
+            const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+
+            breakdown.push({
+              period: dayStart.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }),
+              totalPaid,
+              date: dayStart
+            })
+          }
+        } else {
+          // Show weekly breakdown for the month
+          const weeksInMonth = Math.ceil((now.getDate() + startDate.getDay()) / 7)
+
+          for (let i = 0; i < weeksInMonth; i++) {
+            const weekStart = new Date(startDate)
+
+            weekStart.setDate(startDate.getDate() + i * 7)
+            const weekEnd = new Date(weekStart)
+
+            weekEnd.setDate(weekStart.getDate() + 6)
+            weekEnd.setHours(23, 59, 59, 999)
+
+            const weekPayments = await prisma.payment.findMany({
+              where: {
+                organisation_id: organisationId,
+                payment_date: {
+                  gte: weekStart,
+                  lte: weekEnd
+                }
+              }
+            })
+
+            const totalPaid = weekPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+
+            breakdown.push({
+              period: `Week ${i + 1}`,
+              totalPaid,
+              date: weekStart
+            })
+          }
+        }
+
+        break
+
+      case 'This Year':
+        if (filter === 'daily') {
+          // Show daily breakdown for the current month
+          const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+          const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+
+          for (let i = 0; i < daysInMonth; i++) {
+            const dayStart = new Date(monthStart)
+
+            dayStart.setDate(monthStart.getDate() + i)
+            const dayEnd = new Date(dayStart)
+
+            dayEnd.setHours(23, 59, 59, 999)
+
+            const dayPayments = await prisma.payment.findMany({
+              where: {
+                organisation_id: organisationId,
+                payment_date: {
+                  gte: dayStart,
+                  lte: dayEnd
+                }
+              }
+            })
+
+            const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+
+            breakdown.push({
+              period: dayStart.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }),
+              totalPaid,
+              date: dayStart
+            })
+          }
+        } else if (filter === 'weekly') {
+          // Show weekly breakdown for the current month
+          const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+          const weeksInMonth = Math.ceil((now.getDate() + monthStart.getDay()) / 7)
+
+          for (let i = 0; i < weeksInMonth; i++) {
+            const weekStart = new Date(monthStart)
+
+            weekStart.setDate(monthStart.getDate() + i * 7)
+            const weekEnd = new Date(weekStart)
+
+            weekEnd.setDate(weekStart.getDate() + 6)
+            weekEnd.setHours(23, 59, 59, 999)
+
+            const weekPayments = await prisma.payment.findMany({
+              where: {
+                organisation_id: organisationId,
+                payment_date: {
+                  gte: weekStart,
+                  lte: weekEnd
+                }
+              }
+            })
+
+            const totalPaid = weekPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+
+            breakdown.push({
+              period: `Week ${i + 1}`,
+              totalPaid,
+              date: weekStart
+            })
+          }
+        } else {
+          // Show monthly breakdown for the year
+          for (let i = 0; i <= now.getMonth(); i++) {
+            const monthStart = new Date(now.getFullYear(), i, 1)
+            const monthEnd = new Date(now.getFullYear(), i + 1, 0)
+
+            monthEnd.setHours(23, 59, 59, 999)
+
+            const monthPayments = await prisma.payment.findMany({
+              where: {
+                organisation_id: organisationId,
+                payment_date: {
+                  gte: monthStart,
+                  lte: monthEnd
+                }
+              }
+            })
+
+            const totalPaid = monthPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+
+            breakdown.push({
+              period: monthStart.toLocaleDateString('en-US', { month: 'short' }),
+              totalPaid,
+              date: monthStart
+            })
+          }
+        }
+
+        break
+    }
+
+    // Get previous period payments for comparison
+    const previousPeriodPayments = await prisma.payment.findMany({
+      where: {
+        organisation_id: organisationId,
+        payment_date: {
+          gte: previousStartDate,
+          lte: previousEndDate
+        }
+      }
+    })
+
+    const previousPeriodPaid = previousPeriodPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+    const totalPaid = breakdown.reduce((sum, item) => sum + item.totalPaid, 0)
+
+    // Calculate growth
+    let growth: number
+
+    if (period === 'This Month') {
+      // For monthly comparison, calculate average monthly payment for previous months
+      const monthsInPreviousPeriod = now.getMonth()
+      const averageMonthlyPayment = monthsInPreviousPeriod > 0 ? previousPeriodPaid / monthsInPreviousPeriod : 0
+
+      growth = totalPaid - averageMonthlyPayment
+    } else {
+      // For weekly and yearly comparisons, use direct comparison
+      growth = totalPaid - previousPeriodPaid
+    }
+
+    return {
+      breakdown,
+      totalPaid,
+      growth,
+      period,
+      comparisonType: period === 'This Month' ? 'average_monthly' : 'previous_period'
+    }
+  } catch (error) {
+    console.error('Error in getPaymentTrendsData:', error)
+    throw new Error('Failed to fetch payment trends data')
   }
 }

@@ -25,6 +25,7 @@ import FinanceCharts from './components/FinanceCharts'
 import { prisma } from '@/prisma/prisma'
 import { authOptions } from '@/libs/auth'
 import type { ThemeColor } from '@core/types'
+import PaymentTrends from './components/PaymentTrends'
 
 const FinanceDashboard = async () => {
   const session = await getServerSession(authOptions)
@@ -164,6 +165,11 @@ const FinanceDashboard = async () => {
 
       {/* Charts */}
       <FinanceCharts paymentMethodsData={paymentMethodsData} />
+
+      {/* Payment Trends */}
+      <Grid size={{ xs: 12 }}>
+        <PaymentTrends />
+      </Grid>
     </Grid>
   )
 }
