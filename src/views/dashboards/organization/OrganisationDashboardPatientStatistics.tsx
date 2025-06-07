@@ -6,6 +6,10 @@ import { useEffect, useState } from 'react'
 // MUI Imports
 import Grid from '@mui/material/Grid'
 import Alert from '@mui/material/Alert'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Skeleton from '@mui/material/Skeleton'
+import Box from '@mui/material/Box'
 
 // Component Imports
 import PatientStatistics from '@components/patient-statistics/PatientStatistics'
@@ -16,6 +20,28 @@ import type { PatientStatisticsType } from '@/app/server/patientStatisticsAction
 
 // Context Imports
 import { useTranslation } from '@/contexts/translationContext'
+
+const StatisticsSkeleton = () => {
+  return (
+    <Grid container spacing={6}>
+      {[...Array(4)].map((_, index) => (
+        <Grid item xs={12} sm={6} md={3} key={index}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Skeleton variant='circular' width={40} height={40} sx={{ mr: 4 }} />
+                <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                  <Skeleton variant='text' width='60%' height={32} sx={{ mb: 1 }} />
+                  <Skeleton variant='text' width='40%' height={24} />
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  )
+}
 
 const OrganisationDashboardPatientStatistics = () => {
   const { t } = useTranslation()
@@ -88,10 +114,8 @@ const OrganisationDashboardPatientStatistics = () => {
 
   if (loading) {
     return (
-      <Grid container spacing={6}>
-        <Grid item xs={12}>
-          <Alert severity='info'>{t('common.loading')}</Alert>
-        </Grid>
+      <Grid item xs={12}>
+        <StatisticsSkeleton />
       </Grid>
     )
   }
