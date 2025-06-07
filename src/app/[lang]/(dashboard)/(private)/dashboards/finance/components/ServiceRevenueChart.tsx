@@ -57,9 +57,9 @@ const ServiceRevenueChart = () => {
 
           setData(result)
 
-          // Set the first service as selected by default
+          // Set 'All Services' as selected by default
           if (result.services.length > 0) {
-            setSelectedService(result.services[0].serviceName)
+            setSelectedService(ALL_SERVICES_KEY)
           }
         } catch (error) {
           console.error('Error fetching service revenue data:', error)
@@ -94,35 +94,8 @@ const ServiceRevenueChart = () => {
       <Tab
         key={ALL_SERVICES_KEY}
         value={ALL_SERVICES_KEY}
-        className='mie-4'
-        label={
-          <div
-            className={classnames(
-              'flex flex-col items-center justify-center gap-2 is-[110px] bs-[100px] border rounded-xl',
-              selectedService === ALL_SERVICES_KEY
-                ? 'border-solid border-[var(--mui-palette-primary-main)]'
-                : 'border-dashed'
-            )}
-          >
-            <CustomAvatar
-              variant='rounded'
-              skin='light'
-              size={38}
-              {...(selectedService === ALL_SERVICES_KEY && { color: 'primary' })}
-            >
-              <i
-                className={classnames(
-                  'text-[22px]',
-                  { 'text-textSecondary': selectedService !== ALL_SERVICES_KEY },
-                  'tabler-chart-bar'
-                )}
-              />
-            </CustomAvatar>
-            <Typography className='font-medium capitalize' color='text.primary'>
-              All Services
-            </Typography>
-          </div>
-        }
+        sx={{ minWidth: 140, height: 44, fontWeight: 600, fontSize: '1rem', textTransform: 'none' }}
+        label={<span className='w-full flex justify-center items-center'>All Services</span>}
       />
     )
 
@@ -132,35 +105,8 @@ const ServiceRevenueChart = () => {
         <Tab
           key={index}
           value={service.serviceName}
-          className='mie-4'
-          label={
-            <div
-              className={classnames(
-                'flex flex-col items-center justify-center gap-2 is-[110px] bs-[100px] border rounded-xl',
-                service.serviceName === selectedService
-                  ? 'border-solid border-[var(--mui-palette-primary-main)]'
-                  : 'border-dashed'
-              )}
-            >
-              <CustomAvatar
-                variant='rounded'
-                skin='light'
-                size={38}
-                {...(service.serviceName === selectedService && { color: 'primary' })}
-              >
-                <i
-                  className={classnames(
-                    'text-[22px]',
-                    { 'text-textSecondary': service.serviceName !== selectedService },
-                    'tabler-chart-bar'
-                  )}
-                />
-              </CustomAvatar>
-              <Typography className='font-medium capitalize' color='text.primary'>
-                {service.serviceName}
-              </Typography>
-            </div>
-          }
+          sx={{ minWidth: 140, height: 44, fontWeight: 600, fontSize: '1rem', textTransform: 'none' }}
+          label={<span className='w-full flex justify-center items-center'>{service.serviceName}</span>}
         />
       ))
     ]
@@ -389,10 +335,6 @@ const ServiceRevenueChart = () => {
               onChange={handleServiceChange}
               aria-label='service tabs'
               className='!border-0 mbe-6'
-              sx={{
-                '& .MuiTabs-indicator': { display: 'none !important' },
-                '& .MuiTab-root': { padding: '0 !important', border: '0 !important' }
-              }}
             >
               {renderServiceTabs()}
             </TabList>
