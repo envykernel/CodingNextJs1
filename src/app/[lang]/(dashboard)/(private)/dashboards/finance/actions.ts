@@ -1,12 +1,26 @@
 'use server'
 
-import type { Decimal } from '@prisma/client/runtime/library'
-
 import { prisma } from '@/libs/prisma'
 
 type Period = 'This Week' | 'This Month' | 'This Year'
 type FilterType = 'daily' | 'weekly' | 'monthly'
 type ComparisonType = 'average_monthly' | 'previous_period'
+
+type PaymentBreakdown = {
+  period: string
+  totalPaid: number
+  date: Date
+}
+
+type PaymentTrendsData = {
+  breakdown: PaymentBreakdown[]
+  totalPaid: number
+  growth: number
+  period: Period
+  comparisonType: ComparisonType
+}
+
+export type { Period, FilterType, PaymentTrendsData, PaymentBreakdown }
 
 export async function getInvoiceStatusData(organisationId: number) {
   const invoices = await prisma.invoice.findMany({
@@ -184,16 +198,6 @@ type DateRange = {
   start: Date
   end: Date
   label: string
-}
-
-type PaymentApplication = {
-  id: number
-  amount_applied: Decimal
-  payment: {
-    id: number
-    payment_date: Date
-    payment_method: string
-  }
 }
 
 type MonthlyRevenueResponse = {
@@ -483,20 +487,6 @@ export async function getMonthlyRevenueData(organisationId: number, period: Peri
   }
 }
 
-type PaymentBreakdown = {
-  period: string
-  totalPaid: number
-  date: Date
-}
-
-type PaymentTrendsData = {
-  breakdown: PaymentBreakdown[]
-  totalPaid: number
-  growth: number
-  period: Period
-  comparisonType: ComparisonType
-}
-
 export const getPaymentTrendsData = async (
   organisationId: number,
   period: Period,
@@ -505,10 +495,23 @@ export const getPaymentTrendsData = async (
   try {
     const now = new Date()
     let startDate: Date
-    const endDate: Date = now
     let previousStartDate: Date
     let previousEndDate: Date
     const breakdown: PaymentBreakdown[] = []
+
+    // Helper function to get month abbreviation
+    const getMonthAbbr = (date: Date): string => {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+      return months[date.getMonth()]
+    }
+
+    // Helper function to get day abbreviation
+    const getDayAbbr = (date: Date): string => {
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+      return days[date.getDay()]
+    }
 
     // Calculate start date based on period
     switch (period) {
@@ -566,13 +569,25 @@ export const getPaymentTrendsData = async (
                 gte: dayStart,
                 lte: dayEnd
               }
+            },
+            include: {
+              applications: {
+                select: {
+                  amount_applied: true
+                }
+              }
             }
           })
 
-          const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
+          const totalPaid = dayPayments.reduce((sum, payment) => {
+            const paymentAmount = payment.applications.reduce((appSum, app) => appSum + Number(app.amount_applied), 0)
 
+            return sum + paymentAmount
+          }, 0)
+
+          // Use day abbreviation that will be translated in the component
           breakdown.push({
-            period: dayStart.toLocaleDateString('en-US', { weekday: 'short' }),
+            period: getDayAbbr(dayStart),
             totalPaid,
             date: dayStart
           })
@@ -600,13 +615,25 @@ export const getPaymentTrendsData = async (
                   gte: dayStart,
                   lte: dayEnd
                 }
+              },
+              include: {
+                applications: {
+                  select: {
+                    amount_applied: true
+                  }
+                }
               }
             })
 
-            const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
+            const totalPaid = dayPayments.reduce((sum, payment) => {
+              const paymentAmount = payment.applications.reduce((appSum, app) => appSum + Number(app.amount_applied), 0)
 
+              return sum + paymentAmount
+            }, 0)
+
+            // Use month abbreviation that will be translated in the component
             breakdown.push({
-              period: dayStart.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }),
+              period: `${dayStart.getDate()} ${getMonthAbbr(dayStart)}`,
               totalPaid,
               date: dayStart
             })
@@ -631,10 +658,21 @@ export const getPaymentTrendsData = async (
                   gte: weekStart,
                   lte: weekEnd
                 }
+              },
+              include: {
+                applications: {
+                  select: {
+                    amount_applied: true
+                  }
+                }
               }
             })
 
-            const totalPaid = weekPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
+            const totalPaid = weekPayments.reduce((sum, payment) => {
+              const paymentAmount = payment.applications.reduce((appSum, app) => appSum + Number(app.amount_applied), 0)
+
+              return sum + paymentAmount
+            }, 0)
 
             breakdown.push({
               period: `Week ${i + 1}`,
@@ -667,47 +705,27 @@ export const getPaymentTrendsData = async (
                   gte: dayStart,
                   lte: dayEnd
                 }
-              }
-            })
-
-            const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
-
-            breakdown.push({
-              period: dayStart.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }),
-              totalPaid,
-              date: dayStart
-            })
-          }
-        } else if (filter === 'weekly') {
-          // Show weekly breakdown for the current month
-          const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-          const weeksInMonth = Math.ceil((now.getDate() + monthStart.getDay()) / 7)
-
-          for (let i = 0; i < weeksInMonth; i++) {
-            const weekStart = new Date(monthStart)
-
-            weekStart.setDate(monthStart.getDate() + i * 7)
-            const weekEnd = new Date(weekStart)
-
-            weekEnd.setDate(weekStart.getDate() + 6)
-            weekEnd.setHours(23, 59, 59, 999)
-
-            const weekPayments = await prisma.payment.findMany({
-              where: {
-                organisation_id: organisationId,
-                payment_date: {
-                  gte: weekStart,
-                  lte: weekEnd
+              },
+              include: {
+                applications: {
+                  select: {
+                    amount_applied: true
+                  }
                 }
               }
             })
 
-            const totalPaid = weekPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
+            const totalPaid = dayPayments.reduce((sum, payment) => {
+              const paymentAmount = payment.applications.reduce((appSum, app) => appSum + Number(app.amount_applied), 0)
 
+              return sum + paymentAmount
+            }, 0)
+
+            // Use month abbreviation that will be translated in the component
             breakdown.push({
-              period: `Week ${i + 1}`,
+              period: `${dayStart.getDate()} ${getMonthAbbr(dayStart)}`,
               totalPaid,
-              date: weekStart
+              date: dayStart
             })
           }
         } else {
@@ -725,13 +743,25 @@ export const getPaymentTrendsData = async (
                   gte: monthStart,
                   lte: monthEnd
                 }
+              },
+              include: {
+                applications: {
+                  select: {
+                    amount_applied: true
+                  }
+                }
               }
             })
 
-            const totalPaid = monthPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
+            const totalPaid = monthPayments.reduce((sum, payment) => {
+              const paymentAmount = payment.applications.reduce((appSum, app) => appSum + Number(app.amount_applied), 0)
 
+              return sum + paymentAmount
+            }, 0)
+
+            // Use month abbreviation that will be translated in the component
             breakdown.push({
-              period: monthStart.toLocaleDateString('en-US', { month: 'short' }),
+              period: getMonthAbbr(monthStart),
               totalPaid,
               date: monthStart
             })
@@ -749,10 +779,22 @@ export const getPaymentTrendsData = async (
           gte: previousStartDate,
           lte: previousEndDate
         }
+      },
+      include: {
+        applications: {
+          select: {
+            amount_applied: true
+          }
+        }
       }
     })
 
-    const previousPeriodPaid = previousPeriodPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
+    const previousPeriodPaid = previousPeriodPayments.reduce((sum, payment) => {
+      const paymentAmount = payment.applications.reduce((appSum, app) => appSum + Number(app.amount_applied), 0)
+
+      return sum + paymentAmount
+    }, 0)
+
     const totalPaid = breakdown.reduce((sum, item) => sum + item.totalPaid, 0)
 
     // Calculate growth

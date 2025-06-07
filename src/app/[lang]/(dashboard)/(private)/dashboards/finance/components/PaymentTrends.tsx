@@ -18,6 +18,8 @@ import ButtonGroup from '@mui/material/ButtonGroup'
 // Third-party Imports
 import { useSession } from 'next-auth/react'
 
+import { useTranslation } from '@/contexts/translationContext'
+
 // Component Imports
 import { getPaymentTrendsData } from '../actions'
 
@@ -49,6 +51,123 @@ const PaymentTrends = () => {
 
   // ** Hooks
   const { data: session } = useSession()
+  const { t } = useTranslation()
+
+  // Helper function to translate period labels
+  const getTranslatedPeriodLabel = (periodLabel: string, filterType: string): string => {
+    // For daily view (This Week)
+    if (filterType === 'daily') {
+      // Map of English day abbreviations to their full names
+      const dayMap: { [key: string]: string } = {
+        Sun: 'sunday',
+        Mon: 'monday',
+        Tue: 'tuesday',
+        Wed: 'wednesday',
+        Thu: 'thursday',
+        Fri: 'friday',
+        Sat: 'saturday'
+      }
+
+      // Get the full day name from the abbreviation
+      const fullDay = dayMap[periodLabel]
+
+      if (!fullDay) return periodLabel
+
+      // Get the translation for the day
+      const translatedDay = t(`financeDashboard.paymentTrends.days.${fullDay}`)
+
+      // If translation exists and is different from the key, use it
+      if (translatedDay && translatedDay !== `financeDashboard.paymentTrends.days.${fullDay}`) {
+        return translatedDay
+      }
+
+      return periodLabel
+    }
+
+    // For weekly view (This Month)
+    if (filterType === 'weekly') {
+      // Check if it's a week label (e.g., "Week 1")
+      const weekMatch = periodLabel.match(/Week (\d+)/i)
+
+      if (weekMatch) {
+        return t(`financeDashboard.paymentTrends.weeks.week${weekMatch[1]}`)
+      }
+
+      return periodLabel
+    }
+
+    // For monthly view (This Year)
+    if (filterType === 'monthly') {
+      // Check if it's a date with month (e.g., "15 Jan")
+      const dateMatch = periodLabel.match(/(\d+)\s+(\w+)/)
+
+      if (dateMatch) {
+        const [, day, monthAbbr] = dateMatch
+
+        // Map of English month abbreviations to their full names
+        const monthMap: { [key: string]: string } = {
+          Jan: 'january',
+          Feb: 'february',
+          Mar: 'march',
+          Apr: 'april',
+          May: 'may',
+          Jun: 'june',
+          Jul: 'july',
+          Aug: 'august',
+          Sep: 'september',
+          Oct: 'october',
+          Nov: 'november',
+          Dec: 'december'
+        }
+
+        const fullMonth = monthMap[monthAbbr]
+
+        if (!fullMonth) return periodLabel
+
+        // Get the translation for the month
+        const translatedMonth = t(`financeDashboard.paymentTrends.months.${fullMonth}`)
+
+        // If translation exists and is different from the key, use it
+        if (translatedMonth && translatedMonth !== `financeDashboard.paymentTrends.months.${fullMonth}`) {
+          return `${day} ${translatedMonth}`
+        }
+
+        return periodLabel
+      }
+
+      // Handle single month abbreviation (e.g., "Jan")
+      const monthMap: { [key: string]: string } = {
+        Jan: 'january',
+        Feb: 'february',
+        Mar: 'march',
+        Apr: 'april',
+        May: 'may',
+        Jun: 'june',
+        Jul: 'july',
+        Aug: 'august',
+        Sep: 'september',
+        Oct: 'october',
+        Nov: 'november',
+        Dec: 'december'
+      }
+
+      const fullMonth = monthMap[periodLabel]
+
+      if (!fullMonth) return periodLabel
+
+      // Get the translation for the month
+      const translatedMonth = t(`financeDashboard.paymentTrends.months.${fullMonth}`)
+
+      // If translation exists and is different from the key, use it
+      if (translatedMonth && translatedMonth !== `financeDashboard.paymentTrends.months.${fullMonth}`) {
+        return translatedMonth
+      }
+
+      return periodLabel
+    }
+
+    return periodLabel
+  }
 
   // ** Handlers
   const handlePeriodSelect = (newPeriod: PeriodType) => {
@@ -109,7 +228,7 @@ const PaymentTrends = () => {
     return (
       <Card>
         <CardHeader
-          title='Payment Trends'
+          title={t('financeDashboard.paymentTrends.title')}
           action={
             <ButtonGroup variant='outlined' size='small'>
               {PERIOD_OPTIONS.map(option => (
@@ -118,7 +237,7 @@ const PaymentTrends = () => {
                   onClick={() => handlePeriodSelect(option)}
                   variant={period === option ? 'contained' : 'outlined'}
                 >
-                  {option}
+                  {t(`common.periods.${option.toLowerCase()}`)}
                 </Button>
               ))}
             </ButtonGroup>
@@ -126,6 +245,7 @@ const PaymentTrends = () => {
         />
         <Box sx={{ display: 'flex', justifyContent: 'center', p: 5 }}>
           <CircularProgress />
+          <Typography sx={{ ml: 2 }}>{t('financeDashboard.paymentTrends.loading')}</Typography>
         </Box>
       </Card>
     )
@@ -135,7 +255,7 @@ const PaymentTrends = () => {
     return (
       <Card>
         <CardHeader
-          title='Payment Trends'
+          title={t('financeDashboard.paymentTrends.title')}
           action={
             <ButtonGroup variant='outlined' size='small'>
               {PERIOD_OPTIONS.map(option => (
@@ -144,14 +264,14 @@ const PaymentTrends = () => {
                   onClick={() => handlePeriodSelect(option)}
                   variant={period === option ? 'contained' : 'outlined'}
                 >
-                  {option}
+                  {t(`common.periods.${option.toLowerCase()}`)}
                 </Button>
               ))}
             </ButtonGroup>
           }
         />
         <Box sx={{ p: 5, textAlign: 'center' }}>
-          <Typography color='error'>{error}</Typography>
+          <Typography color='error'>{t('financeDashboard.paymentTrends.error')}</Typography>
         </Box>
       </Card>
     )
@@ -161,7 +281,7 @@ const PaymentTrends = () => {
     return (
       <Card>
         <CardHeader
-          title='Payment Trends'
+          title={t('financeDashboard.paymentTrends.title')}
           action={
             <ButtonGroup variant='outlined' size='small'>
               {PERIOD_OPTIONS.map(option => (
@@ -170,14 +290,14 @@ const PaymentTrends = () => {
                   onClick={() => handlePeriodSelect(option)}
                   variant={period === option ? 'contained' : 'outlined'}
                 >
-                  {option}
+                  {t(`common.periods.${option.toLowerCase()}`)}
                 </Button>
               ))}
             </ButtonGroup>
           }
         />
         <Box sx={{ p: 5, textAlign: 'center' }}>
-          <Typography>No payment data available</Typography>
+          <Typography>{t('financeDashboard.paymentTrends.noData')}</Typography>
         </Box>
       </Card>
     )
@@ -190,7 +310,7 @@ const PaymentTrends = () => {
   return (
     <Card>
       <CardHeader
-        title='Payment Trends'
+        title={t('financeDashboard.paymentTrends.title')}
         action={
           <ButtonGroup variant='outlined' size='small'>
             {PERIOD_OPTIONS.map(option => (
@@ -199,7 +319,7 @@ const PaymentTrends = () => {
                 onClick={() => handlePeriodSelect(option)}
                 variant={period === option ? 'contained' : 'outlined'}
               >
-                {option}
+                {t(`common.periods.${option.toLowerCase()}`)}
               </Button>
             ))}
           </ButtonGroup>
@@ -211,17 +331,19 @@ const PaymentTrends = () => {
             {formatCurrency(data.totalPaid)}
           </Typography>
           {data.growth > 0 ? (
-            <i className='tabler:trending-up text-xl text-success' />
+            <Typography color='success.main'>{t('financeDashboard.paymentTrends.growth.positive')}</Typography>
           ) : data.growth < 0 ? (
-            <i className='tabler:trending-down text-xl text-error' />
+            <Typography color='error.main'>{t('financeDashboard.paymentTrends.growth.negative')}</Typography>
           ) : (
-            <i className='tabler:minus text-xl text-textSecondary' />
+            <Typography color='text.secondary'>{t('financeDashboard.paymentTrends.growth.neutral')}</Typography>
           )}
         </Box>
 
         <Grid container spacing={4}>
           {data.breakdown.map((item, index) => {
             const isBestPeriod = item.totalPaid === maxValue && item.totalPaid > 0
+            const filterType = getFilterType(period)
+            const translatedPeriod = getTranslatedPeriodLabel(item.period, filterType)
 
             return (
               <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>
@@ -236,7 +358,7 @@ const PaymentTrends = () => {
                     position: 'relative',
                     '&::before': isBestPeriod
                       ? {
-                          content: '"Best"',
+                          content: `"${t('financeDashboard.paymentTrends.bestPeriod')}"`,
                           position: 'absolute',
                           top: -10,
                           right: 10,
@@ -253,7 +375,7 @@ const PaymentTrends = () => {
                 >
                   <Box sx={{ mb: 2 }}>
                     <Typography variant='subtitle2' color='text.secondary'>
-                      {item.period}
+                      {translatedPeriod}
                     </Typography>
                     <Typography
                       variant='h6'

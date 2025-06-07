@@ -1270,6 +1270,48 @@
             "error": "Failed to load finance statistics",
             "noData": "No finance statistics available"
         },
+        "paymentTrends": {
+            "title": "Payment Trends",
+            "loading": "Loading payment trends...",
+            "error": "Failed to load payment trends",
+            "noData": "No payment data available",
+            "bestPeriod": "Best Period",
+            "growth": {
+                "positive": "Growth",
+                "negative": "Decline",
+                "neutral": "No Change"
+            },
+            "days": {
+                "monday": "Monday",
+                "tuesday": "Tuesday",
+                "wednesday": "Wednesday",
+                "thursday": "Thursday",
+                "friday": "Friday",
+                "saturday": "Saturday",
+                "sunday": "Sunday"
+            },
+            "weeks": {
+                "week1": "Week 1",
+                "week2": "Week 2",
+                "week3": "Week 3",
+                "week4": "Week 4",
+                "week5": "Week 5"
+            },
+            "months": {
+                "january": "January",
+                "february": "February",
+                "march": "March",
+                "april": "April",
+                "may": "May",
+                "june": "June",
+                "july": "July",
+                "august": "August",
+                "september": "September",
+                "october": "October",
+                "november": "November",
+                "december": "December"
+            }
+        },
         "invoicePayments": {
             "title": "Invoice Payments",
             "all": "All",

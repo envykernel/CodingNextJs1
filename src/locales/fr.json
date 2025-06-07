@@ -1311,6 +1311,48 @@
                 "emergency": "Urgence",
                 "other": "Autres Services"
             }
+        },
+        "paymentTrends": {
+            "title": "Tendances des Paiements",
+            "loading": "Chargement des tendances de paiement...",
+            "error": "Échec du chargement des tendances de paiement",
+            "noData": "Aucune donnée de paiement disponible",
+            "bestPeriod": "Meilleure Période",
+            "growth": {
+                "positive": "Croissance",
+                "negative": "Baisse",
+                "neutral": "Sans Changement"
+            },
+            "days": {
+                "monday": "Lundi",
+                "tuesday": "Mardi",
+                "wednesday": "Mercredi",
+                "thursday": "Jeudi",
+                "friday": "Vendredi",
+                "saturday": "Samedi",
+                "sunday": "Dimanche"
+            },
+            "weeks": {
+                "week1": "Semaine 1",
+                "week2": "Semaine 2",
+                "week3": "Semaine 3",
+                "week4": "Semaine 4",
+                "week5": "Semaine 5"
+            },
+            "months": {
+                "january": "Janvier",
+                "february": "Février",
+                "march": "Mars",
+                "april": "Avril",
+                "may": "Mai",
+                "june": "Juin",
+                "july": "Juillet",
+                "august": "Août",
+                "september": "Septembre",
+                "october": "Octobre",
+                "november": "Novembre",
+                "december": "Décembre"
+            }
         }
     }
 }

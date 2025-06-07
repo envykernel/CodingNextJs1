@@ -1675,54 +1675,46 @@
             "error": "فشل في تحميل الإحصائيات المالية",
             "noData": "لا توجد إحصائيات مالية متاحة"
         },
-        "invoicePayments": {
-            "title": "مدفوعات الفواتير",
-            "all": "الكل",
-            "totalRevenue": "إجمالي الإيرادات",
-            "noData": "لا توجد بيانات فواتير متاحة لـ {period}",
-            "searchPlaceholder": "البحث عن فواتير أو مرضى...",
-            "date": "التاريخ",
-            "invoiceNumber": "رقم الفاتورة",
-            "patient": "المريض",
-            "totalAmount": "المبلغ الإجمالي",
-            "paidAmount": "المبلغ المدفوع",
-            "paidPercentage": "النسبة المدفوعة",
-            "status": "الحالة",
-            "statuses": {
-                "paid": "مدفوع",
-                "partial": "مدفوع جزئياً",
-                "pending": "معلق"
+        "paymentTrends": {
+            "title": "اتجاهات المدفوعات",
+            "loading": "جاري تحميل اتجاهات المدفوعات...",
+            "error": "فشل في تحميل اتجاهات المدفوعات",
+            "noData": "لا توجد بيانات مدفوعات متاحة",
+            "bestPeriod": "أفضل فترة",
+            "growth": {
+                "positive": "زيادة",
+                "negative": "انخفاض",
+                "neutral": "بدون تغيير"
             },
-            "vsLastYear": "مقارنة بالعام الماضي",
-            "vsLast3Months": "مقارنة بمتوسط آخر 3 أشهر",
-            "vsLastWeek": "مقارنة بالأسبوع الماضي"
-        },
-        "common": {
-            "rowsPerPage": "الصفوف في الصفحة",
-            "displayedRows": "عرض {from}-{to} من {count}",
-            "periods": {
-                "this week": "هذا الأسبوع",
-                "this month": "هذا الشهر",
-                "this year": "هذا العام"
-            }
-        },
-        "serviceRevenue": {
-            "title": "إيرادات الخدمات",
-            "subtitle": "الإيرادات الشهرية حسب الخدمة",
-            "allServices": "جميع الخدمات",
-            "monthlyOverview": "نظرة عامة على الإيرادات الشهرية",
-            "loading": "جاري تحميل بيانات إيرادات الخدمات...",
-            "error": "فشل في تحميل بيانات إيرادات الخدمات",
-            "noData": "لا توجد بيانات إيرادات خدمات متاحة",
-            "serviceTabs": "علامات تبويب إيرادات الخدمات",
-            "services": {
-                "consultation": "استشارة",
-                "laboratory": "مختبر",
-                "radiology": "أشعة",
-                "pharmacy": "صيدلية",
-                "surgery": "جراحة",
-                "emergency": "طوارئ",
-                "other": "خدمات أخرى"
+            "days": {
+                "monday": "الاثنين",
+                "tuesday": "الثلاثاء",
+                "wednesday": "الأربعاء",
+                "thursday": "الخميس",
+                "friday": "الجمعة",
+                "saturday": "السبت",
+                "sunday": "الأحد"
+            },
+            "weeks": {
+                "week1": "الأسبوع 1",
+                "week2": "الأسبوع 2",
+                "week3": "الأسبوع 3",
+                "week4": "الأسبوع 4",
+                "week5": "الأسبوع 5"
+            },
+            "months": {
+                "january": "يناير",
+                "february": "فبراير",
+                "march": "مارس",
+                "april": "أبريل",
+                "may": "مايو",
+                "june": "يونيو",
+                "july": "يوليو",
+                "august": "أغسطس",
+                "september": "سبتمبر",
+                "october": "أكتوبر",
+                "november": "نوفمبر",
+                "december": "ديسمبر"
             }
         }
     }
