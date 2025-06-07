@@ -88,6 +88,7 @@ model patient {
   payments                payment[]
   prescriptions           prescription[]
   radiology_orders        radiology_order[]
+  certificates            Certificate[]
 
   @@index([organisation_id], map: "idx_patient_organisation_id")
   @@index([doctor_id], map: "idx_patient_doctor_id")
@@ -167,6 +168,7 @@ model doctor {
   patient_visits      patient_visit[]
   prescriptions       prescription[]
   radiology_orders    radiology_order[]
+  certificates        Certificate[]
 
   @@index([organisation_id], map: "idx_doctor_organisation_id")
   @@index([userId], map: "idx_doctor_user_id")
@@ -209,6 +211,8 @@ model organisation {
   radiology_orders        radiology_order[]
   notifications           Notification[]
   contacts                Contact[]
+  certificateTemplates    CertificateTemplate[]
+  certificates            Certificate[]
 }
 
 model patient_appointment {
@@ -271,6 +275,7 @@ model patient_visit {
   patient             patient               @relation(fields: [patient_id], references: [id])
   prescriptions       prescription[]
   radiology_orders    radiology_order[]
+  certificates        Certificate[]
 
   @@index([patient_id])
   @@index([doctor_id])
@@ -686,4 +691,63 @@ model Contact {
   @@index([status], map: "idx_contact_status")
   @@index([created_at], map: "idx_contact_created_at")
   @@index([user_id], map: "idx_contact_user_id")
+}
+
+model CertificateTemplate {
+  id               Int               @id @default(autoincrement())
+  code             String            @db.VarChar(50)
+  name             String            @db.VarChar(100)
+  description      String?           @db.VarChar(500)
+  category         String            @db.VarChar(50)
+  contentTemplate  String            @db.Text
+  variablesSchema  Json              // Schéma des variables attendues
+  organisationId   Int?              // Null = template partagé
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  
+  organisation     organisation?     @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  certificates     Certificate[]
+
+  @@unique([code, organisationId])
+  @@index([organisationId])
+}
+
+model Certificate {
+  id               Int                @id @default(autoincrement())
+  templateId       Int
+  organisationId   Int
+  patientId        Int
+  doctorId         Int
+  visitId          Int?
+  certificateNumber String            @unique @db.VarChar(50)
+  status           String             @default("draft") @db.VarChar(20)
+  content          String             @db.Text
+  variables        Json               // Valeurs des variables
+  version          Int                @default(1) // Pour le versioning
+  parentVersionId  Int?              // Lien vers la version précédente
+  issuedAt         DateTime?
+  validityDays     Int?
+  notes            String?            @db.VarChar(500)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  finalizedAt      DateTime?         // When the certificate was finalized
+  
+  // Relations
+  template         CertificateTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  organisation     organisation       @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  patient          patient            @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor           doctor             @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  visit            patient_visit?     @relation(fields: [visitId], references: [id], onDelete: SetNull)
+  previousVersions Certificate[]      @relation("CertificateVersions")
+  parentVersion    Certificate?       @relation("CertificateVersions", fields: [parentVersionId], references: [id], onDelete: SetNull)
+
+  @@index([templateId])
+  @@index([organisationId])
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([certificateNumber])
+  @@index([status])
+  @@index([issuedAt])
+  @@index([parentVersionId])
 }
