@@ -1,15 +1,9 @@
 'use server'
 
-import type { Prisma } from '@prisma/client'
+import { prisma } from '@/libs/prisma'
 
-import { prisma } from '@/prisma/prisma'
-
-type InvoiceWithRelations = Prisma.invoiceGetPayload<{
-  include: {
-    payment_apps: true
-    patient: true
-  }
-}>
+type Period = 'This Week' | 'This Month' | 'This Year'
+type ComparisonType = 'average_monthly' | 'previous_period'
 
 export async function getInvoiceStatusData(organisationId: number) {
   const invoices = await prisma.invoice.findMany({
@@ -118,65 +112,137 @@ export const getServiceRevenueData = async (organisationId: number) => {
   }
 }
 
-export const getMonthlyRevenueData = async (organisationId: number) => {
+export const getMonthlyRevenueData = async (organisationId: number, period: Period) => {
   try {
-    // Fetch invoices with their payment applications and patient information
-    const invoices = (await prisma.invoice.findMany({
+    const now = new Date()
+    let startDate: Date
+    const endDate: Date = now
+    let previousStartDate: Date
+    let previousEndDate: Date
+
+    // Calculate start date based on period
+    switch (period) {
+      case 'This Week':
+        // Start of current week (Sunday)
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - now.getDay())
+        startDate.setHours(0, 0, 0, 0)
+
+        // Previous week
+        previousStartDate = new Date(startDate)
+        previousStartDate.setDate(startDate.getDate() - 7)
+        previousEndDate = new Date(startDate)
+        previousEndDate.setDate(startDate.getDate() - 1)
+        break
+      case 'This Month':
+        // Start of current month
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+
+        // For monthly comparison, get all previous months of the current year
+        previousStartDate = new Date(now.getFullYear(), 0, 1) // Start of year
+        previousEndDate = new Date(now.getFullYear(), now.getMonth(), 0) // End of previous month
+        break
+      case 'This Year':
+        // Start of current year
+        startDate = new Date(now.getFullYear(), 0, 1)
+
+        // Previous year
+        previousStartDate = new Date(now.getFullYear() - 1, 0, 1)
+        previousEndDate = new Date(now.getFullYear() - 1, 11, 31)
+        break
+      default:
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        previousStartDate = new Date(now.getFullYear(), 0, 1)
+        previousEndDate = new Date(now.getFullYear(), now.getMonth(), 0)
+    }
+
+    // Get invoices for current period
+    const invoices = await prisma.invoice.findMany({
       where: {
         organisation_id: organisationId,
-        record_status: 'ACTIVE'
+        record_status: 'ACTIVE',
+        invoice_date: {
+          gte: startDate,
+          lte: endDate
+        }
       },
       include: {
-        payment_apps: true,
-        patient: true // Include all patient fields
+        patient: true,
+        payment_apps: true
       },
       orderBy: {
         invoice_date: 'desc'
       }
-    })) as InvoiceWithRelations[]
+    })
 
-    // Process each invoice to calculate paid amount
-    const invoiceData = invoices.map(invoice => {
+    // Get invoices for previous period
+    const previousPeriodInvoices = await prisma.invoice.findMany({
+      where: {
+        organisation_id: organisationId,
+        record_status: 'ACTIVE',
+        invoice_date: {
+          gte: previousStartDate,
+          lte: previousEndDate
+        }
+      },
+      include: {
+        payment_apps: true
+      }
+    })
+
+    // Process current period invoices
+    const processedInvoices = invoices.map(invoice => {
       const totalPaid = invoice.payment_apps.reduce((sum: number, payment) => sum + Number(payment.amount_applied), 0)
-
       const totalAmount = Number(invoice.total_amount)
       const paidPercentage = totalAmount > 0 ? (totalPaid / totalAmount) * 100 : 0
-
-      // Get patient name from the linked patient record
-      const patientName = invoice.patient?.name || 'Unknown Patient'
 
       return {
         invoiceNumber: invoice.invoice_number,
         date: invoice.invoice_date,
         totalAmount,
         paidAmount: totalPaid,
-        paidPercentage,
+        paidPercentage: Math.min(paidPercentage, 100),
         status: invoice.payment_status,
-        patientName
+        patientName: invoice.patient?.name || 'Unknown Patient'
       }
     })
 
-    // Sort by date and get last 10 invoices
-    const sortedInvoices = invoiceData.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 10)
+    // Calculate totals
+    const totalInvoiced = invoices.reduce((sum, invoice) => sum + Number(invoice.total_amount), 0)
+    const totalPaid = processedInvoices.reduce((sum, invoice) => sum + invoice.paidAmount, 0)
 
-    // Calculate totals and growth
-    const totalInvoiced = sortedInvoices.reduce((sum, inv) => sum + inv.totalAmount, 0)
-    const totalPaid = sortedInvoices.reduce((sum, inv) => sum + inv.paidAmount, 0)
+    // Calculate previous period total
+    const previousPeriodPaid = previousPeriodInvoices.reduce((sum, invoice) => {
+      const paid = invoice.payment_apps.reduce((paymentSum, payment) => paymentSum + Number(payment.amount_applied), 0)
 
-    // Calculate growth based on last two invoices
-    const lastTwoInvoices = sortedInvoices.slice(0, 2)
-    const lastMonthPaid = lastTwoInvoices[0]?.paidAmount || 0
-    const previousMonthPaid = lastTwoInvoices[1]?.paidAmount || 0
-    const growth = previousMonthPaid ? ((lastMonthPaid - previousMonthPaid) / previousMonthPaid) * 100 : 0
+      return sum + paid
+    }, 0)
+
+    // Calculate growth
+    let growth: number
+
+    if (period === 'This Month') {
+      // For monthly comparison, calculate average monthly payment for previous months
+      const monthsInPreviousPeriod = now.getMonth() // Number of months from start of year to current month
+      const averageMonthlyPayment = monthsInPreviousPeriod > 0 ? previousPeriodPaid / monthsInPreviousPeriod : 0
+
+      growth = totalPaid - averageMonthlyPayment
+    } else {
+      // For weekly and yearly comparisons, use direct comparison
+      growth = totalPaid - previousPeriodPaid
+    }
 
     return {
-      invoices: sortedInvoices,
+      invoices: processedInvoices,
       totalInvoiced,
       totalPaid,
-      growth
+      growth,
+      previousPeriodPaid,
+      period,
+      comparisonType: (period === 'This Month' ? 'average_monthly' : 'previous_period') as ComparisonType
     }
   } catch (error) {
-    console.error('Error fetching monthly revenue data:', error)
+    console.error('Error in getMonthlyRevenueData:', error)
     throw new Error('Failed to fetch monthly revenue data')
   }
 }

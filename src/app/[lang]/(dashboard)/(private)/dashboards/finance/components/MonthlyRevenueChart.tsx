@@ -44,25 +44,29 @@ type InvoiceData = {
   patientName: string
 }
 
+type Period = 'This Week' | 'This Month' | 'This Year'
+
 type MonthlyRevenueData = {
   invoices: InvoiceData[]
   totalInvoiced: number
   totalPaid: number
   growth: number
+  previousPeriodPaid: number
+  period: Period
+  comparisonType: 'average_monthly' | 'previous_period'
 }
 
 type SortField = 'date' | 'invoiceNumber' | 'totalAmount' | 'paidAmount' | 'paidPercentage' | 'status' | 'patientName'
 type SortOrder = 'asc' | 'desc'
 
-const MonthButton = () => {
+const MonthButton = ({ period, onPeriodChange }: { period: Period; onPeriodChange: (period: Period) => void }) => {
   const [open, setOpen] = useState<boolean>(false)
-  const [selectedIndex, setSelectedIndex] = useState<number>(0)
   const anchorRef = useRef<HTMLDivElement | null>(null)
 
-  const options = ['Last Week', 'Last Month', 'Last Year']
+  const options: Period[] = ['This Week', 'This Month', 'This Year']
 
   const handleMenuItemClick = (event: React.MouseEvent<HTMLLIElement>, index: number) => {
-    setSelectedIndex(index)
+    onPeriodChange(options[index])
     setOpen(false)
   }
 
@@ -77,7 +81,7 @@ const MonthButton = () => {
   return (
     <>
       <ButtonGroup variant='tonal' ref={anchorRef} aria-label='split button' size='small'>
-        <Button>{options[selectedIndex]}</Button>
+        <Button>{period}</Button>
         <Button
           className='pli-0 plb-[5px]'
           aria-haspopup='menu'
@@ -98,7 +102,7 @@ const MonthButton = () => {
                   {options.map((option, index) => (
                     <MenuItem
                       key={option}
-                      selected={index === selectedIndex}
+                      selected={option === period}
                       onClick={event => handleMenuItemClick(event, index)}
                     >
                       {option}
@@ -184,6 +188,7 @@ const MonthlyRevenueChart = () => {
   const [data, setData] = useState<MonthlyRevenueData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [period, setPeriod] = useState<Period>('This Month')
 
   // Table state
   const [page, setPage] = useState(0)
@@ -194,25 +199,39 @@ const MonthlyRevenueChart = () => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchData = async () => {
       if (session?.user?.organisationId) {
         try {
           setLoading(true)
           setError(null)
-          const result = await getMonthlyRevenueData(Number(session.user.organisationId))
+          const result = await getMonthlyRevenueData(Number(session.user.organisationId), period)
 
-          setData(result)
+          if (isMounted) {
+            setData(result)
+          }
         } catch (error) {
           console.error('Error fetching monthly revenue data:', error)
-          setError('Failed to load monthly revenue data')
+
+          if (isMounted) {
+            setError('Failed to load monthly revenue data')
+            setData(null)
+          }
         } finally {
-          setLoading(false)
+          if (isMounted) {
+            setLoading(false)
+          }
         }
       }
     }
 
     fetchData()
-  }, [session?.user?.organisationId])
+
+    return () => {
+      isMounted = false
+    }
+  }, [session?.user?.organisationId, period])
 
   // Format currency helper
   const formatCurrency = (value: number) => {
@@ -310,48 +329,190 @@ const MonthlyRevenueChart = () => {
 
   const paginatedData = sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
-  if (loading) {
-    return (
-      <Grid size={{ xs: 12 }}>
-        <Card>
-          <CardHeader title='Invoice Payments' />
-          <CardContent>
-            <Box display='flex' justifyContent='center' alignItems='center' minHeight={400}>
-              <CircularProgress />
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-    )
-  }
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <Box display='flex' justifyContent='center' alignItems='center' minHeight={400}>
+          <CircularProgress />
+        </Box>
+      )
+    }
 
-  if (error) {
-    return (
-      <Grid size={{ xs: 12 }}>
-        <Card>
-          <CardHeader title='Invoice Payments' />
-          <CardContent>
-            <Box display='flex' justifyContent='center' alignItems='center' minHeight={400}>
-              <Typography color='error'>{error}</Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-    )
-  }
+    if (error) {
+      return (
+        <Box display='flex' justifyContent='center' alignItems='center' minHeight={400}>
+          <Typography color='error'>{error}</Typography>
+        </Box>
+      )
+    }
 
-  if (!data || data.invoices.length === 0) {
+    if (!data || data.invoices.length === 0) {
+      return (
+        <Box display='flex' justifyContent='center' alignItems='center' minHeight={400}>
+          <Typography color='text.secondary'>No invoice data available for {period.toLowerCase()}</Typography>
+        </Box>
+      )
+    }
+
     return (
-      <Grid size={{ xs: 12 }}>
-        <Card>
-          <CardHeader title='Invoice Payments' />
-          <CardContent>
-            <Box display='flex' justifyContent='center' alignItems='center' minHeight={400}>
-              <Typography color='text.secondary'>No invoice data available</Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
+      <>
+        <Box sx={{ mb: 4, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+          <TextField
+            size='small'
+            placeholder='Search invoices or patients...'
+            value={searchQuery}
+            onChange={handleSearchChange}
+            sx={{
+              minWidth: 200,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.palette.primary.main
+                }
+              }
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position='start'>
+                  <i className='tabler-search text-xl' />
+                </InputAdornment>
+              )
+            }}
+          />
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            {['ALL', 'PAID', 'PARTIAL', 'PENDING'].map(status => (
+              <StatusFilterButton
+                key={status}
+                status={status}
+                active={statusFilter === status}
+                onClick={() => handleStatusFilterChange(status)}
+              />
+            ))}
+          </Box>
+        </Box>
+
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortField === 'date'}
+                    direction={sortField === 'date' ? sortOrder : 'asc'}
+                    onClick={() => handleSort('date')}
+                  >
+                    Date
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortField === 'invoiceNumber'}
+                    direction={sortField === 'invoiceNumber' ? sortOrder : 'asc'}
+                    onClick={() => handleSort('invoiceNumber')}
+                  >
+                    Invoice #
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortField === 'patientName'}
+                    direction={sortField === 'patientName' ? sortOrder : 'asc'}
+                    onClick={() => handleSort('patientName')}
+                  >
+                    Patient
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align='right'>
+                  <TableSortLabel
+                    active={sortField === 'totalAmount'}
+                    direction={sortField === 'totalAmount' ? sortOrder : 'asc'}
+                    onClick={() => handleSort('totalAmount')}
+                  >
+                    Total Amount
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align='right'>
+                  <TableSortLabel
+                    active={sortField === 'paidAmount'}
+                    direction={sortField === 'paidAmount' ? sortOrder : 'asc'}
+                    onClick={() => handleSort('paidAmount')}
+                  >
+                    Paid Amount
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortField === 'paidPercentage'}
+                    direction={sortField === 'paidPercentage' ? sortOrder : 'asc'}
+                    onClick={() => handleSort('paidPercentage')}
+                  >
+                    Progress
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortField === 'status'}
+                    direction={sortField === 'status' ? sortOrder : 'asc'}
+                    onClick={() => handleSort('status')}
+                  >
+                    Status
+                  </TableSortLabel>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedData.map(invoice => (
+                <TableRow key={invoice.invoiceNumber} hover>
+                  <TableCell>{formatDate(invoice.date)}</TableCell>
+                  <TableCell>{invoice.invoiceNumber}</TableCell>
+                  <TableCell>{invoice.patientName}</TableCell>
+                  <TableCell align='right'>{formatCurrency(invoice.totalAmount)}</TableCell>
+                  <TableCell align='right'>{formatCurrency(invoice.paidAmount)}</TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <LinearProgress
+                        variant='determinate'
+                        value={invoice.paidPercentage}
+                        sx={{
+                          flex: 1,
+                          height: 6,
+                          borderRadius: 3,
+                          backgroundColor:
+                            theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                          '& .MuiLinearProgress-bar': {
+                            backgroundColor: theme.palette[getStatusColor(invoice.status)].main
+                          }
+                        }}
+                      />
+                      <Typography variant='caption' color='text.secondary' sx={{ minWidth: 45 }}>
+                        {invoice.paidPercentage.toFixed(1)}%
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      size='small'
+                      label={invoice.status}
+                      color={getStatusColor(invoice.status)}
+                      sx={{ height: 20, '& .MuiChip-label': { px: 1, fontSize: '0.75rem' } }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <TablePagination
+          component='div'
+          count={filteredData.length}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+        />
+      </>
     )
   }
 
@@ -360,167 +521,14 @@ const MonthlyRevenueChart = () => {
       <Card>
         <CardHeader
           title='Invoice Payments'
-          subheader={`Total paid: ${formatCurrency(data?.totalPaid || 0)} of ${formatCurrency(data?.totalInvoiced || 0)}`}
-          action={<MonthButton />}
+          subheader={
+            <Typography variant='body2' color='text.secondary'>
+              {`Total paid: ${formatCurrency(data?.totalPaid || 0)} of ${formatCurrency(data?.totalInvoiced || 0)}`}
+            </Typography>
+          }
+          action={<MonthButton period={period} onPeriodChange={setPeriod} />}
         />
-        <CardContent>
-          <Box sx={{ mb: 4, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-            <TextField
-              size='small'
-              placeholder='Search invoices or patients...'
-              value={searchQuery}
-              onChange={handleSearchChange}
-              sx={{
-                minWidth: 200,
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  '&:hover .MuiOutlinedInput-notchedOutline': {
-                    borderColor: theme.palette.primary.main
-                  }
-                }
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position='start'>
-                    <i className='tabler-search text-xl' />
-                  </InputAdornment>
-                )
-              }}
-            />
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {['ALL', 'PAID', 'PARTIAL', 'PENDING'].map(status => (
-                <StatusFilterButton
-                  key={status}
-                  status={status}
-                  active={statusFilter === status}
-                  onClick={() => handleStatusFilterChange(status)}
-                />
-              ))}
-            </Box>
-          </Box>
-
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>
-                    <TableSortLabel
-                      active={sortField === 'date'}
-                      direction={sortField === 'date' ? sortOrder : 'asc'}
-                      onClick={() => handleSort('date')}
-                    >
-                      Date
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={sortField === 'invoiceNumber'}
-                      direction={sortField === 'invoiceNumber' ? sortOrder : 'asc'}
-                      onClick={() => handleSort('invoiceNumber')}
-                    >
-                      Invoice #
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={sortField === 'patientName'}
-                      direction={sortField === 'patientName' ? sortOrder : 'asc'}
-                      onClick={() => handleSort('patientName')}
-                    >
-                      Patient
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell align='right'>
-                    <TableSortLabel
-                      active={sortField === 'totalAmount'}
-                      direction={sortField === 'totalAmount' ? sortOrder : 'asc'}
-                      onClick={() => handleSort('totalAmount')}
-                    >
-                      Total Amount
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell align='right'>
-                    <TableSortLabel
-                      active={sortField === 'paidAmount'}
-                      direction={sortField === 'paidAmount' ? sortOrder : 'asc'}
-                      onClick={() => handleSort('paidAmount')}
-                    >
-                      Paid Amount
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={sortField === 'paidPercentage'}
-                      direction={sortField === 'paidPercentage' ? sortOrder : 'asc'}
-                      onClick={() => handleSort('paidPercentage')}
-                    >
-                      Progress
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={sortField === 'status'}
-                      direction={sortField === 'status' ? sortOrder : 'asc'}
-                      onClick={() => handleSort('status')}
-                    >
-                      Status
-                    </TableSortLabel>
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedData.map(invoice => (
-                  <TableRow key={invoice.invoiceNumber} hover>
-                    <TableCell>{formatDate(invoice.date)}</TableCell>
-                    <TableCell>{invoice.invoiceNumber}</TableCell>
-                    <TableCell>{invoice.patientName}</TableCell>
-                    <TableCell align='right'>{formatCurrency(invoice.totalAmount)}</TableCell>
-                    <TableCell align='right'>{formatCurrency(invoice.paidAmount)}</TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <LinearProgress
-                          variant='determinate'
-                          value={invoice.paidPercentage}
-                          sx={{
-                            flex: 1,
-                            height: 6,
-                            borderRadius: 3,
-                            backgroundColor:
-                              theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-                            '& .MuiLinearProgress-bar': {
-                              backgroundColor: theme.palette[getStatusColor(invoice.status)].main
-                            }
-                          }}
-                        />
-                        <Typography variant='caption' color='text.secondary' sx={{ minWidth: 45 }}>
-                          {invoice.paidPercentage.toFixed(1)}%
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        size='small'
-                        label={invoice.status}
-                        color={getStatusColor(invoice.status)}
-                        sx={{ height: 20, '& .MuiChip-label': { px: 1, fontSize: '0.75rem' } }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <TablePagination
-            component='div'
-            count={filteredData.length}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[5, 10, 25, 50]}
-          />
-        </CardContent>
+        <CardContent>{renderContent()}</CardContent>
       </Card>
     </Grid>
   )
