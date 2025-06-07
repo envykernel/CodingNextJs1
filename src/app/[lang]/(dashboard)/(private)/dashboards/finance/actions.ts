@@ -853,6 +853,7 @@ export async function getFinanceStatistics(organisationId: number) {
     }, 0)
 
     const previousYearTotalInvoices = previousYearInvoices.length
+
     const previousYearTotalPayments = previousYearInvoices.reduce(
       (sum, invoice) => sum + invoice.payment_apps.length,
       0
@@ -880,10 +881,16 @@ export async function getFinanceStatistics(organisationId: number) {
     const previousYearPaidPercentage =
       previousYearTotalInvoices > 0 ? Math.round((previousYearTotalPaid / previousYearTotalInvoiced) * 100) : 0
 
+    const previousYearPendingPercentage =
+      previousYearTotalInvoices > 0
+        ? Math.round(((previousYearTotalInvoiced - previousYearTotalPaid) / previousYearTotalInvoiced) * 100)
+        : 0
+
     const previousYearCollectionRate =
       previousYearTotalInvoices > 0 ? Math.round((previousYearTotalPaid / previousYearTotalInvoiced) * 100) : 0
 
     const paidPercentageGrowth = calculateGrowth(paidInvoicesPercentage, previousYearPaidPercentage)
+    const pendingPercentageGrowth = calculateGrowth(pendingInvoicesPercentage, previousYearPendingPercentage)
     const collectionRateGrowth = calculateGrowth(collectionRate, previousYearCollectionRate)
 
     return {
@@ -903,6 +910,7 @@ export async function getFinanceStatistics(organisationId: number) {
       invoicesGrowth,
       paymentsGrowth,
       paidPercentageGrowth,
+      pendingPercentageGrowth,
       collectionRateGrowth
     }
   } catch (error) {

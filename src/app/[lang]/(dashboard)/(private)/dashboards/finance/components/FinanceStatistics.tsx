@@ -16,10 +16,6 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty'
 import ArticleIcon from '@mui/icons-material/Article'
-import CreditCardIcon from '@mui/icons-material/CreditCard'
-import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import ScheduleIcon from '@mui/icons-material/Schedule'
 
 import type { ThemeColor } from '@core/types'
 import FinanceHorizontalWithCircleIcon from './FinanceHorizontalWithCircleIcon'
@@ -40,6 +36,7 @@ type StatisticsData = {
   invoicesGrowth: number
   paymentsGrowth: number
   paidPercentageGrowth: number
+  pendingPercentageGrowth: number
   collectionRateGrowth: number
 }
 
@@ -162,73 +159,16 @@ const FinanceStatistics = () => {
     }
   ]
 
-  // Horizontal stats data
-  const horizontalStatsData: {
-    stats: number
-    title: string
-    icon: JSX.Element
-    color: ThemeColor
-    trendNumber: number
-    trendPeriod: 'This Week' | 'This Month' | 'This Year'
-  }[] = [
-    {
-      stats: data.totalPayments,
-      title: 'Total Payments',
-      icon: <CreditCardIcon />,
-      color: 'success',
-      trendNumber: data.paymentsGrowth,
-      trendPeriod: 'This Year'
-    },
-    {
-      stats: data.collectionRate,
-      title: 'Collection Rate',
-      icon: <TrendingUpIcon />,
-      color: 'primary',
-      trendNumber: data.collectionRateGrowth,
-      trendPeriod: 'This Year'
-    },
-    {
-      stats: data.paidInvoicesPercentage,
-      title: 'Paid Invoices',
-      icon: <CheckCircleIcon />,
-      color: 'success',
-      trendNumber: data.paidPercentageGrowth,
-      trendPeriod: 'This Year'
-    },
-    {
-      stats: data.pendingInvoicesPercentage,
-      title: 'Pending Invoices',
-      icon: <ScheduleIcon />,
-      color: 'warning',
-      trendNumber: -data.paidPercentageGrowth,
-      trendPeriod: 'This Year'
-    }
-  ]
-
   return (
-    <>
-      {/* Statistics Cards */}
-      <Grid size={{ xs: 12 }}>
-        <Grid container spacing={6}>
-          {statsData.map((item, index) => (
-            <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-              <FinanceHorizontalWithCircleIcon {...item} />
-            </Grid>
-          ))}
-        </Grid>
+    <Grid size={{ xs: 12 }}>
+      <Grid container spacing={6}>
+        {statsData.map((item, index) => (
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
+            <FinanceHorizontalWithCircleIcon {...item} />
+          </Grid>
+        ))}
       </Grid>
-
-      {/* Horizontal Stats */}
-      <Grid size={{ xs: 12 }}>
-        <Grid container spacing={6}>
-          {horizontalStatsData.map((item, index) => (
-            <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-              <FinanceHorizontalWithCircleIcon {...item} />
-            </Grid>
-          ))}
-        </Grid>
-      </Grid>
-    </>
+    </Grid>
   )
 }
 
