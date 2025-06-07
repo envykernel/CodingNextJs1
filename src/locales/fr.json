@@ -306,7 +306,14 @@
         "show": "Afficher",
         "loading": "Chargement...",
         "goToVisit": "Aller à la visite",
-        "noData": "Aucune donnée disponible"
+        "noData": "Aucune donnée disponible",
+        "rowsPerPage": "Lignes par page",
+        "displayedRows": "Affichage de {from}-{to} sur {count}",
+        "periods": {
+            "this week": "Cette Semaine",
+            "this month": "Ce Mois",
+            "this year": "Cette Année"
+        }
     },
     "appointmentsList": "Liste des rendez-vous",
     "bookAppointment": "Prendre rendez-vous",
@@ -1238,5 +1245,49 @@
         "save": "Enregistrer",
         "saving": "Enregistrement...",
         "savedSuccessfully": "Enregistré avec succès !"
+    },
+    "financeDashboard": {
+        "statistics": {
+            "title": "Statistiques",
+            "totalInvoiced": "Total Facturé",
+            "totalPaid": "Total Payé",
+            "totalPending": "Total En Attente",
+            "totalInvoices": "Total Factures",
+            "error": "Échec du chargement des statistiques financières",
+            "noData": "Aucune statistique financière disponible",
+            "trendPeriod": {
+                "thisWeek": "Cette Semaine",
+                "thisMonth": "Ce Mois",
+                "thisYear": "Cette Année"
+            },
+            "trendComparison": {
+                "vsLastYear": "par rapport à l'année dernière",
+                "vsLast3Months": "par rapport à la moyenne des 3 derniers mois",
+                "vsLastWeek": "par rapport à la semaine dernière",
+                "vsLastPeriod": "par rapport à la période précédente"
+            }
+        },
+        "invoicePayments": {
+            "title": "Paiements des factures",
+            "all": "Tous",
+            "totalRevenue": "Revenu total",
+            "noData": "Aucune donnée de facture disponible pour {period}",
+            "searchPlaceholder": "Rechercher des factures ou des patients...",
+            "date": "Date",
+            "invoiceNumber": "N° Facture",
+            "patient": "Patient",
+            "totalAmount": "Montant Total",
+            "paidAmount": "Montant Payé",
+            "paidPercentage": "Progression",
+            "status": "Statut",
+            "statuses": {
+                "paid": "Payé",
+                "partial": "Partiel",
+                "pending": "En Attente"
+            },
+            "vsLastYear": "par rapport à l'année dernière",
+            "vsLast3Months": "par rapport à la moyenne des 3 derniers mois",
+            "vsLastWeek": "par rapport à la semaine dernière"
+        }
     }
 }

@@ -149,7 +149,14 @@
         "show": "Show",
         "loading": "Loading...",
         "goToVisit": "Go to Visit",
-        "noData": "No data available"
+        "noData": "No data available",
+        "rowsPerPage": "Rows per page",
+        "displayedRows": "Showing {from}-{to} of {count}",
+        "periods": {
+            "this week": "This Week",
+            "this month": "This Month",
+            "this year": "This Year"
+        }
     },
     "appointmentsList": "Appointments List",
     "bookAppointment": "Book Appointment",
@@ -1247,6 +1254,39 @@
         "errors": {
             "fetchFailed": "Failed to fetch settings",
             "saveFailed": "Failed to save settings"
+        }
+    },
+    "financeDashboard": {
+        "statistics": {
+            "title": "Statistics",
+            "totalInvoiced": "Total Invoiced",
+            "totalPaid": "Total Paid",
+            "totalPending": "Total Pending",
+            "totalInvoices": "Total Invoices",
+            "error": "Failed to load finance statistics",
+            "noData": "No finance statistics available"
+        },
+        "invoicePayments": {
+            "title": "Invoice Payments",
+            "all": "All",
+            "totalRevenue": "Total revenue",
+            "noData": "No invoice data available for {period}",
+            "searchPlaceholder": "Search invoices or patients...",
+            "date": "Date",
+            "invoiceNumber": "Invoice #",
+            "patient": "Patient",
+            "totalAmount": "Total Amount",
+            "paidAmount": "Paid Amount",
+            "paidPercentage": "Progress",
+            "status": "Status",
+            "statuses": {
+                "paid": "Paid",
+                "partial": "Partial",
+                "pending": "Pending"
+            },
+            "vsLastYear": "vs last year",
+            "vsLast3Months": "vs last 3 months average",
+            "vsLastWeek": "vs last week"
         }
     }
 }

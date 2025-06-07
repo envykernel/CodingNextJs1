@@ -1660,5 +1660,47 @@
             "fetchFailed": "فشل في جلب الإعدادات",
             "saveFailed": "فشل في حفظ الإعدادات"
         }
+    },
+    "financeDashboard": {
+        "statistics": {
+            "title": "الإحصائيات",
+            "totalInvoiced": "إجمالي الفواتير",
+            "totalPaid": "إجمالي المدفوع",
+            "totalPending": "إجمالي المعلق",
+            "totalInvoices": "إجمالي الفواتير",
+            "error": "فشل في تحميل الإحصائيات المالية",
+            "noData": "لا توجد إحصائيات مالية متاحة"
+        },
+        "invoicePayments": {
+            "title": "مدفوعات الفواتير",
+            "all": "الكل",
+            "totalRevenue": "إجمالي الإيرادات",
+            "noData": "لا توجد بيانات فواتير متاحة لـ {period}",
+            "searchPlaceholder": "البحث عن فواتير أو مرضى...",
+            "date": "التاريخ",
+            "invoiceNumber": "رقم الفاتورة",
+            "patient": "المريض",
+            "totalAmount": "المبلغ الإجمالي",
+            "paidAmount": "المبلغ المدفوع",
+            "paidPercentage": "النسبة المدفوعة",
+            "status": "الحالة",
+            "statuses": {
+                "paid": "مدفوع",
+                "partial": "مدفوع جزئياً",
+                "pending": "معلق"
+            },
+            "vsLastYear": "مقارنة بالعام الماضي",
+            "vsLast3Months": "مقارنة بمتوسط آخر 3 أشهر",
+            "vsLastWeek": "مقارنة بالأسبوع الماضي"
+        },
+        "common": {
+            "rowsPerPage": "الصفوف في الصفحة",
+            "displayedRows": "عرض {from}-{to} من {count}",
+            "periods": {
+                "this week": "هذا الأسبوع",
+                "this month": "هذا الشهر",
+                "this year": "هذا العام"
+            }
+        }
     }
 }

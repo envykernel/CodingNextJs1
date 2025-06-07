@@ -33,6 +33,8 @@ import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 
 import { getMonthlyRevenueData } from '../actions'
+import { useTranslation } from '@/contexts/translationContext'
+import { formatDateToDDMMYYYY } from '@/utils/date'
 
 type InvoiceData = {
   id: number
@@ -63,6 +65,7 @@ type SortField = 'date' | 'invoiceNumber' | 'totalAmount' | 'paidAmount' | 'paid
 type SortOrder = 'asc' | 'desc'
 
 const MonthButton = ({ period, onPeriodChange }: { period: Period; onPeriodChange: (period: Period) => void }) => {
+  const { t } = useTranslation()
   const [open, setOpen] = useState<boolean>(false)
   const anchorRef = useRef<HTMLDivElement | null>(null)
 
@@ -84,7 +87,7 @@ const MonthButton = ({ period, onPeriodChange }: { period: Period; onPeriodChang
   return (
     <>
       <ButtonGroup variant='tonal' ref={anchorRef} aria-label='split button' size='small'>
-        <Button>{period}</Button>
+        <Button>{t(`common.periods.${period.toLowerCase()}`)}</Button>
         <Button
           className='pli-0 plb-[5px]'
           aria-haspopup='menu'
@@ -108,7 +111,7 @@ const MonthButton = ({ period, onPeriodChange }: { period: Period; onPeriodChang
                       selected={option === period}
                       onClick={event => handleMenuItemClick(event, index)}
                     >
-                      {option}
+                      {t(`common.periods.${option.toLowerCase()}`)}
                     </MenuItem>
                   ))}
                 </MenuList>
@@ -123,6 +126,7 @@ const MonthButton = ({ period, onPeriodChange }: { period: Period; onPeriodChang
 
 const StatusFilterButton = ({ status, active, onClick }: { status: string; active: boolean; onClick: () => void }) => {
   const theme = useTheme()
+  const { t } = useTranslation()
 
   const getStatusColor = (status: string): 'success' | 'warning' | 'error' | 'primary' => {
     switch (status) {
@@ -180,7 +184,9 @@ const StatusFilterButton = ({ status, active, onClick }: { status: string; activ
         />
       }
     >
-      {status}
+      {status === 'ALL'
+        ? t('financeDashboard.invoicePayments.all')
+        : t(`financeDashboard.invoicePayments.statuses.${status.toLowerCase()}`)}
     </Button>
   )
 }
@@ -200,6 +206,8 @@ const MonthlyRevenueChart = () => {
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
+
+  const { t } = useTranslation()
 
   useEffect(() => {
     let isMounted = true
@@ -247,11 +255,7 @@ const MonthlyRevenueChart = () => {
 
   // Format date helper
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    })
+    return formatDateToDDMMYYYY(date)
   }
 
   // Get status color
@@ -352,7 +356,9 @@ const MonthlyRevenueChart = () => {
     if (!data || data.invoices.length === 0) {
       return (
         <Box display='flex' justifyContent='center' alignItems='center' minHeight={400}>
-          <Typography color='text.secondary'>No invoice data available for {period.toLowerCase()}</Typography>
+          <Typography color='text.secondary'>
+            {t('financeDashboard.invoicePayments.noData', { period: t(`common.periods.${period.toLowerCase()}`) })}
+          </Typography>
         </Box>
       )
     }
@@ -362,7 +368,7 @@ const MonthlyRevenueChart = () => {
         <Box sx={{ mb: 4, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
           <TextField
             size='small'
-            placeholder='Search invoices or patients...'
+            placeholder={t('financeDashboard.invoicePayments.searchPlaceholder')}
             value={searchQuery}
             onChange={handleSearchChange}
             sx={{
@@ -404,7 +410,7 @@ const MonthlyRevenueChart = () => {
                     direction={sortField === 'date' ? sortOrder : 'asc'}
                     onClick={() => handleSort('date')}
                   >
-                    Date
+                    {t('financeDashboard.invoicePayments.date')}
                   </TableSortLabel>
                 </TableCell>
                 <TableCell>
@@ -413,7 +419,7 @@ const MonthlyRevenueChart = () => {
                     direction={sortField === 'invoiceNumber' ? sortOrder : 'asc'}
                     onClick={() => handleSort('invoiceNumber')}
                   >
-                    Invoice #
+                    {t('financeDashboard.invoicePayments.invoiceNumber')}
                   </TableSortLabel>
                 </TableCell>
                 <TableCell>
@@ -422,7 +428,7 @@ const MonthlyRevenueChart = () => {
                     direction={sortField === 'patientName' ? sortOrder : 'asc'}
                     onClick={() => handleSort('patientName')}
                   >
-                    Patient
+                    {t('financeDashboard.invoicePayments.patient')}
                   </TableSortLabel>
                 </TableCell>
                 <TableCell align='right'>
@@ -431,7 +437,7 @@ const MonthlyRevenueChart = () => {
                     direction={sortField === 'totalAmount' ? sortOrder : 'asc'}
                     onClick={() => handleSort('totalAmount')}
                   >
-                    Total Amount
+                    {t('financeDashboard.invoicePayments.totalAmount')}
                   </TableSortLabel>
                 </TableCell>
                 <TableCell align='right'>
@@ -440,7 +446,7 @@ const MonthlyRevenueChart = () => {
                     direction={sortField === 'paidAmount' ? sortOrder : 'asc'}
                     onClick={() => handleSort('paidAmount')}
                   >
-                    Paid Amount
+                    {t('financeDashboard.invoicePayments.paidAmount')}
                   </TableSortLabel>
                 </TableCell>
                 <TableCell>
@@ -449,7 +455,7 @@ const MonthlyRevenueChart = () => {
                     direction={sortField === 'paidPercentage' ? sortOrder : 'asc'}
                     onClick={() => handleSort('paidPercentage')}
                   >
-                    Progress
+                    {t('financeDashboard.invoicePayments.paidPercentage')}
                   </TableSortLabel>
                 </TableCell>
                 <TableCell>
@@ -458,7 +464,7 @@ const MonthlyRevenueChart = () => {
                     direction={sortField === 'status' ? sortOrder : 'asc'}
                     onClick={() => handleSort('status')}
                   >
-                    Status
+                    {t('financeDashboard.invoicePayments.status')}
                   </TableSortLabel>
                 </TableCell>
               </TableRow>
@@ -495,7 +501,7 @@ const MonthlyRevenueChart = () => {
                   <TableCell>
                     <Chip
                       size='small'
-                      label={invoice.status}
+                      label={t(`financeDashboard.invoicePayments.statuses.${invoice.status.toLowerCase()}`)}
                       color={getStatusColor(invoice.status)}
                       sx={{ height: 20, '& .MuiChip-label': { px: 1, fontSize: '0.75rem' } }}
                     />
@@ -514,6 +520,14 @@ const MonthlyRevenueChart = () => {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25, 50]}
+          labelRowsPerPage={t('common.rowsPerPage')}
+          labelDisplayedRows={({ from, to, count }) =>
+            t('common.displayedRows', {
+              from: String(from),
+              to: String(to),
+              count: String(count)
+            })
+          }
         />
       </>
     )
@@ -523,19 +537,19 @@ const MonthlyRevenueChart = () => {
     <Grid size={{ xs: 12 }}>
       <Card>
         <CardHeader
-          title='Invoice Payments'
+          title={t('financeDashboard.invoicePayments.title')}
           subheader={
             <Typography variant='body2' color='text.secondary'>
-              {`Total revenue: ${formatCurrency(data?.totalRevenue || 0)} ${
+              {`${t('financeDashboard.invoicePayments.totalRevenue')}: ${formatCurrency(data?.totalRevenue || 0)} ${
                 data?.growth !== undefined
                   ? `(${data.growth > 0 ? '+' : ''}${
                       data.period === 'This Year' ? data.growth.toFixed(1) + '%' : formatCurrency(data.growth)
                     } ${
                       data.period === 'This Year'
-                        ? 'vs last year'
+                        ? t('financeDashboard.invoicePayments.vsLastYear')
                         : data.period === 'This Month'
-                          ? 'vs last 3 months average'
-                          : 'vs last week'
+                          ? t('financeDashboard.invoicePayments.vsLast3Months')
+                          : t('financeDashboard.invoicePayments.vsLastWeek')
                     })`
                   : ''
               }`}

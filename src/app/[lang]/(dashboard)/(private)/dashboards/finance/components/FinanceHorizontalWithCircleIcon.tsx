@@ -8,6 +8,8 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import type { CardProps } from '@mui/material/Card'
 
+import { useTranslation } from '@/contexts/translationContext'
+
 // Types Imports
 import type { ThemeColor } from '@core/types'
 
@@ -43,17 +45,18 @@ type FinanceHorizontalWithCircleIconProps = {
 const FinanceHorizontalWithCircleIcon = (props: FinanceHorizontalWithCircleIconProps) => {
   // Props
   const { title, stats, trendNumber, trendPeriod, icon, color, formatValue } = props
+  const { t } = useTranslation()
 
   const getTrendText = () => {
     switch (trendPeriod) {
       case 'This Year':
-        return 'vs last year'
+        return t('financeDashboard.statistics.trendComparison.vsLastYear')
       case 'This Month':
-        return 'vs last 3 months average'
+        return t('financeDashboard.statistics.trendComparison.vsLast3Months')
       case 'This Week':
-        return 'vs last week'
+        return t('financeDashboard.statistics.trendComparison.vsLastWeek')
       default:
-        return 'vs last period'
+        return t('financeDashboard.statistics.trendComparison.vsLastPeriod')
     }
   }
 

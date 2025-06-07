@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import { useSession } from 'next-auth/react'
+
 import Grid from '@mui/material/Grid2'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
@@ -16,6 +17,8 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty'
 import ArticleIcon from '@mui/icons-material/Article'
+
+import { useTranslation } from '@/contexts/translationContext'
 
 import type { ThemeColor } from '@core/types'
 import FinanceHorizontalWithCircleIcon from './FinanceHorizontalWithCircleIcon'
@@ -42,9 +45,13 @@ type StatisticsData = {
 
 const FinanceStatistics = () => {
   const { data: session } = useSession()
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<StatisticsData | null>(null)
+
+  // Define trend period constant
+  const TREND_PERIOD: 'This Week' | 'This Month' | 'This Year' = 'This Year'
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,7 +78,7 @@ const FinanceStatistics = () => {
   if (loading) {
     return (
       <Card>
-        <CardHeader title='Statistics' />
+        <CardHeader title={t('financeDashboard.statistics.title')} />
         <CardContent>
           <Box display='flex' justifyContent='center' alignItems='center' minHeight={200}>
             <CircularProgress />
@@ -84,10 +91,10 @@ const FinanceStatistics = () => {
   if (error) {
     return (
       <Card>
-        <CardHeader title='Statistics' />
+        <CardHeader title={t('financeDashboard.statistics.title')} />
         <CardContent>
           <Box display='flex' justifyContent='center' alignItems='center' minHeight={200}>
-            <Typography color='error'>{error}</Typography>
+            <Typography color='error'>{t('financeDashboard.statistics.error')}</Typography>
           </Box>
         </CardContent>
       </Card>
@@ -97,10 +104,10 @@ const FinanceStatistics = () => {
   if (!data) {
     return (
       <Card>
-        <CardHeader title='Statistics' />
+        <CardHeader title={t('financeDashboard.statistics.title')} />
         <CardContent>
           <Box display='flex' justifyContent='center' alignItems='center' minHeight={200}>
-            <Typography color='text.secondary'>No statistics data available</Typography>
+            <Typography color='text.secondary'>{t('financeDashboard.statistics.noData')}</Typography>
           </Box>
         </CardContent>
       </Card>
@@ -127,35 +134,35 @@ const FinanceStatistics = () => {
   }[] = [
     {
       stats: formatCurrency(data.totalInvoiced),
-      title: 'Total Invoiced',
+      title: t('financeDashboard.statistics.totalInvoiced'),
       icon: <AccountBalanceWalletIcon />,
       color: 'primary',
       trendNumber: data.invoicedGrowth,
-      trendPeriod: 'This Year'
+      trendPeriod: TREND_PERIOD
     },
     {
       stats: formatCurrency(data.totalPaid),
-      title: 'Total Paid',
+      title: t('financeDashboard.statistics.totalPaid'),
       icon: <AttachMoneyIcon />,
       color: 'success',
       trendNumber: data.paidGrowth,
-      trendPeriod: 'This Year'
+      trendPeriod: TREND_PERIOD
     },
     {
       stats: formatCurrency(data.totalPending),
-      title: 'Total Pending',
+      title: t('financeDashboard.statistics.totalPending'),
       icon: <HourglassEmptyIcon />,
       color: 'warning',
       trendNumber: data.pendingGrowth,
-      trendPeriod: 'This Year'
+      trendPeriod: TREND_PERIOD
     },
     {
       stats: data.totalInvoices,
-      title: 'Total Invoices',
+      title: t('financeDashboard.statistics.totalInvoices'),
       icon: <ArticleIcon />,
       color: 'info',
       trendNumber: data.invoicesGrowth,
-      trendPeriod: 'This Year'
+      trendPeriod: TREND_PERIOD
     }
   ]
 
