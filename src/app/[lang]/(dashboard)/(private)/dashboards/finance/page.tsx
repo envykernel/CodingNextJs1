@@ -63,10 +63,23 @@ const FinanceDashboard = async () => {
   const totalInvoices = invoices.length
   const totalPayments = payments.length
 
+  // Group payments by payment method
+  const paymentMethodsMap = payments.reduce(
+    (acc, payment) => {
+      const method = payment.payment_method
+      const amount = Number(payment.amount)
+
+      acc[method] = (acc[method] || 0) + amount
+
+      return acc
+    },
+    {} as Record<string, number>
+  )
+
   // Prepare data for payment methods chart
   const paymentMethodsData = {
-    series: [totalPaid, totalPending],
-    labels: ['Paid', 'Pending']
+    series: Object.values(paymentMethodsMap),
+    labels: Object.keys(paymentMethodsMap).map(method => method.replace('_', ' '))
   }
 
   // Prepare statistics cards data
