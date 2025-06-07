@@ -1,7 +1,17 @@
 'use client'
 
 // React Imports
-import { Children, cloneElement, createContext, forwardRef, useEffect, useRef, useState } from 'react'
+import {
+  Children,
+  cloneElement,
+  createContext,
+  forwardRef,
+  useEffect,
+  useRef,
+  useState,
+  isValidElement,
+  Fragment
+} from 'react'
 import type {
   AnchorHTMLAttributes,
   ForwardRefRenderFunction,
@@ -169,8 +179,36 @@ const SubMenu: ForwardRefRenderFunction<HTMLLIElement, SubMenuProps> = (props, r
   } = useHorizontalMenu()
 
   // Vars
-  // Filter out falsy values from children
-  const childNodes = Children.toArray(children).filter(Boolean) as [ReactElement<SubMenuProps | MenuItemProps>]
+  // Filter out falsy values from children and handle Fragment children
+  const childNodes = Children.toArray(children)
+    .filter(Boolean)
+    .map((child, index) => {
+      if (isValidElement(child) && child.type === Fragment) {
+        // If the child is a Fragment, extract its children and add unique keys
+        return Children.toArray(child.props.children)
+          .filter(Boolean)
+          .map((fragmentChild, fragmentIndex) => {
+            if (isValidElement(fragmentChild)) {
+              // Create a unique key by combining the parent index and fragment child index
+              return cloneElement(fragmentChild, {
+                key: `fragment-${index}-${fragmentIndex}-${fragmentChild.key || ''}`
+              })
+            }
+
+            return fragmentChild
+          })
+      }
+
+      // For non-Fragment children, ensure they have a key
+      if (isValidElement(child)) {
+        return cloneElement(child, {
+          key: child.key || `menu-item-${index}`
+        })
+      }
+
+      return child
+    })
+    .flat() as [ReactElement<SubMenuProps | MenuItemProps>]
 
   const mainAxisOffset =
     popoutMenuOffset &&
@@ -447,7 +485,10 @@ const SubMenu: ForwardRefRenderFunction<HTMLLIElement, SubMenuProps> = (props, r
                           }
                         }
                       }),
-                      level: level + 1
+                      level: level + 1,
+
+                      // Ensure the key is preserved from the parent mapping
+                      key: node.key || `menu-item-${index}`
                     })
                   )}
                 </SubMenuContent>
