@@ -188,7 +188,7 @@ const MonthlyRevenueChart = () => {
   const [data, setData] = useState<MonthlyRevenueData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [period, setPeriod] = useState<Period>('This Month')
+  const [period, setPeriod] = useState<Period>('This Year')
 
   // Table state
   const [page, setPage] = useState(0)
