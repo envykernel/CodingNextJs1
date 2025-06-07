@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import type { SyntheticEvent } from 'react'
 
 import { useSession } from 'next-auth/react'
 import { useTheme } from '@mui/material/styles'
@@ -11,10 +12,14 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
 import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import LinearProgress from '@mui/material/LinearProgress'
+import Tab from '@mui/material/Tab'
+import TabList from '@mui/lab/TabList'
+import TabContext from '@mui/lab/TabContext'
+
+import classnames from 'classnames'
 
 import CustomAvatar from '@core/components/mui/Avatar'
+import OptionMenu from '@core/components/option-menu'
 
 import AppReactApexCharts from '@/libs/styles/AppReactApexCharts'
 import { getServiceRevenueData } from '../actions'
@@ -22,6 +27,10 @@ import { getServiceRevenueData } from '../actions'
 type ServiceRevenue = {
   serviceName: string
   totalRevenue: number
+  monthlyRevenue: {
+    month: string
+    revenue: number
+  }[]
 }
 
 type ServiceRevenueData = {
@@ -35,6 +44,8 @@ const ServiceRevenueChart = () => {
   const [data, setData] = useState<ServiceRevenueData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedService, setSelectedService] = useState<string | null>(null)
+  const ALL_SERVICES_KEY = '__ALL__'
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,7 +55,12 @@ const ServiceRevenueChart = () => {
           setError(null)
           const result = await getServiceRevenueData(Number(session.user.organisationId))
 
-          setData(result as ServiceRevenueData)
+          setData(result)
+
+          // Set the first service as selected by default
+          if (result.services.length > 0) {
+            setSelectedService(result.services[0].serviceName)
+          }
         } catch (error) {
           console.error('Error fetching service revenue data:', error)
           setError('Failed to load service revenue data')
@@ -57,17 +73,6 @@ const ServiceRevenueChart = () => {
     fetchData()
   }, [session?.user?.organisationId])
 
-  // Define chart colors with explicit hex values
-  const chartColors = {
-    primary: '#7367f0', // Primary color
-    success: '#28c76f', // Success color
-    warning: '#ff9f43', // Warning color
-    error: '#ea5455', // Error color
-    text: theme.palette.mode === 'dark' ? '#fff' : '#2c3e50',
-    grid: theme.palette.mode === 'dark' ? '#2c3e50' : '#e0e0e0',
-    background: 'transparent'
-  }
-
   // Format currency helper
   const formatCurrency = (value: number) => {
     return value.toLocaleString('en-US', {
@@ -75,6 +80,252 @@ const ServiceRevenueChart = () => {
       currency: 'MAD',
       currencyDisplay: 'code'
     })
+  }
+
+  const handleServiceChange = (event: SyntheticEvent, newValue: string) => {
+    setSelectedService(newValue)
+  }
+
+  const renderServiceTabs = () => {
+    if (!data) return null
+
+    // All Services tab
+    const allTab = (
+      <Tab
+        key={ALL_SERVICES_KEY}
+        value={ALL_SERVICES_KEY}
+        className='mie-4'
+        label={
+          <div
+            className={classnames(
+              'flex flex-col items-center justify-center gap-2 is-[110px] bs-[100px] border rounded-xl',
+              selectedService === ALL_SERVICES_KEY
+                ? 'border-solid border-[var(--mui-palette-primary-main)]'
+                : 'border-dashed'
+            )}
+          >
+            <CustomAvatar
+              variant='rounded'
+              skin='light'
+              size={38}
+              {...(selectedService === ALL_SERVICES_KEY && { color: 'primary' })}
+            >
+              <i
+                className={classnames(
+                  'text-[22px]',
+                  { 'text-textSecondary': selectedService !== ALL_SERVICES_KEY },
+                  'tabler-chart-bar'
+                )}
+              />
+            </CustomAvatar>
+            <Typography className='font-medium capitalize' color='text.primary'>
+              All Services
+            </Typography>
+          </div>
+        }
+      />
+    )
+
+    return [
+      allTab,
+      ...data.services.map((service, index) => (
+        <Tab
+          key={index}
+          value={service.serviceName}
+          className='mie-4'
+          label={
+            <div
+              className={classnames(
+                'flex flex-col items-center justify-center gap-2 is-[110px] bs-[100px] border rounded-xl',
+                service.serviceName === selectedService
+                  ? 'border-solid border-[var(--mui-palette-primary-main)]'
+                  : 'border-dashed'
+              )}
+            >
+              <CustomAvatar
+                variant='rounded'
+                skin='light'
+                size={38}
+                {...(service.serviceName === selectedService && { color: 'primary' })}
+              >
+                <i
+                  className={classnames(
+                    'text-[22px]',
+                    { 'text-textSecondary': service.serviceName !== selectedService },
+                    'tabler-chart-bar'
+                  )}
+                />
+              </CustomAvatar>
+              <Typography className='font-medium capitalize' color='text.primary'>
+                {service.serviceName}
+              </Typography>
+            </div>
+          }
+        />
+      ))
+    ]
+  }
+
+  const renderMonthlyChart = () => {
+    if (!data || !selectedService) return null
+
+    // If 'All Services' is selected, sum monthly revenue across all services
+    let chartTitle = selectedService
+    let totalRevenue = 0
+    let monthlyData: { month: string; revenue: number }[] = []
+
+    if (selectedService === ALL_SERVICES_KEY) {
+      chartTitle = 'All Services'
+
+      // Collect all months from all services
+      const allMonths = Array.from(new Set(data.services.flatMap(s => s.monthlyRevenue.map(m => m.month))))
+
+      monthlyData = allMonths.map(month => ({
+        month,
+        revenue: data.services.reduce((sum, s) => {
+          const found = s.monthlyRevenue.find(m => m.month === month)
+
+          return sum + (found ? found.revenue : 0)
+        }, 0)
+      }))
+      totalRevenue = data.services.reduce((sum, s) => sum + s.totalRevenue, 0)
+    } else {
+      const service = data.services.find(s => s.serviceName === selectedService)
+
+      if (!service) return null
+      monthlyData = service.monthlyRevenue
+      totalRevenue = service.totalRevenue
+      chartTitle = selectedService
+    }
+
+    const max = Math.max(...monthlyData.map(item => item.revenue))
+    const seriesIndex = monthlyData.findIndex(item => item.revenue === max)
+
+    const colors = monthlyData.map((_, i) =>
+      i === seriesIndex ? 'var(--mui-palette-primary-main)' : 'var(--mui-palette-primary-lightOpacity)'
+    )
+
+    const yAxisMax = max > 0 ? max * 1.15 : undefined
+
+    return (
+      <div className='flex flex-col gap-4'>
+        <div className='flex items-center justify-between'>
+          <div className='flex flex-col gap-1'>
+            <Typography variant='h6'>{chartTitle}</Typography>
+            <Typography variant='body2' color='text.secondary'>
+              Monthly Revenue Overview
+            </Typography>
+          </div>
+          <Typography variant='h5'>{formatCurrency(totalRevenue)}</Typography>
+        </div>
+        <AppReactApexCharts
+          type='bar'
+          height={350}
+          width='100%'
+          series={[{ data: monthlyData.map(item => item.revenue) }]}
+          options={{
+            chart: {
+              parentHeightOffset: 0,
+              toolbar: { show: false }
+            },
+            plotOptions: {
+              bar: {
+                borderRadius: 6,
+                distributed: true,
+                columnWidth: '33%',
+                borderRadiusApplication: 'end',
+                dataLabels: { position: 'top' }
+              }
+            },
+            legend: { show: false },
+            tooltip: { enabled: false },
+            dataLabels: {
+              offsetY: -11,
+              formatter: (val: number) => formatCurrency(val),
+              style: {
+                fontWeight: 500,
+                colors: ['var(--mui-palette-text-primary)'],
+                fontSize: theme.typography.body1.fontSize as string
+              }
+            },
+            colors,
+            states: {
+              hover: {
+                filter: { type: 'none' }
+              },
+              active: {
+                filter: { type: 'none' }
+              }
+            },
+            grid: {
+              show: false,
+              padding: {
+                top: -19,
+                left: -4,
+                right: 0,
+                bottom: -11
+              }
+            },
+            xaxis: {
+              axisTicks: { show: false },
+              axisBorder: { color: 'var(--mui-palette-divider)' },
+              categories: monthlyData.map(item => item.month),
+              labels: {
+                style: {
+                  colors: 'var(--mui-palette-text-disabled)',
+                  fontFamily: theme.typography.fontFamily,
+                  fontSize: theme.typography.body2.fontSize as string
+                }
+              }
+            },
+            yaxis: {
+              min: 0,
+              max: yAxisMax,
+              labels: {
+                offsetX: -18,
+                formatter: (val: number) => formatCurrency(val),
+                style: {
+                  colors: 'var(--mui-palette-text-disabled)',
+                  fontFamily: theme.typography.fontFamily,
+                  fontSize: theme.typography.body2.fontSize as string
+                }
+              }
+            },
+            responsive: [
+              {
+                breakpoint: 1450,
+                options: {
+                  plotOptions: {
+                    bar: { columnWidth: '45%' }
+                  }
+                }
+              },
+              {
+                breakpoint: 600,
+                options: {
+                  dataLabels: {
+                    style: {
+                      fontSize: theme.typography.body2.fontSize as string
+                    }
+                  },
+                  plotOptions: {
+                    bar: { columnWidth: '58%' }
+                  }
+                }
+              },
+              {
+                breakpoint: 500,
+                options: {
+                  plotOptions: {
+                    bar: { columnWidth: '70%' }
+                  }
+                }
+              }
+            ]
+          }}
+        />
+      </div>
+    )
   }
 
   if (loading) {
@@ -122,113 +373,31 @@ const ServiceRevenueChart = () => {
     )
   }
 
-  // Calculate percentage for each service
-  const servicesWithPercentage = data.services.map(service => ({
-    ...service,
-    percentage: (service.totalRevenue / data.totalRevenue) * 100
-  }))
-
   return (
     <Grid size={{ xs: 12 }}>
       <Card>
-        <CardHeader title='Service Revenue' subheader='Revenue Distribution by Service' className='pbe-0' />
-        <CardContent className='flex flex-col gap-5'>
-          <div className='flex flex-col sm:flex-row items-center justify-between gap-8'>
-            <div className='flex flex-col gap-3 is-full sm:is-[unset]'>
-              <div className='flex items-center gap-2.5'>
-                <Typography variant='h2'>{formatCurrency(data.totalRevenue)}</Typography>
-                <Chip
-                  size='small'
-                  variant='tonal'
-                  color='success'
-                  label={`${servicesWithPercentage.length} Services`}
-                />
-              </div>
-              <Typography variant='body2' className='text-balance'>
-                Total revenue generated across all services
-              </Typography>
-            </div>
-            <AppReactApexCharts
-              type='bar'
-              height={163}
-              width='100%'
-              series={[{ data: data.services.map(item => item.totalRevenue) }]}
-              options={{
-                chart: {
-                  parentHeightOffset: 0,
-                  toolbar: { show: false }
-                },
-                tooltip: { enabled: false },
-                grid: {
-                  show: false,
-                  padding: {
-                    top: -31,
-                    left: 0,
-                    right: 0,
-                    bottom: -9
-                  }
-                },
-                plotOptions: {
-                  bar: {
-                    borderRadius: 4,
-                    distributed: true,
-                    columnWidth: '42%'
-                  }
-                },
-                legend: { show: false },
-                dataLabels: { enabled: false },
-                colors: data.services.map(() => chartColors.primary),
-                states: {
-                  hover: {
-                    filter: { type: 'none' }
-                  },
-                  active: {
-                    filter: { type: 'none' }
-                  }
-                },
-                xaxis: {
-                  categories: data.services.map(item => item.serviceName),
-                  axisTicks: { show: false },
-                  axisBorder: { show: false },
-                  labels: {
-                    style: {
-                      fontSize: '13px',
-                      colors: 'var(--mui-palette-text-disabled)'
-                    }
-                  }
-                },
-                yaxis: { show: false }
+        <CardHeader
+          title='Service Revenue'
+          subheader='Monthly Revenue by Service'
+          action={<OptionMenu options={['Last Week', 'Last Month', 'Last Year']} />}
+        />
+        <CardContent className='flex flex-col gap-6'>
+          <TabContext value={selectedService || ''}>
+            <TabList
+              variant='scrollable'
+              scrollButtons='auto'
+              onChange={handleServiceChange}
+              aria-label='service tabs'
+              className='!border-0 mbe-6'
+              sx={{
+                '& .MuiTabs-indicator': { display: 'none !important' },
+                '& .MuiTab-root': { padding: '0 !important', border: '0 !important' }
               }}
-            />
-          </div>
-          <div className='flex flex-col sm:flex-row gap-6 p-5 border rounded'>
-            {servicesWithPercentage.map((service, index) => (
-              <div key={index} className='flex flex-col gap-2 is-full'>
-                <div className='flex items-center gap-2'>
-                  <CustomAvatar
-                    skin='light'
-                    variant='rounded'
-                    color={index === 0 ? 'primary' : index === 1 ? 'success' : 'warning'}
-                    size={26}
-                  >
-                    <Typography variant='caption' className='font-medium'>
-                      MAD
-                    </Typography>
-                  </CustomAvatar>
-                  <Typography variant='h6' className='leading-6 font-normal'>
-                    {service.serviceName}
-                  </Typography>
-                </div>
-                <Typography variant='h4'>{formatCurrency(service.totalRevenue)}</Typography>
-                <LinearProgress
-                  value={service.percentage}
-                  variant='determinate'
-                  color={index === 0 ? 'primary' : index === 1 ? 'success' : 'warning'}
-                  className='max-bs-1'
-                />
-              </div>
-            ))}
-          </div>
+            >
+              {renderServiceTabs()}
+            </TabList>
+            {renderMonthlyChart()}
+          </TabContext>
         </CardContent>
       </Card>
     </Grid>

@@ -25,87 +25,142 @@ export async function getInvoiceStatusData(organisationId: number) {
 
 export const getServiceRevenueData = async (organisationId: number) => {
   try {
-    // Debug query to see all payment applications and their relationships
-    const debugPayments = await prisma.payment_application.findMany({
+    // Get date range for current year up to current month
+    const startOfYear = new Date(new Date().getFullYear(), 0, 1)
+    const currentDate = new Date()
+    const endOfCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59)
+
+    // Get payments with their applications and service information
+    const payments = await prisma.payment.findMany({
       where: {
-        organisation_id: organisationId
+        organisation_id: organisationId,
+        payment_date: {
+          gte: startOfYear,
+          lte: endOfCurrentMonth
+        }
       },
       select: {
         id: true,
-        amount_applied: true,
-        payment_id: true,
-        invoice_line_id: true,
-        invoice_line: {
+        payment_date: true,
+        applications: {
           select: {
             id: true,
-            service_name: true,
-            service_id: true,
-            service: {
+            amount_applied: true,
+            invoice_line: {
               select: {
                 id: true,
-                name: true,
-                code: true
+                service: {
+                  select: {
+                    id: true,
+                    name: true
+                  }
+                }
               }
             }
           }
         }
       },
       orderBy: {
-        invoice_line_id: 'asc'
+        payment_date: 'asc'
       }
     })
 
-    // Convert Decimal to number in the debug data
-    const processedDebugPayments = debugPayments.map(payment => ({
-      ...payment,
-      amount_applied: Number(payment.amount_applied)
-    }))
+    // Debug log to see the raw data
+    console.log('Raw payment data:', JSON.stringify(payments, null, 2))
 
-    console.log('Debug Payment Applications:', JSON.stringify(processedDebugPayments, null, 2))
-
-    // Process the payments directly from debug data to ensure we're using the same data
-    const revenueMap = new Map<string, number>()
-
-    processedDebugPayments.forEach(payment => {
-      if (payment.invoice_line) {
-        // Use service name from the service relation if available, fallback to invoice_line service_name
-        const serviceName = payment.invoice_line.service?.name || payment.invoice_line.service_name || 'Unknown Service'
-
-        const amount = payment.amount_applied
-
-        console.log(`Processing payment ${payment.id}: Service=${serviceName}, Amount=${amount}`)
-
-        revenueMap.set(serviceName, (revenueMap.get(serviceName) || 0) + amount)
+    // Initialize monthly revenue map for each service
+    const serviceRevenueMap = new Map<
+      string,
+      {
+        totalRevenue: number
+        monthlyRevenue: Map<string, number> // Using Map to ensure we don't duplicate months
+        paymentCount: number
       }
-    })
+    >()
 
-    // Convert to array and sort
-    const groupedRevenues = Array.from(revenueMap.entries())
-      .map(([serviceName, totalRevenue]) => {
-        console.log(`Final revenue for ${serviceName}: ${totalRevenue}`)
+    // Process each payment and its applications
+    payments.forEach(payment => {
+      const paymentMonth = payment.payment_date.toLocaleString('default', { month: 'short' })
 
-        return {
-          serviceName,
-          totalRevenue
+      // Debug log for each payment
+      console.log(`Processing payment ${payment.id}:`, {
+        date: payment.payment_date,
+        month: paymentMonth,
+        applications: payment.applications.map(app => ({
+          amount: app.amount_applied,
+          service: app.invoice_line?.service?.name
+        }))
+      })
+
+      payment.applications.forEach(app => {
+        if (app.invoice_line?.service?.name) {
+          const serviceName = app.invoice_line.service.name
+          const amount = Number(app.amount_applied)
+
+          // Get or create service data
+          let serviceData = serviceRevenueMap.get(serviceName)
+
+          if (!serviceData) {
+            serviceData = {
+              totalRevenue: 0,
+              monthlyRevenue: new Map(),
+              paymentCount: 0
+            }
+            serviceRevenueMap.set(serviceName, serviceData)
+          }
+
+          // Update total revenue
+          serviceData.totalRevenue += amount
+          serviceData.paymentCount += 1
+
+          // Update monthly revenue for the specific month of this payment
+          const currentMonthRevenue = serviceData.monthlyRevenue.get(paymentMonth) || 0
+
+          serviceData.monthlyRevenue.set(paymentMonth, currentMonthRevenue + amount)
         }
       })
+    })
+
+    // Debug log for service revenue map
+    console.log(
+      'Service revenue map:',
+      Array.from(serviceRevenueMap.entries()).map(([name, data]) => ({
+        service: name,
+        totalRevenue: data.totalRevenue,
+        paymentCount: data.paymentCount,
+        monthlyRevenue: Object.fromEntries(data.monthlyRevenue)
+      }))
+    )
+
+    // Convert to array format and filter out services with zero revenue
+    const serviceData = Array.from(serviceRevenueMap.entries())
+      .filter(([, data]) => data.totalRevenue > 0) // Only keep services with revenue > 0
+      .map(([serviceName, data]) => ({
+        serviceName,
+        totalRevenue: data.totalRevenue,
+        monthlyRevenue: Array.from(data.monthlyRevenue.entries())
+          .map(([month, revenue]) => ({
+            month,
+            revenue
+          }))
+          .sort((a, b) => {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+            return months.indexOf(a.month) - months.indexOf(b.month)
+          })
+      }))
       .sort((a, b) => b.totalRevenue - a.totalRevenue)
 
     // Calculate total revenue
-    const total = groupedRevenues.reduce((sum, item) => sum + item.totalRevenue, 0)
+    const totalRevenue = serviceData.reduce((sum, service) => sum + service.totalRevenue, 0)
 
-    console.log('Final grouped revenues:', JSON.stringify(groupedRevenues, null, 2))
+    // Debug log for final data
+    console.log('Final service data:', serviceData)
+    console.log('Total revenue:', totalRevenue)
 
     return {
-      services: groupedRevenues,
-      totalRevenue: total,
-      debug: {
-        payments: processedDebugPayments,
-        processedPayments: Array.from(revenueMap.entries()).map(([service, amount]) => ({
-          service,
-          amount
-        }))
-      }
+      services: serviceData,
+      totalRevenue
     }
   } catch (error) {
     console.error('Error fetching service revenue data:', error)
