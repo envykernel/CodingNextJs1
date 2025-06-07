@@ -25,12 +25,22 @@ export async function getInvoiceStatusData(organisationId: number) {
   }
 }
 
-export const getServiceRevenueData = async (organisationId: number) => {
+type ServiceRevenueParams = {
+  year?: number
+}
+
+export const getServiceRevenueData = async (organisationId: number, params?: ServiceRevenueParams) => {
   try {
-    // Get date range for current year up to current month
-    const startOfYear = new Date(new Date().getFullYear(), 0, 1)
+    const selectedYear = params?.year || new Date().getFullYear()
+
+    // Get date range for selected year up to current month (if current year) or end of year
+    const startOfYear = new Date(selectedYear, 0, 1)
     const currentDate = new Date()
-    const endOfCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59)
+
+    const endDate =
+      selectedYear === currentDate.getFullYear()
+        ? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59)
+        : new Date(selectedYear, 11, 31, 23, 59, 59)
 
     // Get payments with their applications and service information
     const payments = await prisma.payment.findMany({
@@ -38,7 +48,7 @@ export const getServiceRevenueData = async (organisationId: number) => {
         organisation_id: organisationId,
         payment_date: {
           gte: startOfYear,
-          lte: endOfCurrentMonth
+          lte: endDate
         }
       },
       select: {

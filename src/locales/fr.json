@@ -1292,6 +1292,25 @@
             "vsLastYear": "par rapport à l'année dernière",
             "vsLast3Months": "par rapport à la moyenne des 3 derniers mois",
             "vsLastWeek": "par rapport à la semaine dernière"
+        },
+        "serviceRevenue": {
+            "title": "Revenus des Services",
+            "subtitle": "Revenus Mensuels par Service",
+            "allServices": "Tous les Services",
+            "monthlyOverview": "Aperçu des Revenus Mensuels",
+            "loading": "Chargement des données de revenus des services...",
+            "error": "Échec du chargement des données de revenus des services",
+            "noData": "Aucune donnée de revenus des services disponible",
+            "serviceTabs": "Onglets des Revenus des Services",
+            "services": {
+                "consultation": "Consultation",
+                "laboratory": "Laboratoire",
+                "radiology": "Radiologie",
+                "pharmacy": "Pharmacie",
+                "surgery": "Chirurgie",
+                "emergency": "Urgence",
+                "other": "Autres Services"
+            }
         }
     }
 }

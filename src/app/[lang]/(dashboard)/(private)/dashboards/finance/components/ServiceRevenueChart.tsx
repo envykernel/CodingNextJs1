@@ -15,14 +15,14 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import TabList from '@mui/lab/TabList'
 import TabContext from '@mui/lab/TabContext'
-
-import classnames from 'classnames'
-
-import CustomAvatar from '@core/components/mui/Avatar'
-import OptionMenu from '@core/components/option-menu'
+import type { SelectChangeEvent } from '@mui/material/Select'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
 
 import AppReactApexCharts from '@/libs/styles/AppReactApexCharts'
 import { getServiceRevenueData } from '../actions'
+import { useTranslation } from '@/contexts/translationContext'
 
 type ServiceRevenue = {
   serviceName: string
@@ -41,11 +41,68 @@ type ServiceRevenueData = {
 const ServiceRevenueChart = () => {
   const theme = useTheme()
   const { data: session } = useSession()
+  const { t } = useTranslation()
   const [data, setData] = useState<ServiceRevenueData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedService, setSelectedService] = useState<string | null>(null)
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
   const ALL_SERVICES_KEY = '__ALL__'
+
+  // Generate years array from current year to 5 years back
+  const years = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i)
+
+  // Helper function to get translated service name
+  const getTranslatedServiceName = (serviceName: string): string => {
+    // Convert service name to lowercase and remove spaces for matching
+    const serviceKey = serviceName.toLowerCase().replace(/\s+/g, '')
+
+    // Try to get translation from the services object
+    const translatedName = t(`financeDashboard.serviceRevenue.services.${serviceKey}`)
+
+    // If translation exists and is different from the key, use it
+    if (translatedName && translatedName !== `financeDashboard.serviceRevenue.services.${serviceKey}`) {
+      return translatedName
+    }
+
+    // If no translation found, return original service name
+    return serviceName
+  }
+
+  // Helper function to translate month names
+  const getTranslatedMonth = (month: string): string => {
+    // Map of English month abbreviations to their full names
+    const monthMap: { [key: string]: string } = {
+      Jan: 'january',
+      Feb: 'february',
+      Mar: 'march',
+      Apr: 'april',
+      May: 'may',
+      Jun: 'june',
+      Jul: 'july',
+      Aug: 'august',
+      Sep: 'september',
+      Oct: 'october',
+      Nov: 'november',
+      Dec: 'december'
+    }
+
+    // Get the full month name from the abbreviation
+    const fullMonth = monthMap[month]
+
+    if (!fullMonth) return month
+
+    // Get the translation for the month using the correct path
+    const translatedMonth = t(`appointmentStatistics.dayStats.months.${fullMonth}`)
+
+    // If translation exists and is different from the key, use it
+    if (translatedMonth && translatedMonth !== `appointmentStatistics.dayStats.months.${fullMonth}`) {
+      return translatedMonth
+    }
+
+    // If no translation found, return original month
+    return month
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,7 +110,7 @@ const ServiceRevenueChart = () => {
         try {
           setLoading(true)
           setError(null)
-          const result = await getServiceRevenueData(Number(session.user.organisationId))
+          const result = await getServiceRevenueData(Number(session.user.organisationId), { year: selectedYear })
 
           setData(result)
 
@@ -63,7 +120,7 @@ const ServiceRevenueChart = () => {
           }
         } catch (error) {
           console.error('Error fetching service revenue data:', error)
-          setError('Failed to load service revenue data')
+          setError(t('financeDashboard.serviceRevenue.error'))
         } finally {
           setLoading(false)
         }
@@ -71,7 +128,7 @@ const ServiceRevenueChart = () => {
     }
 
     fetchData()
-  }, [session?.user?.organisationId])
+  }, [session?.user?.organisationId, selectedYear, t])
 
   // Format currency helper
   const formatCurrency = (value: number) => {
@@ -86,6 +143,10 @@ const ServiceRevenueChart = () => {
     setSelectedService(newValue)
   }
 
+  const handleYearChange = (event: SelectChangeEvent<number>) => {
+    setSelectedYear(event.target.value as number)
+  }
+
   const renderServiceTabs = () => {
     if (!data) return null
 
@@ -95,7 +156,11 @@ const ServiceRevenueChart = () => {
         key={ALL_SERVICES_KEY}
         value={ALL_SERVICES_KEY}
         sx={{ minWidth: 140, height: 44, fontWeight: 600, fontSize: '1rem', textTransform: 'none' }}
-        label={<span className='w-full flex justify-center items-center'>All Services</span>}
+        label={
+          <span className='w-full flex justify-center items-center'>
+            {t('financeDashboard.serviceRevenue.allServices')}
+          </span>
+        }
       />
     )
 
@@ -106,7 +171,11 @@ const ServiceRevenueChart = () => {
           key={index}
           value={service.serviceName}
           sx={{ minWidth: 140, height: 44, fontWeight: 600, fontSize: '1rem', textTransform: 'none' }}
-          label={<span className='w-full flex justify-center items-center'>{service.serviceName}</span>}
+          label={
+            <span className='w-full flex justify-center items-center'>
+              {getTranslatedServiceName(service.serviceName)}
+            </span>
+          }
         />
       ))
     ]
@@ -121,7 +190,7 @@ const ServiceRevenueChart = () => {
     let monthlyData: { month: string; revenue: number }[] = []
 
     if (selectedService === ALL_SERVICES_KEY) {
-      chartTitle = 'All Services'
+      chartTitle = t('financeDashboard.serviceRevenue.allServices')
 
       // Collect all months from all services
       const allMonths = Array.from(new Set(data.services.flatMap(s => s.monthlyRevenue.map(m => m.month))))
@@ -141,7 +210,7 @@ const ServiceRevenueChart = () => {
       if (!service) return null
       monthlyData = service.monthlyRevenue
       totalRevenue = service.totalRevenue
-      chartTitle = selectedService
+      chartTitle = getTranslatedServiceName(service.serviceName)
     }
 
     const max = Math.max(...monthlyData.map(item => item.revenue))
@@ -159,7 +228,7 @@ const ServiceRevenueChart = () => {
           <div className='flex flex-col gap-1'>
             <Typography variant='h6'>{chartTitle}</Typography>
             <Typography variant='body2' color='text.secondary'>
-              Monthly Revenue Overview
+              {t('financeDashboard.serviceRevenue.monthlyOverview')}
             </Typography>
           </div>
           <Typography variant='h5'>{formatCurrency(totalRevenue)}</Typography>
@@ -215,7 +284,7 @@ const ServiceRevenueChart = () => {
             xaxis: {
               axisTicks: { show: false },
               axisBorder: { color: 'var(--mui-palette-divider)' },
-              categories: monthlyData.map(item => item.month),
+              categories: monthlyData.map(item => getTranslatedMonth(item.month)),
               labels: {
                 style: {
                   colors: 'var(--mui-palette-text-disabled)',
@@ -278,7 +347,33 @@ const ServiceRevenueChart = () => {
     return (
       <Grid size={{ xs: 12 }}>
         <Card>
-          <CardHeader title='Service Revenue' />
+          <CardHeader
+            title={t('financeDashboard.serviceRevenue.title')}
+            action={
+              <FormControl size='small' sx={{ minWidth: 120 }}>
+                <Select
+                  value={selectedYear}
+                  onChange={handleYearChange}
+                  displayEmpty
+                  sx={{
+                    '& .MuiSelect-select': {
+                      py: 1,
+                      px: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }
+                  }}
+                >
+                  {years.map(year => (
+                    <MenuItem key={year} value={year}>
+                      {year}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            }
+          />
           <CardContent>
             <Box display='flex' justifyContent='center' alignItems='center' minHeight={350}>
               <CircularProgress />
@@ -293,7 +388,33 @@ const ServiceRevenueChart = () => {
     return (
       <Grid size={{ xs: 12 }}>
         <Card>
-          <CardHeader title='Service Revenue' />
+          <CardHeader
+            title={t('financeDashboard.serviceRevenue.title')}
+            action={
+              <FormControl size='small' sx={{ minWidth: 120 }}>
+                <Select
+                  value={selectedYear}
+                  onChange={handleYearChange}
+                  displayEmpty
+                  sx={{
+                    '& .MuiSelect-select': {
+                      py: 1,
+                      px: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }
+                  }}
+                >
+                  {years.map(year => (
+                    <MenuItem key={year} value={year}>
+                      {year}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            }
+          />
           <CardContent>
             <Box display='flex' justifyContent='center' alignItems='center' minHeight={350}>
               <Typography color='error'>{error}</Typography>
@@ -308,10 +429,36 @@ const ServiceRevenueChart = () => {
     return (
       <Grid size={{ xs: 12 }}>
         <Card>
-          <CardHeader title='Service Revenue' />
+          <CardHeader
+            title={t('financeDashboard.serviceRevenue.title')}
+            action={
+              <FormControl size='small' sx={{ minWidth: 120 }}>
+                <Select
+                  value={selectedYear}
+                  onChange={handleYearChange}
+                  displayEmpty
+                  sx={{
+                    '& .MuiSelect-select': {
+                      py: 1,
+                      px: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }
+                  }}
+                >
+                  {years.map(year => (
+                    <MenuItem key={year} value={year}>
+                      {year}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            }
+          />
           <CardContent>
             <Box display='flex' justifyContent='center' alignItems='center' minHeight={350}>
-              <Typography color='text.secondary'>No revenue data available</Typography>
+              <Typography color='text.secondary'>{t('financeDashboard.serviceRevenue.noData')}</Typography>
             </Box>
           </CardContent>
         </Card>
@@ -323,9 +470,32 @@ const ServiceRevenueChart = () => {
     <Grid size={{ xs: 12 }}>
       <Card>
         <CardHeader
-          title='Service Revenue'
-          subheader='Monthly Revenue by Service'
-          action={<OptionMenu options={['Last Week', 'Last Month', 'Last Year']} />}
+          title={t('financeDashboard.serviceRevenue.title')}
+          subheader={t('financeDashboard.serviceRevenue.subtitle')}
+          action={
+            <FormControl size='small' sx={{ minWidth: 120 }}>
+              <Select
+                value={selectedYear}
+                onChange={handleYearChange}
+                displayEmpty
+                sx={{
+                  '& .MuiSelect-select': {
+                    py: 1,
+                    px: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }
+                }}
+              >
+                {years.map(year => (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          }
         />
         <CardContent className='flex flex-col gap-6'>
           <TabContext value={selectedService || ''}>
@@ -333,7 +503,7 @@ const ServiceRevenueChart = () => {
               variant='scrollable'
               scrollButtons='auto'
               onChange={handleServiceChange}
-              aria-label='service tabs'
+              aria-label={t('financeDashboard.serviceRevenue.serviceTabs')}
               className='!border-0 mbe-6'
             >
               {renderServiceTabs()}

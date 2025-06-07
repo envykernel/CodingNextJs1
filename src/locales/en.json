@@ -1291,6 +1291,25 @@
             "vsLastYear": "vs last year",
             "vsLast3Months": "vs last 3 months average",
             "vsLastWeek": "vs last week"
+        },
+        "serviceRevenue": {
+            "title": "Service Revenue",
+            "subtitle": "Monthly Revenue by Service",
+            "allServices": "All Services",
+            "monthlyOverview": "Monthly Revenue Overview",
+            "loading": "Loading service revenue data...",
+            "error": "Failed to load service revenue data",
+            "noData": "No service revenue data available",
+            "serviceTabs": "Service Revenue Tabs",
+            "services": {
+                "consultation": "Consultation",
+                "laboratory": "Laboratory",
+                "radiology": "Radiology",
+                "pharmacy": "Pharmacy",
+                "surgery": "Surgery",
+                "emergency": "Emergency",
+                "other": "Other Services"
+            }
         }
     }
 }
