@@ -79,7 +79,7 @@ const ServiceRevenueChart = () => {
 
   if (loading) {
     return (
-      <Grid size={{ xs: 12, md: 6 }}>
+      <Grid size={{ xs: 12 }}>
         <Card>
           <CardHeader title='Service Revenue' />
           <CardContent>
@@ -94,7 +94,7 @@ const ServiceRevenueChart = () => {
 
   if (error) {
     return (
-      <Grid size={{ xs: 12, md: 6 }}>
+      <Grid size={{ xs: 12 }}>
         <Card>
           <CardHeader title='Service Revenue' />
           <CardContent>
@@ -109,7 +109,7 @@ const ServiceRevenueChart = () => {
 
   if (!data || data.services.length === 0) {
     return (
-      <Grid size={{ xs: 12, md: 6 }}>
+      <Grid size={{ xs: 12 }}>
         <Card>
           <CardHeader title='Service Revenue' />
           <CardContent>
@@ -129,7 +129,7 @@ const ServiceRevenueChart = () => {
   }))
 
   return (
-    <Grid size={{ xs: 12, md: 6 }}>
+    <Grid size={{ xs: 12 }}>
       <Card>
         <CardHeader title='Service Revenue' subheader='Revenue Distribution by Service' className='pbe-0' />
         <CardContent className='flex flex-col gap-5'>
