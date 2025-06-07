@@ -9,10 +9,7 @@ import Alert from '@mui/material/Alert'
 
 // Component Imports
 import PatientStatistics from '@components/patient-statistics/PatientStatistics'
-import PatientStatusOverview from '@/views/dashboards/organization/PatientStatusOverview'
 import TodayAppointments from '@/views/dashboards/organization/TodayAppointments'
-import ThisWeekPayments from '@/views/dashboards/organization/ThisWeekPayments'
-import PaymentStatistics from '@/views/dashboards/organization/PaymentStatistics'
 import AppointmentDayStats from '@/views/dashboards/organization/AppointmentDayStats'
 
 // Type Imports
@@ -132,21 +129,6 @@ const OrganizationDashboard = () => {
       {/* Year-to-Date Appointment Distribution */}
       <Grid item xs={12} md={6}>
         <AppointmentDayStats dateRange='year' />
-      </Grid>
-
-      {/* This Week's Payments and Patient Status Overview */}
-      <Grid item xs={12} md={6}>
-        <ThisWeekPayments />
-      </Grid>
-
-      {/* Patient Status Overview */}
-      <Grid item xs={12} md={6}>
-        <PatientStatusOverview />
-      </Grid>
-
-      {/* Payment Statistics */}
-      <Grid item xs={12}>
-        <PaymentStatistics />
       </Grid>
     </Grid>
   )
