@@ -7,6 +7,8 @@ import Typography from '@mui/material/Typography'
 import LinearProgress from '@mui/material/LinearProgress'
 import Grid from '@mui/material/Grid2'
 
+import { useTranslation } from '@/contexts/translationContext'
+
 interface PaymentMethodsChartProps {
   data: {
     series: number[]
@@ -21,29 +23,36 @@ type PaymentMethodType = {
 }
 
 const PaymentMethodsChart = ({ data }: PaymentMethodsChartProps) => {
-  const formatAmount = (value: number | undefined): string => {
-    if (value === undefined || isNaN(value)) return '€0.00'
+  const { t } = useTranslation()
 
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'EUR' })
+  const formatAmount = (value: number | undefined): string => {
+    if (value === undefined || isNaN(value)) return 'MAD 0.00'
+
+    return value.toLocaleString('en-US', { style: 'currency', currency: 'MAD' })
   }
 
   // Calculate percentages only if we have valid data
   const totalAmount = data.series.reduce((a, b) => (a || 0) + (b || 0), 0)
 
   const paymentMethods: PaymentMethodType[] = data.labels
-    .map((method, index) => ({
-      heading: method,
-      amount: data.series[index] || 0,
-      percentage: totalAmount ? ((data.series[index] || 0) / totalAmount) * 100 : 0
-    }))
+    .map((method, index) => {
+      // Convert method to translation key format (lowercase, underscores)
+      const translationKey = method.toLowerCase().replace(/\s+/g, '_')
+
+      return {
+        heading: t(`thisWeekPayments.paymentMethods.${translationKey}`) || method,
+        amount: data.series[index] || 0,
+        percentage: totalAmount ? ((data.series[index] || 0) / totalAmount) * 100 : 0
+      }
+    })
     .filter(item => item.amount > 0) // Filter out items with zero amount
 
   return (
     <Grid size={{ xs: 12, md: 6 }}>
       <Card>
         <CardHeader
-          title='Payment Methods'
-          subheader='Distribution of payments by method'
+          title={t('paymentStatistics.paymentMethods.title')}
+          subheader={t('paymentStatistics.paymentMethods.distribution')}
           titleTypographyProps={{ variant: 'subtitle1' }}
           subheaderTypographyProps={{ variant: 'caption' }}
           sx={{ pb: 1 }}
@@ -54,7 +63,7 @@ const PaymentMethodsChart = ({ data }: PaymentMethodsChartProps) => {
               <div key={index} className='flex flex-col gap-1 p-2 rounded border border-divider bg-background-paper'>
                 <div className='flex items-center justify-between'>
                   <Typography variant='body2' fontWeight='medium'>
-                    {item.heading.replace('_', ' ')}
+                    {item.heading}
                   </Typography>
                   <Typography variant='body2' fontWeight='medium'>
                     {formatAmount(item.amount)}
@@ -66,7 +75,6 @@ const PaymentMethodsChart = ({ data }: PaymentMethodsChartProps) => {
                   sx={{
                     height: 4,
                     borderRadius: 2,
-                    backgroundColor: 'action.hover',
                     '& .MuiLinearProgress-bar': {
                       backgroundColor: 'primary.main',
                       borderRadius: 2
@@ -74,7 +82,7 @@ const PaymentMethodsChart = ({ data }: PaymentMethodsChartProps) => {
                   }}
                 />
                 <Typography variant='caption' color='text.secondary'>
-                  {item.percentage.toFixed(1)}% of total
+                  {item.percentage.toFixed(1)}%
                 </Typography>
               </div>
             ))}
