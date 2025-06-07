@@ -11,10 +11,12 @@ import { useSession } from 'next-auth/react'
 
 import AppReactApexCharts from '@/libs/styles/AppReactApexCharts'
 import { getInvoiceStatusData } from '../actions'
+import { useTranslation } from '@/contexts/translationContext'
 
 const InvoiceStatusChart = () => {
   const theme = useTheme()
   const { data: session } = useSession()
+  const { t } = useTranslation()
   const [data, setData] = useState<{ series: number[] }>({ series: [0, 0, 0] })
 
   useEffect(() => {
@@ -42,7 +44,7 @@ const InvoiceStatusChart = () => {
   return (
     <Grid size={{ xs: 12, md: 6 }}>
       <Card>
-        <CardHeader title='Invoice Status' />
+        <CardHeader title={t('paymentStatistics.invoiceStatus.title')} />
         <CardContent>
           <AppReactApexCharts
             type='donut'
@@ -52,7 +54,11 @@ const InvoiceStatusChart = () => {
               chart: {
                 background: 'transparent'
               },
-              labels: ['Paid', 'Partial', 'Pending'],
+              labels: [
+                t('invoice.paymentStatus.paid'),
+                t('invoice.paymentStatus.partial'),
+                t('invoice.paymentStatus.pending')
+              ],
               legend: {
                 position: 'bottom',
                 labels: {
@@ -93,7 +99,7 @@ const InvoiceStatusChart = () => {
                       },
                       total: {
                         show: true,
-                        label: 'Total Invoices',
+                        label: t('paymentStatistics.invoiceStatus.totalInvoices'),
                         fontSize: '14px',
                         fontWeight: 400,
                         fontFamily: theme.typography.fontFamily,

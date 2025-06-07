@@ -918,6 +918,10 @@
             "averageTransaction": "Transaction moyenne",
             "totalTransactions": "Total des transactions",
             "successRate": "Taux de réussite"
+        },
+        "invoiceStatus": {
+            "title": "Statut des Factures",
+            "totalInvoices": "Total des Factures"
         }
     },
     "userMenu": {

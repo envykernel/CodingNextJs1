@@ -852,6 +852,10 @@
             "averageTransaction": "Average Transaction",
             "totalTransactions": "Total Transactions",
             "successRate": "Success Rate"
+        },
+        "invoiceStatus": {
+            "title": "Invoice Status",
+            "totalInvoices": "Total Invoices"
         }
     },
     "appointmentStatistics": {

@@ -1026,6 +1026,10 @@
             "averageTransaction": "متوسط المعاملة",
             "totalTransactions": "إجمالي المعاملات",
             "successRate": "معدل النجاح"
+        },
+        "invoiceStatus": {
+            "title": "حالة الفواتير",
+            "totalInvoices": "إجمالي الفواتير"
         }
     },
     "appointmentStatistics": {
