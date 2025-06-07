@@ -2,7 +2,7 @@
 
 // React Imports
 import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 
 // MUI Imports
 import Paper from '@mui/material/Paper'
@@ -14,12 +14,12 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Fade from '@mui/material/Fade'
 import Popper from '@mui/material/Popper'
 import List from '@mui/material/List'
-import ListItemButton from '@mui/material/ListItemButton'
-import Divider from '@mui/material/Divider'
+import { alpha } from '@mui/material/styles'
 
 // Icon Imports
 import SearchIcon from '@mui/icons-material/Search'
 import PhoneIcon from '@mui/icons-material/Phone'
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 
 // Context Imports
 import { useTranslation } from '@/contexts/translationContext'
@@ -34,6 +34,7 @@ type Patient = {
 const PatientSearchBar = () => {
   const { t } = useTranslation()
   const router = useRouter()
+  const params = useParams<{ lang: string }>()
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showResults, setShowResults] = useState(false)
@@ -77,7 +78,8 @@ const PatientSearchBar = () => {
   }
 
   const handlePatientSelect = (patientId: number) => {
-    router.push(`/patients/${patientId}`)
+    const lang = params?.lang || 'en'
+    router.push(`/${lang}/apps/patient/view/${patientId}`)
     setShowResults(false)
     setSearchQuery('')
   }
@@ -155,65 +157,77 @@ const PatientSearchBar = () => {
                 width: '100%',
                 maxHeight: '400px',
                 overflow: 'auto',
-                borderRadius: '12px',
+                borderRadius: '16px',
                 bgcolor: 'background.paper',
                 '&::-webkit-scrollbar': {
-                  width: '6px'
+                  width: '4px'
                 },
                 '&::-webkit-scrollbar-track': {
                   background: 'transparent'
                 },
                 '&::-webkit-scrollbar-thumb': {
                   background: 'rgba(0,0,0,0.1)',
-                  borderRadius: '3px'
+                  borderRadius: '2px'
                 }
               }}
             >
               <List sx={{ width: '100%', p: 0.5 }}>
-                {searchResults.map((patient, index) => (
-                  <Box key={patient.id}>
-                    <ListItemButton
-                      onClick={() => handlePatientSelect(patient.id)}
-                      sx={{
-                        py: 1.25,
-                        px: 2,
-                        borderRadius: '8px',
-                        '&:hover': {
-                          bgcolor: 'action.hover'
-                        }
-                      }}
-                    >
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                {searchResults.map(patient => (
+                  <Box
+                    key={patient.id}
+                    onClick={() => handlePatientSelect(patient.id)}
+                    sx={{
+                      px: 2,
+                      py: 1.5,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      transition: 'all 0.2s ease',
+                      borderRadius: '8px',
+                      '&:hover': {
+                        bgcolor: theme => alpha(theme.palette.primary.main, 0.04)
+                      }
+                    }}
+                  >
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography
+                        variant='body1'
+                        sx={{
+                          color: 'text.primary',
+                          fontWeight: 400,
+                          mb: 0.5
+                        }}
+                        noWrap
+                      >
+                        {patient.name}
+                      </Typography>
+                      {patient.phone_number && (
                         <Typography
-                          variant='body1'
+                          variant='body2'
                           sx={{
-                            fontWeight: 500,
-                            color: 'text.primary',
-                            mb: patient.phone_number ? 0.25 : 0
+                            color: 'text.secondary',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            fontSize: '0.75rem',
+                            opacity: 0.7
                           }}
                           noWrap
                         >
-                          {patient.name}
+                          <PhoneIcon sx={{ fontSize: '0.75rem' }} />
+                          {patient.phone_number}
                         </Typography>
-                        {patient.phone_number && (
-                          <Typography
-                            variant='body2'
-                            sx={{
-                              color: 'text.secondary',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              fontSize: '0.8125rem'
-                            }}
-                            noWrap
-                          >
-                            <PhoneIcon sx={{ fontSize: '0.875rem', opacity: 0.7 }} />
-                            {patient.phone_number}
-                          </Typography>
-                        )}
-                      </Box>
-                    </ListItemButton>
-                    {index < searchResults.length - 1 && <Divider sx={{ mx: 2, opacity: 0.1 }} />}
+                      )}
+                    </Box>
+                    <ArrowForwardIosIcon
+                      sx={{
+                        fontSize: '0.875rem',
+                        color: 'text.secondary',
+                        opacity: 0.5,
+                        ml: 1
+                      }}
+                    />
                   </Box>
                 ))}
               </List>
