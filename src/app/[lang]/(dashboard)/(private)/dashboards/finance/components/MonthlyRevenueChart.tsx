@@ -357,7 +357,10 @@ const MonthlyRevenueChart = () => {
       return (
         <Box display='flex' justifyContent='center' alignItems='center' minHeight={400}>
           <Typography color='text.secondary'>
-            {t('financeDashboard.invoicePayments.noData', { period: t(`common.periods.${period.toLowerCase()}`) })}
+            {t('financeDashboard.invoicePayments.noData').replace(
+              '{period}',
+              t(`common.periods.${period.toLowerCase()}`)
+            )}
           </Typography>
         </Box>
       )
@@ -521,13 +524,14 @@ const MonthlyRevenueChart = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25, 50]}
           labelRowsPerPage={t('common.rowsPerPage')}
-          labelDisplayedRows={({ from, to, count }) =>
-            t('common.displayedRows', {
-              from: String(from),
-              to: String(to),
-              count: String(count)
-            })
-          }
+          labelDisplayedRows={({ from, to, count }) => {
+            const template = t('common.displayedRows')
+
+            return template
+              .replace('{from}', from.toString())
+              .replace('{to}', to.toString())
+              .replace('{count}', count.toString())
+          }}
         />
       </>
     )
