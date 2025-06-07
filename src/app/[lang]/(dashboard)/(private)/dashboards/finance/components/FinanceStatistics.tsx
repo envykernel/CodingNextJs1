@@ -34,6 +34,13 @@ type StatisticsData = {
   paidInvoicesPercentage: number
   pendingInvoicesPercentage: number
   collectionRate: number
+  invoicedGrowth: number
+  paidGrowth: number
+  pendingGrowth: number
+  invoicesGrowth: number
+  paymentsGrowth: number
+  paidPercentageGrowth: number
+  collectionRateGrowth: number
 }
 
 const FinanceStatistics = () => {
@@ -126,7 +133,7 @@ const FinanceStatistics = () => {
       title: 'Total Invoiced',
       icon: <AccountBalanceWalletIcon />,
       color: 'primary',
-      trendNumber: 0,
+      trendNumber: data.invoicedGrowth,
       trendPeriod: 'This Year'
     },
     {
@@ -134,7 +141,7 @@ const FinanceStatistics = () => {
       title: 'Total Paid',
       icon: <AttachMoneyIcon />,
       color: 'success',
-      trendNumber: 0,
+      trendNumber: data.paidGrowth,
       trendPeriod: 'This Year'
     },
     {
@@ -142,7 +149,7 @@ const FinanceStatistics = () => {
       title: 'Total Pending',
       icon: <HourglassEmptyIcon />,
       color: 'warning',
-      trendNumber: 0,
+      trendNumber: data.pendingGrowth,
       trendPeriod: 'This Year'
     },
     {
@@ -150,7 +157,7 @@ const FinanceStatistics = () => {
       title: 'Total Invoices',
       icon: <ArticleIcon />,
       color: 'info',
-      trendNumber: 0,
+      trendNumber: data.invoicesGrowth,
       trendPeriod: 'This Year'
     }
   ]
@@ -169,32 +176,32 @@ const FinanceStatistics = () => {
       title: 'Total Payments',
       icon: <CreditCardIcon />,
       color: 'success',
-      trendNumber: 12,
-      trendPeriod: 'This Month'
+      trendNumber: data.paymentsGrowth,
+      trendPeriod: 'This Year'
     },
     {
       stats: data.collectionRate,
       title: 'Collection Rate',
       icon: <TrendingUpIcon />,
       color: 'primary',
-      trendNumber: 5,
-      trendPeriod: 'This Month'
+      trendNumber: data.collectionRateGrowth,
+      trendPeriod: 'This Year'
     },
     {
       stats: data.paidInvoicesPercentage,
       title: 'Paid Invoices',
       icon: <CheckCircleIcon />,
       color: 'success',
-      trendNumber: 8,
-      trendPeriod: 'This Month'
+      trendNumber: data.paidPercentageGrowth,
+      trendPeriod: 'This Year'
     },
     {
       stats: data.pendingInvoicesPercentage,
       title: 'Pending Invoices',
       icon: <ScheduleIcon />,
       color: 'warning',
-      trendNumber: -3,
-      trendPeriod: 'This Month'
+      trendNumber: -data.paidPercentageGrowth,
+      trendPeriod: 'This Year'
     }
   ]
 

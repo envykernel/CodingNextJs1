@@ -779,8 +779,12 @@ export async function getFinanceStatistics(organisationId: number) {
     const startOfYear = new Date(now.getFullYear(), 0, 1) // January 1st of current year
     const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59) // December 31st of current year
 
+    // Get previous year's start and end dates
+    const startOfPreviousYear = new Date(now.getFullYear() - 1, 0, 1)
+    const endOfPreviousYear = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59)
+
     // Get all active invoices for the current year
-    const invoices = await prisma.invoice.findMany({
+    const currentYearInvoices = await prisma.invoice.findMany({
       where: {
         organisation_id: organisationId,
         record_status: 'ACTIVE',
@@ -798,10 +802,29 @@ export async function getFinanceStatistics(organisationId: number) {
       }
     })
 
-    // Calculate statistics for current year
-    const totalInvoiced = invoices.reduce((sum, invoice) => sum + Number(invoice.total_amount), 0)
+    // Get all active invoices for the previous year
+    const previousYearInvoices = await prisma.invoice.findMany({
+      where: {
+        organisation_id: organisationId,
+        record_status: 'ACTIVE',
+        invoice_date: {
+          gte: startOfPreviousYear,
+          lte: endOfPreviousYear
+        }
+      },
+      include: {
+        payment_apps: {
+          include: {
+            payment: true
+          }
+        }
+      }
+    })
 
-    const totalPaid = invoices.reduce((sum, invoice) => {
+    // Calculate statistics for current year
+    const totalInvoiced = currentYearInvoices.reduce((sum, invoice) => sum + Number(invoice.total_amount), 0)
+
+    const totalPaid = currentYearInvoices.reduce((sum, invoice) => {
       const paidAmount = invoice.payment_apps.reduce(
         (paymentSum, paymentApp) => paymentSum + Number(paymentApp.amount_applied),
         0
@@ -811,13 +834,57 @@ export async function getFinanceStatistics(organisationId: number) {
     }, 0)
 
     const totalPending = totalInvoiced - totalPaid
-    const totalInvoices = invoices.length
-    const totalPayments = invoices.reduce((sum, invoice) => sum + invoice.payment_apps.length, 0)
+    const totalInvoices = currentYearInvoices.length
+    const totalPayments = currentYearInvoices.reduce((sum, invoice) => sum + invoice.payment_apps.length, 0)
+
+    // Calculate statistics for previous year
+    const previousYearTotalInvoiced = previousYearInvoices.reduce(
+      (sum, invoice) => sum + Number(invoice.total_amount),
+      0
+    )
+
+    const previousYearTotalPaid = previousYearInvoices.reduce((sum, invoice) => {
+      const paidAmount = invoice.payment_apps.reduce(
+        (paymentSum, paymentApp) => paymentSum + Number(paymentApp.amount_applied),
+        0
+      )
+
+      return sum + paidAmount
+    }, 0)
+
+    const previousYearTotalInvoices = previousYearInvoices.length
+    const previousYearTotalPayments = previousYearInvoices.reduce(
+      (sum, invoice) => sum + invoice.payment_apps.length,
+      0
+    )
+
+    // Calculate year-over-year growth percentages
+    const calculateGrowth = (current: number, previous: number) => {
+      if (previous === 0) return current > 0 ? 100 : 0
+
+      return ((current - previous) / previous) * 100
+    }
+
+    const invoicedGrowth = calculateGrowth(totalInvoiced, previousYearTotalInvoiced)
+    const paidGrowth = calculateGrowth(totalPaid, previousYearTotalPaid)
+    const pendingGrowth = calculateGrowth(totalPending, previousYearTotalInvoiced - previousYearTotalPaid)
+    const invoicesGrowth = calculateGrowth(totalInvoices, previousYearTotalInvoices)
+    const paymentsGrowth = calculateGrowth(totalPayments, previousYearTotalPayments)
 
     // Calculate percentages
     const paidInvoicesPercentage = totalInvoices > 0 ? Math.round((totalPaid / totalInvoiced) * 100) : 0
     const pendingInvoicesPercentage = totalInvoices > 0 ? Math.round((totalPending / totalInvoiced) * 100) : 0
     const collectionRate = totalInvoices > 0 ? Math.round((totalPaid / totalInvoiced) * 100) : 0
+
+    // Calculate previous year percentages for comparison
+    const previousYearPaidPercentage =
+      previousYearTotalInvoices > 0 ? Math.round((previousYearTotalPaid / previousYearTotalInvoiced) * 100) : 0
+
+    const previousYearCollectionRate =
+      previousYearTotalInvoices > 0 ? Math.round((previousYearTotalPaid / previousYearTotalInvoiced) * 100) : 0
+
+    const paidPercentageGrowth = calculateGrowth(paidInvoicesPercentage, previousYearPaidPercentage)
+    const collectionRateGrowth = calculateGrowth(collectionRate, previousYearCollectionRate)
 
     return {
       totalInvoiced,
@@ -827,7 +894,16 @@ export async function getFinanceStatistics(organisationId: number) {
       totalPayments,
       paidInvoicesPercentage,
       pendingInvoicesPercentage,
-      collectionRate
+      collectionRate,
+
+      // Add growth percentages
+      invoicedGrowth,
+      paidGrowth,
+      pendingGrowth,
+      invoicesGrowth,
+      paymentsGrowth,
+      paidPercentageGrowth,
+      collectionRateGrowth
     }
   } catch (error) {
     console.error('Error in getFinanceStatistics:', error)

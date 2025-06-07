@@ -57,7 +57,11 @@ const FinanceHorizontalWithCircleIcon = (props: FinanceHorizontalWithCircleIconP
     }
   }
 
-  const formatTrendValue = (value: number) => {
+  const formatTrendValue = (value: number | undefined | null) => {
+    if (value === undefined || value === null) {
+      return '0%'
+    }
+
     if (formatValue) {
       return formatValue(value)
     }
