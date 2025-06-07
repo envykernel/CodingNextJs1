@@ -1,5 +1,7 @@
 'use server'
 
+import type { Decimal } from '@prisma/client/runtime/library'
+
 import { prisma } from '@/libs/prisma'
 
 type Period = 'This Week' | 'This Month' | 'This Year'
@@ -168,7 +170,44 @@ export const getServiceRevenueData = async (organisationId: number) => {
   }
 }
 
-export const getMonthlyRevenueData = async (organisationId: number, period: Period) => {
+type DateRange = {
+  start: Date
+  end: Date
+  label: string
+}
+
+type PaymentApplication = {
+  id: number
+  amount_applied: Decimal
+  payment: {
+    id: number
+    payment_date: Date
+    payment_method: string
+  }
+}
+
+type MonthlyRevenueResponse = {
+  totalRevenue: number
+  growth: number
+  breakdown: {
+    period: string
+    totalPaid: number
+  }[]
+  invoices: {
+    id: number
+    invoiceNumber: string
+    patientName: string
+    totalAmount: number
+    totalPaid: number
+    paidPercentage: number
+    status: string
+    date: Date
+  }[]
+  period: Period
+  comparisonType: 'average_monthly' | 'previous_period'
+}
+
+export async function getMonthlyRevenueData(organisationId: number, period: Period): Promise<MonthlyRevenueResponse> {
   try {
     const now = new Date()
     let startDate: Date
@@ -224,10 +263,41 @@ export const getMonthlyRevenueData = async (organisationId: number, period: Peri
       },
       include: {
         patient: true,
-        payment_apps: true
-      },
-      orderBy: {
-        invoice_date: 'desc'
+        payment_apps: {
+          select: {
+            id: true,
+            amount_applied: true,
+            payment: {
+              select: {
+                id: true,
+                payment_date: true,
+                payment_method: true
+              }
+            }
+          }
+        }
+      }
+    })
+
+    // Process current period invoices
+    const processedInvoices = invoices.map(invoice => {
+      const totalPaid = invoice.payment_apps.reduce(
+        (sum: number, paymentApp) => sum + Number(paymentApp.amount_applied),
+        0
+      )
+
+      const totalAmount = Number(invoice.total_amount)
+      const paidPercentage = totalAmount > 0 ? (totalPaid / totalAmount) * 100 : 0
+
+      return {
+        id: invoice.id,
+        invoiceNumber: invoice.invoice_number,
+        patientName: invoice.patient?.name || 'Unknown',
+        totalAmount,
+        totalPaid,
+        paidPercentage,
+        status: invoice.payment_status,
+        date: invoice.invoice_date
       }
     })
 
@@ -242,60 +312,160 @@ export const getMonthlyRevenueData = async (organisationId: number, period: Peri
         }
       },
       include: {
-        payment_apps: true
+        payment_apps: {
+          select: {
+            id: true,
+            amount_applied: true,
+            payment: {
+              select: {
+                id: true,
+                payment_date: true,
+                payment_method: true
+              }
+            }
+          }
+        }
       }
     })
-
-    // Process current period invoices
-    const processedInvoices = invoices.map(invoice => {
-      const totalPaid = invoice.payment_apps.reduce((sum: number, payment) => sum + Number(payment.amount_applied), 0)
-      const totalAmount = Number(invoice.total_amount)
-      const paidPercentage = totalAmount > 0 ? (totalPaid / totalAmount) * 100 : 0
-
-      return {
-        invoiceNumber: invoice.invoice_number,
-        date: invoice.invoice_date,
-        totalAmount,
-        paidAmount: totalPaid,
-        paidPercentage: Math.min(paidPercentage, 100),
-        status: invoice.payment_status,
-        patientName: invoice.patient?.name || 'Unknown Patient'
-      }
-    })
-
-    // Calculate totals
-    const totalInvoiced = invoices.reduce((sum, invoice) => sum + Number(invoice.total_amount), 0)
-    const totalPaid = processedInvoices.reduce((sum, invoice) => sum + invoice.paidAmount, 0)
 
     // Calculate previous period total
     const previousPeriodPaid = previousPeriodInvoices.reduce((sum, invoice) => {
-      const paid = invoice.payment_apps.reduce((paymentSum, payment) => paymentSum + Number(payment.amount_applied), 0)
+      const paid = invoice.payment_apps.reduce(
+        (paymentSum, paymentApp) => paymentSum + Number(paymentApp.amount_applied),
+        0
+      )
 
       return sum + paid
     }, 0)
 
     // Calculate growth
-    let growth: number
+    let growth = 0
 
     if (period === 'This Month') {
-      // For monthly comparison, calculate average monthly payment for previous months
-      const monthsInPreviousPeriod = now.getMonth() // Number of months from start of year to current month
+      // For monthly comparison, compare with average monthly payment of previous period
+      const monthsInPreviousPeriod = 3 // Compare with last 3 months
       const averageMonthlyPayment = monthsInPreviousPeriod > 0 ? previousPeriodPaid / monthsInPreviousPeriod : 0
 
-      growth = totalPaid - averageMonthlyPayment
+      growth = processedInvoices.reduce((sum, invoice) => sum + invoice.totalPaid, 0) - averageMonthlyPayment
+    } else if (period === 'This Year') {
+      // For yearly comparison, compare with the same period in previous year
+      const currentYearTotal = processedInvoices.reduce((sum, invoice) => sum + invoice.totalPaid, 0)
+      const previousYearTotal = previousPeriodPaid
+
+      // Calculate growth as a percentage
+      growth =
+        previousYearTotal > 0
+          ? ((currentYearTotal - previousYearTotal) / previousYearTotal) * 100
+          : currentYearTotal > 0
+            ? 100
+            : 0
     } else {
-      // For weekly and yearly comparisons, use direct comparison
-      growth = totalPaid - previousPeriodPaid
+      // For weekly comparison, use direct comparison
+      const currentPeriodTotal = processedInvoices.reduce((sum, invoice) => sum + invoice.totalPaid, 0)
+
+      growth = currentPeriodTotal - previousPeriodPaid
     }
 
+    // Calculate daily/weekly/monthly breakdown
+    const dateRanges: DateRange[] = []
+
+    if (period === 'This Week') {
+      // Daily breakdown for the week
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(startDate)
+
+        date.setDate(date.getDate() + i)
+        const nextDate = new Date(date)
+
+        nextDate.setDate(date.getDate() + 1)
+        dateRanges.push({
+          start: date,
+          end: nextDate,
+          label: date.toLocaleDateString('en-US', { weekday: 'short' })
+        })
+      }
+    } else if (period === 'This Month') {
+      // Weekly breakdown for the month
+      const weeksInMonth = Math.ceil((endDate.getDate() - startDate.getDate() + 1) / 7)
+
+      for (let i = 0; i < weeksInMonth; i++) {
+        const weekStart = new Date(startDate)
+
+        weekStart.setDate(startDate.getDate() + i * 7)
+        const weekEnd = new Date(weekStart)
+
+        weekEnd.setDate(weekStart.getDate() + 7)
+        dateRanges.push({
+          start: weekStart,
+          end: weekEnd,
+          label: `Week ${i + 1}`
+        })
+      }
+    } else {
+      // Monthly breakdown for the year
+      for (let i = 0; i < 12; i++) {
+        const monthStart = new Date(startDate.getFullYear(), i, 1)
+        const monthEnd = new Date(startDate.getFullYear(), i + 1, 0)
+
+        dateRanges.push({
+          start: monthStart,
+          end: monthEnd,
+          label: monthStart.toLocaleDateString('en-US', { month: 'short' })
+        })
+      }
+    }
+
+    const breakdown = await Promise.all(
+      dateRanges.map(async ({ start, end, label }) => {
+        const periodInvoices = await prisma.invoice.findMany({
+          where: {
+            organisation_id: organisationId,
+            record_status: 'ACTIVE',
+            invoice_date: {
+              gte: start,
+              lte: end
+            }
+          },
+          include: {
+            payment_apps: {
+              select: {
+                id: true,
+                amount_applied: true,
+                payment: {
+                  select: {
+                    id: true,
+                    payment_date: true,
+                    payment_method: true
+                  }
+                }
+              }
+            }
+          }
+        })
+
+        const totalPaid = periodInvoices.reduce((sum, invoice) => {
+          const paid = invoice.payment_apps.reduce(
+            (paymentSum, paymentApp) => paymentSum + Number(paymentApp.amount_applied),
+            0
+          )
+
+          return sum + paid
+        }, 0)
+
+        return {
+          period: label,
+          totalPaid
+        }
+      })
+    )
+
     return {
-      invoices: processedInvoices,
-      totalInvoiced,
-      totalPaid,
+      totalRevenue: processedInvoices.reduce((sum, invoice) => sum + invoice.totalPaid, 0),
       growth,
-      previousPeriodPaid,
+      breakdown,
+      invoices: processedInvoices,
       period,
-      comparisonType: (period === 'This Month' ? 'average_monthly' : 'previous_period') as ComparisonType
+      comparisonType: period === 'This Month' ? 'average_monthly' : 'previous_period'
     }
   } catch (error) {
     console.error('Error in getMonthlyRevenueData:', error)
@@ -389,7 +559,7 @@ export const getPaymentTrendsData = async (
             }
           })
 
-          const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+          const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
 
           breakdown.push({
             period: dayStart.toLocaleDateString('en-US', { weekday: 'short' }),
@@ -423,7 +593,7 @@ export const getPaymentTrendsData = async (
               }
             })
 
-            const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+            const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
 
             breakdown.push({
               period: dayStart.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }),
@@ -454,7 +624,7 @@ export const getPaymentTrendsData = async (
               }
             })
 
-            const totalPaid = weekPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+            const totalPaid = weekPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
 
             breakdown.push({
               period: `Week ${i + 1}`,
@@ -490,7 +660,7 @@ export const getPaymentTrendsData = async (
               }
             })
 
-            const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+            const totalPaid = dayPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
 
             breakdown.push({
               period: dayStart.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }),
@@ -522,7 +692,7 @@ export const getPaymentTrendsData = async (
               }
             })
 
-            const totalPaid = weekPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+            const totalPaid = weekPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
 
             breakdown.push({
               period: `Week ${i + 1}`,
@@ -548,7 +718,7 @@ export const getPaymentTrendsData = async (
               }
             })
 
-            const totalPaid = monthPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+            const totalPaid = monthPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
 
             breakdown.push({
               period: monthStart.toLocaleDateString('en-US', { month: 'short' }),
@@ -572,7 +742,7 @@ export const getPaymentTrendsData = async (
       }
     })
 
-    const previousPeriodPaid = previousPeriodPayments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+    const previousPeriodPaid = previousPeriodPayments.reduce((sum, payment) => sum + Number(payment.amount_applied), 0)
     const totalPaid = breakdown.reduce((sum, item) => sum + item.totalPaid, 0)
 
     // Calculate growth
@@ -599,5 +769,68 @@ export const getPaymentTrendsData = async (
   } catch (error) {
     console.error('Error in getPaymentTrendsData:', error)
     throw new Error('Failed to fetch payment trends data')
+  }
+}
+
+export async function getFinanceStatistics(organisationId: number) {
+  try {
+    // Get current year's start and end dates
+    const now = new Date()
+    const startOfYear = new Date(now.getFullYear(), 0, 1) // January 1st of current year
+    const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59) // December 31st of current year
+
+    // Get all active invoices for the current year
+    const invoices = await prisma.invoice.findMany({
+      where: {
+        organisation_id: organisationId,
+        record_status: 'ACTIVE',
+        invoice_date: {
+          gte: startOfYear,
+          lte: endOfYear
+        }
+      },
+      include: {
+        payment_apps: {
+          include: {
+            payment: true
+          }
+        }
+      }
+    })
+
+    // Calculate statistics for current year
+    const totalInvoiced = invoices.reduce((sum, invoice) => sum + Number(invoice.total_amount), 0)
+
+    const totalPaid = invoices.reduce((sum, invoice) => {
+      const paidAmount = invoice.payment_apps.reduce(
+        (paymentSum, paymentApp) => paymentSum + Number(paymentApp.amount_applied),
+        0
+      )
+
+      return sum + paidAmount
+    }, 0)
+
+    const totalPending = totalInvoiced - totalPaid
+    const totalInvoices = invoices.length
+    const totalPayments = invoices.reduce((sum, invoice) => sum + invoice.payment_apps.length, 0)
+
+    // Calculate percentages
+    const paidInvoicesPercentage = totalInvoices > 0 ? Math.round((totalPaid / totalInvoiced) * 100) : 0
+    const pendingInvoicesPercentage = totalInvoices > 0 ? Math.round((totalPending / totalInvoiced) * 100) : 0
+    const collectionRate = totalInvoices > 0 ? Math.round((totalPaid / totalInvoiced) * 100) : 0
+
+    return {
+      totalInvoiced,
+      totalPaid,
+      totalPending,
+      totalInvoices,
+      totalPayments,
+      paidInvoicesPercentage,
+      pendingInvoicesPercentage,
+      collectionRate
+    }
+  } catch (error) {
+    console.error('Error in getFinanceStatistics:', error)
+    throw new Error('Failed to fetch finance statistics')
   }
 }

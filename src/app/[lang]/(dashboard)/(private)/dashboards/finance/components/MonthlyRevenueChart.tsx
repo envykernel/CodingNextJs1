@@ -35,10 +35,11 @@ import InputAdornment from '@mui/material/InputAdornment'
 import { getMonthlyRevenueData } from '../actions'
 
 type InvoiceData = {
+  id: number
   invoiceNumber: string
   date: Date
   totalAmount: number
-  paidAmount: number
+  totalPaid: number
   paidPercentage: number
   status: string
   patientName: string
@@ -48,10 +49,12 @@ type Period = 'This Week' | 'This Month' | 'This Year'
 
 type MonthlyRevenueData = {
   invoices: InvoiceData[]
-  totalInvoiced: number
-  totalPaid: number
+  totalRevenue: number
   growth: number
-  previousPeriodPaid: number
+  breakdown: {
+    period: string
+    totalPaid: number
+  }[]
   period: Period
   comparisonType: 'average_monthly' | 'previous_period'
 }
@@ -315,7 +318,7 @@ const MonthlyRevenueChart = () => {
       case 'totalAmount':
         return multiplier * (a.totalAmount - b.totalAmount)
       case 'paidAmount':
-        return multiplier * (a.paidAmount - b.paidAmount)
+        return multiplier * (a.totalPaid - b.totalPaid)
       case 'paidPercentage':
         return multiplier * (a.paidPercentage - b.paidPercentage)
       case 'status':
@@ -467,7 +470,7 @@ const MonthlyRevenueChart = () => {
                   <TableCell>{invoice.invoiceNumber}</TableCell>
                   <TableCell>{invoice.patientName}</TableCell>
                   <TableCell align='right'>{formatCurrency(invoice.totalAmount)}</TableCell>
-                  <TableCell align='right'>{formatCurrency(invoice.paidAmount)}</TableCell>
+                  <TableCell align='right'>{formatCurrency(invoice.totalPaid)}</TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <LinearProgress
@@ -523,7 +526,19 @@ const MonthlyRevenueChart = () => {
           title='Invoice Payments'
           subheader={
             <Typography variant='body2' color='text.secondary'>
-              {`Total paid: ${formatCurrency(data?.totalPaid || 0)} of ${formatCurrency(data?.totalInvoiced || 0)}`}
+              {`Total revenue: ${formatCurrency(data?.totalRevenue || 0)} ${
+                data?.growth !== undefined
+                  ? `(${data.growth > 0 ? '+' : ''}${
+                      data.period === 'This Year' ? data.growth.toFixed(1) + '%' : formatCurrency(data.growth)
+                    } ${
+                      data.period === 'This Year'
+                        ? 'vs last year'
+                        : data.period === 'This Month'
+                          ? 'vs last 3 months average'
+                          : 'vs last week'
+                    })`
+                  : ''
+              }`}
             </Typography>
           }
           action={<MonthButton period={period} onPeriodChange={setPeriod} />}
