@@ -235,8 +235,47 @@ const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
             </div>
           </div>
 
-          <Button variant='contained' onClick={handleEditClick} className='mt-4'>
-            {t('navigation.edit') || 'Edit'}
+          <Divider className='w-full' />
+
+          {/* System Information Section */}
+          <div className='w-full'>
+            <Typography variant='subtitle1' className='mb-3 font-medium flex items-center gap-2'>
+              <i className='tabler-database text-xl text-primary' />
+              {t('form.systemInfo') || 'System Information'}
+            </Typography>
+            <div className='flex flex-col gap-3'>
+              <div className='flex items-center gap-2'>
+                <i className='tabler-calendar-event text-lg text-textSecondary' />
+                <Typography className='font-medium' color='text.secondary'>
+                  {t('form.createdAt') || 'Created At'}
+                </Typography>
+                <Typography color='text.primary'>
+                  {patientData?.created_at ? formatDate(patientData.created_at) : '-'}
+                </Typography>
+              </div>
+              <div className='flex items-center gap-2'>
+                <i className='tabler-refresh text-lg text-textSecondary' />
+                <Typography className='font-medium' color='text.secondary'>
+                  {t('form.updatedAt') || 'Updated At'}
+                </Typography>
+                <Typography color='text.primary'>
+                  {patientData?.updated_at ? formatDate(patientData.updated_at) : '-'}
+                </Typography>
+              </div>
+            </div>
+          </div>
+
+          <Divider className='w-full' />
+
+          {/* Edit Button */}
+          <Button
+            variant='outlined'
+            color='primary'
+            onClick={handleEditClick}
+            startIcon={<i className='tabler-edit' />}
+            className='w-full'
+          >
+            {t('form.edit') || 'Edit'}
           </Button>
         </CardContent>
       </Card>

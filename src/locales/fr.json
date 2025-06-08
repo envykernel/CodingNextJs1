@@ -678,9 +678,13 @@
         }
     },
     "form": {
-        "sectionPersonalInfo": "Informations personnelles",
-        "sectionContactInfo": "Informations de contact",
-        "sectionEmergencyContact": "Contact d'urgence",
+        "sectionPersonalInfo": "Informations Personnelles",
+        "sectionContactInfo": "Informations de Contact",
+        "sectionEmergencyContact": "Contact d'Urgence",
+        "systemInfo": "Informations Système",
+        "createdAt": "Créé Le",
+        "updatedAt": "Mis à Jour Le",
+        "edit": "Modifier",
         "name": "Nom",
         "namePlaceholder": "Entrez le nom du patient",
         "birthdate": "Date de naissance",

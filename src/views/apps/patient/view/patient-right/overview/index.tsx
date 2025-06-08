@@ -44,31 +44,6 @@ const OverViewTab = ({ patientData }: OverViewTabProps) => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
-        <Card>
-          <CardContent>
-            <div className='flex items-center gap-3 mb-4'>
-              <i className='tabler-calendar-event text-xl text-primary' />
-              <Typography variant='h6'>Meta Info</Typography>
-            </div>
-            <Divider className='mb-4' />
-            <div className='flex flex-col gap-3'>
-              <div className='flex items-center gap-2'>
-                <i className='tabler-calendar-event text-lg' />
-                <Typography>
-                  <b>Created At:</b> {patientData.created_at ? formatDate(patientData.created_at) : '-'}
-                </Typography>
-              </div>
-              <div className='flex items-center gap-2'>
-                <i className='tabler-refresh text-lg' />
-                <Typography>
-                  <b>Updated At:</b> {patientData.updated_at ? formatDate(patientData.updated_at) : '-'}
-                </Typography>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
         <PatientMeasurementsChart patientId={patientData.id} dictionary={patientData.dictionary} />
       </Grid>
       <Grid item xs={12}>
