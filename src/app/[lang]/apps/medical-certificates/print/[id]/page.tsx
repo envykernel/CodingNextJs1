@@ -65,12 +65,9 @@ function GeneratedHeader({ organisation }: { organisation: any }) {
           {/* Top row: Organization name and QR code */}
           <div className='flex justify-between items-start mb-3 print:mb-2'>
             <Typography
+              component='h4'
               variant='h4'
-              className='font-medium text-gray-900 tracking-tight print:text-xl'
-              sx={{
-                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                letterSpacing: '-0.02em'
-              }}
+              className='font-medium text-gray-900 tracking-tight print:text-xl font-sans'
             >
               {organisation.name}
             </Typography>
@@ -87,17 +84,13 @@ function GeneratedHeader({ organisation }: { organisation: any }) {
             {/* Left column: Address */}
             <div className='flex flex-col'>
               <Typography
+                component='p'
                 variant='body2'
-                className='text-sm text-gray-600 print:text-[0.7rem] mb-0.5'
-                sx={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                className='text-sm text-gray-600 print:text-[0.7rem] mb-0.5 font-sans'
               >
                 {organisation.address}
               </Typography>
-              <Typography
-                variant='body2'
-                className='text-sm text-gray-600 print:text-[0.7rem]'
-                sx={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-              >
+              <Typography component='p' variant='body2' className='text-sm text-gray-600 print:text-[0.7rem] font-sans'>
                 {organisation.city}
               </Typography>
             </div>
@@ -106,16 +99,16 @@ function GeneratedHeader({ organisation }: { organisation: any }) {
             <div className='flex justify-end'>
               <div className='flex flex-col'>
                 <Typography
+                  component='p'
                   variant='body2'
-                  className='text-sm text-gray-600 print:text-[0.7rem] mb-0.5'
-                  sx={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                  className='text-sm text-gray-600 print:text-[0.7rem] mb-0.5 font-sans'
                 >
                   Tél: {organisation.phone_number}
                 </Typography>
                 <Typography
+                  component='p'
                   variant='body2'
-                  className='text-sm text-gray-600 print:text-[0.7rem]'
-                  sx={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                  className='text-sm text-gray-600 print:text-[0.7rem] font-sans'
                 >
                   Email: {organisation.email}
                 </Typography>
@@ -184,50 +177,68 @@ export default async function PrintCertificatePage({ params }: PrintCertificateP
           </div>
 
           {/* Certificate Content */}
-          <div className='flex-1 w-full bg-white p-4 print:p-2'>
-            <Typography variant='h4' align='center' gutterBottom className='print:text-xl print:mb-2'>
+          <div className='flex-1 w-full bg-white p-4 print:p-2 font-sans'>
+            <Typography
+              component='h4'
+              variant='h4'
+              align='center'
+              gutterBottom
+              className='print:text-xl print:mb-2 font-sans'
+            >
               {certificate.template?.name || 'Medical Certificate'}
             </Typography>
             <Divider className='mb-2 print:mb-1' />
             <Grid container spacing={1} className='mb-2 print:mb-1'>
               <Grid item xs={12} sm={6}>
-                <Typography variant='subtitle1' className='font-semibold print:text-sm'>
+                <Typography component='p' variant='subtitle1' className='font-semibold print:text-sm font-sans'>
                   Patient:
                 </Typography>
-                <Typography className='print:text-sm'>{certificate.patient?.name || '-'}</Typography>
+                <Typography component='p' className='print:text-sm font-sans'>
+                  {certificate.patient?.name || '-'}
+                </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Typography variant='subtitle1' className='font-semibold print:text-sm'>
+                <Typography component='p' variant='subtitle1' className='font-semibold print:text-sm font-sans'>
                   Doctor:
                 </Typography>
-                <Typography className='print:text-sm'>{certificate.doctor?.name || '-'}</Typography>
+                <Typography component='p' className='print:text-sm font-sans'>
+                  {certificate.doctor?.name || '-'}
+                </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Typography variant='subtitle1' className='font-semibold print:text-sm'>
+                <Typography component='p' variant='subtitle1' className='font-semibold print:text-sm font-sans'>
                   Certificate Number:
                 </Typography>
-                <Typography className='print:text-sm'>{certificate.certificateNumber || '-'}</Typography>
+                <Typography component='p' className='print:text-sm font-sans'>
+                  {certificate.certificateNumber || '-'}
+                </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Typography variant='subtitle1' className='font-semibold print:text-sm'>
+                <Typography component='p' variant='subtitle1' className='font-semibold print:text-sm font-sans'>
                   Date:
                 </Typography>
-                <Typography className='print:text-sm'>{formattedDate}</Typography>
+                <Typography component='p' className='print:text-sm font-sans'>
+                  {formattedDate}
+                </Typography>
               </Grid>
             </Grid>
             <Divider className='mb-2 print:mb-1' />
             <div
-              className='mt-6 mb-2 p-2 print:mt-8 print:mb-1 print:p-1'
+              className='mt-6 mb-2 p-2 print:mt-8 print:mb-1 print:p-1 font-sans prose prose-sm max-w-none'
               dangerouslySetInnerHTML={{ __html: processedContent }}
             />
             {/* Doctor Signature Footer */}
             <div className='mt-4 mb-8 flex flex-row justify-end items-end w-full print:mt-2 print:mb-12'>
               <div className='text-right p-2 min-w-[300px] print:p-1 print:min-w-[250px]'>
-                <Typography variant='subtitle1' className='font-semibold mb-1 print:text-sm print:mb-0.5'>
+                <Typography
+                  component='p'
+                  variant='subtitle1'
+                  className='font-semibold mb-1 print:text-sm print:mb-0.5 font-sans'
+                >
                   Doctor Signature
                 </Typography>
                 <div className='border-b border-gray-400 w-64 h-10 print:w-50 print:h-8' />
-                <Typography variant='body2' className='mt-1 print:text-xs print:mt-0.5'>
+                <Typography component='p' variant='body2' className='mt-1 print:text-xs print:mt-0.5 font-sans'>
                   {certificate.doctor?.name || '-'}
                 </Typography>
               </div>
