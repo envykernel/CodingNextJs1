@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 
 import { useSession } from 'next-auth/react'
+import type { SelectChangeEvent } from '@mui/material'
 import {
   Box,
   Button,
@@ -16,10 +17,18 @@ import {
   Select,
   MenuItem,
   Alert,
-  Autocomplete
+  Autocomplete,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Chip,
+  Stack,
+  FormControlLabel,
+  Switch,
+  CircularProgress
 } from '@mui/material'
-import { format } from 'date-fns'
 import CloseIcon from '@mui/icons-material/Close'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import { useTranslation } from '@/contexts/translationContext'
 
@@ -29,44 +38,67 @@ import CertificateEditor from './CertificateEditor'
 interface AddCertificateDrawerProps {
   open: boolean
   onClose: () => void
-  onSuccess?: () => void // Optional callback for successful creation
+  onSuccess: (data: any) => void
 }
 
 export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCertificateDrawerProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const [certificateType, setCertificateType] = useState<string>('')
-  const [patients, setPatients] = useState<Patient[]>([])
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
-  const [startDate, setStartDate] = useState<Date | null>(null)
-  const [endDate, setEndDate] = useState<Date | null>(null)
-  const [notes, setNotes] = useState('')
-  const [templates, setTemplates] = useState<CertificateTemplate[]>([])
-  const [doctors, setDoctors] = useState<Doctor[]>([])
+  const [certificateType, setCertificateType] = useState('')
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null)
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
+  const [templates, setTemplates] = useState<CertificateTemplate[]>([])
+  const [doctors, setDoctors] = useState<Doctor[]>([])
+  const [patients, setPatients] = useState<Patient[]>([])
   const [templateVariables, setTemplateVariables] = useState<Record<string, any>>({})
   const [certificateContent, setCertificateContent] = useState('')
+  const [expandedTemplate, setExpandedTemplate] = useState<string | false>(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   // Fetch certificate templates
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
+        console.log('Starting to fetch templates...')
         const response = await fetch('/api/certificates/templates')
 
-        if (!response.ok) throw new Error('Failed to fetch templates')
+        console.log('Template fetch response status:', response.status)
+
+        if (!response.ok) {
+          console.error('Template fetch failed:', {
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries())
+          })
+          throw new Error('Failed to fetch templates')
+        }
+
         const data = await response.json()
 
+        console.log('Templates API response:', {
+          hasTemplates: !!data.templates,
+          templateCount: data.templates?.length,
+          templates: data.templates
+        })
+
+        if (!data.templates || !Array.isArray(data.templates)) {
+          console.error('Invalid templates data:', data)
+          throw new Error('Invalid templates data received')
+        }
+
         setTemplates(data.templates)
+        console.log('Templates state updated:', data.templates)
       } catch (err) {
-        console.error('Error fetching templates:', err)
+        console.error('Error in fetchTemplates:', err)
         setError('Failed to fetch templates')
       }
     }
 
     if (open) {
+      console.log('Drawer opened, fetching templates...')
       fetchTemplates()
     }
   }, [open])
@@ -160,7 +192,7 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
   // Update certificate content when preview content changes
   useEffect(() => {
     setCertificateContent(getPreviewContent())
-  }, [certificateType, selectedPatient, selectedDoctor, templateVariables, notes])
+  }, [certificateType, selectedPatient, selectedDoctor, templateVariables])
 
   // Handle template variable changes
   const handleTemplateVariableChange = (key: string, value: any) => {
@@ -179,285 +211,234 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
 
   // Generate preview content based on certificate type and form values
   const getPreviewContent = () => {
-    if (!certificateType) return ''
-
     const selectedTemplate = templates.find(t => t.code === certificateType)
 
-    if (!selectedTemplate?.contentTemplate) {
-      console.log('No template content found for:', certificateType)
+    if (!selectedTemplate) return ''
 
-      return ''
-    }
+    let content = selectedTemplate.contentTemplate || ''
 
-    const patientName = selectedPatient?.name || '[Patient Name]'
-    const patientGender = selectedPatient?.gender || '[Gender]'
-
-    const formattedBirthdate = selectedPatient?.birthdate
-      ? formatDate(new Date(selectedPatient.birthdate).toISOString().split('T')[0])
-      : '[Birth Date]'
-
-    const doctorName = selectedDoctor?.name?.replace(/^Dr\.\s*/i, '') || '[Doctor Name]'
-    const organizationName = session?.user?.organisationName?.toUpperCase() || '[ORGANIZATION NAME]'
-
-    // Get the template content and replace \n with actual newlines
-    let content = selectedTemplate.contentTemplate.replace(/\\n/g, '\n')
-
-    // Base replacements that are always available
-    const baseReplacements: Record<string, string> = {
-      '{{patient.name}}': patientName,
-      '{{patient.birthdate}}': formattedBirthdate,
-      '{{patient.gender}}': patientGender,
-      '{{doctor.name}}': doctorName,
-      '{{organisation.name}}': organizationName,
-      '{{date}}': new Date().toLocaleDateString(),
-      '{{notes}}': notes || ''
-    }
-
-    // Add template-specific variables
-    const allReplacements = {
-      ...baseReplacements,
-      ...Object.entries(templateVariables).reduce(
-        (acc, [key, value]) => {
-          // Handle date values
-          if (value instanceof Date) {
-            acc[`{{${key}}}`] = formatDate(value.toISOString().split('T')[0])
-          } else if (typeof value === 'boolean') {
-            // Handle boolean values (e.g., for exoneration)
-            acc[`{{${key}}}`] = value ? 'Oui' : 'Non'
-          } else {
-            acc[`{{${key}}}`] = String(value || '')
-          }
-
-          return acc
-        },
-        {} as Record<string, string>
+    // Replace common variables
+    if (selectedPatient) {
+      content = content.replace(/{{patient\.name}}/g, selectedPatient.name || '')
+      content = content.replace(
+        /{{patient\.birthdate}}/g,
+        selectedPatient.birthdate ? new Date(selectedPatient.birthdate).toLocaleDateString() : ''
       )
+      content = content.replace(/{{patient\.gender}}/g, selectedPatient.gender || '')
     }
 
-    // Replace all variables in the template
-    Object.entries(allReplacements).forEach(([key, value]) => {
-      content = content.replace(new RegExp(key, 'g'), value)
+    if (selectedDoctor) {
+      content = content.replace(/{{doctor\.name}}/g, selectedDoctor.name || '')
+      content = content.replace(/{{doctor\.specialty}}/g, selectedDoctor.specialty || '')
+    }
+
+    // Replace organization name
+    if (session?.user?.organisationName) {
+      content = content.replace(/{{organisation\.name}}/g, session.user.organisationName)
+    }
+
+    // Replace template variables
+    Object.entries(templateVariables).forEach(([key, value]) => {
+      const regex = new RegExp(`{{${key}}}`, 'g')
+
+      content = content.replace(regex, value?.toString() || '')
     })
 
-    // Convert the content to HTML format
-    const htmlContent = content
-      .split('\n') // Split by actual newlines
-      .map(line => {
-        // Handle empty lines
-        if (!line.trim()) return '<p><br></p>'
-
-        // Handle signature line
-        if (line.includes('___________________________')) {
-          return `<p style="text-align: center;">${line}</p>`
-        }
-
-        // Regular lines
-        return `<p>${line}</p>`
-      })
+    // Convert \n to actual newlines and generate HTML content
+    return content
+      .split('\\n')
+      .map(line => `<p>${line}</p>`)
       .join('')
-
-    return htmlContent
   }
 
-  // Render dynamic form fields based on template schema
-  const renderTemplateFields = () => {
+  // Handle template variable insertion
+  const handleInsertVariable = (variable: string) => {
+    const editor = document.querySelector('.ProseMirror') as HTMLElement
+
+    if (editor) {
+      const selection = window.getSelection()
+      const range = selection?.getRangeAt(0)
+
+      if (range) {
+        const variableText = `{{${variable}}}`
+        const textNode = document.createTextNode(variableText)
+
+        range.deleteContents()
+        range.insertNode(textNode)
+
+        // Move cursor after the inserted variable
+        range.setStartAfter(textNode)
+        range.setEndAfter(textNode)
+        selection?.removeAllRanges()
+        selection?.addRange(range)
+      }
+    }
+  }
+
+  // Render template variables section
+  const renderTemplateVariables = () => {
     const selectedTemplate = templates.find(t => t.code === certificateType)
 
     if (!selectedTemplate?.variablesSchema?.properties) return null
 
     const schema = selectedTemplate.variablesSchema
-    const fields: JSX.Element[] = []
+    const variables = Object.entries(schema.properties)
 
-    Object.entries(schema.properties).forEach(([key, prop]: [string, any]) => {
-      // Skip fields that are handled separately (like startDate, endDate, notes)
-      if (['startDate', 'endDate', 'notes'].includes(key)) return
-
-      let field: JSX.Element
-
-      switch (prop.type) {
-        case 'string':
-          if (prop.format === 'date') {
-            field = (
-              <Grid item xs={12} md={6} key={key}>
-                <TextField
-                  fullWidth
-                  type='date'
+    return (
+      <Accordion
+        expanded={expandedTemplate === 'variables'}
+        onChange={(_, isExpanded) => setExpandedTemplate(isExpanded ? 'variables' : false)}
+        sx={{ mb: 4 }}
+      >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant='subtitle1'>{t('Template Variables')}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant='subtitle2' color='text.secondary' gutterBottom>
+              {t('Click a variable to insert it into the editor')}
+            </Typography>
+            <Stack direction='row' spacing={1} flexWrap='wrap' useFlexGap>
+              {variables.map(([key, prop]: [string, any]) => (
+                <Chip
+                  key={key}
                   label={prop.description || key}
-                  value={templateVariables[key] || ''}
-                  onChange={e => handleTemplateVariableChange(key, e.target.value)}
-                  InputLabelProps={{ shrink: true }}
-                  required={schema.required?.includes(key)}
+                  onClick={() => handleInsertVariable(key)}
+                  sx={{ m: 0.5 }}
+                  size='small'
                 />
-              </Grid>
-            )
-          } else if (prop.enum) {
-            field = (
-              <Grid item xs={12} md={6} key={key}>
-                <FormControl fullWidth>
-                  <InputLabel>{prop.description || key}</InputLabel>
-                  <Select
-                    value={templateVariables[key] || ''}
-                    label={prop.description || key}
-                    onChange={e => handleTemplateVariableChange(key, e.target.value)}
-                    required={schema.required?.includes(key)}
-                  >
-                    {prop.enum.map((option: string) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-            )
-          } else {
-            field = (
-              <Grid item xs={12} key={key}>
-                <TextField
-                  fullWidth
-                  multiline={key.includes('description') || key.includes('notes')}
-                  rows={key.includes('description') || key.includes('notes') ? 4 : 1}
-                  label={prop.description || key}
-                  value={templateVariables[key] || ''}
-                  onChange={e => handleTemplateVariableChange(key, e.target.value)}
-                  required={schema.required?.includes(key)}
-                />
-              </Grid>
-            )
-          }
+              ))}
+            </Stack>
+          </Box>
 
-          break
+          {/* Render form fields for template variables */}
+          <Grid container spacing={3}>
+            {variables.map(([key, prop]: [string, any]) => {
+              // Skip fields that are handled separately
+              if (['startDate', 'endDate', 'notes'].includes(key)) return null
 
-        case 'number':
-          field = (
-            <Grid item xs={12} md={6} key={key}>
-              <TextField
-                fullWidth
-                type='number'
-                label={prop.description || key}
-                value={templateVariables[key] || ''}
-                onChange={e => handleTemplateVariableChange(key, Number(e.target.value))}
-                required={schema.required?.includes(key)}
-              />
-            </Grid>
-          )
-          break
+              let field: JSX.Element
 
-        case 'boolean':
-          field = (
-            <Grid item xs={12} md={6} key={key}>
-              <FormControl fullWidth>
-                <InputLabel>{prop.description || key}</InputLabel>
-                <Select
-                  value={templateVariables[key] ? 'oui' : 'non'}
-                  label={prop.description || key}
-                  onChange={e => handleTemplateVariableChange(key, e.target.value === 'oui')}
-                  required={schema.required?.includes(key)}
-                >
-                  <MenuItem value='oui'>Oui</MenuItem>
-                  <MenuItem value='non'>Non</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          )
-          break
+              switch (prop.type) {
+                case 'string':
+                  if (prop.format === 'date') {
+                    field = (
+                      <Grid item xs={12} md={6} key={key}>
+                        <TextField
+                          fullWidth
+                          type='date'
+                          label={prop.description || key}
+                          value={templateVariables[key] || ''}
+                          onChange={e => handleTemplateVariableChange(key, e.target.value)}
+                          InputLabelProps={{ shrink: true }}
+                          required={schema.required?.includes(key)}
+                        />
+                      </Grid>
+                    )
+                  } else if (prop.enum) {
+                    field = (
+                      <Grid item xs={12} md={6} key={key}>
+                        <FormControl fullWidth>
+                          <InputLabel>{prop.description || key}</InputLabel>
+                          <Select
+                            value={templateVariables[key] || ''}
+                            label={prop.description || key}
+                            onChange={e => handleTemplateVariableChange(key, e.target.value)}
+                            required={schema.required?.includes(key)}
+                          >
+                            {prop.enum.map((option: string) => (
+                              <MenuItem key={option} value={option}>
+                                {option}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                    )
+                  } else {
+                    field = (
+                      <Grid item xs={12} md={6} key={key}>
+                        <TextField
+                          fullWidth
+                          label={prop.description || key}
+                          value={templateVariables[key] || ''}
+                          onChange={e => handleTemplateVariableChange(key, e.target.value)}
+                          required={schema.required?.includes(key)}
+                          multiline={key.includes('description') || key.includes('notes')}
+                          rows={key.includes('description') || key.includes('notes') ? 3 : 1}
+                        />
+                      </Grid>
+                    )
+                  }
 
-        default:
-          return null
-      }
+                  break
 
-      fields.push(field)
-    })
+                case 'number':
+                  field = (
+                    <Grid item xs={12} md={6} key={key}>
+                      <TextField
+                        fullWidth
+                        type='number'
+                        label={prop.description || key}
+                        value={templateVariables[key] || ''}
+                        onChange={e => handleTemplateVariableChange(key, Number(e.target.value))}
+                        required={schema.required?.includes(key)}
+                      />
+                    </Grid>
+                  )
+                  break
 
-    return fields
+                case 'boolean':
+                  field = (
+                    <Grid item xs={12} md={6} key={key}>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={!!templateVariables[key]}
+                            onChange={e => handleTemplateVariableChange(key, e.target.checked)}
+                          />
+                        }
+                        label={prop.description || key}
+                      />
+                    </Grid>
+                  )
+                  break
+
+                default:
+                  return null
+              }
+
+              return field
+            })}
+          </Grid>
+        </AccordionDetails>
+      </Accordion>
+    )
   }
 
-  const validateForm = () => {
-    const errors: { [key: string]: string } = {}
+  const handleCertificateTypeChange = (event: SelectChangeEvent) => {
+    const type = event.target.value
 
-    if (!selectedPatient) {
-      errors.patientId = t('medicalCertificates.errors.required')
-    }
-
-    if (!certificateType) {
-      errors.type = t('medicalCertificates.errors.required')
-    }
-
-    if (!startDate) {
-      errors.startDate = t('medicalCertificates.errors.required')
-    }
-
-    setFormErrors(errors)
-
-    return Object.keys(errors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!validateForm()) return
-
-    try {
-      setIsLoading(true)
-      setError(null)
-
-      const response = await fetch('/api/certificates', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          patientId: selectedPatient?.id,
-          doctorId: selectedDoctor?.id,
-          type: certificateType,
-          notes,
-          content: certificateContent // Use the edited content from the editor
-        })
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-
-        throw new Error(data.error || t('Failed to create certificate'))
-      }
-
-      // Reset form and close drawer
-      setCertificateType('')
-      setSelectedPatient(null)
-      setSelectedDoctor(null)
-      setStartDate(null)
-      setEndDate(null)
-      setNotes('')
-      setTemplateVariables({})
-      setCertificateContent('')
-      setFormErrors({})
-
-      // Call success callback if provided
-      onSuccess?.()
-
-      // Close the drawer
-      onClose()
-    } catch (err) {
-      console.error('Error creating certificate:', err)
-      setError(err instanceof Error ? err.message : t('Failed to create certificate'))
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleClose = () => {
-    setSelectedPatient(null)
-    setCertificateType('')
-    setStartDate(null)
-    setEndDate(null)
-    setNotes('')
-    setError(null)
-    onClose()
-  }
-
-  const handleCertificateTypeChange = (event: any) => {
-    setCertificateType(event.target.value)
+    setCertificateType(type)
     setFormErrors({})
+    setError(null)
+    setTemplateVariables({})
+    setCertificateContent('')
+
+    const selectedTemplate = templates.find(t => t.code === type)
+
+    if (selectedTemplate) {
+      // Initialize template variables with empty values
+      const initialVariables: Record<string, any> = {}
+
+      if (selectedTemplate.variablesSchema?.properties) {
+        Object.keys(selectedTemplate.variablesSchema.properties).forEach(key => {
+          initialVariables[key] = ''
+        })
+      }
+
+      setTemplateVariables(initialVariables)
+    }
   }
 
   const handleDoctorChange = (_: React.SyntheticEvent, newValue: Doctor | null) => {
@@ -469,6 +450,89 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
     setFormErrors({})
   }
 
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setError(null)
+    setSuccessMessage(null)
+    setFormErrors({})
+
+    // Validate required fields
+    const errors: Record<string, string> = {}
+
+    if (!certificateType) errors.certificateType = t('Certificate type is required')
+    if (!selectedDoctor) errors.doctorId = t('Doctor is required')
+    if (!selectedPatient) errors.patientId = t('Patient is required')
+
+    // Validate template variables
+    const selectedTemplate = templates.find(t => t.code === certificateType)
+
+    if (selectedTemplate?.variablesSchema?.required) {
+      selectedTemplate.variablesSchema.required.forEach((field: string) => {
+        if (!templateVariables[field]) {
+          errors[field] = t('This field is required')
+        }
+      })
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
+
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+    setSuccessMessage(null)
+
+    try {
+      const response = await fetch('/api/certificates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          patientId: selectedPatient?.id,
+          type: certificateType,
+          doctorId: selectedDoctor?.id,
+          content: certificateContent,
+          variables: templateVariables
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || t('Failed to create certificate'))
+      }
+
+      // Show success message before closing
+      setSuccessMessage(t('Certificate created successfully'))
+
+      // Wait a moment to show the success message before closing
+      setTimeout(() => {
+        onSuccess(data)
+        handleClose()
+      }, 1500)
+    } catch (err) {
+      console.error('Error creating certificate:', err)
+      setError(err instanceof Error ? err.message : t('An error occurred'))
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleClose = () => {
+    setError(null)
+    setSuccessMessage(null)
+    setFormErrors({})
+    setCertificateType('')
+    setSelectedDoctor(null)
+    setSelectedPatient(null)
+    setCertificateContent('')
+    setTemplateVariables({})
+    onClose()
+  }
+
   return (
     <Drawer
       open={open}
@@ -476,7 +540,13 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
       anchor='right'
       PaperProps={{
         sx: {
-          width: { xs: '100%', sm: 600 },
+          width: '50%',
+          '@media (max-width: 1200px)': {
+            width: '75%'
+          },
+          '@media (max-width: 600px)': {
+            width: '100%'
+          },
           p: 5
         }
       }}
@@ -506,13 +576,23 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
                     label={t('Certificate Type')}
                     onChange={handleCertificateTypeChange}
                     required
+                    error={!!formErrors.certificateType}
                   >
-                    {templates.map(template => (
-                      <MenuItem key={template.id} value={template.code}>
-                        {template.name}
-                      </MenuItem>
-                    ))}
+                    {templates.length === 0 ? (
+                      <MenuItem disabled>{t('No templates available')}</MenuItem>
+                    ) : (
+                      templates.map(template => (
+                        <MenuItem key={template.id} value={template.code}>
+                          {template.name}
+                        </MenuItem>
+                      ))
+                    )}
                   </Select>
+                  {formErrors.certificateType && (
+                    <Typography color='error' variant='caption'>
+                      {formErrors.certificateType}
+                    </Typography>
+                  )}
                 </FormControl>
               </Grid>
 
@@ -552,61 +632,10 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
                 />
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  type='date'
-                  label={t('Start Date')}
-                  value={startDate ? format(startDate, 'yyyy-MM-dd') : ''}
-                  onChange={e => {
-                    const date = e.target.value ? new Date(e.target.value) : null
+              {/* Template variables section */}
+              {certificateType && renderTemplateVariables()}
 
-                    setStartDate(date)
-                    setFormErrors({})
-                  }}
-                  InputLabelProps={{ shrink: true }}
-                  required
-                  error={!!formErrors.startDate}
-                  helperText={formErrors.startDate}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  type='date'
-                  label={t('End Date')}
-                  value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
-                  onChange={e => {
-                    const date = e.target.value ? new Date(e.target.value) : null
-
-                    setEndDate(date)
-                    setFormErrors({})
-                  }}
-                  InputLabelProps={{ shrink: true }}
-                  required
-                  error={!!formErrors.endDate}
-                  helperText={formErrors.endDate}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  label={t('Notes')}
-                  value={notes}
-                  onChange={e => {
-                    setNotes(e.target.value)
-                    setFormErrors({})
-                  }}
-                />
-              </Grid>
-
-              {/* Render dynamic template fields */}
-              {certificateType && renderTemplateFields()}
-
+              {/* Certificate editor */}
               <Grid item xs={12}>
                 <CertificateEditor
                   content={certificateContent}
@@ -616,11 +645,26 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
               </Grid>
 
               <Grid item xs={12}>
-                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                  <Button variant='outlined' onClick={handleClose}>
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
+                  {error && (
+                    <Alert severity='error' sx={{ flexGrow: 1 }}>
+                      {error}
+                    </Alert>
+                  )}
+                  {successMessage && (
+                    <Alert severity='success' sx={{ flexGrow: 1 }}>
+                      {successMessage}
+                    </Alert>
+                  )}
+                  <Button variant='outlined' onClick={handleClose} disabled={isLoading}>
                     {t('Cancel')}
                   </Button>
-                  <Button type='submit' variant='contained' disabled={isLoading}>
+                  <Button
+                    type='submit'
+                    variant='contained'
+                    disabled={isLoading}
+                    startIcon={isLoading ? <CircularProgress size={20} color='inherit' /> : null}
+                  >
                     {isLoading ? t('Creating...') : t('Create Certificate')}
                   </Button>
                 </Box>

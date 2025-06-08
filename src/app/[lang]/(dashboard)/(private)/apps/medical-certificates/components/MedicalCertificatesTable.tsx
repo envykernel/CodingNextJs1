@@ -333,7 +333,10 @@ const MedicalCertificatesTable: React.FC<MedicalCertificatesTableProps> = ({
         <DialogTitle id='delete-dialog-title'>{t('medicalCertificates.deleteConfirmation.title')}</DialogTitle>
         <DialogContent>
           <DialogContentText id='delete-dialog-description'>
-            {t('medicalCertificates.deleteConfirmation.message').replace('{number}', certificateToDelete?.number || '')}
+            {t('medicalCertificates.deleteConfirmation.message').replace(
+              '{number}',
+              certificateToDelete?.certificateNumber || ''
+            )}
           </DialogContentText>
           {deleteError && (
             <Typography color='error' sx={{ mt: 2 }}>
