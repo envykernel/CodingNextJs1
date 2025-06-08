@@ -32,9 +32,11 @@
             "clinicalExam": "Clinical Exam",
             "prescriptions": "Prescriptions",
             "tests": "Tests",
-            "radiology": "Radiology"
+            "radiology": "Radiology",
+            "goToVisit": "Go to Visit"
         },
-        "doctors": "Doctors"
+        "doctors": "Doctors",
+        "printPrescription": "Print"
     },
     "patient": {
         "name": "Full Name",
@@ -152,6 +154,7 @@
         "noData": "No data available",
         "rowsPerPage": "Rows per page",
         "displayedRows": "Showing {from}-{to} of {count}",
+        "actions": "Actions",
         "periods": {
             "this week": "This Week",
             "this month": "This Month",
@@ -541,7 +544,6 @@
             "advanced": "Advanced",
             "statistics": "Statistics",
             "charts": "Charts",
-            "actions": "Actions",
             "formsAndTables": "Forms & Tables",
             "formLayouts": "Form Layouts",
             "formValidation": "Form Validation",
@@ -569,7 +571,7 @@
             "overview": "Overview",
             "medicalData": "Medical Data",
             "appointments": "Appointments",
-            "security": "Security",
+            "prescriptions": "Prescriptions",
             "billingPlans": "Billing & Plans",
             "notifications": "Notifications",
             "connections": "Connections"

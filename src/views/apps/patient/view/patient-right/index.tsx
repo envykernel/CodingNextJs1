@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { SyntheticEvent, ReactElement } from 'react'
 
 // MUI Imports
@@ -14,16 +14,30 @@ import { useTranslation } from '@/contexts/translationContext'
 
 // Component Imports
 import CustomTabList from '@core/components/mui/TabList'
+import PrescriptionsTab from './prescriptions'
+import OverviewTab from './overview'
+import MedicalDataTab from './medical'
+import AppointmentsTab from './appointments'
+import BillingPlansTab from './billing-plans'
+import NotificationsTab from './notifications'
+import ConnectionsTab from './connections'
 
 interface TabItem {
   value: string
   label: string
   icon: React.ReactElement
+  component: React.ReactElement
 }
 
-const UserRight = ({ tabContentList }: { tabContentList: { [key: string]: ReactElement } }) => {
+interface PatientRightProps {
+  patientId: number
+  patientData: any
+  appointments: any[]
+}
+
+const PatientRight = ({ patientId, patientData, appointments }: PatientRightProps) => {
   // States
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState<string>('overview')
   const { t } = useTranslation()
 
   const handleChange = (event: SyntheticEvent, value: string) => {
@@ -34,60 +48,61 @@ const UserRight = ({ tabContentList }: { tabContentList: { [key: string]: ReactE
     {
       value: 'overview',
       label: t('patientView.tabs.overview') || 'Overview',
-      icon: <i className='tabler-users' />
+      icon: <i className='tabler-user text-xl' />,
+      component: <OverviewTab patientData={patientData} />
     },
     {
-      value: 'medical-data',
+      value: 'medicalData',
       label: t('patientView.tabs.medicalData') || 'Medical Data',
-      icon: <i className='tabler-heartbeat' />
+      icon: <i className='tabler-notes text-xl' />,
+      component: <MedicalDataTab patientData={patientData} />
     },
     {
       value: 'appointments',
       label: t('patientView.tabs.appointments') || 'Appointments',
-      icon: <i className='tabler-calendar-event' />
+      icon: <i className='tabler-calendar text-xl' />,
+      component: <AppointmentsTab appointments={appointments} />
     },
     {
-      value: 'security',
-      label: t('patientView.tabs.security') || 'Security',
-      icon: <i className='tabler-lock' />
+      value: 'prescriptions',
+      label: t('patientView.tabs.prescriptions') || 'Prescriptions',
+      icon: <i className='tabler-prescription text-xl' />,
+      component: <PrescriptionsTab patientId={patientId} patientData={patientData} />
     },
     {
-      value: 'billing-plans',
+      value: 'billingPlans',
       label: t('patientView.tabs.billingPlans') || 'Billing & Plans',
-      icon: <i className='tabler-bookmark' />
+      icon: <i className='tabler-credit-card text-xl' />,
+      component: <BillingPlansTab />
     },
     {
       value: 'notifications',
       label: t('patientView.tabs.notifications') || 'Notifications',
-      icon: <i className='tabler-bell' />
+      icon: <i className='tabler-bell text-xl' />,
+      component: <NotificationsTab />
     },
     {
       value: 'connections',
       label: t('patientView.tabs.connections') || 'Connections',
-      icon: <i className='tabler-link' />
+      icon: <i className='tabler-users text-xl' />,
+      component: <ConnectionsTab />
     }
   ]
 
   return (
-    <>
-      <TabContext value={activeTab}>
-        <Grid container spacing={6}>
-          <Grid size={{ xs: 12 }}>
-            <CustomTabList onChange={handleChange} variant='scrollable' pill='true'>
-              {tabs.map((tab: TabItem) => (
-                <Tab key={tab.value} icon={tab.icon} value={tab.value} label={tab.label} iconPosition='start' />
-              ))}
-            </CustomTabList>
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <TabPanel value={activeTab} className='p-0'>
-              {tabContentList[activeTab]}
-            </TabPanel>
-          </Grid>
-        </Grid>
-      </TabContext>
-    </>
+    <TabContext value={activeTab}>
+      <CustomTabList variant='scrollable' scrollButtons='auto' onChange={handleChange} aria-label='patient view tabs'>
+        {tabs.map(tab => (
+          <Tab key={tab.value} value={tab.value} label={tab.label} icon={tab.icon} iconPosition='start' />
+        ))}
+      </CustomTabList>
+      {tabs.map(tab => (
+        <TabPanel key={tab.value} value={tab.value}>
+          {tab.component}
+        </TabPanel>
+      ))}
+    </TabContext>
   )
 }
 
-export default UserRight
+export default PatientRight

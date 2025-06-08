@@ -142,7 +142,7 @@
         "patientInformation": "معلومات المريض",
         "prescriptionInformation": "معلومات الوصفة الطبية",
         "additionalNotes": "ملاحظات إضافية",
-        "printPrescription": "طباعة الوصفة الطبية",
+        "printPrescription": "طباعة",
         "patientName": "اسم المريض",
         "doctor": "الطبيب",
         "medications": "الأدوية",
@@ -187,8 +187,9 @@
             "measurements": "قياسات المريض",
             "clinicalExam": "الفحص السريري",
             "prescriptions": "الوصفات الطبية",
-            "tests": "التحاليل",
-            "radiology": "الأشعة"
+            "tests": "الفحوصات",
+            "radiology": "الأشعة",
+            "goToVisit": "الذهاب إلى الزيارة"
         },
         "medications": "الأدوية",
         "doctors": "الأطباء"
@@ -301,15 +302,23 @@
     "common": {
         "overview": "نظرة عامة",
         "security": "الأمان",
-        "billingPlans": "الفوترة والاشتراكات",
+        "billingPlans": "الفواتير والخطط",
         "notifications": "الإشعارات",
         "connections": "الاتصالات",
         "show": "عرض",
-        "loading": "جارٍ التحميل...",
+        "loading": "جاري التحميل...",
         "goToVisit": "الذهاب إلى الزيارة",
         "noData": "لا توجد بيانات متاحة",
-        "email": "البريد الإلكتروني",
-        "phone": "الهاتف"
+        "rowsPerPage": "الصفوف في الصفحة",
+        "displayedRows": "عرض {from}-{to} من {count}",
+        "actions": "الإجراءات",
+        "periods": {
+            "today": "اليوم",
+            "thisWeek": "هذا الأسبوع",
+            "thisMonth": "هذا الشهر",
+            "thisYear": "هذا العام",
+            "custom": "فترة مخصصة"
+        }
     },
     "appointmentsList": "قائمة المواعيد",
     "bookAppointment": "حجز موعد",
@@ -747,7 +756,7 @@
             "overview": "نظرة عامة",
             "medicalData": "البيانات الطبية",
             "appointments": "المواعيد",
-            "security": "الأمان",
+            "prescriptions": "الوصفات الطبية",
             "billingPlans": "الفوترة والاشتراكات",
             "notifications": "الإشعارات",
             "connections": "الاتصالات"
@@ -1508,7 +1517,7 @@
             "overview": "نظرة عامة",
             "medicalData": "البيانات الطبية",
             "appointments": "المواعيد",
-            "security": "الأمان",
+            "prescriptions": "الوصفات الطبية",
             "billingPlans": "الفوترة والاشتراكات",
             "notifications": "الإشعارات",
             "connections": "الاتصالات"

@@ -141,7 +141,7 @@
         "patientInformation": "Informations du patient",
         "prescriptionInformation": "Informations de l'ordonnance",
         "additionalNotes": "Notes supplémentaires",
-        "printPrescription": "Imprimer l'ordonnance",
+        "printPrescription": "Imprimer",
         "patientName": "Nom du patient",
         "doctor": "Médecin",
         "medications": "Médicaments",
@@ -168,14 +168,14 @@
         "visitDetails": {
             "title": "Détails de la Visite",
             "date": "Date",
-            "startTime": "Heure de Début",
-            "endTime": "Heure de Fin",
-            "estimatedEndTime": "Heure de Fin Estimée",
+            "startTime": "Heure de début",
+            "endTime": "Heure de fin",
+            "estimatedEndTime": "Heure de fin estimée",
             "estimatedEndTimeTooltip": "Il s'agit de l'heure de fin estimée basée sur la durée du rendez-vous",
             "status": "Statut",
             "statusOptions": {
                 "scheduled": "Planifié",
-                "inProgress": "En Cours",
+                "inProgress": "En cours",
                 "completed": "Terminé",
                 "cancelled": "Annulé"
             },
@@ -186,8 +186,9 @@
             "measurements": "Mesures du Patient",
             "clinicalExam": "Examen Clinique",
             "prescriptions": "Ordonnances",
-            "tests": "Analyses",
-            "radiology": "Radiologie"
+            "tests": "Tests",
+            "radiology": "Radiologie",
+            "goToVisit": "Aller à la Visite"
         },
         "doctors": "Médecins",
         "finance": "Finance",
@@ -301,7 +302,7 @@
     "common": {
         "overview": "Aperçu",
         "security": "Sécurité",
-        "billingPlans": "Facturation et Plans",
+        "billingPlans": "Facturation & Plans",
         "notifications": "Notifications",
         "connections": "Connexions",
         "show": "Afficher",
@@ -310,6 +311,7 @@
         "noData": "Aucune donnée disponible",
         "rowsPerPage": "Lignes par page",
         "displayedRows": "Affichage de {from}-{to} sur {count}",
+        "actions": "Actions",
         "periods": {
             "this week": "Cette Semaine",
             "this month": "Ce Mois",
@@ -1552,5 +1554,50 @@
         "createdAt": "Date de création",
         "updatedAt": "Dernière modification",
         "actionsLabel": "Actions"
+    },
+    "patientView": {
+        "tabs": {
+            "overview": "Aperçu",
+            "medicalData": "Données médicales",
+            "appointments": "Rendez-vous",
+            "prescriptions": "Ordonnances",
+            "billingPlans": "Facturation et Plans",
+            "notifications": "Notifications",
+            "connections": "Connexions"
+        },
+        "medicalData": {
+            "title": "Données médicales",
+            "allergies": "Allergies",
+            "conditions": "Conditions médicales",
+            "medications": "Médicaments actuels",
+            "familyHistory": "Antécédents familiaux",
+            "immunizations": "Vaccinations",
+            "labResults": "Résultats de laboratoire",
+            "noData": "Aucune donnée médicale disponible"
+        },
+        "appointments": {
+            "title": "Rendez-vous",
+            "upcoming": "Rendez-vous à venir",
+            "past": "Rendez-vous passés",
+            "noAppointments": "Aucun rendez-vous programmé",
+            "bookNew": "Prendre un nouveau rendez-vous",
+            "cancel": "Annuler le rendez-vous",
+            "reschedule": "Reprogrammer",
+            "viewDetails": "Voir les détails"
+        },
+        "security": {
+            "title": "Paramètres de sécurité",
+            "password": "Mot de passe",
+            "twoFactor": "Authentification à deux facteurs",
+            "sessions": "Sessions actives",
+            "privacy": "Paramètres de confidentialité"
+        },
+        "billingPlans": {
+            "title": "Facturation et Plans",
+            "currentPlan": "Plan actuel",
+            "billingHistory": "Historique de facturation",
+            "paymentMethods": "Méthodes de paiement",
+            "invoices": "Factures"
+        }
     }
 }
