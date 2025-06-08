@@ -275,13 +275,13 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
     return (
       <Box sx={{ mb: 6 }}>
         <Typography variant='h6' gutterBottom>
-          {t('Template Variables')}
+          {t('medicalCertificates.templateVariables')}
         </Typography>
 
         {/* Quick insert variables section */}
         <Box sx={{ mb: 4 }}>
           <Typography variant='subtitle2' color='text.secondary' gutterBottom>
-            {t('Click a variable to insert it into the editor')}
+            {t('medicalCertificates.clickVariableToInsert')}
           </Typography>
           <Box
             sx={{
@@ -298,7 +298,7 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
             {variables.map(([key, prop]: [string, any]) => (
               <Chip
                 key={key}
-                label={prop.description || key}
+                label={prop.description ? t(`medicalCertificates.variables.${key}`) : key}
                 onClick={() => handleInsertVariable(key)}
                 sx={{
                   fontSize: '0.9rem',
@@ -316,12 +316,12 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
         {/* Form fields section */}
         <Box sx={{ mt: 4 }}>
           <Typography variant='subtitle1' gutterBottom>
-            {t('Edit Variable Values')}
+            {t('medicalCertificates.editVariableValues')}
           </Typography>
           <Grid container spacing={3}>
             {variables.map(([key, prop]: [string, any]) => {
               // Skip fields that are handled separately
-              if (['startDate', 'endDate', 'notes'].includes(key)) return null
+              if (['notes'].includes(key)) return null
 
               let field: JSX.Element
 
@@ -333,7 +333,7 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
                         <TextField
                           fullWidth
                           type='date'
-                          label={prop.description || key}
+                          label={t(`medicalCertificates.variables.${key}`)}
                           value={templateVariables[key] || ''}
                           onChange={e => handleTemplateVariableChange(key, e.target.value)}
                           InputLabelProps={{ shrink: true }}
@@ -562,7 +562,7 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
-          <Typography variant='h5'>{t('Add Certificate')}</Typography>
+          <Typography variant='h5'>{t('medicalCertificates.addCertificate')}</Typography>
           <IconButton onClick={handleClose} size='small'>
             <CloseIcon />
           </IconButton>
