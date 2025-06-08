@@ -307,7 +307,9 @@
         "show": "عرض",
         "loading": "جارٍ التحميل...",
         "goToVisit": "الذهاب إلى الزيارة",
-        "noData": "لا توجد بيانات متاحة"
+        "noData": "لا توجد بيانات متاحة",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف"
     },
     "appointmentsList": "قائمة المواعيد",
     "bookAppointment": "حجز موعد",
@@ -488,7 +490,42 @@
             "archived": "مؤرشف",
             "deleted": "محذوف"
         },
-        "list": "قائمة الفواتير"
+        "list": "قائمة الفواتير",
+        "print": {
+            "title": "الفاتورة",
+            "invoiceNumber": "رقم الفاتورة",
+            "date": "التاريخ",
+            "dueDate": "تاريخ الاستحقاق",
+            "patient": "المريض",
+            "patientName": "اسم المريض",
+            "patientEmail": "البريد الإلكتروني للمريض",
+            "patientPhone": "هاتف المريض",
+            "patientAddress": "عنوان المريض",
+            "services": "الخدمات",
+            "service": "الخدمة",
+            "description": "الوصف",
+            "quantity": "الكمية",
+            "unitPrice": "سعر الوحدة",
+            "amount": "المبلغ",
+            "subtotal": "المجموع الفرعي",
+            "totalPaid": "المبلغ المدفوع",
+            "balance": "الرصيد",
+            "thankYou": "شكراً لتعاملكم معنا",
+            "signature": "توقيع الطبيب",
+            "notes": "ملاحظات",
+            "paymentStatus": {
+                "paid": "مدفوع",
+                "partial": "دفعة جزئية",
+                "pending": "قيد الانتظار"
+            },
+            "recordStatus": {
+                "active": "نشط",
+                "archived": "مؤرشف",
+                "deleted": "محذوف"
+            },
+            "price": "السعر",
+            "total": "المجموع"
+        }
     },
     "form": {
         "sectionPersonalInfo": "المعلومات الشخصية",

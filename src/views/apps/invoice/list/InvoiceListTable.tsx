@@ -306,9 +306,12 @@ const InvoiceListTable = ({ invoiceData }: { invoiceData?: InvoiceType[] }) => {
               iconClassName='text-textSecondary'
               options={[
                 {
-                  text: t('invoice.download'),
-                  icon: 'tabler-download',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
+                  text: t('invoice.print'),
+                  icon: 'tabler-printer',
+                  href: getLocalizedUrl(`/apps/invoice/print/${row.original.id}`, locale),
+                  linkProps: {
+                    className: 'flex items-center is-full plb-2 pli-4 gap-2 text-textSecondary'
+                  }
                 },
                 {
                   text: t('navigation.edit'),

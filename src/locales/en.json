@@ -156,7 +156,9 @@
             "this week": "This Week",
             "this month": "This Month",
             "this year": "This Year"
-        }
+        },
+        "email": "Email",
+        "phone": "Phone"
     },
     "appointmentsList": "Appointments List",
     "bookAppointment": "Book Appointment",
@@ -329,7 +331,42 @@
             "archived": "Archived",
             "deleted": "Deleted"
         },
-        "doctorSignature": "Doctor Signature"
+        "doctorSignature": "Doctor Signature",
+        "print": {
+            "title": "Invoice",
+            "invoiceNumber": "Invoice #",
+            "date": "Date",
+            "dueDate": "Due Date",
+            "patient": "Patient",
+            "patientName": "Patient Name",
+            "patientEmail": "Patient Email",
+            "patientPhone": "Patient Phone",
+            "patientAddress": "Patient Address",
+            "services": "Services",
+            "service": "Service",
+            "description": "Description",
+            "quantity": "Quantity",
+            "unitPrice": "Unit Price",
+            "price": "Price",
+            "amount": "Amount",
+            "subtotal": "Subtotal",
+            "totalPaid": "Total Paid",
+            "balance": "Balance",
+            "thankYou": "Thank you for your business",
+            "signature": "Doctor Signature",
+            "notes": "Notes",
+            "paymentStatus": {
+                "paid": "Paid",
+                "partial": "Partial Payment",
+                "pending": "Pending"
+            },
+            "recordStatus": {
+                "active": "Active",
+                "archived": "Archived",
+                "deleted": "Deleted"
+            },
+            "total": "Total"
+        }
     },
     "form": {
         "sectionPersonalInfo": "Personal Information",

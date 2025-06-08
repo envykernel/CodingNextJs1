@@ -314,7 +314,9 @@
             "this week": "Cette Semaine",
             "this month": "Ce Mois",
             "this year": "Cette Année"
-        }
+        },
+        "email": "Email",
+        "phone": "Téléphone"
     },
     "appointmentsList": "Liste des rendez-vous",
     "bookAppointment": "Prendre rendez-vous",
@@ -636,7 +638,42 @@
             "archived": "Archivé",
             "deleted": "Supprimé"
         },
-        "list": "Liste des factures"
+        "list": "Liste des factures",
+        "print": {
+            "title": "Facture",
+            "invoiceNumber": "N° Facture",
+            "date": "Date",
+            "dueDate": "Date d'échéance",
+            "patient": "Patient",
+            "patientName": "Nom du patient",
+            "patientEmail": "Email du patient",
+            "patientPhone": "Téléphone du patient",
+            "patientAddress": "Adresse du patient",
+            "services": "Services",
+            "service": "Service",
+            "description": "Description",
+            "quantity": "Quantité",
+            "unitPrice": "Prix unitaire",
+            "amount": "Montant",
+            "subtotal": "Sous-total",
+            "totalPaid": "Total payé",
+            "balance": "Solde",
+            "thankYou": "Merci de votre confiance",
+            "signature": "Signature du médecin",
+            "notes": "Notes",
+            "paymentStatus": {
+                "paid": "Payé",
+                "partial": "Paiement partiel",
+                "pending": "En attente"
+            },
+            "recordStatus": {
+                "active": "Actif",
+                "archived": "Archivé",
+                "deleted": "Supprimé"
+            },
+            "price": "Prix",
+            "total": "Total"
+        }
     },
     "form": {
         "sectionPersonalInfo": "Informations personnelles",
