@@ -10,6 +10,7 @@ import TabContext from '@mui/lab/TabContext'
 import TabPanel from '@mui/lab/TabPanel'
 import Grid from '@mui/material/Grid2'
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy'
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 
 import { useTranslation } from '@/contexts/translationContext'
 
@@ -19,9 +20,7 @@ import PrescriptionsTab from './prescriptions'
 import OverviewTab from './overview'
 import MedicalDataTab from './medical'
 import AppointmentsTab from './appointments'
-import BillingPlansTab from './billing-plans'
-import NotificationsTab from './notifications'
-import ConnectionsTab from './connections'
+import FinanceTab from './finance'
 
 interface TabItem {
   value: string
@@ -71,22 +70,10 @@ const PatientRight = ({ patientId, patientData, appointments }: PatientRightProp
       component: <PrescriptionsTab patientId={patientId} patientData={patientData} />
     },
     {
-      value: 'billingPlans',
-      label: t('patientView.tabs.billingPlans') || 'Billing & Plans',
-      icon: <i className='tabler-credit-card text-xl' />,
-      component: <BillingPlansTab />
-    },
-    {
-      value: 'notifications',
-      label: t('patientView.tabs.notifications') || 'Notifications',
-      icon: <i className='tabler-bell text-xl' />,
-      component: <NotificationsTab />
-    },
-    {
-      value: 'connections',
-      label: t('patientView.tabs.connections') || 'Connections',
-      icon: <i className='tabler-users text-xl' />,
-      component: <ConnectionsTab />
+      value: 'finance',
+      label: t('patientView.tabs.finance') || 'Finance',
+      icon: <AttachMoneyIcon />,
+      component: <FinanceTab patientId={patientId} patientData={patientData} />
     }
   ]
 

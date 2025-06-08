@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
   try {
     const visit = await prisma.patient_visit.findUnique({
       where: { id: Number(id) },
-      include: { patient: true, doctor: true }
+      include: { patient: true, doctor: true, organisation: true }
     })
 
     if (!visit) {
@@ -100,6 +100,7 @@ export async function GET(req: NextRequest) {
       created_at: visit.created_at ? visit.created_at.toISOString() : null,
       patient: visit.patient
         ? {
+            id: visit.patient.id,
             name: visit.patient.name,
             birthdate: visit.patient.birthdate,
             gender: visit.patient.gender,
@@ -114,6 +115,17 @@ export async function GET(req: NextRequest) {
             name: visit.doctor.name,
             email: visit.doctor.email,
             phone: visit.doctor.phone_number
+          }
+        : null,
+      organisation: visit.organisation
+        ? {
+            id: visit.organisation.id,
+            name: visit.organisation.name,
+            address: visit.organisation.address,
+            city: visit.organisation.city,
+            phone_number: visit.organisation.phone_number,
+            email: visit.organisation.email,
+            currency: visit.organisation.currency
           }
         : null
     }

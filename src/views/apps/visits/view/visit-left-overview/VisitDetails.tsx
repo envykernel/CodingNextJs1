@@ -223,7 +223,7 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
           <Button
             variant='outlined'
             color='secondary'
-            onClick={() => router.push(`/fr/apps/invoice/create?visitId=${visitData?.id}`)}
+            onClick={() => router.push(`/fr/apps/invoice/add?visitId=${visitData?.id}`)}
             disabled={!visitData?.id}
           >
             {t('invoice.createInvoice')}

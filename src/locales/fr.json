@@ -1561,9 +1561,7 @@
             "medicalData": "Données médicales",
             "appointments": "Rendez-vous",
             "prescriptions": "Ordonnances",
-            "billingPlans": "Facturation et Plans",
-            "notifications": "Notifications",
-            "connections": "Connexions"
+            "finance": "Finance"
         },
         "medicalData": {
             "title": "Données médicales",
@@ -1598,6 +1596,31 @@
             "billingHistory": "Historique de facturation",
             "paymentMethods": "Méthodes de paiement",
             "invoices": "Factures"
+        }
+    },
+    "finance": {
+        "invoiceNumber": "Facture #",
+        "invoiceDate": "Date",
+        "dueDate": "Date d'échéance",
+        "amount": "Montant",
+        "paymentStatus": "Statut",
+        "viewInvoice": "Voir la facture",
+        "downloadInvoice": "Télécharger la facture",
+        "noInvoices": "Aucune facture trouvée",
+        "noInvoicesDescription": "Ce patient n'a pas encore de factures.",
+        "totalInvoiced": "Total Facturé",
+        "totalPaid": "Total Payé",
+        "totalPending": "Total En Attente",
+        "totalPartial": "Paiements Partiels",
+        "invoices": "factures",
+        "ofTotal": "du total",
+        "paymentProgress": "Progression des Paiements",
+        "paidAmount": "Payé",
+        "invoiceDetails": "Détails des Factures",
+        "paymentStatus": {
+            "paid": "Payé",
+            "partial": "Partiel",
+            "pending": "En attente"
         }
     }
 }

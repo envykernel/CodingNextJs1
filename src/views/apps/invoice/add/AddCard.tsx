@@ -100,13 +100,19 @@ const AddAction = () => {
   useEffect(() => {
     if (!visitId) {
       setVisitLoading(false)
-
       return
     }
 
     setVisitLoading(true)
+    setVisitError(null)
+
     fetch(`/api/visits?id=${visitId}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`)
+        }
+        return res.json()
+      })
       .then(data => {
         if (data.visit) {
           setVisit(data.visit)
@@ -116,10 +122,10 @@ const AddAction = () => {
         } else {
           setVisitError('Visit not found')
         }
-
         setVisitLoading(false)
       })
-      .catch(() => {
+      .catch(error => {
+        console.error('Error fetching visit:', error)
         setVisitError('Error fetching visit')
         setVisitLoading(false)
       })
@@ -127,8 +133,17 @@ const AddAction = () => {
 
   useEffect(() => {
     fetch('/api/services')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`)
+        }
+        return res.json()
+      })
       .then(setServices)
+      .catch(error => {
+        console.error('Error fetching services:', error)
+        setServices([])
+      })
   }, [])
 
   useEffect(() => {
@@ -400,10 +415,10 @@ const AddAction = () => {
                       <div className='flex flex-col gap-2'>
                         <div className='flex items-center gap-2'>
                           <Typography className='font-medium' color='text.primary'>
-                            Visit Date:
+                            {t('navigation.visitDetails.date') || 'Visit Date'}:
                           </Typography>
                           <Typography color='text.secondary'>
-                            {visit?.start_time ? new Date(visit.start_time).toLocaleString('en-US') : '-'}
+                            {visit?.visit_date ? new Date(visit.visit_date).toLocaleDateString('en-US') : '-'}
                           </Typography>
                         </div>
                       </div>

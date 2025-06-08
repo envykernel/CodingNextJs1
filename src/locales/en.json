@@ -572,9 +572,7 @@
             "medicalData": "Medical Data",
             "appointments": "Appointments",
             "prescriptions": "Prescriptions",
-            "billingPlans": "Billing & Plans",
-            "notifications": "Notifications",
-            "connections": "Connections"
+            "finance": "Finance"
         },
         "medicalData": {
             "title": "Medical Data",
@@ -616,6 +614,32 @@
             "sms": "SMS Notifications",
             "app": "App Notifications",
             "preferences": "Notification Preferences"
+        },
+        "finance": {
+            "title": "Finance",
+            "invoiceNumber": "Invoice #",
+            "invoiceDate": "Date",
+            "dueDate": "Due Date",
+            "amount": "Amount",
+            "paymentStatus": "Status",
+            "viewInvoice": "View Invoice",
+            "downloadInvoice": "Download Invoice",
+            "noInvoices": "No invoices found",
+            "noInvoicesDescription": "This patient has no invoices yet.",
+            "totalInvoiced": "Total Invoiced",
+            "totalPaid": "Total Paid",
+            "totalPending": "Total Pending",
+            "totalPartial": "Partial Payments",
+            "invoices": "invoices",
+            "ofTotal": "of total",
+            "paymentProgress": "Payment Progress",
+            "paidAmount": "Paid",
+            "invoiceDetails": "Invoice Details",
+            "paymentStatus": {
+                "paid": "Paid",
+                "partial": "Partial",
+                "pending": "Pending"
+            }
         },
         "connections": {
             "title": "Connections",
