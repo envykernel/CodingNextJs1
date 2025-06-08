@@ -1,41 +1,128 @@
 import { useEffect } from 'react'
 
-import { useEditor, EditorContent } from '@tiptap/react'
+import { useEditor, EditorContent, Extension } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import { Paper, Box, IconButton, Divider, Typography } from '@mui/material'
+
+// Custom extension to handle variable highlighting
+const VariableHighlight = Extension.create({
+  name: 'variableHighlight',
+  addGlobalAttributes() {
+    return [
+      {
+        types: ['textStyle'],
+        attributes: {
+          isVariable: {
+            default: false,
+            parseHTML: element => element.hasAttribute('data-variable'),
+            renderHTML: attributes => {
+              if (!attributes.isVariable) return {}
+
+              return {
+                'data-variable': 'true',
+                class: 'variable ' + (attributes.isVariable === 'unfilled' ? 'unfilled-variable' : 'filled-variable')
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+})
 
 interface CertificateEditorProps {
   content: string
   onChange: (content: string) => void
   readOnly?: boolean
   label?: string
+  templateVariables?: Record<string, any>
 }
 
-const CertificateEditor: React.FC<CertificateEditorProps> = ({ content, onChange, readOnly = false, label }) => {
-  // Convert HTML content to plain text with proper newlines
+const CertificateEditor: React.FC<CertificateEditorProps> = ({
+  content,
+  onChange,
+  readOnly = false,
+  label,
+  templateVariables = {}
+}) => {
+  // Process content to ensure all variables are visible and properly highlighted
+  const processContent = (text: string) => {
+    // First, find all variables in the template
+    const allVariables = new Set<string>()
+    const variableRegex = /{{([^}]+)}}/g
+    let match
+
+    while ((match = variableRegex.exec(text)) !== null) {
+      allVariables.add(match[1])
+    }
+
+    // Process each paragraph
+    return text
+      .split('\n')
+      .map(paragraph => {
+        if (!paragraph.trim()) return paragraph
+
+        // Handle signature line
+        if (paragraph.includes('___________________________')) {
+          return paragraph
+        }
+
+        let result = ''
+        let lastIndex = 0
+
+        // Find all variables in this paragraph
+        const matches = Array.from(paragraph.matchAll(variableRegex))
+
+        // If no variables in this paragraph, return as is
+        if (matches.length === 0) return paragraph
+
+        // Process each variable in the paragraph
+        matches.forEach(match => {
+          const variableName = match[1]
+
+          const isFilled =
+            templateVariables[variableName] !== undefined &&
+            templateVariables[variableName] !== null &&
+            templateVariables[variableName] !== ''
+
+          // Add text before the variable
+          result += paragraph.slice(lastIndex, match.index)
+
+          // Add the variable with appropriate styling
+          result += `<span data-variable="${isFilled ? 'filled' : 'unfilled'}">${match[0]}</span>`
+
+          lastIndex = match.index + match[0].length
+        })
+
+        // Add any remaining text
+        result += paragraph.slice(lastIndex)
+
+        return result
+      })
+      .join('\n')
+  }
+
+  // Convert HTML content to plain text with proper newlines and variable highlighting
   const convertToPlainText = (html: string) => {
     const div = document.createElement('div')
 
     div.innerHTML = html
 
-    return Array.from(div.getElementsByTagName('p'))
+    const processedContent = Array.from(div.getElementsByTagName('p'))
       .map(p => {
         // Handle empty paragraphs
         if (!p.textContent?.trim()) return '\n'
 
-        // Handle signature line
-        if (p.textContent.includes('___________________________')) {
-          return p.textContent.trim()
-        }
-
-        // Regular lines
-        return p.textContent.trim()
+        // Process the paragraph content
+        return processContent(p.textContent.trim())
       })
       .join('\n')
       .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
       .trim()
+
+    return processedContent
   }
 
   const editor = useEditor({
@@ -52,7 +139,8 @@ const CertificateEditor: React.FC<CertificateEditorProps> = ({ content, onChange
       Underline,
       TextAlign.configure({
         types: ['paragraph']
-      })
+      }),
+      VariableHighlight
     ],
     content,
     editable: !readOnly,
@@ -72,7 +160,7 @@ const CertificateEditor: React.FC<CertificateEditorProps> = ({ content, onChange
         editor.commands.setContent(content)
       }
     }
-  }, [content, editor])
+  }, [content, editor, templateVariables])
 
   useEffect(() => {
     if (editor && !editor.isDestroyed) {
@@ -197,6 +285,26 @@ const CertificateEditor: React.FC<CertificateEditorProps> = ({ content, onChange
             },
             '&:focus': {
               outline: 'none'
+            },
+            '& .variable': {
+              padding: '0 2px',
+              borderRadius: '2px',
+              fontWeight: 500,
+              display: 'inline-block',
+              minWidth: '1em',
+              textAlign: 'center'
+            },
+            '& .unfilled-variable': {
+              color: 'error.main',
+              backgroundColor: 'error.lighter',
+              border: '1px dashed',
+              borderColor: 'error.main'
+            },
+            '& .filled-variable': {
+              color: 'success.main',
+              backgroundColor: 'success.lighter',
+              border: '1px solid',
+              borderColor: 'success.main'
             }
           },
           '& .ProseMirror-focused': {

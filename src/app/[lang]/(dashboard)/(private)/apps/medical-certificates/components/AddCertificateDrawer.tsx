@@ -18,17 +18,12 @@ import {
   MenuItem,
   Alert,
   Autocomplete,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Chip,
-  Stack,
   FormControlLabel,
   Switch,
   CircularProgress
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import { useTranslation } from '@/contexts/translationContext'
 
@@ -55,7 +50,6 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
   const [patients, setPatients] = useState<Patient[]>([])
   const [templateVariables, setTemplateVariables] = useState<Record<string, any>>({})
   const [certificateContent, setCertificateContent] = useState('')
-  const [expandedTemplate, setExpandedTemplate] = useState<string | false>(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   // Fetch certificate templates
@@ -202,13 +196,6 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
     }))
   }
 
-  // Format date for display
-  const formatDate = (date: string) => {
-    if (!date) return ''
-
-    return new Date(date).toLocaleDateString()
-  }
-
   // Generate preview content based on certificate type and form values
   const getPreviewContent = () => {
     const selectedTemplate = templates.find(t => t.code === certificateType)
@@ -219,29 +206,30 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
 
     // Replace common variables
     if (selectedPatient) {
-      content = content.replace(/{{patient\.name}}/g, selectedPatient.name || '')
+      content = content.replace(/{{patient\.name}}/g, selectedPatient.name || '{{patient.name}}')
       content = content.replace(
         /{{patient\.birthdate}}/g,
-        selectedPatient.birthdate ? new Date(selectedPatient.birthdate).toLocaleDateString() : ''
+        selectedPatient.birthdate ? new Date(selectedPatient.birthdate).toLocaleDateString() : '{{patient.birthdate}}'
       )
-      content = content.replace(/{{patient\.gender}}/g, selectedPatient.gender || '')
+      content = content.replace(/{{patient\.gender}}/g, selectedPatient.gender || '{{patient.gender}}')
     }
 
     if (selectedDoctor) {
-      content = content.replace(/{{doctor\.name}}/g, selectedDoctor.name || '')
-      content = content.replace(/{{doctor\.specialty}}/g, selectedDoctor.specialty || '')
+      content = content.replace(/{{doctor\.name}}/g, selectedDoctor.name || '{{doctor.name}}')
+      content = content.replace(/{{doctor\.specialty}}/g, selectedDoctor.specialty || '{{doctor.specialty}}')
     }
 
     // Replace organization name
     if (session?.user?.organisationName) {
-      content = content.replace(/{{organisation\.name}}/g, session.user.organisationName)
+      content = content.replace(/{{organisation\.name}}/g, session.user.organisationName || '{{organisation.name}}')
     }
 
     // Replace template variables
     Object.entries(templateVariables).forEach(([key, value]) => {
       const regex = new RegExp(`{{${key}}}`, 'g')
 
-      content = content.replace(regex, value?.toString() || '')
+      // Keep the variable placeholder if the value is empty
+      content = content.replace(regex, value?.toString() || `{{${key}}}`)
     })
 
     // Convert \n to actual newlines and generate HTML content
@@ -285,33 +273,51 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
     const variables = Object.entries(schema.properties)
 
     return (
-      <Accordion
-        expanded={expandedTemplate === 'variables'}
-        onChange={(_, isExpanded) => setExpandedTemplate(isExpanded ? 'variables' : false)}
-        sx={{ mb: 4 }}
-      >
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant='subtitle1'>{t('Template Variables')}</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant='subtitle2' color='text.secondary' gutterBottom>
-              {t('Click a variable to insert it into the editor')}
-            </Typography>
-            <Stack direction='row' spacing={1} flexWrap='wrap' useFlexGap>
-              {variables.map(([key, prop]: [string, any]) => (
-                <Chip
-                  key={key}
-                  label={prop.description || key}
-                  onClick={() => handleInsertVariable(key)}
-                  sx={{ m: 0.5 }}
-                  size='small'
-                />
-              ))}
-            </Stack>
-          </Box>
+      <Box sx={{ mb: 6 }}>
+        <Typography variant='h6' gutterBottom>
+          {t('Template Variables')}
+        </Typography>
 
-          {/* Render form fields for template variables */}
+        {/* Quick insert variables section */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant='subtitle2' color='text.secondary' gutterBottom>
+            {t('Click a variable to insert it into the editor')}
+          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 1.5,
+              p: 2,
+              bgcolor: 'background.default',
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            {variables.map(([key, prop]: [string, any]) => (
+              <Chip
+                key={key}
+                label={prop.description || key}
+                onClick={() => handleInsertVariable(key)}
+                sx={{
+                  fontSize: '0.9rem',
+                  height: 32,
+                  '&:hover': {
+                    bgcolor: 'action.hover',
+                    cursor: 'pointer'
+                  }
+                }}
+              />
+            ))}
+          </Box>
+        </Box>
+
+        {/* Form fields section */}
+        <Box sx={{ mt: 4 }}>
+          <Typography variant='subtitle1' gutterBottom>
+            {t('Edit Variable Values')}
+          </Typography>
           <Grid container spacing={3}>
             {variables.map(([key, prop]: [string, any]) => {
               // Skip fields that are handled separately
@@ -332,13 +338,14 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
                           onChange={e => handleTemplateVariableChange(key, e.target.value)}
                           InputLabelProps={{ shrink: true }}
                           required={schema.required?.includes(key)}
+                          size='medium'
                         />
                       </Grid>
                     )
                   } else if (prop.enum) {
                     field = (
                       <Grid item xs={12} md={6} key={key}>
-                        <FormControl fullWidth>
+                        <FormControl fullWidth size='medium'>
                           <InputLabel>{prop.description || key}</InputLabel>
                           <Select
                             value={templateVariables[key] || ''}
@@ -366,6 +373,7 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
                           required={schema.required?.includes(key)}
                           multiline={key.includes('description') || key.includes('notes')}
                           rows={key.includes('description') || key.includes('notes') ? 3 : 1}
+                          size='medium'
                         />
                       </Grid>
                     )
@@ -383,6 +391,7 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
                         value={templateVariables[key] || ''}
                         onChange={e => handleTemplateVariableChange(key, Number(e.target.value))}
                         required={schema.required?.includes(key)}
+                        size='medium'
                       />
                     </Grid>
                   )
@@ -411,8 +420,8 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
               return field
             })}
           </Grid>
-        </AccordionDetails>
-      </Accordion>
+        </Box>
+      </Box>
     )
   }
 
@@ -632,8 +641,12 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
                 />
               </Grid>
 
-              {/* Template variables section */}
-              {certificateType && renderTemplateVariables()}
+              {/* Template variables section - now directly in the form */}
+              {certificateType && (
+                <Grid item xs={12}>
+                  {renderTemplateVariables()}
+                </Grid>
+              )}
 
               {/* Certificate editor */}
               <Grid item xs={12}>
@@ -641,6 +654,29 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
                   content={certificateContent}
                   onChange={setCertificateContent}
                   label={t('Certificate Content')}
+                  templateVariables={{
+                    ...templateVariables,
+                    ...(selectedPatient
+                      ? {
+                          'patient.name': selectedPatient.name,
+                          'patient.birthdate': selectedPatient.birthdate
+                            ? new Date(selectedPatient.birthdate).toLocaleDateString()
+                            : '',
+                          'patient.gender': selectedPatient.gender
+                        }
+                      : {}),
+                    ...(selectedDoctor
+                      ? {
+                          'doctor.name': selectedDoctor.name,
+                          'doctor.specialty': selectedDoctor.specialty
+                        }
+                      : {}),
+                    ...(session?.user?.organisationName
+                      ? {
+                          'organisation.name': session.user.organisationName
+                        }
+                      : {})
+                  }}
                 />
               </Grid>
 
