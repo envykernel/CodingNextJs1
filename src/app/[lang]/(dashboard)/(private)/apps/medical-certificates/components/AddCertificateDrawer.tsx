@@ -215,7 +215,10 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
     }
 
     if (selectedDoctor) {
-      content = content.replace(/{{doctor\.name}}/g, selectedDoctor.name || '{{doctor.name}}')
+      // Remove "Dr." prefix from doctor's name if it exists
+      const doctorName = selectedDoctor.name?.replace(/^Dr\.?\s*/i, '') || ''
+
+      content = content.replace(/{{doctor\.name}}/g, doctorName || '{{doctor.name}}')
       content = content.replace(/{{doctor\.specialty}}/g, selectedDoctor.specialty || '{{doctor.specialty}}')
     }
 

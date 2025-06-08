@@ -45,13 +45,6 @@ const ViewCertificateDrawer: React.FC<ViewCertificateDrawerProps> = ({ open, onC
 
   if (!certificate) return null
 
-  // Format the content by replacing \n with actual line breaks
-  const formattedContent = certificate.content.split('\\n').map((line, index) => (
-    <Typography key={index} component='div' sx={{ mb: 1 }}>
-      {line}
-    </Typography>
-  ))
-
   return (
     <Drawer
       open={open}
@@ -92,14 +85,14 @@ const ViewCertificateDrawer: React.FC<ViewCertificateDrawerProps> = ({ open, onC
               fontFamily: 'inherit',
               fontSize: '1rem',
               lineHeight: 1.6,
-              '& > div': {
+              '& p': {
+                margin: '0.5em 0',
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word'
               }
             }}
-          >
-            {formattedContent}
-          </Paper>
+            dangerouslySetInnerHTML={{ __html: certificate.content }}
+          />
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
