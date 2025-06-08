@@ -1,33 +1,27 @@
-// Component Imports
-import { getDictionary } from '@/utils/getDictionary'
-import type { Locale } from '@configs/i18n'
-import { TranslationProvider } from '@/contexts/translationContext'
+'use client'
 
-interface SearchParams {
-  page?: string | string[]
-  pageSize?: string | string[]
-  filter?: string | string[]
-  status?: string | string[]
-  type?: string | string[]
-  startDate?: string | string[]
-  endDate?: string | string[]
+import React from 'react'
+
+import { useTranslation } from '@/contexts/translationContext'
+import MedicalCertificatesList from '../components/MedicalCertificatesList'
+
+interface PageProps {
+  searchParams: Promise<{
+    page?: string
+    pageSize?: string
+  }>
 }
 
-const MedicalCertificatesListApp = async ({
-  params,
-  searchParams
-}: {
-  params: Promise<{ lang: Locale }>
-  searchParams: Promise<SearchParams>
-}) => {
-  const { lang } = await params
-  const dictionary = await getDictionary(lang)
+const Page: React.FC<PageProps> = ({ searchParams }) => {
+  const { t } = useTranslation()
+  const unwrappedSearchParams = React.use(searchParams)
 
   return (
-    <TranslationProvider dictionary={dictionary}>
-      <div>{/* Empty page for now */}</div>
-    </TranslationProvider>
+    <div>
+      <h1>{t('medicalCertificates.title')}</h1>
+      <MedicalCertificatesList searchParams={unwrappedSearchParams} />
+    </div>
   )
 }
 
-export default MedicalCertificatesListApp
+export default Page

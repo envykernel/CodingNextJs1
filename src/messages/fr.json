@@ -1,0 +1,62 @@
+{
+    "common": {
+        "gender": {
+            "male": "Masculin",
+            "female": "Féminin",
+            "other": "Autre"
+        }
+    },
+    "medicalCertificates": {
+        "title": "Certificats Médicaux",
+        "addCertificate": "Créer un Nouveau Certificat",
+        "cancel": "Annuler",
+        "create": "Créer le Certificat",
+        "patient": "Patient",
+        "selectPatient": "Sélectionner un Patient",
+        "certificateType": "Type de Certificat",
+        "selectType": "Sélectionner le Type",
+        "startDate": "Date de Début",
+        "endDate": "Date de Fin",
+        "notes": "Notes Additionnelles",
+        "preview": "Aperçu du Certificat",
+        "noPatients": "Aucun patient disponible",
+        "errors": {
+            "fetchPatientsFailed": "Échec de la récupération des patients",
+            "createFailed": "Échec de la création du certificat",
+            "required": "Ce champ est requis"
+        },
+        "types": {
+            "sickLeave": "Certificat d'Arrêt Maladie",
+            "fitness": "Certificat d'Aptitude",
+            "medicalReport": "Rapport Médical",
+            "other": "Autre Certificat"
+        },
+        "status": {
+            "draft": "Brouillon",
+            "issued": "Émis",
+            "expired": "Expiré",
+            "cancelled": "Annulé"
+        },
+        "actions": {
+            "view": "Voir",
+            "download": "Télécharger",
+            "edit": "Modifier",
+            "delete": "Supprimer"
+        },
+        "list": {
+            "title": "Certificats Médicaux",
+            "noCertificates": "Aucun certificat trouvé",
+            "search": "Rechercher des certificats...",
+            "filters": "Filtres",
+            "export": "Exporter",
+            "columns": {
+                "patient": "Patient",
+                "type": "Type",
+                "startDate": "Date de Début",
+                "endDate": "Date de Fin",
+                "status": "Statut",
+                "actions": "Actions"
+            }
+        }
+    }
+}

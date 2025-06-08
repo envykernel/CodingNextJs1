@@ -1354,5 +1354,58 @@
                 "other": "Other Services"
             }
         }
+    },
+    "medicalCertificates": {
+        "title": "Medical Certificates",
+        "addCertificate": "Create New Certificate",
+        "cancel": "Cancel",
+        "create": "Create Certificate",
+        "patient": "Patient",
+        "selectPatient": "Select Patient",
+        "certificateType": "Certificate Type",
+        "selectType": "Select Certificate Type",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "notes": "Additional Notes",
+        "preview": "Certificate Preview",
+        "noPatients": "No patients available",
+        "errors": {
+            "fetchPatientsFailed": "Failed to fetch patients",
+            "createFailed": "Failed to create certificate",
+            "required": "This field is required"
+        },
+        "types": {
+            "sickLeave": "Sick Leave Certificate",
+            "fitness": "Fitness Certificate",
+            "medicalReport": "Medical Report",
+            "other": "Other Certificate"
+        },
+        "status": {
+            "draft": "Draft",
+            "issued": "Issued",
+            "expired": "Expired",
+            "cancelled": "Cancelled"
+        },
+        "actions": {
+            "view": "View",
+            "download": "Download",
+            "edit": "Edit",
+            "delete": "Delete"
+        },
+        "list": {
+            "title": "Medical Certificates",
+            "noCertificates": "No certificates found",
+            "search": "Search certificates...",
+            "filters": "Filters",
+            "export": "Export",
+            "columns": {
+                "patient": "Patient",
+                "type": "Type",
+                "startDate": "Start Date",
+                "endDate": "End Date",
+                "status": "Status",
+                "actions": "Actions"
+            }
+        }
     }
 }

@@ -1718,5 +1718,58 @@
                 "december": "ديسمبر"
             }
         }
+    },
+    "medicalCertificates": {
+        "title": "الشهادات الطبية",
+        "addCertificate": "إنشاء شهادة جديدة",
+        "cancel": "إلغاء",
+        "create": "إنشاء الشهادة",
+        "patient": "المريض",
+        "selectPatient": "اختر المريض",
+        "certificateType": "نوع الشهادة",
+        "selectType": "اختر النوع",
+        "startDate": "تاريخ البداية",
+        "endDate": "تاريخ النهاية",
+        "notes": "ملاحظات إضافية",
+        "preview": "معاينة الشهادة",
+        "noPatients": "لا يوجد مرضى متاحين",
+        "errors": {
+            "fetchPatientsFailed": "فشل في جلب بيانات المرضى",
+            "createFailed": "فشل في إنشاء الشهادة",
+            "required": "هذا الحقل مطلوب"
+        },
+        "types": {
+            "sickLeave": "شهادة إجازة مرضية",
+            "fitness": "شهادة لياقة طبية",
+            "medicalReport": "تقرير طبي",
+            "other": "شهادة أخرى"
+        },
+        "status": {
+            "draft": "مسودة",
+            "issued": "صادر",
+            "expired": "منتهي",
+            "cancelled": "ملغي"
+        },
+        "actions": {
+            "view": "عرض",
+            "download": "تحميل",
+            "edit": "تعديل",
+            "delete": "حذف"
+        },
+        "list": {
+            "title": "الشهادات الطبية",
+            "noCertificates": "لم يتم العثور على شهادات",
+            "search": "البحث في الشهادات...",
+            "filters": "التصفية",
+            "export": "تصدير",
+            "columns": {
+                "patient": "المريض",
+                "type": "النوع",
+                "startDate": "تاريخ البداية",
+                "endDate": "تاريخ النهاية",
+                "status": "الحالة",
+                "actions": "الإجراءات"
+            }
+        }
     }
 }

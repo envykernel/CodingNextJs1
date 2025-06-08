@@ -1356,5 +1356,66 @@
                 "december": "Décembre"
             }
         }
+    },
+    "medicalCertificates": {
+        "title": "Certificats Médicaux",
+        "addCertificate": "Créer un nouveau certificat",
+        "cancel": "Annuler",
+        "create": "Créer le certificat",
+        "patient": "Patient",
+        "selectPatient": "Sélectionner un patient",
+        "certificateType": "Type de certificat",
+        "selectType": "Sélectionner le type",
+        "startDate": "Date de début",
+        "endDate": "Date de fin",
+        "notes": "Notes additionnelles",
+        "preview": "Aperçu du certificat",
+        "noPatients": "Aucun patient disponible",
+        "errors": {
+            "fetchPatientsFailed": "Échec de la récupération des patients",
+            "createFailed": "Échec de la création du certificat",
+            "required": "Ce champ est requis"
+        },
+        "types": {
+            "sickLeave": "Certificat d'Arrêt Maladie",
+            "fitness": "Certificat d'Aptitude",
+            "medicalReport": "Rapport Médical",
+            "other": "Autre Certificat"
+        },
+        "status": {
+            "draft": "Brouillon",
+            "issued": "Émis",
+            "expired": "Expiré",
+            "cancelled": "Annulé"
+        },
+        "actions": {
+            "view": "Voir",
+            "download": "Télécharger",
+            "edit": "Modifier",
+            "delete": "Supprimer"
+        },
+        "list": {
+            "title": "Certificats Médicaux",
+            "noCertificates": "Aucun certificat trouvé",
+            "search": "Rechercher des certificats...",
+            "filters": "Filtres",
+            "export": "Exporter",
+            "columns": {
+                "patient": "Patient",
+                "type": "Type",
+                "startDate": "Date de Début",
+                "endDate": "Date de Fin",
+                "status": "Statut",
+                "actions": "Actions"
+            }
+        },
+        "pagination": {
+            "labelRowsPerPage": "Lignes par page:",
+            "labelDisplayedRows": "{from}-{to} sur {count}",
+            "firstPageLabel": "Première page",
+            "lastPageLabel": "Dernière page",
+            "nextPageLabel": "Page suivante",
+            "previousPageLabel": "Page précédente"
+        }
     }
 }
