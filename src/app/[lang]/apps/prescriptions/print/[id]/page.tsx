@@ -166,11 +166,14 @@ export default async function PrintPrescriptionPage({ params }: PrintPrescriptio
           {/* Prescription Content */}
           <div className='flex-1 w-full bg-white p-4 print:p-2 font-sans'>
             <Typography
-              component='h4'
               variant='h4'
               align='center'
               gutterBottom
-              className='print:text-xl print:mb-2 font-sans'
+              sx={{
+                fontSize: { xs: '1.5rem', print: '1.25rem' },
+                marginBottom: { xs: 2, print: 1 },
+                fontFamily: 'inherit'
+              }}
             >
               Prescription Médicale
             </Typography>
