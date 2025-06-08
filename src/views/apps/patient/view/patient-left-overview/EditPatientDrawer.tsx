@@ -236,21 +236,29 @@ const EditPatientDrawer = ({ open, onClose, patientData, onPatientUpdated }: Pro
             <Controller
               name='gender'
               control={control}
-              render={({ field }) => (
-                <CustomTextField
-                  select
-                  fullWidth
-                  label={t('form.gender')}
-                  error={!!errors.gender}
-                  helperText={errors.gender ? t('form.required') : ''}
-                  {...field}
-                >
-                  <MenuItem value=''>{t('form.selectGender')}</MenuItem>
-                  <MenuItem value='Male'>{t('form.male')}</MenuItem>
-                  <MenuItem value='Female'>{t('form.female')}</MenuItem>
-                  <MenuItem value='Other'>{t('form.other')}</MenuItem>
-                </CustomTextField>
-              )}
+              render={({ field }) => {
+                // Normalize the gender value to match the MenuItem values
+                const normalizedGender = field.value
+                  ? field.value.charAt(0).toUpperCase() + field.value.slice(1).toLowerCase()
+                  : ''
+
+                return (
+                  <CustomTextField
+                    select
+                    fullWidth
+                    label={t('form.gender')}
+                    error={!!errors.gender}
+                    helperText={errors.gender ? t('form.required') : ''}
+                    value={normalizedGender}
+                    onChange={e => field.onChange(e.target.value.toLowerCase())}
+                  >
+                    <MenuItem value=''>{t('form.selectGender')}</MenuItem>
+                    <MenuItem value='Male'>{t('form.male')}</MenuItem>
+                    <MenuItem value='Female'>{t('form.female')}</MenuItem>
+                    <MenuItem value='Other'>{t('form.other')}</MenuItem>
+                  </CustomTextField>
+                )
+              }}
             />
             <Controller
               name='doctor'
