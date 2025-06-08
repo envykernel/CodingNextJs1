@@ -102,6 +102,7 @@ const NotificationDropdown = () => {
   // Refs
   const anchorRef = useRef<HTMLButtonElement>(null)
   const ref = useRef<HTMLDivElement | null>(null)
+  const lastFetchTime = useRef<number>(Date.now())
 
   // Hooks
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
@@ -121,6 +122,7 @@ const NotificationDropdown = () => {
 
       setNotifications(data)
       setError(null)
+      lastFetchTime.current = Date.now()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch notifications')
     } finally {
@@ -128,30 +130,36 @@ const NotificationDropdown = () => {
     }
   }
 
-  // Fetch notifications on mount and periodically
+  // Fetch notifications on mount and every 5 minutes
   useEffect(() => {
     // Initial fetch
     fetchNotifications()
 
-    // Set up periodic refresh every 30 seconds
-    const intervalId = setInterval(fetchNotifications, 30000)
+    // Set up periodic refresh every 5 minutes
+    const intervalId = setInterval(
+      () => {
+        const now = Date.now()
+        const timeSinceLastFetch = now - lastFetchTime.current
+
+        // Only fetch if it's been at least 5 minutes since the last fetch
+        if (timeSinceLastFetch >= 5 * 60 * 1000) {
+          fetchNotifications()
+        }
+      },
+      5 * 60 * 1000
+    ) // Check every 5 minutes
 
     // Cleanup interval on unmount
     return () => clearInterval(intervalId)
   }, [])
-
-  // Also fetch when dropdown is opened to ensure fresh data
-  useEffect(() => {
-    if (open) {
-      fetchNotifications()
-    }
-  }, [open])
 
   const handleClose = () => {
     setOpen(false)
   }
 
   const handleToggle = () => {
+    // Fetch notifications when toggling the dropdown
+    fetchNotifications()
     setOpen(prevOpen => !prevOpen)
   }
 
