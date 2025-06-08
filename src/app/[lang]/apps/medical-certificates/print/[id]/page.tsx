@@ -1,4 +1,4 @@
-import { Typography, Grid, Box, Divider } from '@mui/material'
+import { Typography, Divider, Grid } from '@mui/material'
 
 import { getDictionary } from '@/utils/getDictionary'
 import { prisma } from '@/prisma/prisma'
@@ -30,7 +30,20 @@ async function getCertificate(id: string) {
     include: {
       patient: true,
       doctor: true,
-      organisation: true,
+      organisation: {
+        select: {
+          id: true,
+          name: true,
+          address: true,
+          city: true,
+          phone_number: true,
+          email: true,
+          has_pre_printed_header: true,
+          has_pre_printed_footer: true,
+          header_height: true,
+          footer_height: true
+        }
+      },
       template: true
     }
   })
@@ -40,6 +53,108 @@ async function getCertificate(id: string) {
   }
 
   return certificate
+}
+
+// Restore the original GeneratedHeader
+function GeneratedHeader({ organisation }: { organisation: any }) {
+  return (
+    <div className='w-full'>
+      <div className='max-w-4xl mx-auto'>
+        {/* Main header container */}
+        <div className='px-8 py-6 print:px-6 print:py-4'>
+          {/* Top row: Organization name and QR code */}
+          <div className='flex justify-between items-start mb-3 print:mb-2'>
+            <Typography
+              variant='h4'
+              className='font-medium text-gray-900 tracking-tight print:text-xl'
+              sx={{
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.02em'
+              }}
+            >
+              {organisation.name}
+            </Typography>
+            {/* QR Code - Apple style minimal */}
+            <div className='w-[42px] h-[42px] border border-gray-200 rounded-sm flex items-center justify-center bg-white print:w-[36px] print:h-[36px] relative'>
+              <div className='absolute inset-0 flex items-center justify-center'>
+                <div className='w-[80%] h-[80%] bg-[linear-gradient(45deg,transparent_45%,#000_45%,#000_55%,transparent_55%),linear-gradient(-45deg,transparent_45%,#000_45%,#000_55%,transparent_55%),linear-gradient(45deg,#000_45%,transparent_45%,transparent_55%,#000_55%),linear-gradient(-45deg,#000_45%,transparent_45%,transparent_55%,#000_55%)] bg-[length:50%_50%] bg-[position:0_0,0_100%,100%_0,100%_100%] bg-no-repeat' />
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom row: Address and contact info */}
+          <div className='grid grid-cols-2 gap-8 print:gap-6'>
+            {/* Left column: Address */}
+            <div className='flex flex-col'>
+              <Typography
+                variant='body2'
+                className='text-sm text-gray-600 print:text-[0.7rem] mb-0.5'
+                sx={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+              >
+                {organisation.address}
+              </Typography>
+              <Typography
+                variant='body2'
+                className='text-sm text-gray-600 print:text-[0.7rem]'
+                sx={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+              >
+                {organisation.city}
+              </Typography>
+            </div>
+
+            {/* Right column: Contact info */}
+            <div className='flex justify-end'>
+              <div className='flex flex-col'>
+                <Typography
+                  variant='body2'
+                  className='text-sm text-gray-600 print:text-[0.7rem] mb-0.5'
+                  sx={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                >
+                  Tél: {organisation.phone_number}
+                </Typography>
+                <Typography
+                  variant='body2'
+                  className='text-sm text-gray-600 print:text-[0.7rem]'
+                  sx={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                >
+                  Email: {organisation.email}
+                </Typography>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Generated footer component
+function GeneratedFooter({ organisation }: { organisation: any }) {
+  return (
+    <div className='w-full p-1 border-t border-gray-200 mt-auto relative print:p-2 print:bg-white print:border-t print:border-gray-200 print:text-xs print:leading-tight'>
+      <div className='grid grid-cols-2 gap-1 items-center justify-between print:max-w-full print:m-0'>
+        <div className='print:pr-2'>
+          <Typography
+            variant='body2'
+            className='text-xs font-medium mb-0.5 print:text-[0.7rem] print:font-medium print:mb-0.5'
+          >
+            {organisation.name}
+          </Typography>
+          <Typography variant='body2' className='text-xs text-gray-600 print:text-[0.7rem] print:text-gray-600'>
+            {organisation.address}, {organisation.city}
+          </Typography>
+        </div>
+        <div className='text-right print:pl-2'>
+          <Typography variant='body2' className='text-xs text-gray-600 print:text-[0.7rem] print:text-gray-600'>
+            Tel: {organisation.phone_number}
+          </Typography>
+          <Typography variant='body2' className='text-xs text-gray-600 print:text-[0.7rem] print:text-gray-600'>
+            Email: {organisation.email}
+          </Typography>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default async function PrintCertificatePage({ params }: PrintCertificatePageProps) {
@@ -56,164 +171,79 @@ export default async function PrintCertificatePage({ params }: PrintCertificateP
     .join('')
 
   return (
-    <div className='min-h-screen bg-white p-8 print:p-0'>
-      {/* Header Space */}
-      {certificate.organisation.has_pre_printed_header && (
-        <div style={{ height: certificate.organisation.header_height || 200 }} />
-      )}
-
-      {/* Certificate Content */}
-      <div className='max-w-3xl mx-auto'>
+    <div className='min-h-screen bg-white p-8 print:p-0 print:m-0'>
+      <div className='max-w-3xl mx-auto print:max-w-none print:h-[297mm] print:w-[210mm] print:mx-auto print:my-0 print:bg-white print:min-h-[297mm] flex flex-col min-h-full'>
         <TranslationProvider dictionary={dictionary}>
-          <Box
-            component='div'
-            className='certificate-container'
-            sx={{
-              minHeight: '100vh',
-              width: '100%',
-              bgcolor: 'white',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              '&.certificate-container': {
-                print: {
-                  bgcolor: 'white',
-                  minHeight: '100vh',
-                  width: '100%',
-                  m: 0,
-                  p: 0
-                }
-              }
-            }}
-          >
-            {/* A4 content area */}
-            <Box
-              component='div'
-              className='certificate-content'
-              sx={{
-                width: '794px', // A4 width at 96dpi
-                bgcolor: 'white',
-                boxShadow: 0,
-                borderRadius: 0,
-                p: { xs: 2, sm: 4, print: 6 },
-                m: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                '&.certificate-content': {
-                  print: {
-                    boxShadow: 'none',
-                    borderRadius: 0,
-                    m: 0,
-                    p: 6
-                  }
-                }
-              }}
-            >
-              <Typography variant='h4' align='center' gutterBottom>
-                {certificate.template?.name || 'Medical Certificate'}
-              </Typography>
-              <Divider sx={{ mb: 4 }} />
-              <Grid container spacing={2} className='mb-4'>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant='subtitle1' className='font-semibold'>
-                    Patient:
-                  </Typography>
-                  <Typography>{certificate.patient?.name || '-'}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant='subtitle1' className='font-semibold'>
-                    Doctor:
-                  </Typography>
-                  <Typography>{certificate.doctor?.name || '-'}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant='subtitle1' className='font-semibold'>
-                    Certificate Number:
-                  </Typography>
-                  <Typography>{certificate.certificateNumber || '-'}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant='subtitle1' className='font-semibold'>
-                    Date:
-                  </Typography>
-                  <Typography>{formattedDate}</Typography>
-                </Grid>
+          {/* Header */}
+          <div className='flex-none'>
+            {certificate.organisation.has_pre_printed_header ? (
+              <div style={{ height: certificate.organisation.header_height || 200 }} />
+            ) : (
+              <GeneratedHeader organisation={certificate.organisation} />
+            )}
+          </div>
+
+          {/* Certificate Content */}
+          <div className='flex-1 w-full bg-white p-4 print:p-2'>
+            <Typography variant='h4' align='center' gutterBottom className='print:text-xl print:mb-2'>
+              {certificate.template?.name || 'Medical Certificate'}
+            </Typography>
+            <Divider className='mb-2 print:mb-1' />
+            <Grid container spacing={1} className='mb-2 print:mb-1'>
+              <Grid item xs={12} sm={6}>
+                <Typography variant='subtitle1' className='font-semibold print:text-sm'>
+                  Patient:
+                </Typography>
+                <Typography className='print:text-sm'>{certificate.patient?.name || '-'}</Typography>
               </Grid>
-              <Divider />
-              <Box
-                component='div'
-                className='certificate-body'
-                sx={{
-                  mt: 4,
-                  mb: 4,
-                  p: 3,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 1,
-                  '&.certificate-body p': {
-                    margin: '0.5em 0',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word'
-                  }
-                }}
-                dangerouslySetInnerHTML={{ __html: processedContent }}
-              />
-              {/* Doctor Signature Footer */}
-              <Box
-                component='div'
-                className='signature-container'
-                sx={{
-                  mt: 16,
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                  alignItems: 'flex-end',
-                  width: '100%',
-                  '&.signature-container': {
-                    print: { mt: 32 }
-                  }
-                }}
-              >
-                <Box
-                  component='div'
-                  className='signature-box'
-                  sx={{
-                    textAlign: 'right',
-                    p: 3,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: 1,
-                    minWidth: 300
-                  }}
-                >
-                  <Typography variant='subtitle1' sx={{ fontWeight: 600, mb: 2 }}>
-                    Doctor Signature
-                  </Typography>
-                  <Box
-                    component='div'
-                    className='signature-line'
-                    sx={{
-                      borderBottom: '1px solid #9ca3af',
-                      width: 256,
-                      height: 40
-                    }}
-                  />
-                  <Typography variant='body2' sx={{ mt: 2 }}>
-                    {certificate.doctor?.name || '-'}
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
+              <Grid item xs={12} sm={6}>
+                <Typography variant='subtitle1' className='font-semibold print:text-sm'>
+                  Doctor:
+                </Typography>
+                <Typography className='print:text-sm'>{certificate.doctor?.name || '-'}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant='subtitle1' className='font-semibold print:text-sm'>
+                  Certificate Number:
+                </Typography>
+                <Typography className='print:text-sm'>{certificate.certificateNumber || '-'}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant='subtitle1' className='font-semibold print:text-sm'>
+                  Date:
+                </Typography>
+                <Typography className='print:text-sm'>{formattedDate}</Typography>
+              </Grid>
+            </Grid>
+            <Divider className='mb-2 print:mb-1' />
+            <div
+              className='mt-6 mb-2 p-2 print:mt-8 print:mb-1 print:p-1'
+              dangerouslySetInnerHTML={{ __html: processedContent }}
+            />
+            {/* Doctor Signature Footer */}
+            <div className='mt-4 mb-8 flex flex-row justify-end items-end w-full print:mt-2 print:mb-12'>
+              <div className='text-right p-2 min-w-[300px] print:p-1 print:min-w-[250px]'>
+                <Typography variant='subtitle1' className='font-semibold mb-1 print:text-sm print:mb-0.5'>
+                  Doctor Signature
+                </Typography>
+                <div className='border-b border-gray-400 w-64 h-10 print:w-50 print:h-8' />
+                <Typography variant='body2' className='mt-1 print:text-xs print:mt-0.5'>
+                  {certificate.doctor?.name || '-'}
+                </Typography>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer - Always at bottom */}
+          <div className='flex-none mt-auto relative print:absolute print:bottom-0 print:left-0 print:right-0'>
+            {certificate.organisation.has_pre_printed_footer ? (
+              <div style={{ height: certificate.organisation.footer_height || 200 }} />
+            ) : (
+              <GeneratedFooter organisation={certificate.organisation} />
+            )}
+          </div>
         </TranslationProvider>
       </div>
-
-      {/* Footer Space */}
-      {certificate.organisation.has_pre_printed_footer && (
-        <div style={{ height: certificate.organisation.footer_height || 200 }} />
-      )}
 
       {/* Print Button - Only visible on screen */}
       <PrintButton />
