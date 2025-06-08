@@ -9,6 +9,7 @@ import Tab from '@mui/material/Tab'
 import TabContext from '@mui/lab/TabContext'
 import TabPanel from '@mui/lab/TabPanel'
 import Grid from '@mui/material/Grid2'
+import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy'
 
 import { useTranslation } from '@/contexts/translationContext'
 
@@ -66,7 +67,7 @@ const PatientRight = ({ patientId, patientData, appointments }: PatientRightProp
     {
       value: 'prescriptions',
       label: t('patientView.tabs.prescriptions') || 'Prescriptions',
-      icon: <i className='tabler-prescription text-xl' />,
+      icon: <LocalPharmacyIcon />,
       component: <PrescriptionsTab patientId={patientId} patientData={patientData} />
     },
     {
