@@ -2,84 +2,36 @@
 
 import React, { useState, useEffect } from 'react'
 
+import { useSession } from 'next-auth/react'
 import {
-  Drawer,
   Box,
-  Typography,
   Button,
+  Drawer,
+  Grid,
+  IconButton,
   TextField,
+  Typography,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  Grid,
   Alert,
-  CircularProgress,
-  Paper,
-  Divider,
-  IconButton,
   Autocomplete
 } from '@mui/material'
-import type { SelectProps, SelectChangeEvent } from '@mui/material'
-
-import { useSession } from 'next-auth/react'
-
-import { DatePicker } from '@mui/x-date-pickers'
-
 import { format } from 'date-fns'
+import CloseIcon from '@mui/icons-material/Close'
 
 import { useTranslation } from '@/contexts/translationContext'
-import type { CertificateTemplate } from '@/types/certificate'
 
-interface CertificateTemplate {
-  id: number
-  code: string
-  name: string
-  description: string
-  category: string
-  contentTemplate: string
-  variablesSchema: any
-}
-
-interface Doctor {
-  id: number
-  name: string
-  specialty: string
-}
-
-interface Patient {
-  id: number
-  name: string
-  birthdate: string // ISO date string
-  gender: string
-}
+import type { Patient, Doctor, CertificateTemplate } from '@/types/certificate'
 
 interface AddCertificateDrawerProps {
   open: boolean
   onClose: () => void
-  onSubmit: (data: {
-    patientId: string
-    type: string
-    startDate: string
-    endDate: string
-    notes: string
-    content: string
-  }) => Promise<void>
+  onSuccess?: () => void // Optional callback for successful creation
 }
 
-const ITEM_HEIGHT = 48
-
-const MenuProps: Partial<SelectProps['MenuProps']> = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 8.5,
-      width: 350
-    }
-  },
-  autoFocus: false
-}
-
-export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCertificateDrawerProps) {
+export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCertificateDrawerProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
   const [certificateType, setCertificateType] = useState<string>('')
@@ -93,8 +45,8 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [patientSearch, setPatientSearch] = useState('')
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
+  const [templateVariables, setTemplateVariables] = useState<Record<string, any>>({})
 
   // Fetch certificate templates
   useEffect(() => {
@@ -180,6 +132,37 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
     }
   }, [open, session?.user?.name])
 
+  // Update template variables when certificate type changes
+  useEffect(() => {
+    if (certificateType) {
+      const selectedTemplate = templates.find(t => t.code === certificateType)
+
+      if (selectedTemplate?.variablesSchema) {
+        // Initialize variables with default values from schema
+        const initialVariables: Record<string, any> = {}
+        const schema = selectedTemplate.variablesSchema
+
+        if (schema.properties) {
+          Object.entries(schema.properties).forEach(([key, prop]: [string, any]) => {
+            initialVariables[key] = prop.default || ''
+          })
+        }
+
+        setTemplateVariables(initialVariables)
+      }
+    } else {
+      setTemplateVariables({})
+    }
+  }, [certificateType, templates])
+
+  // Handle template variable changes
+  const handleTemplateVariableChange = (key: string, value: any) => {
+    setTemplateVariables(prev => ({
+      ...prev,
+      [key]: value
+    }))
+  }
+
   // Format date for display
   const formatDate = (date: string) => {
     if (!date) return ''
@@ -195,73 +178,174 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
 
     if (!selectedTemplate?.contentTemplate) {
       console.log('No template content found for:', certificateType)
-      console.log('Available templates:', templates)
 
       return ''
     }
 
-    console.log('Template content:', selectedTemplate.contentTemplate)
-
     const patientName = selectedPatient?.name || '[Patient Name]'
     const patientGender = selectedPatient?.gender || '[Gender]'
-    const formattedStartDate = startDate ? formatDate(format(startDate, 'yyyy-MM-dd')) : '[Start Date]'
-    const formattedEndDate = endDate ? formatDate(format(endDate, 'yyyy-MM-dd')) : '[End Date]'
 
     const formattedBirthdate = selectedPatient?.birthdate
       ? formatDate(new Date(selectedPatient.birthdate).toISOString().split('T')[0])
       : '[Birth Date]'
 
-    const certificateNotes = notes || '[Additional Notes]'
-
-    // Use selected doctor's name or fallback
     const doctorName = selectedDoctor?.name?.replace(/^Dr\.\s*/i, '') || '[Doctor Name]'
-
-    // Get organization name from session user data and convert to uppercase
     const organizationName = session?.user?.organisationName?.toUpperCase() || '[ORGANIZATION NAME]'
 
     // Get the template content
     let content = selectedTemplate.contentTemplate
 
-    // Replace all template variables
-    const replacements: Record<string, string> = {
+    // Base replacements that are always available
+    const baseReplacements: Record<string, string> = {
       '{{patient.name}}': patientName,
       '{{patient.birthdate}}': formattedBirthdate,
       '{{patient.gender}}': patientGender,
-      '{{startDate}}': formattedStartDate,
-      '{{endDate}}': formattedEndDate,
-      '{{notes}}': certificateNotes,
-      '{{date}}': new Date().toLocaleDateString(),
-      '{{medicalObservation}}': certificateNotes,
-      '{{sport}}': '[Sport]',
-      '{{restrictions}}': '[Restrictions]',
-      '{{duration}}': '[Duration]',
-      '{{reason}}': '[Reason]',
-      '{{validUntil}}': formattedEndDate,
-      '{{profession}}': '[Profession]',
-      '{{diagnosis}}': certificateNotes,
-      '{{exoneration}}': 'Non',
-      '{{school}}': '[School]',
-      '{{inaptitude}}': '[Inaptitude]',
-      '{{observations}}': certificateNotes,
-      '{{ald}}': 'Non',
-      '{{deathDate}}': formattedStartDate,
-      '{{deathTime}}': '[Time]',
-      '{{deathPlace}}': '[Place]',
-      '{{apparentCause}}': '[Cause]',
-      '{{circumstances}}': '[Circumstances]',
-      '{{suspiciousSigns}}': 'Aucun',
       '{{doctor.name}}': doctorName,
-      '{{organisation.name}}': organizationName
+      '{{organisation.name}}': organizationName,
+      '{{date}}': new Date().toLocaleDateString(),
+      '{{notes}}': notes || ''
+    }
+
+    // Add template-specific variables
+    const allReplacements = {
+      ...baseReplacements,
+      ...Object.entries(templateVariables).reduce(
+        (acc, [key, value]) => {
+          // Handle date values
+          if (value instanceof Date) {
+            acc[`{{${key}}}`] = formatDate(value.toISOString().split('T')[0])
+          } else if (typeof value === 'boolean') {
+            // Handle boolean values (e.g., for exoneration)
+            acc[`{{${key}}}`] = value ? 'Oui' : 'Non'
+          } else {
+            acc[`{{${key}}}`] = String(value || '')
+          }
+
+          return acc
+        },
+        {} as Record<string, string>
+      )
     }
 
     // Replace all variables in the template
-    Object.entries(replacements).forEach(([key, value]) => {
+    Object.entries(allReplacements).forEach(([key, value]) => {
       content = content.replace(new RegExp(key, 'g'), value)
     })
 
-    console.log('Processed content:', content)
-
     return content
+  }
+
+  // Render dynamic form fields based on template schema
+  const renderTemplateFields = () => {
+    const selectedTemplate = templates.find(t => t.code === certificateType)
+
+    if (!selectedTemplate?.variablesSchema?.properties) return null
+
+    const schema = selectedTemplate.variablesSchema
+    const fields: JSX.Element[] = []
+
+    Object.entries(schema.properties).forEach(([key, prop]: [string, any]) => {
+      // Skip fields that are handled separately (like startDate, endDate, notes)
+      if (['startDate', 'endDate', 'notes'].includes(key)) return
+
+      let field: JSX.Element
+
+      switch (prop.type) {
+        case 'string':
+          if (prop.format === 'date') {
+            field = (
+              <Grid item xs={12} md={6} key={key}>
+                <TextField
+                  fullWidth
+                  type='date'
+                  label={prop.description || key}
+                  value={templateVariables[key] || ''}
+                  onChange={e => handleTemplateVariableChange(key, e.target.value)}
+                  InputLabelProps={{ shrink: true }}
+                  required={schema.required?.includes(key)}
+                />
+              </Grid>
+            )
+          } else if (prop.enum) {
+            field = (
+              <Grid item xs={12} md={6} key={key}>
+                <FormControl fullWidth>
+                  <InputLabel>{prop.description || key}</InputLabel>
+                  <Select
+                    value={templateVariables[key] || ''}
+                    label={prop.description || key}
+                    onChange={e => handleTemplateVariableChange(key, e.target.value)}
+                    required={schema.required?.includes(key)}
+                  >
+                    {prop.enum.map((option: string) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            )
+          } else {
+            field = (
+              <Grid item xs={12} key={key}>
+                <TextField
+                  fullWidth
+                  multiline={key.includes('description') || key.includes('notes')}
+                  rows={key.includes('description') || key.includes('notes') ? 4 : 1}
+                  label={prop.description || key}
+                  value={templateVariables[key] || ''}
+                  onChange={e => handleTemplateVariableChange(key, e.target.value)}
+                  required={schema.required?.includes(key)}
+                />
+              </Grid>
+            )
+          }
+
+          break
+
+        case 'number':
+          field = (
+            <Grid item xs={12} md={6} key={key}>
+              <TextField
+                fullWidth
+                type='number'
+                label={prop.description || key}
+                value={templateVariables[key] || ''}
+                onChange={e => handleTemplateVariableChange(key, Number(e.target.value))}
+                required={schema.required?.includes(key)}
+              />
+            </Grid>
+          )
+          break
+
+        case 'boolean':
+          field = (
+            <Grid item xs={12} md={6} key={key}>
+              <FormControl fullWidth>
+                <InputLabel>{prop.description || key}</InputLabel>
+                <Select
+                  value={templateVariables[key] ? 'oui' : 'non'}
+                  label={prop.description || key}
+                  onChange={e => handleTemplateVariableChange(key, e.target.value === 'oui')}
+                  required={schema.required?.includes(key)}
+                >
+                  <MenuItem value='oui'>Oui</MenuItem>
+                  <MenuItem value='non'>Non</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          )
+          break
+
+        default:
+          return null
+      }
+
+      fields.push(field)
+    })
+
+    return fields
   }
 
   const validateForm = () => {
@@ -288,18 +372,42 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
     e.preventDefault()
     if (!validateForm()) return
 
+    if (!selectedDoctor) {
+      setFormErrors(prev => ({ ...prev, doctorId: t('medicalCertificates.errors.required') }))
+
+      return
+    }
+
     try {
-      await onSubmit({
-        patientId: selectedPatient?.id?.toString() || '',
-        type: certificateType,
-        startDate: startDate ? format(startDate, 'yyyy-MM-dd') : '',
-        endDate: endDate ? format(endDate, 'yyyy-MM-dd') : '',
-        notes,
-        content: getPreviewContent()
+      setIsLoading(true)
+
+      const response = await fetch('/api/certificates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          patientId: selectedPatient?.id?.toString(),
+          type: certificateType,
+          notes,
+          content: getPreviewContent(),
+          doctorId: selectedDoctor.id
+        })
       })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+
+        throw new Error(errorData.error || 'Failed to create certificate')
+      }
+
+      await response.json() // We don't need to store the response data
+      onSuccess?.() // Call the success callback if provided
       onClose()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -313,45 +421,18 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
     onClose()
   }
 
-  // Filter templates based on search
-  const filteredTemplates = templates.filter(template => {
-    const searchLower = patientSearch.toLowerCase()
-
-    return (
-      template.name.toLowerCase().includes(searchLower) ||
-      template.description.toLowerCase().includes(searchLower) ||
-      template.category.toLowerCase().includes(searchLower)
-    )
-  })
-
-  // Group filtered templates by category
-  const templatesByCategory = filteredTemplates.reduce(
-    (acc, template) => {
-      if (!acc[template.category]) {
-        acc[template.category] = []
-      }
-
-      acc[template.category].push(template)
-
-      return acc
-    },
-    {} as Record<string, CertificateTemplate[]>
-  )
-
-  const handleCertificateTypeChange = (event: SelectChangeEvent<string>) => {
+  const handleCertificateTypeChange = (event: any) => {
     setCertificateType(event.target.value)
+    setFormErrors({})
   }
 
   const handleDoctorChange = (_: React.SyntheticEvent, newValue: Doctor | null) => {
     setSelectedDoctor(newValue)
   }
 
-  const handlePatientChange = (_event: React.SyntheticEvent, newValue: Patient | null) => {
+  const handlePatientChange = (event: any, newValue: Patient | null) => {
     setSelectedPatient(newValue)
-  }
-
-  const handlePatientInputChange = (_: React.SyntheticEvent, value: string) => {
-    setPatientSearch(value)
+    setFormErrors({})
   }
 
   return (
@@ -367,10 +448,10 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 6 }}>
-          <Typography variant='h5'>{t('medicalCertificates.addCertificate')}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+          <Typography variant='h5'>{t('Add Certificate')}</Typography>
           <IconButton onClick={handleClose} size='small'>
-            <i className='tabler-x' />
+            <CloseIcon />
           </IconButton>
         </Box>
 
@@ -379,22 +460,21 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
             <Grid container spacing={6}>
               {error && (
                 <Grid item xs={12}>
-                  <Alert severity='error' sx={{ mb: 4 }}>
-                    {error}
-                  </Alert>
+                  <Alert severity='error'>{error}</Alert>
                 </Grid>
               )}
 
               <Grid item xs={12}>
                 <FormControl fullWidth>
-                  <InputLabel>{t('medicalCertificates.typeLabel')}</InputLabel>
+                  <InputLabel>{t('Certificate Type')}</InputLabel>
                   <Select
                     value={certificateType}
-                    label={t('medicalCertificates.typeLabel')}
+                    label={t('Certificate Type')}
                     onChange={handleCertificateTypeChange}
+                    required
                   >
                     {templates.map(template => (
-                      <MenuItem key={template.code} value={template.code}>
+                      <MenuItem key={template.id} value={template.code}>
                         {template.name}
                       </MenuItem>
                     ))}
@@ -404,50 +484,37 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
 
               <Grid item xs={12}>
                 <Autocomplete
+                  options={doctors}
+                  getOptionLabel={option => option.name || ''}
                   value={selectedDoctor}
                   onChange={handleDoctorChange}
-                  options={doctors}
-                  getOptionLabel={option => `${option.name}${option.specialty ? ` (${option.specialty})` : ''}`}
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label={t('medicalCertificates.doctor')}
-                      placeholder={t('medicalCertificates.selectDoctor')}
+                      label={t('Doctor')}
+                      required
+                      error={!!formErrors.doctorId}
+                      helperText={formErrors.doctorId}
                     />
                   )}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  noOptionsText={t('medicalCertificates.noDoctors')}
-                  loading={isLoading}
-                  loadingText={t('common.loading')}
                 />
               </Grid>
 
               <Grid item xs={12}>
                 <Autocomplete
-                  id='patient'
                   options={patients}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={option => option.name || ''}
                   value={selectedPatient}
                   onChange={handlePatientChange}
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label={t('medicalCertificates.patient')}
-                      error={Boolean(formErrors.patientId)}
+                      label={t('Patient')}
+                      required
+                      error={!!formErrors.patientId}
                       helperText={formErrors.patientId}
                     />
                   )}
-                  renderOption={(props, option) => {
-                    const { key, ...otherProps } = props
-
-                    return (
-                      <li key={option.id} {...otherProps}>
-                        <Typography>{option.name}</Typography>
-                      </li>
-                    )
-                  }}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  fullWidth
                 />
               </Grid>
 
@@ -455,11 +522,18 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
                 <TextField
                   fullWidth
                   type='date'
-                  label={t('medicalCertificates.startDate')}
+                  label={t('Start Date')}
                   value={startDate ? format(startDate, 'yyyy-MM-dd') : ''}
-                  onChange={e => setStartDate(e.target.value ? new Date(e.target.value) : null)}
+                  onChange={e => {
+                    const date = e.target.value ? new Date(e.target.value) : null
+
+                    setStartDate(date)
+                    setFormErrors({})
+                  }}
                   InputLabelProps={{ shrink: true }}
                   required
+                  error={!!formErrors.startDate}
+                  helperText={formErrors.startDate}
                 />
               </Grid>
 
@@ -467,12 +541,18 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
                 <TextField
                   fullWidth
                   type='date'
-                  label={t('medicalCertificates.endDate')}
+                  label={t('End Date')}
                   value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
-                  onChange={e => setEndDate(e.target.value ? new Date(e.target.value) : null)}
+                  onChange={e => {
+                    const date = e.target.value ? new Date(e.target.value) : null
+
+                    setEndDate(date)
+                    setFormErrors({})
+                  }}
                   InputLabelProps={{ shrink: true }}
-                  required={certificateType !== 'CERT_MED_SIMPLE'}
-                  disabled={certificateType === 'CERT_MED_SIMPLE'}
+                  required
+                  error={!!formErrors.endDate}
+                  helperText={formErrors.endDate}
                 />
               </Grid>
 
@@ -481,28 +561,31 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
                   fullWidth
                   multiline
                   rows={4}
-                  label={t('medicalCertificates.notes')}
+                  label={t('Notes')}
                   value={notes}
-                  onChange={e => setNotes(e.target.value)}
-                  required
+                  onChange={e => {
+                    setNotes(e.target.value)
+                    setFormErrors({})
+                  }}
                 />
               </Grid>
 
+              {/* Render dynamic template fields */}
+              {certificateType && renderTemplateFields()}
+
               <Grid item xs={12}>
-                <Paper sx={{ p: 4, bgcolor: 'background.default' }}>
-                  <Typography variant='h6' sx={{ mb: 2 }}>
-                    {t('medicalCertificates.preview')}
+                <Box sx={{ mt: 4, p: 4, bgcolor: 'background.paper', borderRadius: 1 }}>
+                  <Typography variant='subtitle2' sx={{ mb: 2 }}>
+                    {t('Preview')}
                   </Typography>
-                  <Typography
-                    component='div'
+                  <Box
                     sx={{
                       whiteSpace: 'pre-wrap',
                       fontFamily: 'inherit',
-                      fontSize: '0.875rem',
-                      lineHeight: 1.5,
-                      m: 0,
-                      p: 2,
-                      bgcolor: 'background.paper',
+                      fontSize: '1rem',
+                      lineHeight: 1.6,
+                      p: 3,
+                      bgcolor: 'background.default',
                       border: '1px solid',
                       borderColor: 'divider',
                       borderRadius: 1,
@@ -512,27 +595,21 @@ export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCer
                     {getPreviewContent()
                       .split('\\n')
                       .map((line, index, array) => (
-                        <React.Fragment key={index}>
+                        <Typography key={index} component='div' sx={{ mb: index < array.length - 1 ? 1 : 0 }}>
                           {line}
-                          {index < array.length - 1 && <br />}
-                        </React.Fragment>
+                        </Typography>
                       ))}
-                  </Typography>
-                </Paper>
+                  </Box>
+                </Box>
               </Grid>
 
               <Grid item xs={12}>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                   <Button variant='outlined' onClick={handleClose}>
-                    {t('medicalCertificates.cancel')}
+                    {t('Cancel')}
                   </Button>
-                  <Button
-                    type='submit'
-                    variant='contained'
-                    disabled={isLoading}
-                    startIcon={isLoading ? <CircularProgress size={20} /> : <i className='tabler-check' />}
-                  >
-                    {t('medicalCertificates.create')}
+                  <Button type='submit' variant='contained' disabled={isLoading}>
+                    {isLoading ? t('Creating...') : t('Create Certificate')}
                   </Button>
                 </Box>
               </Grid>

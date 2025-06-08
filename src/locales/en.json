@@ -1393,6 +1393,7 @@
             "expired": "Expired",
             "cancelled": "Cancelled"
         },
+        "actionsLabel": "Actions",
         "actions": {
             "view": "View",
             "download": "Download",
@@ -1423,6 +1424,9 @@
             "message": "Are you sure you want to delete certificate {number}? This action cannot be undone.",
             "cancel": "Cancel",
             "confirm": "Delete"
-        }
+        },
+        "createdAt": "Created At",
+        "updatedAt": "Updated At",
+        "actions": "Actions"
     }
 }

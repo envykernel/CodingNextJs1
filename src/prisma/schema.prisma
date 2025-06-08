@@ -723,7 +723,6 @@ model Certificate {
   certificateNumber String            @unique @db.VarChar(50)
   status           String             @default("draft") @db.VarChar(20)
   content          String             @db.Text
-  variables        Json               // Valeurs des variables
   version          Int                @default(1) // Pour le versioning
   parentVersionId  Int?              // Lien vers la version précédente
   issuedAt         DateTime?

@@ -9,70 +9,29 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  IconButton,
-  Chip,
-  TablePagination,
-  Drawer,
-  Typography,
   Box,
-  Button,
+  Typography,
+  Alert,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
-  Alert,
-  CircularProgress
+  Button,
+  Drawer,
+  Paper,
+  CircularProgress,
+  TablePagination
 } from '@mui/material'
 
 import { useTranslation } from '@/contexts/translationContext'
-import { LocalDate } from '@/components/LocalTime'
-
-// Define the Certificate type
-interface Certificate {
-  id: number
-  number: string
-  patient: {
-    id: number
-    name: string
-    birthdate: string
-  }
-  doctor: {
-    id: number
-    name: string
-  }
-  organisation: {
-    id: number
-    name: string
-  }
-  template: {
-    code: string
-    name: string
-  }
-  variables: Record<string, any>
-  content: string
-  status: string
-  createdAt: string
-  updatedAt: string
-}
+import type { Certificate } from '@/types/certificate'
 
 interface MedicalCertificatesTableProps {
   certificates: Certificate[]
-  isLoading: boolean
-  onDelete: (id: number) => void
-  error?: {
-    error: string
-    message: string
-    details?: string
-  }
-}
-
-const statusColor: { [key: string]: string } = {
-  active: 'success',
-  expired: 'error',
-  revoked: 'error',
-  pending: 'warning'
+  isLoading?: boolean
+  onDelete: (certificate: Certificate) => void
+  error?: Error
 }
 
 interface ViewCertificateDrawerProps {
@@ -86,71 +45,12 @@ const ViewCertificateDrawer: React.FC<ViewCertificateDrawerProps> = ({ open, onC
 
   if (!certificate) return null
 
-  const variables = certificate.variables as any
-
-  // Process the template content with actual values
-  const getFilledContent = (content: string, variables: any, patient: any) => {
-    let filledContent = content
-
-    // Get the doctor and organization info from the certificate
-    const doctor = certificate.doctor
-    const organisation = certificate.organisation
-
-    // Replace template variables with actual values
-    const replacements: Record<string, string> = {
-      '{{patient.name}}': patient.name,
-      '{{patient.birthdate}}': patient.birthdate ? new Date(patient.birthdate).toLocaleDateString() : '',
-      '{{doctor.name}}': doctor ? `Dr. ${doctor.name}` : 'Dr. [Doctor Name]',
-      '{{organisation.name}}': organisation ? organisation.name : '[Organization Name]',
-      '{{date}}': new Date().toLocaleDateString(),
-      '{{medicalObservation}}': variables.notes || '',
-      '{{startDate}}': variables.startDate ? new Date(variables.startDate).toLocaleDateString() : '',
-      '{{endDate}}': variables.endDate ? new Date(variables.endDate).toLocaleDateString() : '',
-      '{{sport}}': variables.sport || '',
-      '{{restrictions}}': variables.restrictions || '',
-      '{{duration}}': variables.duration || '',
-      '{{reason}}': variables.reason || '',
-      '{{validUntil}}': variables.validUntil ? new Date(variables.validUntil).toLocaleDateString() : '',
-      '{{profession}}': variables.profession || '',
-      '{{diagnosis}}': variables.diagnosis || '',
-      '{{exoneration}}': variables.exoneration === 'oui' ? 'Oui' : 'Non',
-      '{{school}}': variables.school || '',
-      '{{inaptitude}}': variables.inaptitude || '',
-      '{{observations}}': variables.observations || '',
-      '{{ald}}': variables.ald === 'oui' ? 'Oui' : variables.ald === 'non' ? 'Non' : 'En cours',
-      '{{treatment}}': variables.treatment || '',
-      '{{recommendations}}': variables.recommendations || '',
-      '{{nextAppointment}}': variables.nextAppointment ? new Date(variables.nextAppointment).toLocaleDateString() : '',
-      '{{recipient.name}}': variables.recipient?.name || '',
-      '{{recipient.specialty}}': variables.recipient?.specialty || '',
-      '{{consultationReason}}': variables.consultationReason || '',
-      '{{testsDone}}': variables.testsDone || '',
-      '{{diagnosticHypothesis}}': variables.diagnosticHypothesis || '',
-      '{{specificQuestions}}': variables.specificQuestions || '',
-      '{{deathDate}}': variables.deathDate ? new Date(variables.deathDate).toLocaleDateString() : '',
-      '{{deathTime}}': variables.deathTime || '',
-      '{{deathPlace}}': variables.deathPlace || '',
-      '{{apparentCause}}': variables.apparentCause || '',
-      '{{circumstances}}': variables.circumstances || '',
-      '{{suspiciousSigns}}': variables.suspiciousSigns || 'aucun',
-      '{{vaccineName}}': variables.vaccineName || '',
-      '{{lotNumber}}': variables.lotNumber || '',
-      '{{administrationDate}}': variables.administrationDate
-        ? new Date(variables.administrationDate).toLocaleDateString()
-        : '',
-      '{{doseNumber}}': variables.doseNumber || '',
-      '{{schedule}}': variables.schedule || '',
-      '{{nextDoseDate}}': variables.nextDoseDate ? new Date(variables.nextDoseDate).toLocaleDateString() : '',
-      '{{sideEffects}}': variables.sideEffects || 'aucun'
-    }
-
-    // Replace all variables in the content
-    Object.entries(replacements).forEach(([key, value]) => {
-      filledContent = filledContent.replace(new RegExp(key, 'g'), value)
-    })
-
-    return filledContent
-  }
+  // Format the content by replacing \n with actual line breaks
+  const formattedContent = certificate.content.split('\\n').map((line, index) => (
+    <Typography key={index} component='div' sx={{ mb: 1 }}>
+      {line}
+    </Typography>
+  ))
 
   return (
     <Drawer
@@ -174,7 +74,7 @@ const ViewCertificateDrawer: React.FC<ViewCertificateDrawerProps> = ({ open, onC
             {t('medicalCertificates.certificateNumber')}
           </Typography>
           <Typography variant='body1' gutterBottom>
-            {certificate.number}
+            {certificate.certificateNumber || '-'}
           </Typography>
         </Box>
 
@@ -185,17 +85,20 @@ const ViewCertificateDrawer: React.FC<ViewCertificateDrawerProps> = ({ open, onC
           <Paper
             elevation={0}
             sx={{
-              p: 3,
+              p: 4,
               bgcolor: 'background.default',
               border: '1px solid',
               borderColor: 'divider',
-              whiteSpace: 'pre-wrap',
-              fontFamily: 'monospace',
-              fontSize: '0.9rem',
-              lineHeight: 1.6
+              fontFamily: 'inherit',
+              fontSize: '1rem',
+              lineHeight: 1.6,
+              '& > div': {
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word'
+              }
             }}
           >
-            {getFilledContent(certificate.content, variables, certificate.patient)}
+            {formattedContent}
           </Paper>
         </Box>
 
@@ -216,13 +119,18 @@ const ViewCertificateDrawer: React.FC<ViewCertificateDrawerProps> = ({ open, onC
   )
 }
 
-export function MedicalCertificatesTable({ certificates, isLoading, onDelete, error }: MedicalCertificatesTableProps) {
+const MedicalCertificatesTable: React.FC<MedicalCertificatesTableProps> = ({
+  certificates,
+  isLoading,
+  onDelete,
+  error
+}) => {
   const { t } = useTranslation()
   const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null)
   const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [certificateToDelete, setCertificateToDelete] = useState<Certificate | null>(null)
-  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<Error | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -256,14 +164,14 @@ export function MedicalCertificatesTable({ certificates, isLoading, onDelete, er
       }
 
       // Optimistically remove the deleted certificate from the table
-      onDelete(certificateToDelete.id)
+      onDelete(certificateToDelete)
 
       // Close the dialog and reset state
       setIsDeleteDialogOpen(false)
       setCertificateToDelete(null)
     } catch (error) {
       console.error('Error deleting certificate:', error)
-      setDeleteError(error instanceof Error ? error.message : t('deleteFailed'))
+      setDeleteError(error instanceof Error ? error : new Error(t('deleteFailed')))
     } finally {
       setIsDeleting(false)
     }
@@ -284,30 +192,27 @@ export function MedicalCertificatesTable({ certificates, isLoading, onDelete, er
     setPage(0)
   }
 
-  // Map template codes to frontend types for display
-  const getCertificateType = (templateCode: string) => {
-    const typeMap: Record<string, string> = {
-      CERT_ARRET_TRAVAIL: 'sickLeave',
-      CERT_APT_SPORT: 'fitness',
-      CERT_MED_SIMPLE: 'medicalReport'
-    }
+  // Extract doctor name from certificate content
+  const getDoctorName = (content: string) => {
+    const match = content.match(/Dr ([^,]+)/)
 
-    return typeMap[templateCode] || 'other'
+    return match ? match[1] : '-'
   }
 
-  const getDeleteMessage = () => {
-    if (!certificateToDelete) return ''
+  // Extract patient name from certificate content
+  const getPatientName = (content: string) => {
+    const match = content.match(/examiné ce jour ([^,]+)/)
 
-    return t('medicalCertificates.deleteConfirmation.message').replace('{number}', certificateToDelete.number)
+    return match ? match[1] : '-'
   }
 
   if (error) {
     return (
       <Alert severity='error' sx={{ mb: 4 }}>
         <Typography variant='body2'>{t(error.message)}</Typography>
-        {error.details && (
+        {error instanceof Error && (
           <Typography variant='caption' sx={{ display: 'block', mt: 1 }}>
-            {error.details}
+            {error.stack}
           </Typography>
         )}
       </Alert>
@@ -325,12 +230,12 @@ export function MedicalCertificatesTable({ certificates, isLoading, onDelete, er
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>{t('medicalCertificates.list.columns.patient')}</TableCell>
-                <TableCell>{t('medicalCertificates.list.columns.type')}</TableCell>
-                <TableCell>{t('medicalCertificates.list.columns.startDate')}</TableCell>
-                <TableCell>{t('medicalCertificates.list.columns.endDate')}</TableCell>
-                <TableCell>{t('medicalCertificates.list.columns.status')}</TableCell>
-                <TableCell>{t('medicalCertificates.list.columns.actions')}</TableCell>
+                <TableCell>{t('medicalCertificates.certificateNumber')}</TableCell>
+                <TableCell>{t('medicalCertificates.patient')}</TableCell>
+                <TableCell>{t('medicalCertificates.doctor')}</TableCell>
+                <TableCell>{t('medicalCertificates.createdAt')}</TableCell>
+                <TableCell>{t('medicalCertificates.updatedAt')}</TableCell>
+                <TableCell align='right'>{t('medicalCertificates.actionsLabel')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -342,43 +247,33 @@ export function MedicalCertificatesTable({ certificates, isLoading, onDelete, er
                 </TableRow>
               ) : (
                 certificates.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(certificate => {
-                  const variables = certificate.variables as any
-
                   return (
                     <TableRow key={certificate.id}>
-                      <TableCell>{certificate.patient.name}</TableCell>
-                      <TableCell>
-                        {t(`medicalCertificates.types.${getCertificateType(certificate.template.code)}`)}
-                      </TableCell>
-                      <TableCell>
-                        <LocalDate iso={variables.startDate} />
-                      </TableCell>
-                      <TableCell>
-                        <LocalDate iso={variables.endDate} />
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={t(`medicalCertificates.status.${certificate.status}`)}
-                          color={statusColor[certificate.status] as any}
-                          size='small'
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <IconButton
-                          size='small'
-                          onClick={() => handleViewCertificate(certificate)}
-                          title={t('medicalCertificates.actions.view')}
-                        >
-                          <i className='tabler-eye' />
-                        </IconButton>
-                        <IconButton
-                          size='small'
-                          color='error'
-                          onClick={() => handleDeleteClick(certificate)}
-                          disabled={isDeleting}
-                        >
-                          <i className='tabler-trash' />
-                        </IconButton>
+                      <TableCell>{certificate.certificateNumber || '-'}</TableCell>
+                      <TableCell>{getPatientName(certificate.content)}</TableCell>
+                      <TableCell>{getDoctorName(certificate.content)}</TableCell>
+                      <TableCell>{new Date(certificate.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>{new Date(certificate.updatedAt).toLocaleDateString()}</TableCell>
+                      <TableCell align='right'>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                          <Button
+                            size='small'
+                            variant='outlined'
+                            onClick={() => handleViewCertificate(certificate)}
+                            startIcon={<i className='tabler-eye' />}
+                          >
+                            {t('medicalCertificates.actions.view')}
+                          </Button>
+                          <Button
+                            size='small'
+                            variant='outlined'
+                            color='error'
+                            onClick={() => handleDeleteClick(certificate)}
+                            startIcon={<i className='tabler-trash' />}
+                          >
+                            {t('medicalCertificates.actions.delete')}
+                          </Button>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   )
@@ -437,10 +332,12 @@ export function MedicalCertificatesTable({ certificates, isLoading, onDelete, er
       >
         <DialogTitle id='delete-dialog-title'>{t('medicalCertificates.deleteConfirmation.title')}</DialogTitle>
         <DialogContent>
-          <DialogContentText id='delete-dialog-description'>{getDeleteMessage()}</DialogContentText>
+          <DialogContentText id='delete-dialog-description'>
+            {t('medicalCertificates.deleteConfirmation.message').replace('{number}', certificateToDelete?.number || '')}
+          </DialogContentText>
           {deleteError && (
             <Typography color='error' sx={{ mt: 2 }}>
-              {deleteError}
+              {deleteError.message}
             </Typography>
           )}
         </DialogContent>

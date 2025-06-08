@@ -1754,6 +1754,7 @@
             "expired": "منتهي",
             "cancelled": "ملغي"
         },
+        "actionsLabel": "الإجراءات",
         "actions": {
             "view": "عرض",
             "download": "تحميل",
@@ -1774,6 +1775,9 @@
                 "status": "الحالة",
                 "actions": "الإجراءات"
             }
-        }
+        },
+        "createdAt": "تاريخ الإنشاء",
+        "updatedAt": "تاريخ التحديث",
+        "actions": "الإجراءات"
     }
 }
