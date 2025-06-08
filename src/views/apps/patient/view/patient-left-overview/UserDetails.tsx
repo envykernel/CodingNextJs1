@@ -66,22 +66,83 @@ const UserDetails = ({ patientData, onPatientUpdated }: UserDetailsProps) => {
   return (
     <>
       <Card>
-        <CardContent className='flex flex-col items-center gap-6 pbs-12'>
+        <CardContent className='flex flex-col items-center gap-3 pbs-12'>
           <CustomAvatar
-            alt='user-profile'
-            src={patientData?.avatar || '/images/avatars/1.png'}
+            color={patientData?.gender === 'male' ? 'primary' : patientData?.gender === 'female' ? 'error' : 'info'}
+            skin='filled'
             variant='rounded'
             size={120}
-          />
-          <Typography variant='h5' className='font-bold text-center'>
-            {patientData?.name || '-'}
-          </Typography>
-          <Chip
-            label={t(`form.${patientData?.status || 'unknown'}`) || '-'}
-            color={patientStatusObj[String(patientData?.status || 'unknown')]}
-            variant='filled'
-            className='mb-2 capitalize'
-          />
+            sx={{
+              '& i': {
+                color: 'white',
+                fontSize: '3rem'
+              },
+              ...(patientData?.gender === 'female' && {
+                backgroundColor: '#FF69B4 !important', // Pink color
+                '&:hover': {
+                  backgroundColor: '#FF69B4 !important'
+                }
+              })
+            }}
+          >
+            {patientData?.gender === 'male' ? (
+              <i className='tabler-user' />
+            ) : patientData?.gender === 'female' ? (
+              <i className='tabler-user-circle' />
+            ) : (
+              <i className='tabler-user' />
+            )}
+          </CustomAvatar>
+          <div className='flex flex-col items-center gap-1'>
+            <Typography variant='h5' className='font-bold text-center'>
+              {patientData?.name || '-'}
+            </Typography>
+            <Chip
+              label={t(`form.${patientData?.status || 'unknown'}`) || '-'}
+              color={patientStatusObj[String(patientData?.status || 'unknown')]}
+              variant='outlined'
+              className='capitalize font-medium'
+              sx={{
+                borderWidth: 2,
+                '& .MuiChip-label': {
+                  px: 2,
+                  fontSize: '0.875rem'
+                },
+                ...(patientData?.status === 'enabled' && {
+                  borderColor: 'success.main',
+                  color: 'success.main',
+                  '&:hover': {
+                    backgroundColor: 'success.main',
+                    color: 'white'
+                  }
+                }),
+                ...(patientData?.status === 'disabled' && {
+                  borderColor: 'secondary.main',
+                  color: 'secondary.main',
+                  '&:hover': {
+                    backgroundColor: 'secondary.main',
+                    color: 'white'
+                  }
+                }),
+                ...(patientData?.status === 'blocked' && {
+                  borderColor: 'error.main',
+                  color: 'error.main',
+                  '&:hover': {
+                    backgroundColor: 'error.main',
+                    color: 'white'
+                  }
+                }),
+                ...(patientData?.status === 'pending' && {
+                  borderColor: 'warning.main',
+                  color: 'warning.main',
+                  '&:hover': {
+                    backgroundColor: 'warning.main',
+                    color: 'white'
+                  }
+                })
+              }}
+            />
+          </div>
           <Divider className='w-full' />
 
           {/* Personal Information Section */}

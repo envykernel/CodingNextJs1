@@ -787,12 +787,20 @@
         }
     },
     "finance": {
-        "invoiceNumber": "رقم الفاتورة",
+        "title": "المالية",
+        "invoiceNumber": "رقم الفاتورة #",
         "invoiceDate": "التاريخ",
         "dueDate": "تاريخ الاستحقاق",
         "amount": "المبلغ",
-        "paymentStatus": "الحالة",
+        "paymentStatusLabel": "حالة الدفع",
+        "paymentStatus": {
+            "label": "الحالة",
+            "paid": "مدفوع",
+            "partial": "مدفوع جزئياً",
+            "pending": "قيد الانتظار"
+        },
         "viewInvoice": "عرض الفاتورة",
+        "printInvoice": "طباعة الفاتورة",
         "downloadInvoice": "تحميل الفاتورة",
         "noInvoices": "لم يتم العثور على فواتير",
         "noInvoicesDescription": "هذا المريض ليس لديه فواتير بعد.",
@@ -804,11 +812,6 @@
         "ofTotal": "من الإجمالي",
         "paymentProgress": "تقدم المدفوعات",
         "paidAmount": "مدفوع",
-        "invoiceDetails": "تفاصيل الفواتير",
-        "paymentStatus": {
-            "paid": "مدفوع",
-            "partial": "جزئي",
-            "pending": "معلق"
-        }
+        "invoiceDetails": "تفاصيل الفواتير"
     }
 }

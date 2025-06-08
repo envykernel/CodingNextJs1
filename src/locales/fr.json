@@ -1599,12 +1599,20 @@
         }
     },
     "finance": {
+        "title": "Finance",
         "invoiceNumber": "Facture #",
         "invoiceDate": "Date",
         "dueDate": "Date d'échéance",
         "amount": "Montant",
-        "paymentStatus": "Statut",
+        "paymentStatusLabel": "Statut de paiement",
+        "paymentStatus": {
+            "label": "Statut",
+            "paid": "Payé",
+            "partial": "Partiel",
+            "pending": "En attente"
+        },
         "viewInvoice": "Voir la facture",
+        "printInvoice": "Imprimer la facture",
         "downloadInvoice": "Télécharger la facture",
         "noInvoices": "Aucune facture trouvée",
         "noInvoicesDescription": "Ce patient n'a pas encore de factures.",

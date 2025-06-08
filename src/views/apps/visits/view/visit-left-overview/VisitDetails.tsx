@@ -198,33 +198,43 @@ const VisitDetails = ({ visitData }: { visitData: any }) => {
         </div>
       </CardContent>
       <Divider className='w-full my-4' />
-      <div className='w-full flex justify-center pb-4'>
+      {/* Buttons Container */}
+      <div className='w-full flex flex-col items-center gap-4 pb-4'>
+        {/* Patient Profile Button */}
         <Button
-          variant='contained'
-          color='primary'
+          variant='outlined'
+          color='info'
           onClick={() => router.push(`/fr/apps/patient/view/${patient.id}`)}
           disabled={!patient.id}
+          startIcon={<i className='tabler-user-circle text-xl' />}
+          className='capitalize w-[240px] hover:bg-info/5'
+          sx={{ borderWidth: 2 }}
         >
           {t('patient.profile')}
         </Button>
-      </div>
-      {/* Invoice Button */}
-      <div className='w-full flex justify-center pb-4'>
+
+        {/* Invoice Button */}
         {loadingInvoice ? null : invoice ? (
           <Button
             variant='outlined'
-            color='secondary'
+            color='success'
             onClick={() => router.push(`/fr/apps/invoice/edit/${invoice.id}`)}
             disabled={!invoice.id}
+            startIcon={<i className='tabler-file-invoice text-xl' />}
+            className='capitalize w-[240px] hover:bg-success/5'
+            sx={{ borderWidth: 2 }}
           >
             {t('invoice.updateInvoice')}
           </Button>
         ) : (
           <Button
             variant='outlined'
-            color='secondary'
+            color='success'
             onClick={() => router.push(`/fr/apps/invoice/add?visitId=${visitData?.id}`)}
             disabled={!visitData?.id}
+            startIcon={<i className='tabler-file-plus text-xl' />}
+            className='capitalize w-[240px] hover:bg-success/5'
+            sx={{ borderWidth: 2 }}
           >
             {t('invoice.createInvoice')}
           </Button>

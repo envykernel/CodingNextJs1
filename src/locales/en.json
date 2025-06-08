@@ -621,8 +621,15 @@
             "invoiceDate": "Date",
             "dueDate": "Due Date",
             "amount": "Amount",
-            "paymentStatus": "Status",
+            "paymentStatusLabel": "Payment Status",
+            "paymentStatus": {
+                "label": "Status",
+                "paid": "Paid",
+                "partial": "Partial",
+                "pending": "Pending"
+            },
             "viewInvoice": "View Invoice",
+            "printInvoice": "Print Invoice",
             "downloadInvoice": "Download Invoice",
             "noInvoices": "No invoices found",
             "noInvoicesDescription": "This patient has no invoices yet.",
@@ -634,12 +641,7 @@
             "ofTotal": "of total",
             "paymentProgress": "Payment Progress",
             "paidAmount": "Paid",
-            "invoiceDetails": "Invoice Details",
-            "paymentStatus": {
-                "paid": "Paid",
-                "partial": "Partial",
-                "pending": "Pending"
-            }
+            "invoiceDetails": "Invoice Details"
         },
         "connections": {
             "title": "Connections",

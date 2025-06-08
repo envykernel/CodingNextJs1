@@ -36,6 +36,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
 import PaymentIcon from '@mui/icons-material/Payment'
 import PendingActionsIcon from '@mui/icons-material/PendingActions'
+import PrintIcon from '@mui/icons-material/Print'
 
 interface Invoice {
   id: number
@@ -148,9 +149,10 @@ const FinanceTab = ({ patientId, patientData }: FinanceTabProps) => {
   }
 
   const formatCurrency = (amount: number) => {
+    const currency = patientData?.organisation?.currency || 'MAD'
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: 'USD'
+      currency
     }).format(amount)
   }
 
@@ -312,7 +314,7 @@ const FinanceTab = ({ patientId, patientData }: FinanceTabProps) => {
                   <TableCell>{t('finance.invoiceDate') || 'Date'}</TableCell>
                   <TableCell>{t('finance.dueDate') || 'Due Date'}</TableCell>
                   <TableCell align='right'>{t('finance.amount') || 'Amount'}</TableCell>
-                  <TableCell>{t('finance.paymentStatus') || 'Status'}</TableCell>
+                  <TableCell>{t('finance.paymentStatusLabel') || 'Payment Status'}</TableCell>
                   <TableCell align='right'>{t('common.actions')}</TableCell>
                 </TableRow>
               </TableHead>
@@ -341,30 +343,28 @@ const FinanceTab = ({ patientId, patientData }: FinanceTabProps) => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {getStatusIcon(invoice.paymentStatus)}
-                        <Chip
-                          label={getPaymentStatusLabel(invoice.paymentStatus)}
-                          color={getPaymentStatusColor(invoice.paymentStatus) as any}
-                          size='small'
-                          variant='outlined'
-                        />
-                      </Box>
+                      <Chip
+                        label={getPaymentStatusLabel(invoice.paymentStatus)}
+                        color={getPaymentStatusColor(invoice.paymentStatus) as any}
+                        size='small'
+                        variant='outlined'
+                        sx={{ fontWeight: 500 }}
+                      />
                     </TableCell>
                     <TableCell align='right'>
                       <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                         <Tooltip title={t('finance.viewInvoice') || 'View Invoice'}>
-                          <IconButton size='small' href={`/${locale}/apps/invoices/${invoice.id}`} target='_blank'>
+                          <IconButton
+                            size='small'
+                            href={`/${locale}/apps/invoice/preview/${invoice.id}`}
+                            target='_blank'
+                          >
                             <VisibilityIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title={t('finance.downloadInvoice') || 'Download Invoice'}>
-                          <IconButton
-                            size='small'
-                            href={`/${locale}/apps/invoices/${invoice.id}/download`}
-                            target='_blank'
-                          >
-                            <DownloadIcon />
+                        <Tooltip title={t('finance.printInvoice') || 'Print Invoice'}>
+                          <IconButton size='small' href={`/${locale}/apps/invoice/print/${invoice.id}`} target='_blank'>
+                            <PrintIcon />
                           </IconButton>
                         </Tooltip>
                       </Box>
