@@ -390,7 +390,34 @@
             "to": "à"
         }
     },
-    "organization": "Organisation",
+    "organization": {
+        "title": "Paramètres de l'organisation",
+        "basicInfo": "Informations de base",
+        "name": "Nom de l'organisation",
+        "address": "Adresse",
+        "city": "Ville",
+        "phoneNumber": "Numéro de téléphone",
+        "email": "Email",
+        "status": "Statut",
+        "enabled": "Activé",
+        "disabled": "Désactivé",
+        "workingHours": "Heures de Travail",
+        "workingDays": "Jours de Travail",
+        "workHours": "Heures de Travail",
+        "breakHours": "Heures de Pause",
+        "startTime": "Heure de Début",
+        "endTime": "Heure de Fin",
+        "saveChanges": "Enregistrer les Modifications",
+        "cancel": "Annuler",
+        "saving": "Enregistrement...",
+        "success": "Organisation mise à jour avec succès",
+        "error": "Erreur lors de la mise à jour de l'organisation",
+        "printPreferences": "Préférences d'Impression",
+        "hasPrePrintedHeader": "En-tête Pré-imprimé",
+        "hasPrePrintedFooter": "Pied de Page Pré-imprimé",
+        "headerHeight": "Hauteur de l'En-tête",
+        "footerHeight": "Hauteur du Pied de Page"
+    },
     "yourOrganization": "Votre Organisation",
     "otherOrganization": "Autre Organisation",
     "global": "Global",
@@ -400,6 +427,7 @@
         "basicInfo": "Informations de Base",
         "name": "Nom de l'Organisation",
         "address": "Adresse",
+        "city": "Ville",
         "phoneNumber": "Numéro de Téléphone",
         "email": "Email",
         "status": "Statut",
@@ -415,7 +443,12 @@
         "cancel": "Annuler",
         "saving": "Enregistrement...",
         "success": "Organisation mise à jour avec succès",
-        "error": "Erreur lors de la mise à jour de l'organisation"
+        "error": "Erreur lors de la mise à jour de l'organisation",
+        "printPreferences": "Préférences d'Impression",
+        "hasPrePrintedHeader": "En-tête Pré-imprimé",
+        "hasPrePrintedFooter": "Pied de Page Pré-imprimé",
+        "headerHeight": "Hauteur de l'En-tête",
+        "footerHeight": "Hauteur du Pied de Page"
     },
     "sidebar": {
         "navigation": {
@@ -1442,9 +1475,9 @@
         },
         "actions": {
             "view": "Voir",
-            "download": "Télécharger",
-            "edit": "Modifier",
-            "delete": "Supprimer"
+            "print": "Imprimer",
+            "delete": "Supprimer",
+            "download": "Télécharger"
         },
         "list": {
             "title": "Certificats Médicaux",

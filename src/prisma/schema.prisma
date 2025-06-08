@@ -178,6 +178,7 @@ model organisation {
   id                      Int                       @id @default(autoincrement())
   name                    String                    @db.VarChar(255)
   address                 String?
+  city                    String?                   @db.VarChar(100)
   phone_number            String?                   @db.VarChar(50)
   email                   String?                   @db.VarChar(255)
   status                  String?                   @default("enabled") @db.VarChar(50)
@@ -189,6 +190,10 @@ model organisation {
   work_end_time           String?                   @db.VarChar(5)
   work_start_time         String?                   @db.VarChar(5)
   working_days            String[]                  @db.VarChar(20)
+  has_pre_printed_header  Boolean                   @default(false)
+  has_pre_printed_footer  Boolean                   @default(false)
+  header_height           Int?                      @default(200)
+  footer_height           Int?                      @default(200)
   accounts                Account[]
   users                   User[]
   userInternals           UserInternal[]

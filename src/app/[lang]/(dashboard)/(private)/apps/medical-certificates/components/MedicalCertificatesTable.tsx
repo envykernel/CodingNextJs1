@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+import { useParams } from 'next/navigation'
+
 import {
   Table,
   TableBody,
@@ -42,6 +44,8 @@ interface ViewCertificateDrawerProps {
 
 const ViewCertificateDrawer: React.FC<ViewCertificateDrawerProps> = ({ open, onClose, certificate }) => {
   const { t } = useTranslation()
+  const params = useParams<{ lang: string }>()
+  const lang = params?.lang as string
 
   if (!certificate) return null
 
@@ -57,7 +61,7 @@ const ViewCertificateDrawer: React.FC<ViewCertificateDrawerProps> = ({ open, onC
       <Box sx={{ p: 5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 5 }}>
           <Typography variant='h5'>{t('medicalCertificates.viewCertificate')}</Typography>
-          <Button variant='outlined' onClick={onClose}>
+          <Button variant='outlined' onClick={onClose} startIcon={<i className='tabler-x' />}>
             {t('medicalCertificates.close')}
           </Button>
         </Box>
@@ -96,11 +100,23 @@ const ViewCertificateDrawer: React.FC<ViewCertificateDrawerProps> = ({ open, onC
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-          <Button variant='outlined' onClick={onClose}>
+          <Button variant='outlined' onClick={onClose} startIcon={<i className='tabler-x' />}>
             {t('medicalCertificates.close')}
           </Button>
           <Button
-            variant='contained'
+            variant='outlined'
+            color='info'
+            component='a'
+            href={`/${lang}/apps/medical-certificates/print/${certificate.id}`}
+            target='_blank'
+            rel='noopener'
+            startIcon={<i className='tabler-printer' />}
+          >
+            {t('medicalCertificates.actions.print')}
+          </Button>
+          <Button
+            variant='outlined'
+            color='success'
             onClick={() => window.open(`/api/certificates/${certificate.id}/download`, '_blank')}
             startIcon={<i className='tabler-download' />}
           >
@@ -119,6 +135,8 @@ const MedicalCertificatesTable: React.FC<MedicalCertificatesTableProps> = ({
   error
 }) => {
   const { t } = useTranslation()
+  const params = useParams<{ lang: string }>()
+  const lang = params?.lang as string
   const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null)
   const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -256,6 +274,18 @@ const MedicalCertificatesTable: React.FC<MedicalCertificatesTableProps> = ({
                             startIcon={<i className='tabler-eye' />}
                           >
                             {t('medicalCertificates.actions.view')}
+                          </Button>
+                          <Button
+                            size='small'
+                            variant='outlined'
+                            color='info'
+                            component='a'
+                            href={`/${lang}/apps/medical-certificates/print/${certificate.id}`}
+                            target='_blank'
+                            rel='noopener'
+                            startIcon={<i className='tabler-printer' />}
+                          >
+                            {t('medicalCertificates.actions.print')}
                           </Button>
                           <Button
                             size='small'

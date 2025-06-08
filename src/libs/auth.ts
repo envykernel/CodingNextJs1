@@ -15,6 +15,7 @@ declare module 'next-auth' {
       image?: string | null
       organisationId?: string
       organisationName?: string | null
+      organisationCity?: string | null
       role?: string | null
     }
   }
@@ -92,6 +93,9 @@ export const authOptions: NextAuthOptions = {
         token.organisationName = internalUser?.organisation?.name
           ? safeString(internalUser.organisation.name)
           : undefined
+        token.organisationCity = internalUser?.organisation?.city
+          ? safeString(internalUser.organisation.city)
+          : undefined
         token.role = internalUser?.role
       }
 
@@ -105,6 +109,9 @@ export const authOptions: NextAuthOptions = {
         ;(session.user as any).organisationId = token.organisationId != null ? String(token.organisationId) : undefined
         ;(session.user as any).organisationName = token.organisationName
           ? safeString(token.organisationName)
+          : undefined
+        ;(session.user as any).organisationCity = token.organisationCity
+          ? safeString(token.organisationCity)
           : undefined
         ;(session.user as any).role = token.role
       }

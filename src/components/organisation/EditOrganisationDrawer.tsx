@@ -18,6 +18,9 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Switch from '@mui/material/Switch'
+import InputAdornment from '@mui/material/InputAdornment'
 
 // Third-party Imports
 import { useSession } from 'next-auth/react'
@@ -54,6 +57,7 @@ const EditOrganisationDrawer = ({ open, onClose, onOrganisationUpdated }: EditOr
   const [formData, setFormData] = useState<Partial<organisation>>({
     name: '',
     address: '',
+    city: '',
     phone_number: '',
     email: '',
     status: 'enabled',
@@ -61,7 +65,11 @@ const EditOrganisationDrawer = ({ open, onClose, onOrganisationUpdated }: EditOr
     work_start_time: '',
     work_end_time: '',
     break_start_time: '',
-    break_end_time: ''
+    break_end_time: '',
+    has_pre_printed_header: false,
+    has_pre_printed_footer: false,
+    header_height: 200,
+    footer_height: 200
   })
 
   // Hooks
@@ -206,6 +214,13 @@ const EditOrganisationDrawer = ({ open, onClose, onOrganisationUpdated }: EditOr
 
             <TextField
               fullWidth
+              label={t('organisation.city')}
+              value={formData.city || ''}
+              onChange={e => handleChange('city', e.target.value)}
+            />
+
+            <TextField
+              fullWidth
               label={t('organisation.phoneNumber')}
               value={formData.phone_number || ''}
               onChange={e => handleChange('phone_number', e.target.value)}
@@ -319,6 +334,71 @@ const EditOrganisationDrawer = ({ open, onClose, onOrganisationUpdated }: EditOr
                   onChange={e => handleChange('break_end_time', e.target.value)}
                   InputLabelProps={{ shrink: true }}
                 />
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Print Preferences Section */}
+          <Box className='col-span-2 space-y-6 mt-6 pt-6 border-t'>
+            <Typography variant='subtitle1' className='font-medium'>
+              {t('organisation.printPreferences')}
+            </Typography>
+
+            <Box className='grid grid-cols-2 gap-6'>
+              {/* Header Preferences */}
+              <Box className='space-y-4'>
+                <FormControl fullWidth>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={formData.has_pre_printed_header}
+                        onChange={e => handleChange('has_pre_printed_header', e.target.checked)}
+                      />
+                    }
+                    label={t('organisation.hasPrePrintedHeader')}
+                  />
+                </FormControl>
+
+                {formData.has_pre_printed_header && (
+                  <TextField
+                    fullWidth
+                    type='number'
+                    label={t('organisation.headerHeight')}
+                    value={formData.header_height}
+                    onChange={e => handleChange('header_height', parseInt(e.target.value))}
+                    InputProps={{
+                      endAdornment: <InputAdornment position='end'>px</InputAdornment>
+                    }}
+                  />
+                )}
+              </Box>
+
+              {/* Footer Preferences */}
+              <Box className='space-y-4'>
+                <FormControl fullWidth>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={formData.has_pre_printed_footer}
+                        onChange={e => handleChange('has_pre_printed_footer', e.target.checked)}
+                      />
+                    }
+                    label={t('organisation.hasPrePrintedFooter')}
+                  />
+                </FormControl>
+
+                {formData.has_pre_printed_footer && (
+                  <TextField
+                    fullWidth
+                    type='number'
+                    label={t('organisation.footerHeight')}
+                    value={formData.footer_height}
+                    onChange={e => handleChange('footer_height', parseInt(e.target.value))}
+                    InputProps={{
+                      endAdornment: <InputAdornment position='end'>px</InputAdornment>
+                    }}
+                  />
+                )}
               </Box>
             </Box>
           </Box>

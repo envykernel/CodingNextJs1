@@ -225,6 +225,7 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
     // Replace organization name
     if (session?.user?.organisationName) {
       content = content.replace(/{{organisation\.name}}/g, session.user.organisationName || '{{organisation.name}}')
+      content = content.replace(/{{organisation\.city}}/g, session.user.organisationCity || '{{organisation.city}}')
     }
 
     // Replace template variables

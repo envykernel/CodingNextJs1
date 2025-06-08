@@ -1140,16 +1140,12 @@
         "notes": "Notes",
         "orderedAt": "Ordered At"
     },
-    "organization": "Organization",
-    "yourOrganization": "Your Organization",
-    "otherOrganization": "Other Organization",
-    "global": "Global",
-    "actions": "Actions",
-    "organisation": {
+    "organization": {
         "title": "Organization Settings",
         "basicInfo": "Basic Information",
         "name": "Organization Name",
         "address": "Address",
+        "city": "City",
         "phoneNumber": "Phone Number",
         "email": "Email",
         "status": "Status",
@@ -1165,7 +1161,44 @@
         "cancel": "Cancel",
         "saving": "Saving...",
         "success": "Organization updated successfully",
-        "error": "Error updating organization"
+        "error": "Error updating organization",
+        "printPreferences": "Print Preferences",
+        "hasPrePrintedHeader": "Has Pre-printed Header",
+        "hasPrePrintedFooter": "Has Pre-printed Footer",
+        "headerHeight": "Header Height",
+        "footerHeight": "Footer Height"
+    },
+    "yourOrganization": "Your Organization",
+    "otherOrganization": "Other Organization",
+    "global": "Global",
+    "actions": "Actions",
+    "organisation": {
+        "title": "Organization Settings",
+        "basicInfo": "Basic Information",
+        "name": "Organization Name",
+        "address": "Address",
+        "city": "City",
+        "phoneNumber": "Phone Number",
+        "email": "Email",
+        "status": "Status",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "workingHours": "Working Hours",
+        "workingDays": "Working Days",
+        "workHours": "Work Hours",
+        "breakHours": "Break Hours",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "saveChanges": "Save Changes",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "success": "Organization updated successfully",
+        "error": "Error updating organization",
+        "printPreferences": "Print Preferences",
+        "hasPrePrintedHeader": "Has Pre-printed Header",
+        "hasPrePrintedFooter": "Has Pre-printed Footer",
+        "headerHeight": "Header Height",
+        "footerHeight": "Footer Height"
     },
     "doctors": {
         "title": "Doctors List",
@@ -1443,9 +1476,9 @@
         "actionsLabel": "Actions",
         "actions": {
             "view": "View",
-            "download": "Download",
-            "edit": "Edit",
-            "delete": "Delete"
+            "print": "Print",
+            "delete": "Delete",
+            "download": "Download"
         },
         "list": {
             "title": "Medical Certificates",
