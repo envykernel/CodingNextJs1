@@ -49,7 +49,7 @@ const PatientRight = ({ patientId, patientData, appointments }: PatientRightProp
       value: 'overview',
       label: t('patientView.tabs.overview') || 'Overview',
       icon: <i className='tabler-user text-xl' />,
-      component: <OverviewTab patientData={patientData} />
+      component: <OverviewTab patientData={{ ...patientData, appointments: appointments }} />
     },
     {
       value: 'medicalData',

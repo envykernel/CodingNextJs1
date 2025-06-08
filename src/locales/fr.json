@@ -252,7 +252,42 @@
             "disabledPatients": "Patients Désactivés",
             "monthlyComparison": "Ce mois-ci vs mois dernier",
             "yearlyComparison": "Cette année vs année dernière"
-        }
+        },
+        "activePrescriptions": "Ordonnances Actives",
+        "currentMedications": "Médicaments Actuels",
+        "upcomingAppointments": "Rendez-vous à Venir",
+        "scheduledVisits": "Visites Planifiées",
+        "lastVisit": "Dernière Visite",
+        "lastVisitDate": "Date de visite",
+        "visited": "Visité",
+        "bmi": "IMC",
+        "bodyMassIndex": "Indice de Masse Corporelle",
+        "underweight": "Insuffisance Pondérale",
+        "normal": "Normal",
+        "overweight": "Surpoids",
+        "obese": "Obésité",
+        "bloodPressure": "Tension artérielle",
+        "weight": "Poids",
+        "height": "Taille",
+        "temperature": "Température",
+        "vitalSignsTrend": "Tendance des Signes Vitaux",
+        "last7Days": "7 Derniers Jours",
+        "medicalAlerts": "Alertes Médicales",
+        "allergies": "Allergies",
+        "noAllergies": "Aucune allergie connue",
+        "noActiveMedications": "Aucun médicament actif",
+        "active": "Actif",
+        "scheduled": "Planifié",
+        "daysAgo": "il y a {days} jours",
+        "noVisits": "Aucune visite enregistrée",
+        "unknown": "Inconnu",
+        "visitStatus": {
+            "completed": "Terminé",
+            "cancelled": "Annulé",
+            "scheduled": "Planifié",
+            "in_progress": "En cours"
+        },
+        "noData": "Aucune donnée"
     },
     "appointments": {
         "typeOptions": {
@@ -1562,10 +1597,47 @@
     "patientView": {
         "tabs": {
             "overview": "Aperçu",
-            "medicalData": "Données médicales",
+            "medicalData": "Données Médicales",
             "appointments": "Rendez-vous",
             "prescriptions": "Ordonnances",
             "finance": "Finance"
+        },
+        "overview": {
+            "quickStats": {
+                "title": "Statistiques Rapides",
+                "activePrescriptions": "Ordonnances Actives",
+                "upcomingAppointments": "Rendez-vous à Venir",
+                "lastVisit": "Dernière Visite",
+                "daysAgo": "il y a {days} jours",
+                "bmiStatus": "Statut IMC"
+            },
+            "vitalSigns": {
+                "title": "Signes Vitaux",
+                "bloodPressure": "Tension Artérielle",
+                "weight": "Poids",
+                "height": "Taille",
+                "temperature": "Température",
+                "bmi": "IMC",
+                "status": {
+                    "underweight": "Insuffisance Pondérale",
+                    "normal": "Normal",
+                    "overweight": "Surpoids",
+                    "obese": "Obésité"
+                }
+            },
+            "medicalAlerts": {
+                "title": "Alertes Médicales",
+                "allergies": "Allergies",
+                "currentMedications": "Médicaments Actuels",
+                "noAllergies": "Aucune allergie connue",
+                "noMedications": "Aucun médicament actuel"
+            },
+            "vitalSignsTrend": {
+                "title": "Tendance des Signes Vitaux",
+                "subtitle": "7 derniers jours",
+                "bloodPressure": "Tendance de la Tension Artérielle",
+                "noData": "Aucune donnée de signes vitaux disponible"
+            }
         },
         "medicalData": {
             "title": "Données médicales",

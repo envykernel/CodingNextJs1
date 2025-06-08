@@ -252,7 +252,41 @@
             "disabledPatients": "المرضى المعطلون",
             "monthlyComparison": "هذا الشهر مقارنة بالشهر الماضي",
             "yearlyComparison": "هذا العام مقارنة بالعام الماضي"
-        }
+        },
+        "activePrescriptions": "الوصفات النشطة",
+        "currentMedications": "الأدوية الحالية",
+        "upcomingAppointments": "المواعيد القادمة",
+        "scheduledVisits": "الزيارات المجدولة",
+        "lastVisit": "آخر زيارة",
+        "lastVisitDate": "تاريخ الزيارة",
+        "visited": "تمت الزيارة",
+        "daysAgo": "منذ {days} يوم",
+        "noVisits": "لا توجد زيارات مسجلة",
+        "bmi": "مؤشر كتلة الجسم",
+        "bodyMassIndex": "مؤشر كتلة الجسم",
+        "underweight": "نقص الوزن",
+        "normal": "طبيعي",
+        "overweight": "زيادة الوزن",
+        "obese": "سمنة",
+        "bloodPressure": "ضغط الدم",
+        "weight": "الوزن",
+        "height": "الطول",
+        "temperature": "درجة الحرارة",
+        "vitalSignsTrend": "اتجاه العلامات الحيوية",
+        "last7Days": "آخر 7 أيام",
+        "medicalAlerts": "التنبيهات الطبية",
+        "allergies": "الحساسية",
+        "noAllergies": "لا توجد حساسية معروفة",
+        "noActiveMedications": "لا توجد أدوية نشطة",
+        "scheduled": "مجدول",
+        "unknown": "غير معروف",
+        "visitStatus": {
+            "completed": "مكتمل",
+            "cancelled": "ملغي",
+            "scheduled": "مجدول",
+            "in_progress": "قيد التنفيذ"
+        },
+        "noData": "لا توجد بيانات"
     },
     "appointments": {
         "typeOptions": {
@@ -761,6 +795,43 @@
             "appointments": "المواعيد",
             "prescriptions": "الوصفات الطبية",
             "finance": "المالية"
+        },
+        "overview": {
+            "quickStats": {
+                "title": "إحصائيات سريعة",
+                "activePrescriptions": "الوصفات النشطة",
+                "upcomingAppointments": "المواعيد القادمة",
+                "lastVisit": "آخر زيارة",
+                "daysAgo": "منذ {days} يوم",
+                "bmiStatus": "حالة مؤشر كتلة الجسم"
+            },
+            "vitalSigns": {
+                "title": "العلامات الحيوية",
+                "bloodPressure": "ضغط الدم",
+                "weight": "الوزن",
+                "height": "الطول",
+                "temperature": "درجة الحرارة",
+                "bmi": "مؤشر كتلة الجسم",
+                "status": {
+                    "underweight": "نقص الوزن",
+                    "normal": "طبيعي",
+                    "overweight": "زيادة الوزن",
+                    "obese": "سمنة"
+                }
+            },
+            "medicalAlerts": {
+                "title": "التنبيهات الطبية",
+                "allergies": "الحساسية",
+                "currentMedications": "الأدوية الحالية",
+                "noAllergies": "لا توجد حساسية معروفة",
+                "noMedications": "لا توجد أدوية حالية"
+            },
+            "vitalSignsTrend": {
+                "title": "اتجاه العلامات الحيوية",
+                "subtitle": "آخر 7 أيام",
+                "bloodPressure": "اتجاه ضغط الدم",
+                "noData": "لا توجد بيانات للعلامات الحيوية"
+            }
         },
         "medicalData": {
             "title": "البيانات الطبية",

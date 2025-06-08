@@ -95,7 +95,41 @@
             "disabledPatients": "Disabled Patients",
             "monthlyComparison": "This month vs last month",
             "yearlyComparison": "This year vs last year"
-        }
+        },
+        "activePrescriptions": "Active Prescriptions",
+        "currentMedications": "Current Medications",
+        "upcomingAppointments": "Upcoming Appointments",
+        "scheduledVisits": "Scheduled Visits",
+        "lastVisit": "Last Visit",
+        "lastVisitDate": "Visit Date",
+        "visited": "Visited",
+        "bmi": "BMI",
+        "bodyMassIndex": "Body Mass Index",
+        "underweight": "Underweight",
+        "normal": "Normal",
+        "overweight": "Overweight",
+        "obese": "Obese",
+        "bloodPressure": "Blood Pressure",
+        "weight": "Weight",
+        "height": "Height",
+        "temperature": "Temperature",
+        "vitalSignsTrend": "Vital Signs Trend",
+        "last7Days": "Last 7 Days",
+        "medicalAlerts": "Medical Alerts",
+        "allergies": "Allergies",
+        "noAllergies": "No known allergies",
+        "noActiveMedications": "No active medications",
+        "scheduled": "Scheduled",
+        "daysAgo": "{days} days ago",
+        "noVisits": "No visits recorded",
+        "unknown": "Unknown",
+        "visitStatus": {
+            "completed": "Completed",
+            "cancelled": "Cancelled",
+            "scheduled": "Scheduled",
+            "in_progress": "In Progress"
+        },
+        "noData": "No Data"
     },
     "appointments": {
         "typeOptions": {
@@ -577,6 +611,43 @@
             "appointments": "Appointments",
             "prescriptions": "Prescriptions",
             "finance": "Finance"
+        },
+        "overview": {
+            "quickStats": {
+                "title": "Quick Stats",
+                "activePrescriptions": "Active Prescriptions",
+                "upcomingAppointments": "Upcoming Appointments",
+                "lastVisit": "Last Visit",
+                "daysAgo": "{days} days ago",
+                "bmiStatus": "BMI Status"
+            },
+            "vitalSigns": {
+                "title": "Vital Signs",
+                "bloodPressure": "Blood Pressure",
+                "weight": "Weight",
+                "height": "Height",
+                "temperature": "Temperature",
+                "bmi": "BMI",
+                "status": {
+                    "underweight": "Underweight",
+                    "normal": "Normal",
+                    "overweight": "Overweight",
+                    "obese": "Obese"
+                }
+            },
+            "medicalAlerts": {
+                "title": "Medical Alerts",
+                "allergies": "Allergies",
+                "currentMedications": "Current Medications",
+                "noAllergies": "No known allergies",
+                "noMedications": "No current medications"
+            },
+            "vitalSignsTrend": {
+                "title": "Vital Signs Trend",
+                "subtitle": "Last 7 days",
+                "bloodPressure": "Blood Pressure Trend",
+                "noData": "No vital signs data available"
+            }
         },
         "medicalData": {
             "title": "Medical Data",
