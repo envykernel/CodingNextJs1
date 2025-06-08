@@ -24,6 +24,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { useTranslation } from '@/contexts/translationContext'
 
 import type { Patient, Doctor, CertificateTemplate } from '@/types/certificate'
+import CertificateEditor from './CertificateEditor'
 
 interface AddCertificateDrawerProps {
   open: boolean
@@ -47,6 +48,7 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
   const [error, setError] = useState<string | null>(null)
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const [templateVariables, setTemplateVariables] = useState<Record<string, any>>({})
+  const [certificateContent, setCertificateContent] = useState('')
 
   // Fetch certificate templates
   useEffect(() => {
@@ -155,6 +157,11 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
     }
   }, [certificateType, templates])
 
+  // Update certificate content when preview content changes
+  useEffect(() => {
+    setCertificateContent(getPreviewContent())
+  }, [certificateType, selectedPatient, selectedDoctor, templateVariables, notes])
+
   // Handle template variable changes
   const handleTemplateVariableChange = (key: string, value: any) => {
     setTemplateVariables(prev => ({
@@ -192,8 +199,8 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
     const doctorName = selectedDoctor?.name?.replace(/^Dr\.\s*/i, '') || '[Doctor Name]'
     const organizationName = session?.user?.organisationName?.toUpperCase() || '[ORGANIZATION NAME]'
 
-    // Get the template content
-    let content = selectedTemplate.contentTemplate
+    // Get the template content and replace \n with actual newlines
+    let content = selectedTemplate.contentTemplate.replace(/\\n/g, '\n')
 
     // Base replacements that are always available
     const baseReplacements: Record<string, string> = {
@@ -232,7 +239,24 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
       content = content.replace(new RegExp(key, 'g'), value)
     })
 
-    return content
+    // Convert the content to HTML format
+    const htmlContent = content
+      .split('\n') // Split by actual newlines
+      .map(line => {
+        // Handle empty lines
+        if (!line.trim()) return '<p><br></p>'
+
+        // Handle signature line
+        if (line.includes('___________________________')) {
+          return `<p style="text-align: center;">${line}</p>`
+        }
+
+        // Regular lines
+        return `<p>${line}</p>`
+      })
+      .join('')
+
+    return htmlContent
   }
 
   // Render dynamic form fields based on template schema
@@ -370,16 +394,12 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
     if (!validateForm()) return
-
-    if (!selectedDoctor) {
-      setFormErrors(prev => ({ ...prev, doctorId: t('medicalCertificates.errors.required') }))
-
-      return
-    }
 
     try {
       setIsLoading(true)
+      setError(null)
 
       const response = await fetch('/api/certificates', {
         method: 'POST',
@@ -387,25 +407,39 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          patientId: selectedPatient?.id?.toString(),
+          patientId: selectedPatient?.id,
+          doctorId: selectedDoctor?.id,
           type: certificateType,
           notes,
-          content: getPreviewContent(),
-          doctorId: selectedDoctor.id
+          content: certificateContent // Use the edited content from the editor
         })
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
+        const data = await response.json()
 
-        throw new Error(errorData.error || 'Failed to create certificate')
+        throw new Error(data.error || t('Failed to create certificate'))
       }
 
-      await response.json() // We don't need to store the response data
-      onSuccess?.() // Call the success callback if provided
+      // Reset form and close drawer
+      setCertificateType('')
+      setSelectedPatient(null)
+      setSelectedDoctor(null)
+      setStartDate(null)
+      setEndDate(null)
+      setNotes('')
+      setTemplateVariables({})
+      setCertificateContent('')
+      setFormErrors({})
+
+      // Call success callback if provided
+      onSuccess?.()
+
+      // Close the drawer
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      console.error('Error creating certificate:', err)
+      setError(err instanceof Error ? err.message : t('Failed to create certificate'))
     } finally {
       setIsLoading(false)
     }
@@ -574,33 +608,11 @@ export default function AddCertificateDrawer({ open, onClose, onSuccess }: AddCe
               {certificateType && renderTemplateFields()}
 
               <Grid item xs={12}>
-                <Box sx={{ mt: 4, p: 4, bgcolor: 'background.paper', borderRadius: 1 }}>
-                  <Typography variant='subtitle2' sx={{ mb: 2 }}>
-                    {t('Preview')}
-                  </Typography>
-                  <Box
-                    sx={{
-                      whiteSpace: 'pre-wrap',
-                      fontFamily: 'inherit',
-                      fontSize: '1rem',
-                      lineHeight: 1.6,
-                      p: 3,
-                      bgcolor: 'background.default',
-                      border: '1px solid',
-                      borderColor: 'divider',
-                      borderRadius: 1,
-                      minHeight: '200px'
-                    }}
-                  >
-                    {getPreviewContent()
-                      .split('\\n')
-                      .map((line, index, array) => (
-                        <Typography key={index} component='div' sx={{ mb: index < array.length - 1 ? 1 : 0 }}>
-                          {line}
-                        </Typography>
-                      ))}
-                  </Box>
-                </Box>
+                <CertificateEditor
+                  content={certificateContent}
+                  onChange={setCertificateContent}
+                  label={t('Certificate Content')}
+                />
               </Grid>
 
               <Grid item xs={12}>
