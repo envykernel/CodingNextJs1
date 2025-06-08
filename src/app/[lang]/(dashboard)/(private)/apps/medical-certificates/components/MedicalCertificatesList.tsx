@@ -25,7 +25,7 @@ export function MedicalCertificatesList({ searchParams }: MedicalCertificatesLis
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [certificates, setCertificates] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<Error | undefined>(undefined)
 
   // Use optional chaining and nullish coalescing for safer access to searchParams
   const page = Number(searchParams?.page ?? '1')
@@ -34,7 +34,7 @@ export function MedicalCertificatesList({ searchParams }: MedicalCertificatesLis
   const fetchCertificates = useCallback(async () => {
     try {
       setIsLoading(true)
-      setError(null)
+      setError(undefined)
 
       const response = await fetch(`/api/certificates?page=${page}&pageSize=${pageSize}`)
 
@@ -49,7 +49,7 @@ export function MedicalCertificatesList({ searchParams }: MedicalCertificatesLis
       setCertificates(data.certificates || [])
     } catch (err) {
       console.error('Error fetching certificates:', err)
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err : new Error('An error occurred'))
     } finally {
       setIsLoading(false)
     }
@@ -61,9 +61,9 @@ export function MedicalCertificatesList({ searchParams }: MedicalCertificatesLis
     }
   }, [page, pageSize, lang, fetchCertificates])
 
-  const handleSuccess = (data: any) => {
-    // Just refresh the list without showing a success message
-    fetchCertificates()
+  const handleSuccess = (newCertificate: any) => {
+    // Optimistically add the new certificate to the list
+    setCertificates(prevCertificates => [newCertificate, ...prevCertificates])
   }
 
   const handleDelete = (certificate: any) => {
@@ -75,8 +75,8 @@ export function MedicalCertificatesList({ searchParams }: MedicalCertificatesLis
       <Grid container spacing={6}>
         {error && (
           <Grid item xs={12}>
-            <Alert severity='error' onClose={() => setError(null)}>
-              {error}
+            <Alert severity='error' onClose={() => setError(undefined)}>
+              {error.message}
             </Alert>
           </Grid>
         )}
@@ -99,7 +99,7 @@ export function MedicalCertificatesList({ searchParams }: MedicalCertificatesLis
           open={isDrawerOpen}
           onClose={() => {
             setIsDrawerOpen(false)
-            setError(null)
+            setError(undefined)
           }}
           onSuccess={handleSuccess}
         />
