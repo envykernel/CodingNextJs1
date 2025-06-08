@@ -116,24 +116,28 @@ export function MedicalCertificatesList({ searchParams }: MedicalCertificatesLis
     }
   }
 
+  const handleDelete = (deletedId: number) => {
+    setCertificates(prev => prev.filter(cert => cert.id !== deletedId))
+  }
+
   return (
     <Box>
       <Grid container spacing={6}>
         <Grid item xs={12}>
-          <Button variant='contained' startIcon={<i className='tabler-plus' />} onClick={() => setIsDrawerOpen(true)}>
-            {t('medicalCertificates.addCertificate')}
-          </Button>
+          <Box display='flex' justifyContent='flex-end' mb={2}>
+            <Button variant='contained' startIcon={<i className='tabler-plus' />} onClick={() => setIsDrawerOpen(true)}>
+              {t('medicalCertificates.addCertificate')}
+            </Button>
+          </Box>
         </Grid>
-
         <Grid item xs={12}>
           <MedicalCertificatesTable
             certificates={certificates}
             isLoading={isLoading}
-            onRefresh={fetchCertificates}
+            onDelete={handleDelete}
             error={error || undefined}
           />
         </Grid>
-
         <AddCertificateDrawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} onSubmit={handleSuccess} />
       </Grid>
     </Box>

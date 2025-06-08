@@ -23,8 +23,7 @@ import {
   DialogContentText,
   DialogActions,
   Alert,
-  CircularProgress,
-  Card
+  CircularProgress
 } from '@mui/material'
 
 import { useTranslation } from '@/contexts/translationContext'
@@ -61,7 +60,7 @@ interface Certificate {
 interface MedicalCertificatesTableProps {
   certificates: Certificate[]
   isLoading: boolean
-  onRefresh: () => void
+  onDelete: (id: number) => void
   error?: {
     error: string
     message: string
@@ -217,7 +216,7 @@ const ViewCertificateDrawer: React.FC<ViewCertificateDrawerProps> = ({ open, onC
   )
 }
 
-export function MedicalCertificatesTable({ certificates, isLoading, onRefresh, error }: MedicalCertificatesTableProps) {
+export function MedicalCertificatesTable({ certificates, isLoading, onDelete, error }: MedicalCertificatesTableProps) {
   const { t } = useTranslation()
   const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null)
   const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false)
@@ -256,8 +255,8 @@ export function MedicalCertificatesTable({ certificates, isLoading, onRefresh, e
         throw new Error(data.error || t('deleteFailed'))
       }
 
-      // Call the refresh function to update the parent component's state
-      onRefresh()
+      // Optimistically remove the deleted certificate from the table
+      onDelete(certificateToDelete.id)
 
       // Close the dialog and reset state
       setIsDeleteDialogOpen(false)
