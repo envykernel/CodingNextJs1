@@ -15,15 +15,42 @@ import {
   Grid,
   Alert,
   CircularProgress,
-  Paper
+  Paper,
+  Divider,
+  IconButton,
+  Autocomplete
 } from '@mui/material'
+import type { SelectProps, SelectChangeEvent } from '@mui/material'
+
+import { useSession } from 'next-auth/react'
+
+import { DatePicker } from '@mui/x-date-pickers'
+
+import { format } from 'date-fns'
 
 import { useTranslation } from '@/contexts/translationContext'
+import type { CertificateTemplate } from '@/types/certificate'
+
+interface CertificateTemplate {
+  id: number
+  code: string
+  name: string
+  description: string
+  category: string
+  contentTemplate: string
+  variablesSchema: any
+}
+
+interface Doctor {
+  id: number
+  name: string
+  specialty: string
+}
 
 interface Patient {
   id: number
   name: string
-  birthdate: string | null
+  birthdate: string // ISO date string
   gender: string
 }
 
@@ -40,59 +67,118 @@ interface AddCertificateDrawerProps {
   }) => Promise<void>
 }
 
-const AddCertificateDrawer = ({ open, onClose, onSubmit }: AddCertificateDrawerProps) => {
-  const { t } = useTranslation()
-  const [patients, setPatients] = useState<Patient[]>([])
-  const [selectedPatient, setSelectedPatient] = useState<string>('')
-  const [certificateType, setCertificateType] = useState<string>('')
-  const [startDate, setStartDate] = useState<string>('')
-  const [endDate, setEndDate] = useState<string>('')
-  const [notes, setNotes] = useState<string>('')
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+const ITEM_HEIGHT = 48
 
-  // Fetch patients on component mount
+const MenuProps: Partial<SelectProps['MenuProps']> = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 8.5,
+      width: 350
+    }
+  },
+  autoFocus: false
+}
+
+export default function AddCertificateDrawer({ open, onClose, onSubmit }: AddCertificateDrawerProps) {
+  const { t } = useTranslation()
+  const { data: session } = useSession()
+  const [certificateType, setCertificateType] = useState<string>('')
+  const [patients, setPatients] = useState<Patient[]>([])
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
+  const [startDate, setStartDate] = useState<Date | null>(null)
+  const [endDate, setEndDate] = useState<Date | null>(null)
+  const [notes, setNotes] = useState('')
+  const [templates, setTemplates] = useState<CertificateTemplate[]>([])
+  const [doctors, setDoctors] = useState<Doctor[]>([])
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [patientSearch, setPatientSearch] = useState('')
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
+
+  // Fetch certificate templates
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const response = await fetch('/api/certificates/templates')
+
+        if (!response.ok) throw new Error('Failed to fetch templates')
+        const data = await response.json()
+
+        setTemplates(data.templates)
+      } catch (err) {
+        console.error('Error fetching templates:', err)
+        setError('Failed to fetch templates')
+      }
+    }
+
+    if (open) {
+      fetchTemplates()
+    }
+  }, [open])
+
+  // Fetch patients with search
   useEffect(() => {
     const fetchPatients = async () => {
       try {
+        setIsLoading(true)
         const response = await fetch('/api/patients')
 
         if (!response.ok) throw new Error('Failed to fetch patients')
         const data = await response.json()
 
-        console.log('Raw API response:', data)
-
-        // The API returns { patients: Patient[] }
-        const patientsArray = data.patients || []
-
-        console.log(
-          'Processed patients array:',
-          patientsArray.map((p: Patient) => ({
-            id: p.id,
-            name: p.name,
-            gender: p.gender
-          }))
-        )
-        setPatients(patientsArray)
+        console.log('Fetched patients:', data.patients)
+        setPatients(data.patients)
       } catch (err) {
         console.error('Error fetching patients:', err)
         setError(t('medicalCertificates.errors.fetchPatientsFailed'))
+      } finally {
+        setIsLoading(false)
       }
     }
 
     if (open) {
-      fetchPatients()
+      const timeoutId = setTimeout(() => {
+        fetchPatients()
+      }, 300) // Debounce search
+
+      return () => clearTimeout(timeoutId)
     }
   }, [open, t])
 
-  // Get the selected patient's details for the preview
-  const selectedPatientDetails = patients.find(p => p.id.toString() === selectedPatient)
+  // Fetch doctors when component mounts
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch('/api/doctors')
 
-  console.log('Selected patient details:', {
-    selectedPatient,
-    selectedPatientDetails,
-    allPatients: patients
-  })
+        if (!response.ok) throw new Error('Failed to fetch doctors')
+        const data = await response.json()
+
+        setDoctors(data)
+
+        // If current user is a doctor, try to find and select them
+        const userName = session?.user?.name
+
+        if (userName) {
+          const currentUserDoctor = data.find(
+            (doctor: Doctor) => doctor.name.replace(/^Dr\.\s*/i, '') === userName.replace(/^Dr\.\s*/i, '')
+          )
+
+          if (currentUserDoctor) {
+            setSelectedDoctor(currentUserDoctor)
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching doctors:', err)
+        setError('Failed to fetch doctors')
+      }
+    }
+
+    if (open) {
+      fetchDoctors()
+    }
+  }, [open, session?.user?.name])
 
   // Format date for display
   const formatDate = (date: string) => {
@@ -105,107 +191,167 @@ const AddCertificateDrawer = ({ open, onClose, onSubmit }: AddCertificateDrawerP
   const getPreviewContent = () => {
     if (!certificateType) return ''
 
-    const patientName = selectedPatientDetails?.name || '[Patient Name]'
-    const rawGender = selectedPatientDetails?.gender
+    const selectedTemplate = templates.find(t => t.code === certificateType)
 
-    console.log('Debug gender:', {
-      rawGender,
-      selectedPatientDetails,
-      hasGender: !!selectedPatientDetails?.gender
-    })
+    if (!selectedTemplate?.contentTemplate) {
+      console.log('No template content found for:', certificateType)
+      console.log('Available templates:', templates)
 
-    // Translate the gender value using the patient gender options
-    let patientGender = '[Gender]'
-
-    if (rawGender) {
-      const genderKey = `patient.gender.options.${rawGender.toLowerCase()}`
-
-      console.log('Gender translation key:', genderKey)
-      patientGender = t(genderKey)
+      return ''
     }
 
-    const formattedStartDate = startDate ? formatDate(startDate) : '[Start Date]'
-    const formattedEndDate = endDate ? formatDate(endDate) : '[End Date]'
+    console.log('Template content:', selectedTemplate.contentTemplate)
+
+    const patientName = selectedPatient?.name || '[Patient Name]'
+    const patientGender = selectedPatient?.gender || '[Gender]'
+    const formattedStartDate = startDate ? formatDate(format(startDate, 'yyyy-MM-dd')) : '[Start Date]'
+    const formattedEndDate = endDate ? formatDate(format(endDate, 'yyyy-MM-dd')) : '[End Date]'
+
+    const formattedBirthdate = selectedPatient?.birthdate
+      ? formatDate(new Date(selectedPatient.birthdate).toISOString().split('T')[0])
+      : '[Birth Date]'
+
     const certificateNotes = notes || '[Additional Notes]'
 
-    const templates: Record<string, string> = {
-      sick_leave: `
-CERTIFICAT MÉDICAL
+    // Use selected doctor's name or fallback
+    const doctorName = selectedDoctor?.name?.replace(/^Dr\.\s*/i, '') || '[Doctor Name]'
 
-Je soussigné(e), médecin, certifie que ${patientName} (${patientGender}) a été examiné(e) dans mon cabinet.
+    // Get organization name from session user data and convert to uppercase
+    const organizationName = session?.user?.organisationName?.toUpperCase() || '[ORGANIZATION NAME]'
 
-Diagnostic: ${certificateNotes}
+    // Get the template content
+    let content = selectedTemplate.contentTemplate
 
-Durée de l'arrêt de travail: Du ${formattedStartDate} au ${formattedEndDate}.
-
-Ce certificat est établi à la demande de l'intéressé(e) pour servir et valoir ce que de droit.
-
-Date: ${new Date().toLocaleDateString()}
-Signature du médecin: _________________
-      `,
-      fitness: `
-CERTIFICAT DE NON CONTRE-INDICATION
-
-Je soussigné(e), médecin, certifie que ${patientName} (${patientGender}) a été examiné(e) dans mon cabinet.
-
-Après examen clinique complet, je certifie qu'il/elle ne présente aucune contre-indication à la pratique d'une activité physique.
-
-Validité: Du ${formattedStartDate} au ${formattedEndDate}.
-
-Observations: ${certificateNotes}
-
-Ce certificat est établi à la demande de l'intéressé(e) pour servir et valoir ce que de droit.
-
-Date: ${new Date().toLocaleDateString()}
-Signature du médecin: _________________
-      `,
-      consultation: `
-CERTIFICAT DE CONSULTATION
-
-Je soussigné(e), médecin, certifie que ${patientName} (${patientGender}) a consulté dans mon cabinet le ${formattedStartDate}.
-
-Motif de la consultation: ${certificateNotes}
-
-Ce certificat est établi à la demande de l'intéressé(e) pour servir et valoir ce que de droit.
-
-Date: ${new Date().toLocaleDateString()}
-Signature du médecin: _________________
-      `
+    // Replace all template variables
+    const replacements: Record<string, string> = {
+      '{{patient.name}}': patientName,
+      '{{patient.birthdate}}': formattedBirthdate,
+      '{{patient.gender}}': patientGender,
+      '{{startDate}}': formattedStartDate,
+      '{{endDate}}': formattedEndDate,
+      '{{notes}}': certificateNotes,
+      '{{date}}': new Date().toLocaleDateString(),
+      '{{medicalObservation}}': certificateNotes,
+      '{{sport}}': '[Sport]',
+      '{{restrictions}}': '[Restrictions]',
+      '{{duration}}': '[Duration]',
+      '{{reason}}': '[Reason]',
+      '{{validUntil}}': formattedEndDate,
+      '{{profession}}': '[Profession]',
+      '{{diagnosis}}': certificateNotes,
+      '{{exoneration}}': 'Non',
+      '{{school}}': '[School]',
+      '{{inaptitude}}': '[Inaptitude]',
+      '{{observations}}': certificateNotes,
+      '{{ald}}': 'Non',
+      '{{deathDate}}': formattedStartDate,
+      '{{deathTime}}': '[Time]',
+      '{{deathPlace}}': '[Place]',
+      '{{apparentCause}}': '[Cause]',
+      '{{circumstances}}': '[Circumstances]',
+      '{{suspiciousSigns}}': 'Aucun',
+      '{{doctor.name}}': doctorName,
+      '{{organisation.name}}': organizationName
     }
 
-    return templates[certificateType] || ''
+    // Replace all variables in the template
+    Object.entries(replacements).forEach(([key, value]) => {
+      content = content.replace(new RegExp(key, 'g'), value)
+    })
+
+    console.log('Processed content:', content)
+
+    return content
+  }
+
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {}
+
+    if (!selectedPatient) {
+      errors.patientId = t('medicalCertificates.errors.required')
+    }
+
+    if (!certificateType) {
+      errors.type = t('medicalCertificates.errors.required')
+    }
+
+    if (!startDate) {
+      errors.startDate = t('medicalCertificates.errors.required')
+    }
+
+    setFormErrors(errors)
+
+    return Object.keys(errors).length === 0
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    setError(null)
+    if (!validateForm()) return
 
     try {
       await onSubmit({
-        patientId: selectedPatient,
+        patientId: selectedPatient?.id?.toString() || '',
         type: certificateType,
-        startDate,
-        endDate,
+        startDate: startDate ? format(startDate, 'yyyy-MM-dd') : '',
+        endDate: endDate ? format(endDate, 'yyyy-MM-dd') : '',
         notes,
         content: getPreviewContent()
       })
       onClose()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setIsLoading(false)
     }
   }
 
   const handleClose = () => {
-    setSelectedPatient('')
+    setSelectedPatient(null)
     setCertificateType('')
-    setStartDate('')
-    setEndDate('')
+    setStartDate(null)
+    setEndDate(null)
     setNotes('')
     setError(null)
     onClose()
+  }
+
+  // Filter templates based on search
+  const filteredTemplates = templates.filter(template => {
+    const searchLower = patientSearch.toLowerCase()
+
+    return (
+      template.name.toLowerCase().includes(searchLower) ||
+      template.description.toLowerCase().includes(searchLower) ||
+      template.category.toLowerCase().includes(searchLower)
+    )
+  })
+
+  // Group filtered templates by category
+  const templatesByCategory = filteredTemplates.reduce(
+    (acc, template) => {
+      if (!acc[template.category]) {
+        acc[template.category] = []
+      }
+
+      acc[template.category].push(template)
+
+      return acc
+    },
+    {} as Record<string, CertificateTemplate[]>
+  )
+
+  const handleCertificateTypeChange = (event: SelectChangeEvent<string>) => {
+    setCertificateType(event.target.value)
+  }
+
+  const handleDoctorChange = (_: React.SyntheticEvent, newValue: Doctor | null) => {
+    setSelectedDoctor(newValue)
+  }
+
+  const handlePatientChange = (_event: React.SyntheticEvent, newValue: Patient | null) => {
+    setSelectedPatient(newValue)
+  }
+
+  const handlePatientInputChange = (_: React.SyntheticEvent, value: string) => {
+    setPatientSearch(value)
   }
 
   return (
@@ -214,148 +360,186 @@ Signature du médecin: _________________
       onClose={handleClose}
       anchor='right'
       PaperProps={{
-        sx: { width: { xs: '100%', sm: 720 } }
+        sx: {
+          width: { xs: '100%', sm: 600 },
+          p: 5
+        }
       }}
     >
-      <Box sx={{ p: 5 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 5 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 6 }}>
           <Typography variant='h5'>{t('medicalCertificates.addCertificate')}</Typography>
-          <Button variant='outlined' onClick={handleClose}>
-            {t('medicalCertificates.cancel')}
-          </Button>
+          <IconButton onClick={handleClose} size='small'>
+            <i className='tabler-x' />
+          </IconButton>
         </Box>
 
-        {error && (
-          <Alert severity='error' sx={{ mb: 4 }}>
-            {error}
-          </Alert>
-        )}
+        <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={6}>
+              {error && (
+                <Grid item xs={12}>
+                  <Alert severity='error' sx={{ mb: 4 }}>
+                    {error}
+                  </Alert>
+                </Grid>
+              )}
 
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>{t('medicalCertificates.patient')}</InputLabel>
-                <Select
-                  value={selectedPatient}
-                  label={t('medicalCertificates.patient')}
-                  onChange={e => {
-                    console.log('Patient selection changed:', e.target.value)
-                    setSelectedPatient(e.target.value)
-                  }}
-                  required
-                >
-                  {patients && patients.length > 0 ? (
-                    patients.map(patient => {
-                      console.log('Rendering patient option:', patient)
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel>{t('medicalCertificates.typeLabel')}</InputLabel>
+                  <Select
+                    value={certificateType}
+                    label={t('medicalCertificates.typeLabel')}
+                    onChange={handleCertificateTypeChange}
+                  >
+                    {templates.map(template => (
+                      <MenuItem key={template.code} value={template.code}>
+                        {template.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
 
-                      return (
-                        <MenuItem key={patient.id} value={patient.id.toString()}>
-                          {patient.name}
-                        </MenuItem>
-                      )
-                    })
-                  ) : (
-                    <MenuItem disabled>{t('medicalCertificates.noPatients')}</MenuItem>
+              <Grid item xs={12}>
+                <Autocomplete
+                  value={selectedDoctor}
+                  onChange={handleDoctorChange}
+                  options={doctors}
+                  getOptionLabel={option => `${option.name}${option.specialty ? ` (${option.specialty})` : ''}`}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label={t('medicalCertificates.doctor')}
+                      placeholder={t('medicalCertificates.selectDoctor')}
+                    />
                   )}
-                </Select>
-              </FormControl>
-            </Grid>
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  noOptionsText={t('medicalCertificates.noDoctors')}
+                  loading={isLoading}
+                  loadingText={t('common.loading')}
+                />
+              </Grid>
 
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>{t('medicalCertificates.certificateType')}</InputLabel>
-                <Select
-                  value={certificateType}
-                  label={t('medicalCertificates.certificateType')}
-                  onChange={e => setCertificateType(e.target.value)}
+              <Grid item xs={12}>
+                <Autocomplete
+                  id='patient'
+                  options={patients}
+                  getOptionLabel={option => option.name}
+                  value={selectedPatient}
+                  onChange={handlePatientChange}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label={t('medicalCertificates.patient')}
+                      error={Boolean(formErrors.patientId)}
+                      helperText={formErrors.patientId}
+                    />
+                  )}
+                  renderOption={(props, option) => {
+                    const { key, ...otherProps } = props
+
+                    return (
+                      <li key={option.id} {...otherProps}>
+                        <Typography>{option.name}</Typography>
+                      </li>
+                    )
+                  }}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  fullWidth
+                />
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  type='date'
+                  label={t('medicalCertificates.startDate')}
+                  value={startDate ? format(startDate, 'yyyy-MM-dd') : ''}
+                  onChange={e => setStartDate(e.target.value ? new Date(e.target.value) : null)}
+                  InputLabelProps={{ shrink: true }}
                   required
-                >
-                  <MenuItem value='sick_leave'>{t('medicalCertificates.types.sickLeave')}</MenuItem>
-                  <MenuItem value='fitness'>{t('medicalCertificates.types.fitness')}</MenuItem>
-                  <MenuItem value='consultation'>{t('medicalCertificates.types.medicalReport')}</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
+                />
+              </Grid>
 
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                type='date'
-                label={t('medicalCertificates.startDate')}
-                value={startDate}
-                onChange={e => setStartDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                required
-              />
-            </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  type='date'
+                  label={t('medicalCertificates.endDate')}
+                  value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
+                  onChange={e => setEndDate(e.target.value ? new Date(e.target.value) : null)}
+                  InputLabelProps={{ shrink: true }}
+                  required={certificateType !== 'CERT_MED_SIMPLE'}
+                  disabled={certificateType === 'CERT_MED_SIMPLE'}
+                />
+              </Grid>
 
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                type='date'
-                label={t('medicalCertificates.endDate')}
-                value={endDate}
-                onChange={e => setEndDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                required={certificateType !== 'consultation'}
-                disabled={certificateType === 'consultation'}
-              />
-            </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={4}
+                  label={t('medicalCertificates.notes')}
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  required
+                />
+              </Grid>
 
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                label={t('medicalCertificates.notes')}
-                value={notes}
-                onChange={e => setNotes(e.target.value)}
-                required
-              />
-            </Grid>
+              <Grid item xs={12}>
+                <Paper sx={{ p: 4, bgcolor: 'background.default' }}>
+                  <Typography variant='h6' sx={{ mb: 2 }}>
+                    {t('medicalCertificates.preview')}
+                  </Typography>
+                  <Typography
+                    component='div'
+                    sx={{
+                      whiteSpace: 'pre-wrap',
+                      fontFamily: 'inherit',
+                      fontSize: '0.875rem',
+                      lineHeight: 1.5,
+                      m: 0,
+                      p: 2,
+                      bgcolor: 'background.paper',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: 1,
+                      minHeight: '200px'
+                    }}
+                  >
+                    {getPreviewContent()
+                      .split('\\n')
+                      .map((line, index, array) => (
+                        <React.Fragment key={index}>
+                          {line}
+                          {index < array.length - 1 && <br />}
+                        </React.Fragment>
+                      ))}
+                  </Typography>
+                </Paper>
+              </Grid>
 
-            {/* Preview Section */}
-            <Grid item xs={12}>
-              <Typography variant='h6' sx={{ mb: 2 }}>
-                {t('medicalCertificates.preview')}
-              </Typography>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 3,
-                  bgcolor: 'background.default',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  whiteSpace: 'pre-wrap',
-                  fontFamily: 'monospace',
-                  minHeight: '300px'
-                }}
-              >
-                {getPreviewContent()}
-              </Paper>
+              <Grid item xs={12}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                  <Button variant='outlined' onClick={handleClose}>
+                    {t('medicalCertificates.cancel')}
+                  </Button>
+                  <Button
+                    type='submit'
+                    variant='contained'
+                    disabled={isLoading}
+                    startIcon={isLoading ? <CircularProgress size={20} /> : <i className='tabler-check' />}
+                  >
+                    {t('medicalCertificates.create')}
+                  </Button>
+                </Box>
+              </Grid>
             </Grid>
-
-            <Grid item xs={12}>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                <Button variant='outlined' onClick={handleClose}>
-                  {t('medicalCertificates.cancel')}
-                </Button>
-                <Button
-                  type='submit'
-                  variant='contained'
-                  disabled={isLoading}
-                  startIcon={isLoading ? <CircularProgress size={20} /> : null}
-                >
-                  {t('medicalCertificates.create')}
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </form>
+          </form>
+        </Box>
       </Box>
     </Drawer>
   )
 }
-
-export default AddCertificateDrawer

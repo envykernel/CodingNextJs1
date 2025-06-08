@@ -5,13 +5,6 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/libs/auth'
 import { prisma } from '@/prisma/prisma'
 
-// Map frontend certificate types to database template codes
-const CERTIFICATE_TYPE_MAP: Record<string, string> = {
-  sick_leave: 'CERT_ARRET_TRAVAIL',
-  fitness: 'CERT_APT_SPORT',
-  consultation: 'CERT_MED_SIMPLE'
-}
-
 // Helper function to fill template content with values
 const fillTemplateContent = (template: string, variables: any, patient: any, doctor: any, organisation: any) => {
   let filledContent = template
@@ -143,19 +136,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Map the frontend type to the database template code
-    const templateCode = CERTIFICATE_TYPE_MAP[type]
-
-    if (!templateCode) {
-      return NextResponse.json({ error: 'Invalid certificate type' }, { status: 400 })
-    }
-
     const organisationId = parseInt(session.user.organisationId)
 
-    // Find the appropriate template based on the type
+    // Find the template directly using the type (which is now the template code)
     const template = await prisma.certificateTemplate.findFirst({
       where: {
-        code: templateCode,
+        code: type,
+        isActive: true,
         OR: [
           { organisationId: null }, // Shared templates
           { organisationId } // Organization-specific templates
@@ -210,14 +197,14 @@ export async function POST(request: Request) {
       notes,
 
       // Add other variables based on the template type
-      ...(templateCode === 'CERT_APT_SPORT' && {
+      ...(template.code === 'CERT_APT_SPORT' && {
         sport: body.sport,
         restrictions: body.restrictions,
         duration: body.duration,
         reason: body.reason,
         validUntil: body.validUntil
       }),
-      ...(templateCode === 'CERT_MALADIE_CHRONIQUE' && {
+      ...(template.code === 'CERT_MALADIE_CHRONIQUE' && {
         diagnosis: body.diagnosis,
         ald: body.ald,
         treatment: body.treatment,
