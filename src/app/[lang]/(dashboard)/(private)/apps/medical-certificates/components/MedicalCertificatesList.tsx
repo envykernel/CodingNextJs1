@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
 import { useParams } from 'next/navigation'
 
-import { Grid, Button } from '@mui/material'
+import { Grid, Button, Box } from '@mui/material'
 
 import { useTranslation } from '@/contexts/translationContext'
 import MedicalCertificatesTable from './MedicalCertificatesTable'
@@ -18,12 +18,13 @@ interface MedicalCertificatesListProps {
   }
 }
 
-const MedicalCertificatesList: React.FC<MedicalCertificatesListProps> = ({ searchParams }) => {
+export function MedicalCertificatesList({ searchParams }: MedicalCertificatesListProps) {
   const { t } = useTranslation()
   const params = useParams<{ lang: string }>()
   const lang = params?.lang as string
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [certificates, setCertificates] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
   const [error, setError] = useState<{
     error: string
@@ -35,31 +36,33 @@ const MedicalCertificatesList: React.FC<MedicalCertificatesListProps> = ({ searc
   const page = Number(searchParams?.page ?? '1')
   const pageSize = Number(searchParams?.pageSize ?? '10')
 
-  useEffect(() => {
-    const fetchCertificates = async () => {
-      try {
-        const response = await fetch('/api/certificates', {
-          headers: {
-            'Accept-Language': lang
-          }
-        })
+  const fetchCertificates = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
 
-        if (!response.ok) throw new Error('Failed to fetch certificates')
-        const data = await response.json()
+      const response = await fetch(`/api/certificates?page=${page}&pageSize=${pageSize}`)
 
-        setCertificates(data.certificates)
-      } catch (err) {
-        setError({
-          error: 'medicalCertificates.errors.fetchFailed',
-          message: 'medicalCertificates.errors.fetchFailedMessage'
-        })
+      if (!response.ok) {
+        throw new Error('Failed to fetch certificates')
       }
-    }
 
+      const data = await response.json()
+
+      setCertificates(data.certificates)
+    } catch (err) {
+      console.error('Error fetching certificates:', err)
+      setError(err instanceof Error ? err.message : 'Failed to fetch certificates')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [page, pageSize])
+
+  useEffect(() => {
     if (lang) {
       fetchCertificates()
     }
-  }, [page, pageSize, lang])
+  }, [page, pageSize, lang, fetchCertificates])
 
   const handleSuccess = async (data: {
     patientId: string
@@ -67,6 +70,7 @@ const MedicalCertificatesList: React.FC<MedicalCertificatesListProps> = ({ searc
     startDate: string
     endDate: string
     notes: string
+    content: string
   }) => {
     try {
       // First create the certificate
@@ -81,7 +85,8 @@ const MedicalCertificatesList: React.FC<MedicalCertificatesListProps> = ({ searc
           type: data.type,
           startDate: data.startDate,
           endDate: data.endDate,
-          notes: data.notes
+          notes: data.notes,
+          content: data.content
         })
       })
 
@@ -112,25 +117,26 @@ const MedicalCertificatesList: React.FC<MedicalCertificatesListProps> = ({ searc
   }
 
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12}>
-        <Button variant='contained' startIcon={<i className='tabler-plus' />} onClick={() => setIsDrawerOpen(true)}>
-          {t('medicalCertificates.addCertificate')}
-        </Button>
-      </Grid>
+    <Box>
+      <Grid container spacing={6}>
+        <Grid item xs={12}>
+          <Button variant='contained' startIcon={<i className='tabler-plus' />} onClick={() => setIsDrawerOpen(true)}>
+            {t('medicalCertificates.addCertificate')}
+          </Button>
+        </Grid>
 
-      <Grid item xs={12}>
-        <MedicalCertificatesTable
-          certificatesData={certificates}
-          page={page - 1} // Convert to 0-based index for MUI TablePagination
-          pageSize={pageSize}
-          total={100} // TODO: Get actual total from API
-          error={error || undefined}
-        />
-      </Grid>
+        <Grid item xs={12}>
+          <MedicalCertificatesTable
+            certificates={certificates}
+            isLoading={isLoading}
+            onRefresh={fetchCertificates}
+            error={error || undefined}
+          />
+        </Grid>
 
-      <AddCertificateDrawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} onSubmit={handleSuccess} />
-    </Grid>
+        <AddCertificateDrawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} onSubmit={handleSuccess} />
+      </Grid>
+    </Box>
   )
 }
 

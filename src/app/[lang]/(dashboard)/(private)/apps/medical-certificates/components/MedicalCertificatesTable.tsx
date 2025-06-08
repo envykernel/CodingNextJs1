@@ -1,11 +1,8 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-
-import { useRouter, usePathname, useSearchParams, useParams } from 'next/navigation'
+import { useState } from 'react'
 
 import {
-  Card,
   Table,
   TableBody,
   TableCell,
@@ -13,24 +10,58 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TablePagination,
   IconButton,
-  CircularProgress,
-  Box,
-  Alert,
+  Chip,
+  TablePagination,
+  Drawer,
   Typography,
-  Chip
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Alert,
+  CircularProgress,
+  Card
 } from '@mui/material'
 
 import { useTranslation } from '@/contexts/translationContext'
-import type { Locale } from '@configs/i18n'
 import { LocalDate } from '@/components/LocalTime'
 
+// Define the Certificate type
+interface Certificate {
+  id: number
+  number: string
+  patient: {
+    id: number
+    name: string
+    birthdate: string
+  }
+  doctor: {
+    id: number
+    name: string
+  }
+  organisation: {
+    id: number
+    name: string
+  }
+  template: {
+    code: string
+    name: string
+  }
+  variables: Record<string, any>
+  content: string
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
 interface MedicalCertificatesTableProps {
-  certificatesData: any[]
-  page: number
-  pageSize: number
-  total: number
+  certificates: Certificate[]
+  isLoading: boolean
+  onRefresh: () => void
   error?: {
     error: string
     message: string
@@ -45,67 +76,213 @@ const statusColor: { [key: string]: string } = {
   pending: 'warning'
 }
 
-const MedicalCertificatesTable: React.FC<MedicalCertificatesTableProps> = ({
-  certificatesData,
-  page,
-  pageSize,
-  total,
-  error
-}) => {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const params = useParams<{ lang: string }>()
-  const lang = params?.lang as Locale
+interface ViewCertificateDrawerProps {
+  open: boolean
+  onClose: () => void
+  certificate: Certificate | null
+}
+
+const ViewCertificateDrawer: React.FC<ViewCertificateDrawerProps> = ({ open, onClose, certificate }) => {
   const { t } = useTranslation()
-  const [isLoading, setIsLoading] = useState(false)
 
-  // Add error state
-  const [errorState, setErrorState] = useState<{
-    error: string
-    message: string
-    details?: string
-  } | null>(error || null)
+  if (!certificate) return null
 
-  // Add effect to reset loading state when data changes
-  useEffect(() => {
-    if (certificatesData) {
-      setIsLoading(false)
+  const variables = certificate.variables as any
+
+  // Process the template content with actual values
+  const getFilledContent = (content: string, variables: any, patient: any) => {
+    let filledContent = content
+
+    // Get the doctor and organization info from the certificate
+    const doctor = certificate.doctor
+    const organisation = certificate.organisation
+
+    // Replace template variables with actual values
+    const replacements: Record<string, string> = {
+      '{{patient.name}}': patient.name,
+      '{{patient.birthdate}}': patient.birthdate ? new Date(patient.birthdate).toLocaleDateString() : '',
+      '{{doctor.name}}': doctor ? `Dr. ${doctor.name}` : 'Dr. [Doctor Name]',
+      '{{organisation.name}}': organisation ? organisation.name : '[Organization Name]',
+      '{{date}}': new Date().toLocaleDateString(),
+      '{{medicalObservation}}': variables.notes || '',
+      '{{startDate}}': variables.startDate ? new Date(variables.startDate).toLocaleDateString() : '',
+      '{{endDate}}': variables.endDate ? new Date(variables.endDate).toLocaleDateString() : '',
+      '{{sport}}': variables.sport || '',
+      '{{restrictions}}': variables.restrictions || '',
+      '{{duration}}': variables.duration || '',
+      '{{reason}}': variables.reason || '',
+      '{{validUntil}}': variables.validUntil ? new Date(variables.validUntil).toLocaleDateString() : '',
+      '{{profession}}': variables.profession || '',
+      '{{diagnosis}}': variables.diagnosis || '',
+      '{{exoneration}}': variables.exoneration === 'oui' ? 'Oui' : 'Non',
+      '{{school}}': variables.school || '',
+      '{{inaptitude}}': variables.inaptitude || '',
+      '{{observations}}': variables.observations || '',
+      '{{ald}}': variables.ald === 'oui' ? 'Oui' : variables.ald === 'non' ? 'Non' : 'En cours',
+      '{{treatment}}': variables.treatment || '',
+      '{{recommendations}}': variables.recommendations || '',
+      '{{nextAppointment}}': variables.nextAppointment ? new Date(variables.nextAppointment).toLocaleDateString() : '',
+      '{{recipient.name}}': variables.recipient?.name || '',
+      '{{recipient.specialty}}': variables.recipient?.specialty || '',
+      '{{consultationReason}}': variables.consultationReason || '',
+      '{{testsDone}}': variables.testsDone || '',
+      '{{diagnosticHypothesis}}': variables.diagnosticHypothesis || '',
+      '{{specificQuestions}}': variables.specificQuestions || '',
+      '{{deathDate}}': variables.deathDate ? new Date(variables.deathDate).toLocaleDateString() : '',
+      '{{deathTime}}': variables.deathTime || '',
+      '{{deathPlace}}': variables.deathPlace || '',
+      '{{apparentCause}}': variables.apparentCause || '',
+      '{{circumstances}}': variables.circumstances || '',
+      '{{suspiciousSigns}}': variables.suspiciousSigns || 'aucun',
+      '{{vaccineName}}': variables.vaccineName || '',
+      '{{lotNumber}}': variables.lotNumber || '',
+      '{{administrationDate}}': variables.administrationDate
+        ? new Date(variables.administrationDate).toLocaleDateString()
+        : '',
+      '{{doseNumber}}': variables.doseNumber || '',
+      '{{schedule}}': variables.schedule || '',
+      '{{nextDoseDate}}': variables.nextDoseDate ? new Date(variables.nextDoseDate).toLocaleDateString() : '',
+      '{{sideEffects}}': variables.sideEffects || 'aucun'
     }
-  }, [certificatesData])
 
-  // Helper function to handle navigation
-  const handleNavigation = async (params: URLSearchParams) => {
-    setIsLoading(true)
+    // Replace all variables in the content
+    Object.entries(replacements).forEach(([key, value]) => {
+      filledContent = filledContent.replace(new RegExp(key, 'g'), value)
+    })
+
+    return filledContent
+  }
+
+  return (
+    <Drawer
+      open={open}
+      onClose={onClose}
+      anchor='right'
+      PaperProps={{
+        sx: { width: { xs: '100%', sm: 720 } }
+      }}
+    >
+      <Box sx={{ p: 5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 5 }}>
+          <Typography variant='h5'>{t('medicalCertificates.viewCertificate')}</Typography>
+          <Button variant='outlined' onClick={onClose}>
+            {t('medicalCertificates.close')}
+          </Button>
+        </Box>
+
+        <Box sx={{ mb: 4 }}>
+          <Typography variant='subtitle2' color='text.secondary' gutterBottom>
+            {t('medicalCertificates.certificateNumber')}
+          </Typography>
+          <Typography variant='body1' gutterBottom>
+            {certificate.number}
+          </Typography>
+        </Box>
+
+        <Box sx={{ mb: 4 }}>
+          <Typography variant='subtitle2' color='text.secondary' gutterBottom>
+            {t('medicalCertificates.content')}
+          </Typography>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              bgcolor: 'background.default',
+              border: '1px solid',
+              borderColor: 'divider',
+              whiteSpace: 'pre-wrap',
+              fontFamily: 'monospace',
+              fontSize: '0.9rem',
+              lineHeight: 1.6
+            }}
+          >
+            {getFilledContent(certificate.content, variables, certificate.patient)}
+          </Paper>
+        </Box>
+
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+          <Button variant='outlined' onClick={onClose}>
+            {t('medicalCertificates.close')}
+          </Button>
+          <Button
+            variant='contained'
+            onClick={() => window.open(`/api/certificates/${certificate.id}/download`, '_blank')}
+            startIcon={<i className='tabler-download' />}
+          >
+            {t('medicalCertificates.actions.download')}
+          </Button>
+        </Box>
+      </Box>
+    </Drawer>
+  )
+}
+
+export function MedicalCertificatesTable({ certificates, isLoading, onRefresh, error }: MedicalCertificatesTableProps) {
+  const { t } = useTranslation()
+  const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null)
+  const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [certificateToDelete, setCertificateToDelete] = useState<Certificate | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+
+  const handleViewCertificate = (certificate: Certificate) => {
+    setSelectedCertificate(certificate)
+    setIsViewDrawerOpen(true)
+  }
+
+  const handleDeleteClick = (certificate: Certificate) => {
+    setCertificateToDelete(certificate)
+    setIsDeleteDialogOpen(true)
+    setDeleteError(null)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!certificateToDelete) return
 
     try {
-      await router.push(`${pathname}?${params.toString()}`)
-      router.refresh()
-    } catch (err) {
-      setErrorState({
-        error: 'medicalCertificates.errors.navigationFailed',
-        message: 'medicalCertificates.errors.navigationFailedMessage'
+      setIsDeleting(true)
+      setDeleteError(null)
+
+      const response = await fetch(`/api/certificates/${certificateToDelete.id}`, {
+        method: 'DELETE'
       })
-      setIsLoading(false)
+
+      if (!response.ok) {
+        const data = await response.json()
+
+        throw new Error(data.error || t('deleteFailed'))
+      }
+
+      // Call the refresh function to update the parent component's state
+      onRefresh()
+
+      // Close the dialog and reset state
+      setIsDeleteDialogOpen(false)
+      setCertificateToDelete(null)
+    } catch (error) {
+      console.error('Error deleting certificate:', error)
+      setDeleteError(error instanceof Error ? error.message : t('deleteFailed'))
+    } finally {
+      setIsDeleting(false)
     }
   }
 
-  // Handle page change
-  const handlePageChange = (_event: unknown, newPage: number) => {
-    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
-
-    params.set('page', String(newPage + 1))
-    handleNavigation(params)
+  const handleDeleteCancel = () => {
+    setIsDeleteDialogOpen(false)
+    setCertificateToDelete(null)
+    setDeleteError(null)
   }
 
-  // Handle page size change
-  const handlePageSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
-    const newPageSize = Number(event.target.value)
+  const handlePageChange = (_event: unknown, newPage: number) => {
+    setPage(newPage)
+  }
 
-    params.set('pageSize', String(newPageSize))
-    params.set('page', '1')
-    handleNavigation(params)
+  const handlePageSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
   }
 
   // Map template codes to frontend types for display
@@ -119,13 +296,19 @@ const MedicalCertificatesTable: React.FC<MedicalCertificatesTableProps> = ({
     return typeMap[templateCode] || 'other'
   }
 
-  if (errorState) {
+  const getDeleteMessage = () => {
+    if (!certificateToDelete) return ''
+
+    return t('medicalCertificates.deleteConfirmation.message').replace('{number}', certificateToDelete.number)
+  }
+
+  if (error) {
     return (
       <Alert severity='error' sx={{ mb: 4 }}>
-        <Typography variant='body2'>{t(errorState.message)}</Typography>
-        {errorState.details && (
+        <Typography variant='body2'>{t(error.message)}</Typography>
+        {error.details && (
           <Typography variant='caption' sx={{ display: 'block', mt: 1 }}>
-            {errorState.details}
+            {error.details}
           </Typography>
         )}
       </Alert>
@@ -133,7 +316,7 @@ const MedicalCertificatesTable: React.FC<MedicalCertificatesTableProps> = ({
   }
 
   return (
-    <Card>
+    <>
       <TableContainer component={Paper}>
         {isLoading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
@@ -152,14 +335,14 @@ const MedicalCertificatesTable: React.FC<MedicalCertificatesTableProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {certificatesData.length === 0 ? (
+              {certificates.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} align='center'>
                     {t('medicalCertificates.list.noCertificates')}
                   </TableCell>
                 </TableRow>
               ) : (
-                certificatesData.map(certificate => {
+                certificates.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(certificate => {
                   const variables = certificate.variables as any
 
                   return (
@@ -184,17 +367,18 @@ const MedicalCertificatesTable: React.FC<MedicalCertificatesTableProps> = ({
                       <TableCell>
                         <IconButton
                           size='small'
-                          onClick={() => router.push(`/${lang}/apps/medical-certificates/${certificate.id}`)}
+                          onClick={() => handleViewCertificate(certificate)}
                           title={t('medicalCertificates.actions.view')}
                         >
                           <i className='tabler-eye' />
                         </IconButton>
                         <IconButton
                           size='small'
-                          onClick={() => window.open(`/api/certificates/${certificate.id}/download`, '_blank')}
-                          title={t('medicalCertificates.actions.download')}
+                          color='error'
+                          onClick={() => handleDeleteClick(certificate)}
+                          disabled={isDeleting}
                         >
-                          <i className='tabler-download' />
+                          <i className='tabler-trash' />
                         </IconButton>
                       </TableCell>
                     </TableRow>
@@ -207,10 +391,10 @@ const MedicalCertificatesTable: React.FC<MedicalCertificatesTableProps> = ({
       </TableContainer>
       <TablePagination
         component='div'
-        count={total}
+        count={certificates.length}
         page={page}
         onPageChange={handlePageChange}
-        rowsPerPage={pageSize}
+        rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handlePageSizeChange}
         rowsPerPageOptions={[10, 25, 50]}
         labelRowsPerPage={t('medicalCertificates.pagination.labelRowsPerPage')}
@@ -236,7 +420,47 @@ const MedicalCertificatesTable: React.FC<MedicalCertificatesTableProps> = ({
           return t('medicalCertificates.pagination.previousPageLabel')
         }}
       />
-    </Card>
+
+      <ViewCertificateDrawer
+        open={isViewDrawerOpen}
+        onClose={() => {
+          setIsViewDrawerOpen(false)
+          setSelectedCertificate(null)
+        }}
+        certificate={selectedCertificate}
+      />
+
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby='delete-dialog-title'
+        aria-describedby='delete-dialog-description'
+      >
+        <DialogTitle id='delete-dialog-title'>{t('medicalCertificates.deleteConfirmation.title')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id='delete-dialog-description'>{getDeleteMessage()}</DialogContentText>
+          {deleteError && (
+            <Typography color='error' sx={{ mt: 2 }}>
+              {deleteError}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} disabled={isDeleting}>
+            {t('medicalCertificates.deleteConfirmation.cancel')}
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            color='error'
+            variant='contained'
+            disabled={isDeleting}
+            startIcon={isDeleting ? <CircularProgress size={20} /> : <i className='tabler-trash' />}
+          >
+            {t('medicalCertificates.deleteConfirmation.confirm')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
 

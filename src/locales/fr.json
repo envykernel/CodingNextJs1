@@ -1374,7 +1374,8 @@
         "errors": {
             "fetchPatientsFailed": "Échec de la récupération des patients",
             "createFailed": "Échec de la création du certificat",
-            "required": "Ce champ est requis"
+            "required": "Ce champ est requis",
+            "deleteFailed": "Échec de la suppression du certificat"
         },
         "types": {
             "sickLeave": "Certificat d'Arrêt Maladie",
@@ -1416,6 +1417,16 @@
             "lastPageLabel": "Dernière page",
             "nextPageLabel": "Page suivante",
             "previousPageLabel": "Page précédente"
+        },
+        "viewCertificate": "Voir le Certificat",
+        "close": "Fermer",
+        "certificateNumber": "Numéro de Certificat",
+        "content": "Contenu du Certificat",
+        "deleteConfirmation": {
+            "title": "Supprimer le Certificat",
+            "message": "Êtes-vous sûr de vouloir supprimer le certificat {number} ? Cette action ne peut pas être annulée.",
+            "cancel": "Annuler",
+            "confirm": "Supprimer"
         }
     }
 }

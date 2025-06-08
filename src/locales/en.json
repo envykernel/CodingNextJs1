@@ -1372,7 +1372,8 @@
         "errors": {
             "fetchPatientsFailed": "Failed to fetch patients",
             "createFailed": "Failed to create certificate",
-            "required": "This field is required"
+            "required": "This field is required",
+            "deleteFailed": "Failed to delete certificate"
         },
         "types": {
             "sickLeave": "Sick Leave Certificate",
@@ -1406,6 +1407,16 @@
                 "status": "Status",
                 "actions": "Actions"
             }
+        },
+        "viewCertificate": "View Certificate",
+        "close": "Close",
+        "certificateNumber": "Certificate Number",
+        "content": "Certificate Content",
+        "deleteConfirmation": {
+            "title": "Delete Certificate",
+            "message": "Are you sure you want to delete certificate {number}? This action cannot be undone.",
+            "cancel": "Cancel",
+            "confirm": "Delete"
         }
     }
 }

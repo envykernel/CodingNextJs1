@@ -36,6 +36,7 @@ interface AddCertificateDrawerProps {
     startDate: string
     endDate: string
     notes: string
+    content: string
   }) => Promise<void>
 }
 
@@ -186,7 +187,8 @@ Signature du médecin: _________________
         type: certificateType,
         startDate,
         endDate,
-        notes
+        notes,
+        content: getPreviewContent()
       })
       onClose()
     } catch (err) {

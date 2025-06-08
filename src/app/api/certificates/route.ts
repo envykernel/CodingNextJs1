@@ -12,6 +12,66 @@ const CERTIFICATE_TYPE_MAP: Record<string, string> = {
   consultation: 'CERT_MED_SIMPLE'
 }
 
+// Helper function to fill template content with values
+const fillTemplateContent = (template: string, variables: any, patient: any, doctor: any, organisation: any) => {
+  let filledContent = template
+
+  // Replace template variables with actual values
+  const replacements: Record<string, string> = {
+    '{{patient.name}}': patient.name,
+    '{{patient.birthdate}}': patient.birthdate ? new Date(patient.birthdate).toLocaleDateString() : '',
+    '{{doctor.name}}': doctor ? `Dr. ${doctor.name}` : 'Dr. [Doctor Name]',
+    '{{organisation.name}}': organisation ? organisation.name : '[Organization Name]',
+    '{{date}}': new Date().toLocaleDateString(),
+    '{{medicalObservation}}': variables.notes || '',
+    '{{startDate}}': variables.startDate ? new Date(variables.startDate).toLocaleDateString() : '',
+    '{{endDate}}': variables.endDate ? new Date(variables.endDate).toLocaleDateString() : '',
+    '{{sport}}': variables.sport || '',
+    '{{restrictions}}': variables.restrictions || '',
+    '{{duration}}': variables.duration || '',
+    '{{reason}}': variables.reason || '',
+    '{{validUntil}}': variables.validUntil ? new Date(variables.validUntil).toLocaleDateString() : '',
+    '{{profession}}': variables.profession || '',
+    '{{diagnosis}}': variables.diagnosis || '',
+    '{{exoneration}}': variables.exoneration === 'oui' ? 'Oui' : 'Non',
+    '{{school}}': variables.school || '',
+    '{{inaptitude}}': variables.inaptitude || '',
+    '{{observations}}': variables.observations || '',
+    '{{ald}}': variables.ald === 'oui' ? 'Oui' : variables.ald === 'non' ? 'Non' : 'En cours',
+    '{{treatment}}': variables.treatment || '',
+    '{{recommendations}}': variables.recommendations || '',
+    '{{nextAppointment}}': variables.nextAppointment ? new Date(variables.nextAppointment).toLocaleDateString() : '',
+    '{{recipient.name}}': variables.recipient?.name || '',
+    '{{recipient.specialty}}': variables.recipient?.specialty || '',
+    '{{consultationReason}}': variables.consultationReason || '',
+    '{{testsDone}}': variables.testsDone || '',
+    '{{diagnosticHypothesis}}': variables.diagnosticHypothesis || '',
+    '{{specificQuestions}}': variables.specificQuestions || '',
+    '{{deathDate}}': variables.deathDate ? new Date(variables.deathDate).toLocaleDateString() : '',
+    '{{deathTime}}': variables.deathTime || '',
+    '{{deathPlace}}': variables.deathPlace || '',
+    '{{apparentCause}}': variables.apparentCause || '',
+    '{{circumstances}}': variables.circumstances || '',
+    '{{suspiciousSigns}}': variables.suspiciousSigns || 'aucun',
+    '{{vaccineName}}': variables.vaccineName || '',
+    '{{lotNumber}}': variables.lotNumber || '',
+    '{{administrationDate}}': variables.administrationDate
+      ? new Date(variables.administrationDate).toLocaleDateString()
+      : '',
+    '{{doseNumber}}': variables.doseNumber || '',
+    '{{schedule}}': variables.schedule || '',
+    '{{nextDoseDate}}': variables.nextDoseDate ? new Date(variables.nextDoseDate).toLocaleDateString() : '',
+    '{{sideEffects}}': variables.sideEffects || 'aucun'
+  }
+
+  // Replace all variables in the content
+  Object.entries(replacements).forEach(([key, value]) => {
+    filledContent = filledContent.replace(new RegExp(key, 'g'), value)
+  })
+
+  return filledContent
+}
+
 // GET /api/certificates
 export async function GET() {
   try {
@@ -29,6 +89,19 @@ export async function GET() {
       },
       include: {
         patient: {
+          select: {
+            id: true,
+            name: true,
+            birthdate: true
+          }
+        },
+        doctor: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        organisation: {
           select: {
             id: true,
             name: true
@@ -64,7 +137,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { patientId, type, startDate, endDate, notes } = body
+    const { patientId, type, startDate, endDate, notes, content } = body
 
     if (!patientId || !type) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -98,8 +171,6 @@ export async function POST(request: Request) {
     const doctor = await prisma.doctor.findFirst({
       where: {
         organisation_id: organisationId
-
-        // You might want to add more conditions here to find the correct doctor
       }
     })
 
@@ -107,10 +178,61 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No doctor found for this organization' }, { status: 400 })
     }
 
+    // Get the patient
+    const patient = await prisma.patient.findUnique({
+      where: {
+        id: parseInt(patientId)
+      }
+    })
+
+    if (!patient) {
+      return NextResponse.json({ error: 'Patient not found' }, { status: 404 })
+    }
+
+    // Get the organization
+    const organisation = await prisma.organisation.findUnique({
+      where: {
+        id: organisationId
+      }
+    })
+
+    if (!organisation) {
+      return NextResponse.json({ error: 'Organization not found' }, { status: 404 })
+    }
+
     // Generate a unique certificate number
     const certificateNumber = `CERT-${Date.now()}-${Math.floor(Math.random() * 1000)}`
 
-    // Create the certificate
+    // Prepare variables object
+    const variables = {
+      startDate,
+      endDate,
+      notes,
+
+      // Add other variables based on the template type
+      ...(templateCode === 'CERT_APT_SPORT' && {
+        sport: body.sport,
+        restrictions: body.restrictions,
+        duration: body.duration,
+        reason: body.reason,
+        validUntil: body.validUntil
+      }),
+      ...(templateCode === 'CERT_MALADIE_CHRONIQUE' && {
+        diagnosis: body.diagnosis,
+        ald: body.ald,
+        treatment: body.treatment,
+        recommendations: body.recommendations,
+        nextAppointment: body.nextAppointment
+      })
+
+      // Add other template-specific variables as needed
+    }
+
+    // Fill the template content with actual values, or use provided content
+    const filledContent =
+      content || fillTemplateContent(template.contentTemplate, variables, patient, doctor, organisation)
+
+    // Create the certificate with the filled content
     const certificate = await prisma.certificate.create({
       data: {
         templateId: template.id,
@@ -119,18 +241,25 @@ export async function POST(request: Request) {
         doctorId: doctor.id,
         certificateNumber,
         status: 'draft',
-        content: template.contentTemplate, // You might want to process this with the actual values
-        variables: {
-          startDate,
-          endDate,
-          notes
-
-          // Add other variables as needed
-        },
+        content: filledContent, // Save the filled content
+        variables,
         notes
       },
       include: {
         patient: {
+          select: {
+            id: true,
+            name: true,
+            birthdate: true
+          }
+        },
+        doctor: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        organisation: {
           select: {
             id: true,
             name: true
