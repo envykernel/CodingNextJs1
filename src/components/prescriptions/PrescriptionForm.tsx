@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Card, CardContent, CardHeader, Button, TextField, Grid, Box, Typography, Alert } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import PrintIcon from '@mui/icons-material/Print'
 
 import MedicationBlock from './MedicationBlock'
 
@@ -25,6 +26,7 @@ const medicationSchema = z.object({
 
 // Zod schema for the entire form
 const prescriptionSchema = z.object({
+  id: z.number().optional(),
   patientId: z.number(),
   doctor: z.string().min(1, 'Doctor name is required'),
   medications: z.array(medicationSchema).min(1, 'At least one medication is required'),
@@ -210,11 +212,24 @@ export default function PrescriptionForm({
       <CardHeader
         title={title}
         action={
-          <Link href={`/${locale}/apps/prescriptions/list`} passHref>
-            <Button variant='outlined' color='secondary'>
-              {dictionary?.navigation?.cancel}
-            </Button>
-          </Link>
+          initialData?.id ? (
+            <Link
+              href={`/${locale}/apps/prescriptions/print/${initialData.id}`}
+              target='_blank'
+              rel='noopener'
+              passHref
+            >
+              <Button variant='outlined' color='primary' startIcon={<PrintIcon />}>
+                {dictionary?.navigation?.printPrescription || 'Print Prescription'}
+              </Button>
+            </Link>
+          ) : (
+            <Link href={`/${locale}/apps/prescriptions/list`} passHref>
+              <Button variant='outlined' color='secondary'>
+                {dictionary?.navigation?.cancel}
+              </Button>
+            </Link>
+          )
         }
       />
       <CardContent>

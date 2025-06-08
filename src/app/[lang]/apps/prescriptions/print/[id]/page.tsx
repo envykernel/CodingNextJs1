@@ -56,7 +56,6 @@ function GeneratedHeader({ organisation }: { organisation: any }) {
           {/* Top row: Organization name and QR code */}
           <div className='flex justify-between items-start mb-3 print:mb-2'>
             <Typography
-              component='h4'
               variant='h4'
               className='font-medium text-gray-900 tracking-tight print:text-xl font-sans'
               sx={{ fontFamily: 'inherit' }}
@@ -76,7 +75,6 @@ function GeneratedHeader({ organisation }: { organisation: any }) {
             {/* Left column: Address */}
             <div className='flex flex-col'>
               <Typography
-                component='p'
                 variant='body2'
                 className='text-sm text-gray-600 print:text-[0.7rem] mb-0.5 font-sans'
                 sx={{ fontFamily: 'inherit' }}
@@ -84,7 +82,6 @@ function GeneratedHeader({ organisation }: { organisation: any }) {
                 {organisation.address}
               </Typography>
               <Typography
-                component='p'
                 variant='body2'
                 className='text-sm text-gray-600 print:text-[0.7rem] font-sans'
                 sx={{ fontFamily: 'inherit' }}
@@ -97,7 +94,6 @@ function GeneratedHeader({ organisation }: { organisation: any }) {
             <div className='flex justify-end'>
               <div className='flex flex-col'>
                 <Typography
-                  component='p'
                   variant='body2'
                   className='text-sm text-gray-600 print:text-[0.7rem] mb-0.5 font-sans'
                   sx={{ fontFamily: 'inherit' }}
@@ -105,7 +101,6 @@ function GeneratedHeader({ organisation }: { organisation: any }) {
                   Tél: {organisation.phone_number}
                 </Typography>
                 <Typography
-                  component='p'
                   variant='body2'
                   className='text-sm text-gray-600 print:text-[0.7rem] font-sans'
                   sx={{ fontFamily: 'inherit' }}
@@ -276,7 +271,7 @@ export default async function PrintPrescriptionPage({ params }: PrintPrescriptio
       </div>
 
       {/* Print Button - Only visible on screen */}
-      <PrintButton />
+      <PrintButton prescription={prescription} />
     </div>
   )
 }

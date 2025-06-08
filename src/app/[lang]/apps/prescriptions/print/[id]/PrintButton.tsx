@@ -2,7 +2,13 @@
 
 import { Button } from '@mui/material'
 
-export default function PrintButton() {
+interface PrintButtonProps {
+  prescription?: any
+}
+
+export default function PrintButton({ prescription }: PrintButtonProps) {
+  if (!prescription) return null
+
   const handlePrint = () => {
     window.print()
   }

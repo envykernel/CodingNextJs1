@@ -159,6 +159,7 @@ export default function ClientVisitView({ data: initialData }: ClientVisitViewPr
         initialData={
           visitData.prescriptions?.[0]
             ? {
+                id: visitData.prescriptions[0].id,
                 patientId: visitData.patient_id,
                 doctor: visitData.doctor?.name || '',
                 medications:
