@@ -15,31 +15,46 @@ interface ExamType {
 }
 
 interface RadiologyOrder {
-  exam_type_id: number
-  exam_type: string
+  id?: number
+  exam_type: {
+    id: number
+    name: string
+    category: string | null
+    description: string | null
+  }
   notes: string
-  status: string
-  result: string
+  status: 'pending' | 'in_progress' | 'completed' | 'cancelled'
+  result: string | null
   result_date: string | null
 }
 
 interface RadiologyOrderFormProps {
   visitId: number
   initialValues?: RadiologyOrder[]
-  onVisitUpdate: (updatedVisit: any) => void
+  onSuccess?: () => void
 }
 
-export default function RadiologyOrderForm({ visitId, initialValues = [], onVisitUpdate }: RadiologyOrderFormProps) {
+export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }: RadiologyOrderFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [examTypes, setExamTypes] = useState<ExamType[]>([])
 
-  const [orders, setOrders] = useState<RadiologyOrder[]>(
-    initialValues.length > 0
-      ? initialValues
-      : [{ exam_type_id: 0, exam_type: '', notes: '', status: 'pending', result: '', result_date: null }]
-  )
+  const [orders, setOrders] = useState<RadiologyOrder[]>(() => {
+    if (initialValues && Array.isArray(initialValues) && initialValues.length > 0) {
+      return initialValues
+    }
+
+    return [
+      {
+        exam_type: { id: 0, name: '', category: null, description: null },
+        notes: '',
+        status: 'pending',
+        result: null,
+        result_date: null
+      }
+    ]
+  })
 
   useEffect(() => {
     const fetchExamTypes = async () => {
@@ -51,7 +66,6 @@ export default function RadiologyOrderForm({ visitId, initialValues = [], onVisi
 
         setExamTypes(data)
       } catch (err) {
-        console.error('Error fetching exam types:', err)
         setError('Failed to load exam types')
       }
     }
@@ -62,7 +76,13 @@ export default function RadiologyOrderForm({ visitId, initialValues = [], onVisi
   const addOrder = () => {
     setOrders([
       ...orders,
-      { exam_type_id: 0, exam_type: '', notes: '', status: 'pending', result: '', result_date: null }
+      {
+        exam_type: { id: 0, name: '', category: '', description: null },
+        notes: '',
+        status: 'pending',
+        result: null,
+        result_date: null
+      }
     ])
   }
 
@@ -77,13 +97,12 @@ export default function RadiologyOrderForm({ visitId, initialValues = [], onVisi
   const handleOrderChange = (index: number, field: keyof RadiologyOrder, value: any) => {
     const newOrders = [...orders]
 
-    if (field === 'exam_type_id') {
-      const selectedExamType = examTypes.find(type => type.id === value)
+    if (field === 'exam_type') {
+      const selectedExamType = examTypes.find(type => type.id === value.id)
 
       newOrders[index] = {
         ...newOrders[index],
-        exam_type_id: value,
-        exam_type: selectedExamType?.name || ''
+        exam_type: selectedExamType || { id: 0, name: '', category: null, description: null }
       }
     } else {
       newOrders[index] = { ...newOrders[index], [field]: value }
@@ -97,8 +116,7 @@ export default function RadiologyOrderForm({ visitId, initialValues = [], onVisi
 
     newOrders[index] = {
       ...newOrders[index],
-      exam_type_id: value?.id || 0,
-      exam_type: value?.name || ''
+      exam_type: value || { id: 0, name: '', category: null, description: null }
     }
     setOrders(newOrders)
   }
@@ -110,26 +128,38 @@ export default function RadiologyOrderForm({ visitId, initialValues = [], onVisi
     setSuccess(false)
 
     try {
-      const response = await fetch('/api/radiology/orders', {
+      const ordersToSubmit = orders.map(order => ({
+        exam_type_id: order.exam_type.id,
+        notes: order.notes,
+        status: order.status,
+        result: order.result,
+        result_date: order.result_date
+      }))
+
+      const response = await fetch(`/api/visits/${visitId}/radiology-orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          visit_id: visitId,
-          orders: orders
-        })
+        body: JSON.stringify({ orders: ordersToSubmit })
       })
 
       if (!response.ok) {
         throw new Error('Failed to save radiology orders')
       }
 
-      const data = await response.json()
-
-      onVisitUpdate(data.visit)
+      await response.json()
+      onSuccess?.()
       setSuccess(true)
-      setOrders([{ exam_type_id: 0, exam_type: '', notes: '', status: 'pending', result: '', result_date: null }])
+      setOrders([
+        {
+          exam_type: { id: 0, name: '', category: null, description: null },
+          notes: '',
+          status: 'pending',
+          result: null,
+          result_date: null
+        }
+      ])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -157,7 +187,7 @@ export default function RadiologyOrderForm({ visitId, initialValues = [], onVisi
                         <Autocomplete
                           options={examTypes}
                           getOptionLabel={option => option.name}
-                          value={examTypes.find(type => type.id === order.exam_type_id) || null}
+                          value={examTypes.find(type => type.id === order.exam_type.id) || null}
                           onChange={(_, newValue) => handleExamTypeChange(index, newValue)}
                           renderInput={params => <TextField {...params} label='Exam Type' required fullWidth />}
                           isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -168,7 +198,13 @@ export default function RadiologyOrderForm({ visitId, initialValues = [], onVisi
                         <TextField
                           label='Status'
                           value={order.status}
-                          onChange={e => handleOrderChange(index, 'status', e.target.value)}
+                          onChange={e =>
+                            handleOrderChange(
+                              index,
+                              'status',
+                              e.target.value as 'pending' | 'in_progress' | 'completed' | 'cancelled'
+                            )
+                          }
                           fullWidth
                           select
                           SelectProps={{ native: true }}
@@ -182,8 +218,8 @@ export default function RadiologyOrderForm({ visitId, initialValues = [], onVisi
                       <Grid item xs={12} sm={6}>
                         <TextField
                           label='Result'
-                          value={order.result}
-                          onChange={e => handleOrderChange(index, 'result', e.target.value)}
+                          value={order.result || ''}
+                          onChange={e => handleOrderChange(index, 'result', e.target.value as string | null)}
                           fullWidth
                         />
                       </Grid>
@@ -192,7 +228,7 @@ export default function RadiologyOrderForm({ visitId, initialValues = [], onVisi
                           label='Result Date'
                           type='date'
                           value={order.result_date || ''}
-                          onChange={e => handleOrderChange(index, 'result_date', e.target.value)}
+                          onChange={e => handleOrderChange(index, 'result_date', e.target.value as string | null)}
                           fullWidth
                           InputLabelProps={{ shrink: true }}
                         />
