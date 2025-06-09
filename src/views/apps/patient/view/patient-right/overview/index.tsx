@@ -10,14 +10,21 @@ import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert'
 import { useTheme } from '@mui/material/styles'
 import { useTranslation } from '@/contexts/translationContext'
+import Grid2 from '@mui/material/Grid2'
+import Chip from '@mui/material/Chip'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import { useState, useEffect } from 'react'
 
 // Component Imports
 import PatientLabTests from '../dashboard/PatientLabTests'
 import PatientMeasurementsChart from '../dashboard/PatientMeasurementsChart'
-import CardStatsVertical from '@components/card-statistics/Vertical'
-import CardStatsHorizontal from '@components/card-statistics/Horizontal'
-import CardStatsWithAreaChart from '@components/card-statistics/StatsWithAreaChart'
+import CardStatsVertical from '@/components/card-statistics/Vertical'
+import CardStatsHorizontal from '@/components/card-statistics/Horizontal'
 import HorizontalWithBorder from '@components/card-statistics/HorizontalWithBorder'
+import HorizontalWithSubtitle from '@components/card-statistics/HorizontalWithSubtitle'
 
 /**
  * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
@@ -59,54 +66,226 @@ const formatDateConsistent = (dateString: string) => {
   })
 }
 
-interface OverViewTabProps {
+interface OverviewTabProps {
   patientData: any
 }
 
-const OverViewTab = ({ patientData }: OverViewTabProps) => {
-  const theme = useTheme()
+interface Measurement {
+  id: number
+  measured_at: string
+  blood_pressure_systolic: number | null
+  blood_pressure_diastolic: number | null
+}
+
+interface ProcessedMeasurement {
+  date: string
+  systolic: number
+  diastolic: number
+}
+
+const formatDate = (dateString: string | null | undefined) => {
+  if (!dateString) return '-'
+  const d = new Date(dateString)
+  return d.toISOString().slice(0, 10)
+}
+
+const OverviewTab = ({ patientData }: OverviewTabProps) => {
   const { t } = useTranslation()
+  const theme = useTheme()
+  const [recentMedicalHistory, setRecentMedicalHistory] = useState<any[]>([])
+  const [activePrescriptions, setActivePrescriptions] = useState<any[]>([])
+  const [upcomingAppointments, setUpcomingAppointments] = useState<any[]>([])
+  const [lastVisit, setLastVisit] = useState<any>(null)
+  const [vitalSignsTrend, setVitalSignsTrend] = useState<ProcessedMeasurement[]>([])
+  const [allergies, setAllergies] = useState<any[]>([])
+
+  const getTranslatedHistoryType = (type: string) => {
+    return t(`medicalHistory.types.${type.toLowerCase().replace(' ', '_')}`) || type
+  }
+
+  // Fetch medical history and filter allergies
+  useEffect(() => {
+    const fetchMedicalHistory = async () => {
+      try {
+        if (!patientData?.id) {
+          console.error('Missing patient ID:', patientData)
+          return
+        }
+
+        const patientId = Number(patientData.id)
+        if (isNaN(patientId)) {
+          console.error('Invalid patient ID:', patientData.id)
+          return
+        }
+
+        console.log('Fetching medical history for patient:', patientId)
+        const response = await fetch(`/api/patient-medical-history?patientId=${patientId}`)
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          console.error('API Error:', errorData)
+          throw new Error(errorData.error || 'Failed to fetch medical history')
+        }
+
+        const data = await response.json()
+        console.log('Received medical history data:', data)
+
+        // Filter allergies from medical history
+        const allergyHistory = data.filter((item: any) => item.history_type === 'allergy')
+        setAllergies(allergyHistory)
+
+        // Get recent medical history (excluding allergies)
+        const recentHistory = data
+          .filter((item: any) => item.history_type !== 'allergy')
+          .sort((a: any, b: any) => {
+            const dateA = a.date_occurred ? new Date(a.date_occurred).getTime() : 0
+            const dateB = b.date_occurred ? new Date(b.date_occurred).getTime() : 0
+            return dateB - dateA
+          })
+          .slice(0, 3)
+        setRecentMedicalHistory(recentHistory)
+      } catch (error) {
+        console.error('Error in fetchMedicalHistory:', error)
+      }
+    }
+
+    fetchMedicalHistory()
+  }, [patientData?.id])
 
   // Debug logs
-  console.log('All appointments:', patientData?.appointments)
+  console.log('OverViewTab patientData:', patientData)
+  console.log('Recent medical history:', recentMedicalHistory)
+  console.log('Allergies:', allergies)
 
   // Get latest measurements
   const latestMeasurements = patientData?.patient_measurements?.[0] || {}
   const bmi = calculateBMI(latestMeasurements.weight_kg, latestMeasurements.height_cm)
 
   // Get last visit date - get the most recent visit regardless of status
-  const sortedAppointments =
-    patientData?.appointments?.sort(
-      (a: any, b: any) => new Date(b.appointment_date).getTime() - new Date(a.appointment_date).getTime()
-    ) || []
+  useEffect(() => {
+    const fetchLastVisit = async () => {
+      try {
+        if (!patientData?.id) return
 
-  // Get only the most recent visit
-  const lastVisit = sortedAppointments[0]
+        const patientId = Number(patientData.id)
+        if (isNaN(patientId)) return
 
-  // Get upcoming appointments (excluding the last visit if it's in the future)
-  const upcomingAppointments =
-    patientData?.appointments
-      ?.filter((apt: any) => {
-        const aptDate = new Date(apt.appointment_date)
-        const now = new Date()
-        // Only include future appointments that aren't the last visit
-        return aptDate > now && apt.id !== lastVisit?.id
-      })
-      .slice(0, 3) || []
+        const response = await fetch(`/api/patient-visits?patientId=${patientId}&limit=1&status=completed`)
+        if (!response.ok) {
+          const errorData = await response.json()
+          console.error('API Error:', errorData)
+          throw new Error(errorData.error || 'Failed to fetch last visit')
+        }
 
-  // Get active prescriptions
-  const activePrescriptions = patientData?.prescriptions?.filter((presc: any) => presc.status === 'active') || []
-
-  const daysSinceLastVisit = lastVisit ? getDaysBetween(new Date(lastVisit.appointment_date), new Date()) : null
-
-  // Prepare chart data for vital signs trend
-  const vitalSignsData = patientData?.patient_measurements?.slice(0, 7).reverse() || []
-  const chartSeries = [
-    {
-      name: 'Blood Pressure',
-      data: vitalSignsData.map((m: any) => m.blood_pressure_systolic || 0)
+        const data = await response.json()
+        console.log('Last visit data:', data)
+        if (data.length > 0) {
+          setLastVisit(data[0])
+        }
+      } catch (error) {
+        console.error('Error in fetchLastVisit:', error)
+      }
     }
-  ]
+
+    fetchLastVisit()
+  }, [patientData?.id])
+
+  // Fetch upcoming appointments
+  useEffect(() => {
+    const fetchUpcomingAppointments = async () => {
+      try {
+        if (!patientData?.id) return
+
+        const patientId = Number(patientData.id)
+        if (isNaN(patientId)) return
+
+        const response = await fetch(`/api/patient-appointments?patientId=${patientId}&status=scheduled&limit=3`)
+        if (!response.ok) {
+          const errorData = await response.json()
+          console.error('API Error:', errorData)
+          throw new Error(errorData.error || 'Failed to fetch upcoming appointments')
+        }
+
+        const data = await response.json()
+        console.log('Upcoming appointments data:', data)
+        setUpcomingAppointments(data)
+      } catch (error) {
+        console.error('Error in fetchUpcomingAppointments:', error)
+      }
+    }
+
+    fetchUpcomingAppointments()
+  }, [patientData?.id])
+
+  // Fetch active prescriptions
+  useEffect(() => {
+    const fetchActivePrescriptions = async () => {
+      try {
+        if (!patientData?.id) return
+
+        const patientId = Number(patientData.id)
+        if (isNaN(patientId)) return
+
+        const response = await fetch(`/api/patient-prescriptions?patientId=${patientId}&status=active&limit=3`)
+        if (!response.ok) {
+          const errorData = await response.json()
+          console.error('API Error:', errorData)
+          throw new Error(errorData.error || 'Failed to fetch active prescriptions')
+        }
+
+        const data = await response.json()
+        console.log('Active prescriptions data:', data)
+        setActivePrescriptions(data)
+      } catch (error) {
+        console.error('Error in fetchActivePrescriptions:', error)
+      }
+    }
+
+    fetchActivePrescriptions()
+  }, [patientData?.id])
+
+  // Fetch vital signs trend data
+  useEffect(() => {
+    const fetchVitalSignsTrend = async () => {
+      try {
+        if (!patientData?.id) return
+
+        const response = await fetch(`/api/patient-measurements?patientId=${patientData.id}`, {
+          credentials: 'include'
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          console.error('API Error:', errorData)
+          throw new Error(errorData.error || 'Failed to fetch vital signs')
+        }
+
+        const data = await response.json()
+        if (!Array.isArray(data)) {
+          console.error('Invalid measurements data format:', data)
+          throw new Error('Invalid measurements data format')
+        }
+
+        const processedData = data
+          .filter((item: Measurement) => item.measured_at)
+          .map(
+            (item: Measurement): ProcessedMeasurement => ({
+              date: formatDateConsistent(item.measured_at),
+              systolic: item.blood_pressure_systolic || 0,
+              diastolic: item.blood_pressure_diastolic || 0
+            })
+          )
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
+        setVitalSignsTrend(processedData)
+      } catch (error) {
+        console.error('Error in fetchVitalSignsTrend:', error)
+        setVitalSignsTrend([])
+      }
+    }
+
+    fetchVitalSignsTrend()
+  }, [patientData?.id])
 
   return (
     <Grid container spacing={6}>
@@ -252,81 +431,76 @@ const OverViewTab = ({ patientData }: OverViewTabProps) => {
         </Grid>
       </Grid>
 
-      {/* Vital Signs Trend */}
-      <Grid item xs={12} md={6}>
-        <CardStatsWithAreaChart
-          stats={t('patient.vitalSignsTrend') || 'Vital Signs Trend'}
-          title={t('patient.last7Days') || 'Last 7 Days'}
-          avatarIcon='tabler-chart-line'
-          chartColor='primary'
-          avatarColor='primary'
-          avatarSkin='light'
-          chartSeries={chartSeries}
-        />
-      </Grid>
-
-      {/* Medical Alerts */}
-      <Grid item xs={12} md={6}>
+      {/* Medical Alerts Section */}
+      <Grid item xs={12}>
         <Card>
           <CardContent>
-            <Typography variant='h6' className='mb-4 flex items-center gap-2'>
-              <i className='tabler-alert-triangle text-xl text-primary' />
-              {t('patient.medicalAlerts') || 'Medical Alerts'}
-            </Typography>
+            <div className='flex items-center gap-3 mb-4'>
+              <i className='tabler-alert-triangle text-xl text-warning' />
+              <Typography variant='h6'>{t('patientView.overview.medicalAlerts.title')}</Typography>
+            </div>
             <Divider className='mb-4' />
-            <Grid container spacing={3}>
+            <Grid container spacing={4}>
               {/* Allergies */}
               <Grid item xs={12} md={6}>
-                <Box>
-                  <Typography variant='subtitle2' color='text.secondary' className='mb-2'>
-                    {t('patient.allergies') || 'Allergies'}
-                  </Typography>
-                  {patientData?.allergies?.length > 0 ? (
-                    <Box className='flex flex-wrap gap-1'>
-                      {patientData.allergies.map((allergy: string) => (
-                        <HorizontalWithBorder
-                          key={allergy}
-                          title={allergy}
-                          stats='Allergy'
-                          avatarIcon='tabler-alert-circle'
+                <div className='bg-error/5 p-4 rounded-lg border border-error/20'>
+                  <div className='flex items-center gap-2 mb-2'>
+                    <i className='tabler-allergens text-lg text-error' />
+                    <Typography variant='subtitle1' className='font-medium text-error'>
+                      {t('patientView.overview.medicalAlerts.allergies')}
+                    </Typography>
+                  </div>
+                  {allergies.length === 0 ? (
+                    <Typography color='text.secondary' className='italic'>
+                      {t('patientView.overview.medicalAlerts.noAllergies')}
+                    </Typography>
+                  ) : (
+                    <div className='flex flex-wrap gap-2'>
+                      {allergies.map((allergy: any) => (
+                        <Chip
+                          key={allergy.id}
+                          label={allergy.description}
                           color='error'
-                          trendNumber={0}
+                          variant='outlined'
+                          className='border-error/30'
                         />
                       ))}
-                    </Box>
-                  ) : (
-                    <Typography variant='body2' color='text.secondary'>
-                      {t('patient.noAllergies') || 'No known allergies'}
-                    </Typography>
+                    </div>
                   )}
-                </Box>
+                </div>
               </Grid>
 
-              {/* Current Medications */}
+              {/* Medical History Alerts */}
               <Grid item xs={12} md={6}>
-                <Box>
-                  <Typography variant='subtitle2' color='text.secondary' className='mb-2'>
-                    {t('patient.currentMedications') || 'Current Medications'}
-                  </Typography>
-                  {activePrescriptions.length > 0 ? (
-                    <Box className='flex flex-col gap-2'>
-                      {activePrescriptions.map((prescription: any) => (
-                        <HorizontalWithBorder
-                          key={prescription.id}
-                          title={prescription.medication_name}
-                          stats={prescription.dosage || '-'}
-                          avatarIcon='tabler-pill'
-                          color='primary'
-                          trendNumber={0}
-                        />
-                      ))}
-                    </Box>
-                  ) : (
-                    <Typography variant='body2' color='text.secondary'>
-                      {t('patient.noActiveMedications') || 'No active medications'}
+                <div className='bg-warning/5 p-4 rounded-lg border border-warning/20'>
+                  <div className='flex items-center gap-2 mb-2'>
+                    <i className='tabler-notes text-lg text-warning' />
+                    <Typography variant='subtitle1' className='font-medium text-warning'>
+                      {t('patientView.overview.medicalAlerts.recentMedicalHistory')}
                     </Typography>
+                  </div>
+                  {recentMedicalHistory.length === 0 ? (
+                    <Typography color='text.secondary' className='italic'>
+                      {t('patientView.overview.medicalAlerts.noMedicalHistory')}
+                    </Typography>
+                  ) : (
+                    <div className='space-y-2'>
+                      {recentMedicalHistory.map((history: any) => (
+                        <div key={history.id} className='flex items-start gap-2'>
+                          <i className='tabler-circle-dot text-warning mt-1' />
+                          <div>
+                            <Typography variant='body2' className='font-medium'>
+                              {getTranslatedHistoryType(history.history_type)}
+                            </Typography>
+                            <Typography variant='body2' color='text.secondary'>
+                              {history.description}
+                            </Typography>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   )}
-                </Box>
+                </div>
               </Grid>
             </Grid>
           </CardContent>
@@ -344,4 +518,4 @@ const OverViewTab = ({ patientData }: OverViewTabProps) => {
   )
 }
 
-export default OverViewTab
+export default OverviewTab

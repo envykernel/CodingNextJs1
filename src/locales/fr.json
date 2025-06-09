@@ -1629,8 +1629,10 @@
                 "title": "Alertes Médicales",
                 "allergies": "Allergies",
                 "currentMedications": "Médicaments Actuels",
+                "recentMedicalHistory": "Historique Médical Récent",
                 "noAllergies": "Aucune allergie connue",
-                "noMedications": "Aucun médicament actuel"
+                "noMedications": "Aucun médicament actuel",
+                "noMedicalHistory": "Aucun historique médical récent"
             },
             "vitalSignsTrend": {
                 "title": "Tendance des Signes Vitaux",

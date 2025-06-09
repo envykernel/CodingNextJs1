@@ -87,17 +87,35 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
     const visitId = searchParams.get('visit_id')
+    const patientId = searchParams.get('patientId')
+    const limit = searchParams.get('limit')
 
-    if (!visitId) {
-      return NextResponse.json({ error: 'Missing visit_id' }, { status: 400 })
+    if (!visitId && !patientId) {
+      return NextResponse.json({ error: 'Missing required parameter: visit_id or patientId' }, { status: 400 })
     }
 
-    const measurement = await prisma.patient_measurements.findFirst({
-      where: { visit_id: Number(visitId) }
-    })
+    let measurements
 
-    return NextResponse.json({ measurement }, { status: 200 })
+    if (visitId) {
+      // Fetch measurement for a specific visit
+      measurements = await prisma.patient_measurements.findFirst({
+        where: { visit_id: Number(visitId) }
+      })
+
+      return NextResponse.json({ measurement: measurements }, { status: 200 })
+    } else {
+      // Fetch measurements for a patient
+      measurements = await prisma.patient_measurements.findMany({
+        where: { patient_id: Number(patientId) },
+        orderBy: { measured_at: 'desc' },
+        take: limit ? Number(limit) : undefined
+      })
+
+      return NextResponse.json(measurements, { status: 200 })
+    }
   } catch (error: any) {
+    console.error('Error fetching measurements:', error)
+
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

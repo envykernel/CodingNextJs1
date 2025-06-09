@@ -115,7 +115,15 @@
         "temperature": "Temperature",
         "vitalSignsTrend": "Vital Signs Trend",
         "last7Days": "Last 7 Days",
-        "medicalAlerts": "Medical Alerts",
+        "medicalAlerts": {
+            "title": "Medical Alerts",
+            "allergies": "Allergies",
+            "currentMedications": "Current Medications",
+            "recentMedicalHistory": "Recent Medical History",
+            "noAllergies": "No known allergies",
+            "noMedications": "No current medications",
+            "noMedicalHistory": "No recent medical history"
+        },
         "allergies": "Allergies",
         "noAllergies": "No known allergies",
         "noActiveMedications": "No active medications",
@@ -639,8 +647,10 @@
                 "title": "Medical Alerts",
                 "allergies": "Allergies",
                 "currentMedications": "Current Medications",
+                "recentMedicalHistory": "Recent Medical History",
                 "noAllergies": "No known allergies",
-                "noMedications": "No current medications"
+                "noMedications": "No current medications",
+                "noMedicalHistory": "No recent medical history"
             },
             "vitalSignsTrend": {
                 "title": "Vital Signs Trend",

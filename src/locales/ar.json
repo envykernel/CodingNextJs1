@@ -274,7 +274,15 @@
         "temperature": "درجة الحرارة",
         "vitalSignsTrend": "اتجاه العلامات الحيوية",
         "last7Days": "آخر 7 أيام",
-        "medicalAlerts": "التنبيهات الطبية",
+        "medicalAlerts": {
+            "title": "التنبيهات الطبية",
+            "allergies": "الحساسية",
+            "currentMedications": "الأدوية الحالية",
+            "recentMedicalHistory": "التاريخ الطبي الأخير",
+            "noAllergies": "لا توجد حساسية معروفة",
+            "noMedications": "لا توجد أدوية حالية",
+            "noMedicalHistory": "لا يوجد تاريخ طبي حديث"
+        },
         "allergies": "الحساسية",
         "noAllergies": "لا توجد حساسية معروفة",
         "noActiveMedications": "لا توجد أدوية نشطة",
@@ -823,8 +831,10 @@
                 "title": "التنبيهات الطبية",
                 "allergies": "الحساسية",
                 "currentMedications": "الأدوية الحالية",
+                "recentMedicalHistory": "التاريخ الطبي الأخير",
                 "noAllergies": "لا توجد حساسية معروفة",
-                "noMedications": "لا توجد أدوية حالية"
+                "noMedications": "لا توجد أدوية حالية",
+                "noMedicalHistory": "لا يوجد تاريخ طبي حديث"
             },
             "vitalSignsTrend": {
                 "title": "اتجاه العلامات الحيوية",
