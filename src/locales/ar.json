@@ -888,5 +888,39 @@
         "paymentProgress": "تقدم المدفوعات",
         "paidAmount": "مدفوع",
         "invoiceDetails": "تفاصيل الفواتير"
+    },
+    "medicalHistory": {
+        "title": "التاريخ الطبي",
+        "addNew": "إضافة تاريخ طبي",
+        "addMedicalHistory": "إضافة تاريخ طبي",
+        "edit": "تعديل التاريخ الطبي",
+        "editMedicalHistory": "تعديل التاريخ الطبي",
+        "type": "نوع التاريخ",
+        "description": "الوصف",
+        "date": "تاريخ الحدوث",
+        "dateOccurred": "تاريخ الحدوث",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "saving": "جاري الحفظ...",
+        "success": "تم حفظ التاريخ الطبي بنجاح",
+        "error": "خطأ في حفظ التاريخ الطبي",
+        "types": {
+            "allergy": "حساسية",
+            "chronic_disease": "مرض مزمن",
+            "surgery": "جراحة",
+            "hospitalization": "استشفاء",
+            "family_history": "تاريخ عائلي",
+            "vaccination": "تطعيم",
+            "other": "أخرى"
+        },
+        "noData": "لا يوجد تاريخ طبي مسجل",
+        "actions": {
+            "edit": "تعديل",
+            "delete": "حذف",
+            "confirmDelete": "هل أنت متأكد من رغبتك في حذف هذا السجل الطبي؟"
+        },
+        "item": "العنصر",
+        "saving": "جاري الحفظ...",
+        "save": "حفظ"
     }
 }

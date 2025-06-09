@@ -1706,5 +1706,38 @@
             "partial": "Partiel",
             "pending": "En attente"
         }
+    },
+    "medicalHistory": {
+        "title": "Antécédents médicaux",
+        "addNew": "Ajouter un antécédent médical",
+        "addMedicalHistory": "Ajouter un antécédent médical",
+        "edit": "Modifier l'antécédent médical",
+        "editMedicalHistory": "Modifier l'antécédent médical",
+        "type": "Type d'antécédent",
+        "description": "Description",
+        "date": "Date de survenue",
+        "dateOccurred": "Date de survenue",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "saving": "Enregistrement...",
+        "success": "Antécédent médical enregistré avec succès",
+        "error": "Erreur lors de l'enregistrement de l'antécédent médical",
+        "types": {
+            "allergy": "Allergie",
+            "chronic_disease": "Maladie chronique",
+            "surgery": "Chirurgie",
+            "hospitalization": "Hospitalisation",
+            "family_history": "Antécédents familiaux",
+            "vaccination": "Vaccination",
+            "other": "Autre"
+        },
+        "noData": "Aucun antécédent médical enregistré",
+        "actions": {
+            "edit": "Modifier",
+            "delete": "Supprimer",
+            "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet antécédent médical ?"
+        },
+        "item": "Élément",
+        "addNew": "Ajouter un autre élément"
     }
 }
