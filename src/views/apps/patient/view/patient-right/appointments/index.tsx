@@ -136,13 +136,17 @@ const AppointmentCard = ({
           </Typography>
         </div>
         <div className='flex justify-start items-center'>
-          <Chip label={appointment.status || '-'} size='small' color={getStatusColor(appointment.status)} />
+          <Chip
+            label={t(`appointments.statusOptions.${appointment.status}`) || appointment.status}
+            size='small'
+            color={getStatusColor(appointment.status)}
+          />
         </div>
       </CardContent>
       <Divider />
       <div className='flex justify-center p-2 min-h-[48px]'>
         {appointment.visit?.id ? (
-          <Tooltip title={t('goToVisit') || 'Go to Visit'}>
+          <Tooltip title={t('appointments.actions.goToVisit') || 'Go to Visit'}>
             <Button
               size='small'
               variant='outlined'
@@ -151,7 +155,7 @@ const AppointmentCard = ({
               className='hover:text-success hover:border-success'
               startIcon={<i className='tabler-clipboard-check text-lg' />}
             >
-              {t('goToVisit') || 'Visit'}
+              {t('appointments.actions.goToVisit') || 'Visit'}
             </Button>
           </Tooltip>
         ) : appointment.status === 'scheduled' ? (
