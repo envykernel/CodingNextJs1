@@ -18,8 +18,17 @@ import {
   Box,
   CircularProgress,
   IconButton,
-  Tooltip
+  Tooltip,
+  Typography,
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell
 } from '@mui/material'
+import PrintIcon from '@mui/icons-material/Print'
 
 interface LabTestType {
   id: number
@@ -160,7 +169,7 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
 
   // Add logging to doctor selection change
   const handleDoctorChange = (_e: any, value: Doctor | null) => {
-    console.log('Doctor selection changed:', value) // Debug log
+    console.log('Doctor selection changed:', value)
     if (!value) {
       console.log('No doctor selected in handleDoctorChange')
       setSelectedDoctor(null)
@@ -168,7 +177,7 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
     }
     if (!value.id) {
       console.log('Selected doctor has no id:', value)
-      setError(dictionary?.testForm?.selectDoctor || 'Invalid doctor selection')
+      setError(dictionary?.testForm?.selectDoctor || 'Veuillez sélectionner un médecin')
       return
     }
     console.log('Setting selected doctor:', value)
@@ -182,24 +191,16 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
     setError(null)
     setLoading(true)
 
-    console.log('Form submission - Current state:', {
-      selectedDoctor,
-      doctors,
-      selectedTests,
-      testDetails
-    })
-
-    // Validate that a doctor is selected first
     if (!selectedDoctor) {
       console.log('No doctor selected in handleSubmit')
-      setError(dictionary?.testForm?.selectDoctor || 'Please select a doctor')
+      setError(dictionary?.testForm?.selectDoctor || 'Veuillez sélectionner un médecin')
       setLoading(false)
       return
     }
 
     if (!selectedDoctor.id) {
       console.log('Selected doctor has no id in handleSubmit:', selectedDoctor)
-      setError(dictionary?.testForm?.selectDoctor || 'Invalid doctor selection')
+      setError(dictionary?.testForm?.selectDoctor || 'Veuillez sélectionner un médecin')
       setLoading(false)
       return
     }
@@ -243,7 +244,7 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
       if (res.ok) {
         const data = await res.json()
         console.log('Response data:', data)
-        setSuccess(dictionary?.testForm?.savedSuccessfully || 'Test order saved successfully!')
+        setSuccess(dictionary?.testForm?.savedSuccessfully || 'Analyse enregistrée avec succès !')
 
         // Get the first lab test order ID from the results
         if (data.results && data.results.length > 0) {
@@ -256,11 +257,11 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
       } else {
         const errorData = await res.json().catch(() => ({}))
         console.error('API error:', errorData)
-        setError(errorData.error || dictionary?.testForm?.error || 'Error saving lab test orders')
+        setError(errorData.error || dictionary?.testForm?.error || "Erreur lors de l'enregistrement de l'analyse")
       }
     } catch (error) {
       console.error('Error saving lab test orders:', error)
-      setError(dictionary?.testForm?.error || 'Error saving lab test orders')
+      setError(dictionary?.testForm?.error || "Erreur lors de l'enregistrement de l'analyse")
     } finally {
       setLoading(false)
     }
@@ -324,20 +325,20 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
   return (
     <Card>
       <CardHeader
-        title={dictionary?.testForm?.title || 'Test Order'}
+        title={dictionary?.testForm?.title || 'Analyses de laboratoire'}
         action={
           <Box sx={{ display: 'flex', gap: 1 }}>
             {(savedOrderId || initialValues?.id) && (
-              <Tooltip title={dictionary?.testForm?.print || 'Print Test Order'}>
-                <Link
-                  href={`/${dictionary?.locale || 'fr'}/apps/lab-tests/print/${savedOrderId || initialValues?.id}`}
-                  target='_blank'
-                >
-                  <IconButton color='primary'>
-                    <i className='tabler-printer' />
-                  </IconButton>
-                </Link>
-              </Tooltip>
+              <Link
+                href={`/${dictionary?.locale || 'fr'}/apps/lab-tests/print/${savedOrderId || initialValues?.id}`}
+                target='_blank'
+                rel='noopener'
+                passHref
+              >
+                <Button variant='outlined' color='primary' startIcon={<PrintIcon />}>
+                  {dictionary?.testForm?.print || "Imprimer l'analyse"}
+                </Button>
+              </Link>
             )}
           </Box>
         }
@@ -364,18 +365,18 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
                 renderInput={params => (
                   <TextField
                     {...params}
-                    label={dictionary?.doctor || 'Doctor'}
-                    placeholder={dictionary?.selectDoctor || 'Select Doctor'}
+                    label={dictionary?.navigation?.doctor || 'Médecin'}
+                    placeholder={dictionary?.navigation?.selectDoctor || 'Sélectionner un médecin'}
                     required
                     error={!selectedDoctor?.id && error !== null}
                     helperText={
                       !selectedDoctor?.id && error !== null
-                        ? dictionary?.testForm?.selectDoctor || 'Please select a doctor'
+                        ? dictionary?.testForm?.selectDoctor || 'Veuillez sélectionner un médecin'
                         : ''
                     }
                   />
                 )}
-                sx={{ mb: 2 }}
+                sx={{ mb: 4 }}
               />
               <Autocomplete
                 multiple
@@ -386,8 +387,8 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
                 renderInput={params => (
                   <TextField
                     {...params}
-                    label={dictionary?.testForm?.selectTest || 'Select Test'}
-                    placeholder={dictionary?.testForm?.selectTest || 'Select Test'}
+                    label={dictionary?.testForm?.selectTest || 'Sélectionner un test'}
+                    placeholder={dictionary?.testForm?.selectTest || 'Sélectionner un test'}
                   />
                 )}
                 sx={{ mb: 2 }}
@@ -400,11 +401,18 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
                       alignItems='flex-start'
                       sx={{ flexDirection: 'column', alignItems: 'stretch' }}
                     >
-                      <ListItemText primary={test.name} secondary={test.category} />
+                      <ListItemText
+                        primary={test.name}
+                        secondary={
+                          test.category
+                            ? `${dictionary?.testForm?.category || 'Catégorie'}: ${test.category}`
+                            : undefined
+                        }
+                      />
                       <Grid container spacing={2} sx={{ mb: 2 }}>
                         <Grid item xs={12} sm={4}>
                           <TextField
-                            label={dictionary?.testForm?.result || 'Result'}
+                            label={dictionary?.testForm?.result || 'Résultat'}
                             value={testDetails[test.id]?.result_value || ''}
                             onChange={e => handleDetailChange(test.id, 'result_value', e.target.value)}
                             fullWidth
@@ -412,7 +420,7 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
                         </Grid>
                         <Grid item xs={12} sm={2}>
                           <TextField
-                            label={dictionary?.testForm?.unit || 'Unit'}
+                            label={dictionary?.testForm?.unit || 'Unité'}
                             value={testDetails[test.id]?.result_unit || ''}
                             onChange={e => handleDetailChange(test.id, 'result_unit', e.target.value)}
                             fullWidth
@@ -420,7 +428,7 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
                         </Grid>
                         <Grid item xs={12} sm={3}>
                           <TextField
-                            label={dictionary?.testForm?.referenceRange || 'Reference Range'}
+                            label={dictionary?.testForm?.referenceRange || 'Valeurs de référence'}
                             value={testDetails[test.id]?.reference_range || ''}
                             onChange={e => handleDetailChange(test.id, 'reference_range', e.target.value)}
                             fullWidth
@@ -463,7 +471,7 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
                   onClick={fetchAndPrefillOrders}
                   disabled={loading}
                 >
-                  {dictionary?.navigation?.cancel || 'Cancel'}
+                  {dictionary?.navigation?.cancel || 'Annuler'}
                 </Button>
                 <Button
                   type='submit'
@@ -472,7 +480,9 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
                   disabled={loading}
                   startIcon={loading ? <i className='tabler-loader animate-spin' /> : undefined}
                 >
-                  {loading ? dictionary?.testForm?.saving || 'Saving...' : dictionary?.testForm?.submit || 'Submit'}
+                  {loading
+                    ? dictionary?.testForm?.saving || 'Enregistrement...'
+                    : dictionary?.testForm?.save || 'Enregistrer'}
                 </Button>
               </Box>
             </form>
