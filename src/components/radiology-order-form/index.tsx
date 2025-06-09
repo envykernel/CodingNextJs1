@@ -2,10 +2,25 @@
 
 import React, { useState, useEffect } from 'react'
 
-import { Card, CardContent, Button, TextField, Grid, Typography, Alert, IconButton, Autocomplete } from '@mui/material'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
+
+import {
+  Card,
+  CardContent,
+  Button,
+  TextField,
+  Grid,
+  Typography,
+  Alert,
+  IconButton,
+  Autocomplete,
+  Box
+} from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
+import PrintIcon from '@mui/icons-material/Print'
 
 interface ExamType {
   id: number
@@ -34,7 +49,21 @@ interface RadiologyOrderFormProps {
   onSuccess?: () => void
 }
 
+const convertDateToYYYYMMDD = (dateStr: string | null): string | null => {
+  if (!dateStr) return null
+
+  // Check if the date is already in YYYY-MM-DD format
+  if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return dateStr
+
+  // Convert from DD/MM/YYYY to YYYY-MM-DD
+  const [day, month, year] = dateStr.split('/')
+
+  return `${year}-${month}-${day}`
+}
+
 export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }: RadiologyOrderFormProps) {
+  const params = useParams() as { lang: string }
+  const { lang: locale } = params
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -42,7 +71,10 @@ export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }
 
   const [orders, setOrders] = useState<RadiologyOrder[]>(() => {
     if (initialValues && Array.isArray(initialValues) && initialValues.length > 0) {
-      return initialValues
+      return initialValues.map(order => ({
+        ...order,
+        result_date: convertDateToYYYYMMDD(order.result_date)
+      }))
     }
 
     return [
@@ -86,7 +118,35 @@ export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }
     ])
   }
 
-  const removeOrder = (index: number) => {
+  const removeOrder = async (index: number) => {
+    const orderToRemove = orders[index]
+
+    // If it's an existing order (has an ID), delete it from the database
+    if (orderToRemove.id) {
+      try {
+        const response = await fetch(`/api/radiology/orders?id=${orderToRemove.id}`, {
+          method: 'DELETE'
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+
+          throw new Error(errorData.error || 'Failed to delete radiology order')
+        }
+
+        const data = await response.json()
+
+        if (data.visit) {
+          onSuccess?.()
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to delete order')
+
+        return // Don't remove from local state if deletion failed
+      }
+    }
+
+    // Remove from local state if it's a new order or if deletion was successful
     if (orders.length > 1) {
       const newOrders = orders.filter((_, i) => i !== index)
 
@@ -128,38 +188,114 @@ export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }
     setSuccess(false)
 
     try {
-      const ordersToSubmit = orders.map(order => ({
-        exam_type_id: order.exam_type.id,
-        notes: order.notes,
-        status: order.status,
-        result: order.result,
-        result_date: order.result_date
-      }))
+      // Separate orders into existing and new ones
+      const ordersToSubmit = orders.map(order => {
+        const isExisting = 'id' in order && order.id
 
-      const response = await fetch(`/api/visits/${visitId}/radiology-orders`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ orders: ordersToSubmit })
+        return {
+          id: isExisting ? order.id : undefined,
+          exam_type_id: order.exam_type.id,
+          notes: order.notes,
+          status: order.status,
+          result: order.result,
+          result_date: order.result_date // This will be in YYYY-MM-DD format
+        }
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to save radiology orders')
+      // First, update existing orders
+      const existingOrders = ordersToSubmit.filter(order => order.id)
+
+      if (existingOrders.length > 0) {
+        await Promise.all(
+          existingOrders.map(order =>
+            fetch('/api/radiology/orders', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(order)
+            }).then(async response => {
+              if (!response.ok) {
+                const errorData = await response.json()
+
+                throw new Error(errorData.error || 'Failed to update radiology order')
+              }
+            })
+          )
+        )
       }
 
-      await response.json()
+      // Then, create new orders
+      const newOrders = ordersToSubmit.filter(order => !order.id)
+      let updatedVisit = null
+
+      if (newOrders.length > 0) {
+        const response = await fetch('/api/radiology/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ visit_id: visitId, orders: newOrders })
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+
+          throw new Error(errorData.error || 'Failed to save new radiology orders')
+        }
+
+        const data = await response.json()
+
+        updatedVisit = data.visit
+      }
+
+      // If we have updated visit data, use it to update the form
+      if (updatedVisit) {
+        // Transform the orders to match our form state format
+        const updatedOrders = updatedVisit.radiology_orders.map(
+          (order: {
+            id: number
+            exam_type: {
+              id: number
+              name: string
+              category: string | null
+              description: string | null
+            }
+            notes: string | null
+            status: string
+            result: string | null
+            result_date: string | null
+          }) => ({
+            id: order.id,
+            exam_type: {
+              id: order.exam_type.id,
+              name: order.exam_type.name,
+              category: order.exam_type.category,
+              description: order.exam_type.description
+            },
+            notes: order.notes || '',
+            status: order.status as 'pending' | 'in_progress' | 'completed' | 'cancelled',
+            result: order.result,
+            result_date: convertDateToYYYYMMDD(order.result_date)
+          })
+        )
+
+        // If there are no orders, add an empty one
+        if (updatedOrders.length === 0) {
+          updatedOrders.push({
+            exam_type: { id: 0, name: '', category: null, description: null },
+            notes: '',
+            status: 'pending',
+            result: null,
+            result_date: null
+          })
+        }
+
+        setOrders(updatedOrders)
+      }
+
       onSuccess?.()
       setSuccess(true)
-      setOrders([
-        {
-          exam_type: { id: 0, name: '', category: null, description: null },
-          notes: '',
-          status: 'pending',
-          result: null,
-          result_date: null
-        }
-      ])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -170,14 +306,32 @@ export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }
   return (
     <Card>
       <CardContent>
-        <Typography variant='h6' className='mb-4'>
-          Radiology Orders
-        </Typography>
-        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-          <div className='mb-4'>
-            <Button variant='outlined' color='primary' startIcon={<AddIcon />} onClick={addOrder} className='mb-4'>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+          <Typography variant='h6'>Radiology Orders</Typography>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button variant='outlined' color='primary' startIcon={<AddIcon />} onClick={addOrder}>
               Add Radiology Order
             </Button>
+            {initialValues && initialValues.length > 0 && initialValues[0].id && (
+              <Link
+                href={`/${locale}/apps/radiology/print/${initialValues[0].id}`}
+                target='_blank'
+                rel='noopener'
+                passHref
+              >
+                <Button
+                  variant='outlined'
+                  startIcon={<PrintIcon />}
+                  disabled={orders.length === 0 || (orders.length === 1 && !orders[0].exam_type.name)}
+                >
+                  Print Orders
+                </Button>
+              </Link>
+            )}
+          </Box>
+        </Box>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+          <div className='mb-4'>
             {orders.map((order, index) => (
               <Card key={index} className='mb-4 p-4' variant='outlined'>
                 <Grid container spacing={2}>

@@ -154,3 +154,53 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: 'Failed to update radiology order' }, { status: 500 })
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json({ error: 'Order ID is required' }, { status: 400 })
+    }
+
+    const orderId = parseInt(id)
+
+    // Get the order to find the visit_id for updating the visit data
+    const order = await prisma.radiology_order.findUnique({
+      where: { id: orderId },
+      select: { visit_id: true }
+    })
+
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    }
+
+    // Delete the order
+    await prisma.radiology_order.delete({
+      where: { id: orderId }
+    })
+
+    // If the order was associated with a visit, fetch the updated visit data
+    if (order.visit_id) {
+      const updatedVisit = await prisma.patient_visit.findUnique({
+        where: { id: order.visit_id },
+        include: {
+          radiology_orders: {
+            include: {
+              exam_type: true
+            }
+          }
+        }
+      })
+
+      return NextResponse.json({ success: true, visit: updatedVisit })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting radiology order:', error)
+
+    return NextResponse.json({ error: 'Failed to delete radiology order' }, { status: 500 })
+  }
+}
