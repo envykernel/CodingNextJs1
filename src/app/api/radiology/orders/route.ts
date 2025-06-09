@@ -35,10 +35,14 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { visit_id, exam_type_id, notes, status, ordered_at } = body
+    const { visit_id, orders } = body
 
     if (!visit_id || typeof visit_id !== 'number') {
       return NextResponse.json({ error: 'Valid visit ID is required' }, { status: 400 })
+    }
+
+    if (!Array.isArray(orders) || orders.length === 0) {
+      return NextResponse.json({ error: 'At least one order is required' }, { status: 400 })
     }
 
     const visit = await prisma.patient_visit.findUnique({
@@ -54,21 +58,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Visit not found' }, { status: 404 })
     }
 
-    const order = await prisma.radiology_order.create({
-      data: {
-        visit_id,
-        exam_type_id,
-        notes,
-        status: status || 'pending',
-        patient_id: visit.patient_id,
-        organisation_id: visit.organisation_id,
-        ordered_at: ordered_at || formatDateToDDMMYYYY(new Date()),
-        doctor_id: visit.doctor_id || undefined
-      },
-      include: {
-        exam_type: true
-      }
-    })
+    // Create all orders in a transaction
+    const createdOrders = await prisma.$transaction(
+      orders.map(order =>
+        prisma.radiology_order.create({
+          data: {
+            visit_id,
+            exam_type_id: order.exam_type_id,
+            notes: order.notes,
+            status: order.status || 'pending',
+            patient_id: visit.patient_id,
+            organisation_id: visit.organisation_id,
+            ordered_at: formatDateToDDMMYYYY(new Date()),
+            doctor_id: visit.doctor_id || undefined,
+            result: order.result || null,
+            result_date: order.result_date || null
+          },
+          include: {
+            exam_type: true
+          }
+        })
+      )
+    )
 
     const updatedVisit = await prisma.patient_visit.findUnique({
       where: { id: visit_id },
@@ -81,9 +92,9 @@ export async function POST(request: Request) {
       }
     })
 
-    return NextResponse.json({ order, visit: updatedVisit })
+    return NextResponse.json({ orders: createdOrders, visit: updatedVisit })
   } catch (error) {
-    console.error('Error creating radiology order:', error)
+    console.error('Error creating radiology orders:', error)
 
     return NextResponse.json({ error: 'Failed to create radiology order' }, { status: 500 })
   }
