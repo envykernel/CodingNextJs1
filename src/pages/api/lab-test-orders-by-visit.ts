@@ -11,7 +11,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const orders = await prisma.lab_test_order.findMany({
       where: { visit_id: Number(visitId) },
-      include: { test_type: true }
+      include: {
+        test_type: true,
+        doctor: {
+          select: {
+            id: true,
+            name: true,
+            specialty: true
+          }
+        }
+      }
     })
 
     res.status(200).json(orders)

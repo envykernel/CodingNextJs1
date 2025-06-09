@@ -1,5 +1,7 @@
 'use client'
 import React, { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
 import {
   Card,
@@ -14,7 +16,9 @@ import {
   Alert,
   Grid,
   Box,
-  CircularProgress
+  CircularProgress,
+  IconButton,
+  Tooltip
 } from '@mui/material'
 
 interface LabTestType {
@@ -25,6 +29,12 @@ interface LabTestType {
   default_reference_range?: string
 }
 
+interface Doctor {
+  id: number
+  name: string
+  specialty?: string | null
+}
+
 interface LabTestOrderFormProps {
   visitId: number
   dictionary: any
@@ -33,13 +43,17 @@ interface LabTestOrderFormProps {
 }
 
 const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary, initialValues, onVisitUpdate }) => {
+  const { data: session } = useSession()
   const [testTypes, setTestTypes] = useState<LabTestType[]>([])
+  const [doctors, setDoctors] = useState<Doctor[]>([])
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null)
   const [selectedTests, setSelectedTests] = useState<LabTestType[]>([])
   const [testDetails, setTestDetails] = useState<any>({})
   const [success, setSuccess] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
+  const [savedOrderId, setSavedOrderId] = useState<number | null>(null)
 
   const fetchAndPrefillOrders = useCallback(() => {
     setInitialLoading(true)
@@ -48,6 +62,12 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
       .then(res => res.json())
       .then(orders => {
         if (!Array.isArray(orders)) return
+        if (orders.length > 0) {
+          setSavedOrderId(orders[0].id)
+          if (orders[0].doctor) {
+            setSelectedDoctor(orders[0].doctor)
+          }
+        }
         setSelectedTests(
           orders.map((order: any) => ({
             id: order.test_type.id,
@@ -74,6 +94,30 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
       })
       .finally(() => setInitialLoading(false))
   }, [visitId])
+
+  // Fetch doctors when component mounts
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch('/api/doctors')
+        if (!res.ok) throw new Error('Failed to fetch doctors')
+        const data = await res.json()
+        setDoctors(data)
+
+        // If current user is a doctor, find and select them
+        if (session?.user?.role === 'DOCTOR') {
+          const currentDoctor = data.find((d: Doctor) => d.name === session.user.name)
+          if (currentDoctor) {
+            setSelectedDoctor(currentDoctor)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching doctors:', error)
+      }
+    }
+
+    fetchDoctors()
+  }, [session])
 
   // Only fetch data when component mounts
   useEffect(() => {
@@ -114,22 +158,62 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
     }))
   }
 
+  // Add logging to doctor selection change
+  const handleDoctorChange = (_e: any, value: Doctor | null) => {
+    console.log('Doctor selection changed:', value) // Debug log
+    if (!value) {
+      console.log('No doctor selected in handleDoctorChange')
+      setSelectedDoctor(null)
+      return
+    }
+    if (!value.id) {
+      console.log('Selected doctor has no id:', value)
+      setError(dictionary?.testForm?.selectDoctor || 'Invalid doctor selection')
+      return
+    }
+    console.log('Setting selected doctor:', value)
+    setSelectedDoctor(value)
+    setError(null)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSuccess(null)
     setError(null)
     setLoading(true)
 
+    console.log('Form submission - Current state:', {
+      selectedDoctor,
+      doctors,
+      selectedTests,
+      testDetails
+    })
+
+    // Validate that a doctor is selected first
+    if (!selectedDoctor) {
+      console.log('No doctor selected in handleSubmit')
+      setError(dictionary?.testForm?.selectDoctor || 'Please select a doctor')
+      setLoading(false)
+      return
+    }
+
+    if (!selectedDoctor.id) {
+      console.log('Selected doctor has no id in handleSubmit:', selectedDoctor)
+      setError(dictionary?.testForm?.selectDoctor || 'Invalid doctor selection')
+      setLoading(false)
+      return
+    }
+
     try {
       // Get the visit data to include required fields
       const visitRes = await fetch(`/api/visits/${visitId}`)
-
       if (!visitRes.ok) throw new Error('Failed to fetch visit data')
       const visitData = await visitRes.json()
 
+      console.log('Visit data:', visitData)
+
       const tests = selectedTests.map(test => {
         const resultValue = testDetails[test.id]?.result_value || ''
-
         return {
           id: test.id,
           result_value: resultValue,
@@ -140,38 +224,124 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
         }
       })
 
+      const requestBody = {
+        visitId,
+        patientId: visitData.visit.patient_id,
+        doctorId: selectedDoctor.id,
+        organisationId: visitData.visit.organisation_id,
+        tests
+      }
+
+      console.log('Submitting request with body:', requestBody)
+
       const res = await fetch('/api/lab-test-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          visitId,
-          patientId: visitData.visit.patient_id,
-          doctorId: visitData.visit.doctor?.id,
-          organisationId: visitData.visit.organisation_id,
-          tests
-        })
+        body: JSON.stringify(requestBody)
       })
 
       if (res.ok) {
         const data = await res.json()
+        console.log('Response data:', data)
         setSuccess(dictionary?.testForm?.savedSuccessfully || 'Test order saved successfully!')
 
-        if (onVisitUpdate) {
+        // Get the first lab test order ID from the results
+        if (data.results && data.results.length > 0) {
+          setSavedOrderId(data.results[0].id)
+        }
+
+        if (onVisitUpdate && data.visit) {
           onVisitUpdate(data.visit)
         }
       } else {
-        setError(dictionary?.testForm?.error || 'Error saving lab test orders')
+        const errorData = await res.json().catch(() => ({}))
+        console.error('API error:', errorData)
+        setError(errorData.error || dictionary?.testForm?.error || 'Error saving lab test orders')
       }
-    } catch {
+    } catch (error) {
+      console.error('Error saving lab test orders:', error)
       setError(dictionary?.testForm?.error || 'Error saving lab test orders')
     } finally {
       setLoading(false)
     }
   }
 
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+
+    const content = `
+      <html>
+        <head>
+          <title>${dictionary?.testForm?.title || 'Test Order'}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            .test-item { margin-bottom: 20px; }
+            .test-name { font-weight: bold; margin-bottom: 10px; }
+            .test-details { margin-left: 20px; }
+            .test-row { margin-bottom: 5px; }
+            @media print {
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>${dictionary?.testForm?.title || 'Test Order'}</h1>
+          <div class="no-print">
+            <button onclick="window.print()">Print</button>
+          </div>
+          ${selectedTests
+            .map(
+              test => `
+            <div class="test-item">
+              <div class="test-name">${test.name}</div>
+              <div class="test-details">
+                <div class="test-row">
+                  <strong>${dictionary?.testForm?.result || 'Result'}:</strong> ${testDetails[test.id]?.result_value || ''}
+                </div>
+                <div class="test-row">
+                  <strong>${dictionary?.testForm?.unit || 'Unit'}:</strong> ${testDetails[test.id]?.result_unit || ''}
+                </div>
+                <div class="test-row">
+                  <strong>${dictionary?.testForm?.referenceRange || 'Reference Range'}:</strong> ${testDetails[test.id]?.reference_range || ''}
+                </div>
+                <div class="test-row">
+                  <strong>${dictionary?.testForm?.notes || 'Notes'}:</strong> ${testDetails[test.id]?.notes || ''}
+                </div>
+              </div>
+            </div>
+          `
+            )
+            .join('')}
+        </body>
+      </html>
+    `
+
+    printWindow.document.write(content)
+    printWindow.document.close()
+  }
+
   return (
     <Card>
-      <CardHeader title={dictionary?.testForm?.title || 'Test Order'} />
+      <CardHeader
+        title={dictionary?.testForm?.title || 'Test Order'}
+        action={
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {(savedOrderId || initialValues?.id) && (
+              <Tooltip title={dictionary?.testForm?.print || 'Print Test Order'}>
+                <Link
+                  href={`/${dictionary?.locale || 'fr'}/apps/lab-tests/print/${savedOrderId || initialValues?.id}`}
+                  target='_blank'
+                >
+                  <IconButton color='primary'>
+                    <i className='tabler-printer' />
+                  </IconButton>
+                </Link>
+              </Tooltip>
+            )}
+          </Box>
+        }
+      />
       <CardContent>
         {initialLoading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
@@ -185,6 +355,28 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
               </Alert>
             )}
             <form onSubmit={handleSubmit}>
+              <Autocomplete
+                options={doctors}
+                getOptionLabel={option => option.name}
+                value={selectedDoctor}
+                onChange={handleDoctorChange}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label={dictionary?.doctor || 'Doctor'}
+                    placeholder={dictionary?.selectDoctor || 'Select Doctor'}
+                    required
+                    error={!selectedDoctor?.id && error !== null}
+                    helperText={
+                      !selectedDoctor?.id && error !== null
+                        ? dictionary?.testForm?.selectDoctor || 'Please select a doctor'
+                        : ''
+                    }
+                  />
+                )}
+                sx={{ mb: 2 }}
+              />
               <Autocomplete
                 multiple
                 options={testTypes}

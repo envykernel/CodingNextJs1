@@ -59,6 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return prisma.lab_test_order.update({
             where: { id: existing.id },
             data: {
+              doctor_id: doctorId,
               result_value: test.result_value,
               result_unit: test.result_unit,
               reference_range: test.reference_range,
@@ -72,7 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             data: {
               visit_id: visitId,
               patient_id: patientId,
-              doctor_id: doctorId || null,
+              doctor_id: doctorId,
               test_type_id: test.id,
               organisation_id: organisationId,
               result_value: test.result_value,
@@ -86,7 +87,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
     )
 
-    res.status(200).json({ success: true, results })
+    // Fetch the updated visit data to return
+    const updatedVisit = await prisma.patient_visit.findUnique({
+      where: { id: visitId },
+      include: {
+        lab_test_orders: {
+          include: {
+            test_type: true,
+            doctor: true
+          }
+        }
+      }
+    })
+
+    res.status(200).json({ success: true, results, visit: updatedVisit })
   } catch (error) {
     console.error('Error saving lab test orders:', error)
     res.status(500).json({ error: 'Failed to save lab test orders' })
