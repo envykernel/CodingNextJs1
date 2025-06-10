@@ -1007,6 +1007,28 @@
         "invoiceStatus": {
             "title": "Invoice Status",
             "totalInvoices": "Total Invoices"
+        },
+        "errors": {
+            "unauthorized": {
+                "title": "Authentication Required",
+                "message": "Please sign in to view statistics"
+            },
+            "organization": {
+                "title": "Organization Error",
+                "message": "Unable to identify your organization"
+            },
+            "database": {
+                "title": "Database Connection Error",
+                "message": "Unable to connect to the database. Please try again later or contact support if the issue persists."
+            },
+            "timeout": {
+                "title": "Request Timeout",
+                "message": "The request took too long to complete. Please try again."
+            },
+            "generic": {
+                "title": "Unable to Load Statistics",
+                "message": "We're having trouble loading the statistics. Please try again later."
+            }
         }
     },
     "appointmentStatistics": {

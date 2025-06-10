@@ -1748,5 +1748,27 @@
         },
         "item": "Élément",
         "addNew": "Ajouter un autre élément"
+    },
+    "errors": {
+        "unauthorized": {
+            "title": "Authentification Requise",
+            "message": "Veuillez vous connecter pour voir les statistiques"
+        },
+        "organization": {
+            "title": "Erreur d'Organisation",
+            "message": "Impossible d'identifier votre organisation"
+        },
+        "database": {
+            "title": "Erreur de Connexion à la Base de Données",
+            "message": "Impossible de se connecter à la base de données. Veuillez réessayer plus tard ou contacter le support si le problème persiste."
+        },
+        "timeout": {
+            "title": "Délai d'Attente Dépassé",
+            "message": "La requête a pris trop de temps à s'exécuter. Veuillez réessayer."
+        },
+        "generic": {
+            "title": "Impossible de Charger les Statistiques",
+            "message": "Nous rencontrons des difficultés pour charger les statistiques. Veuillez réessayer plus tard."
+        }
     }
 }
