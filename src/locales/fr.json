@@ -1783,7 +1783,8 @@
         "aria": {
             "patient": "rechercher par nom de patient",
             "invoice": "rechercher des factures par nom de patient"
-        }
+        },
+        "noResults": "Aucun résultat trouvé"
     },
     "loading": {
         "navigatingToPatient": "Navigation vers les détails du patient...",

@@ -1730,7 +1730,8 @@
         "aria": {
             "patient": "search by patient name",
             "invoice": "search invoices by patient name"
-        }
+        },
+        "noResults": "No results found"
     },
     "loading": {
         "navigatingToPatient": "Navigating to patient details...",
