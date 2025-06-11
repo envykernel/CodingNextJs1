@@ -3,6 +3,7 @@
 // React Imports
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import { useDispatch } from 'react-redux'
 
 // MUI Imports
 import Paper from '@mui/material/Paper'
@@ -29,6 +30,9 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 // Context Imports
 import { useTranslation } from '@/contexts/translationContext'
 
+// Redux Imports
+import { setLoading } from '@/redux-store/slices/loading'
+
 // Types
 type Patient = {
   id: number
@@ -52,6 +56,7 @@ type SearchResult = Patient | Invoice
 const PatientSearchBar = () => {
   const { t } = useTranslation()
   const router = useRouter()
+  const dispatch = useDispatch()
   const params = useParams<{ lang: string }>()
   const [searchQuery, setSearchQuery] = useState('')
   const [searchType, setSearchType] = useState<SearchType>('patient')
@@ -84,9 +89,19 @@ const PatientSearchBar = () => {
     setIsLoading(true)
     try {
       // Always search patients first
-      const patientResponse = await fetch(`/api/patients/search?q=${encodeURIComponent(query)}`)
+      const patientResponse = await fetch(`/api/patients/search?q=${encodeURIComponent(query)}`, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
 
       if (!patientResponse.ok) {
+        if (patientResponse.status === 401) {
+          // Handle unauthorized - redirect to login
+          router.push(`/${params?.lang || 'en'}/login`)
+          return
+        }
         const errorText = await patientResponse.text()
         console.error('Patient search failed:', errorText)
         throw new Error('Patient search failed')
@@ -100,9 +115,19 @@ const PatientSearchBar = () => {
         // For invoice search, get invoices for the found patients
         const patientIds = patientData.map((p: Patient) => p.id)
         if (patientIds.length > 0) {
-          const invoiceResponse = await fetch(`/api/invoices/search?patientIds=${patientIds.join(',')}`)
+          const invoiceResponse = await fetch(`/api/invoices/search?patientIds=${patientIds.join(',')}`, {
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
 
           if (!invoiceResponse.ok) {
+            if (invoiceResponse.status === 401) {
+              // Handle unauthorized - redirect to login
+              router.push(`/${params?.lang || 'en'}/login`)
+              return
+            }
             const errorText = await invoiceResponse.text()
             console.error('Invoice search failed:', errorText)
             throw new Error('Invoice search failed')
@@ -124,15 +149,28 @@ const PatientSearchBar = () => {
     }
   }
 
-  const handleSelect = (item: SearchResult) => {
+  const handleSelect = async (item: SearchResult) => {
     const lang = params?.lang || 'en'
-    if (searchType === 'patient') {
-      router.push(`/${lang}/apps/patient/view/${item.id}`)
-    } else {
-      router.push(`/${lang}/apps/invoice/preview/${(item as Invoice).id}`)
-    }
+    const message = searchType === 'patient' ? t('loading.navigatingToPatient') : t('loading.navigatingToInvoice')
+
+    // Set loading state before navigation
+    dispatch(setLoading({ isLoading: true, message }))
     setShowResults(false)
     setSearchQuery('')
+
+    try {
+      if (searchType === 'patient') {
+        await router.push(`/${lang}/apps/patient/view/${item.id}`)
+      } else {
+        await router.push(`/${lang}/apps/invoice/preview/${(item as Invoice).id}`)
+      }
+    } catch (error) {
+      console.error('Navigation error:', error)
+      // Only clear loading state if navigation fails
+      dispatch(setLoading({ isLoading: false }))
+    }
+    // Note: We don't clear loading state here anymore
+    // The GlobalLoading component will handle clearing the state when the component unmounts
   }
 
   const handleSearchTypeChange = (type: SearchType) => {

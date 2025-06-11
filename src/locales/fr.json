@@ -1784,5 +1784,9 @@
             "patient": "rechercher par nom de patient",
             "invoice": "rechercher des factures par nom de patient"
         }
+    },
+    "loading": {
+        "navigatingToPatient": "Navigation vers les détails du patient...",
+        "navigatingToInvoice": "Navigation vers les détails de la facture..."
     }
 }

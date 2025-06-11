@@ -1731,5 +1731,9 @@
             "patient": "search by patient name",
             "invoice": "search invoices by patient name"
         }
+    },
+    "loading": {
+        "navigatingToPatient": "Navigating to patient details...",
+        "navigatingToInvoice": "Navigating to invoice details..."
     }
 }

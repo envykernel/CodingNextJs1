@@ -68,6 +68,22 @@ const formatDateConsistent = (dateString: string) => {
 
 interface OverviewTabProps {
   patientData: any
+  appointments: Array<{
+    id: number
+    appointment_date: string
+    status: string
+    doctor: {
+      id: number
+      name: string
+      specialty: string | null
+      email: string | null
+      phone_number: string | null
+    }
+    visit?: {
+      id: number
+      status: string
+    }
+  }>
 }
 
 interface Measurement {
@@ -89,7 +105,7 @@ const formatDate = (dateString: string | null | undefined) => {
   return d.toISOString().slice(0, 10)
 }
 
-const OverviewTab = ({ patientData }: OverviewTabProps) => {
+const OverviewTab = ({ patientData, appointments }: OverviewTabProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const [recentMedicalHistory, setRecentMedicalHistory] = useState<any[]>([])
@@ -190,33 +206,6 @@ const OverviewTab = ({ patientData }: OverviewTabProps) => {
     fetchLastVisit()
   }, [patientData?.id])
 
-  // Fetch upcoming appointments
-  useEffect(() => {
-    const fetchUpcomingAppointments = async () => {
-      try {
-        if (!patientData?.id) return
-
-        const patientId = Number(patientData.id)
-        if (isNaN(patientId)) return
-
-        const response = await fetch(`/api/patient-appointments?patientId=${patientId}&status=scheduled&limit=3`)
-        if (!response.ok) {
-          const errorData = await response.json()
-          console.error('API Error:', errorData)
-          throw new Error(errorData.error || 'Failed to fetch upcoming appointments')
-        }
-
-        const data = await response.json()
-        console.log('Upcoming appointments data:', data)
-        setUpcomingAppointments(data)
-      } catch (error) {
-        console.error('Error in fetchUpcomingAppointments:', error)
-      }
-    }
-
-    fetchUpcomingAppointments()
-  }, [patientData?.id])
-
   // Fetch active prescriptions
   useEffect(() => {
     const fetchActivePrescriptions = async () => {
@@ -226,7 +215,7 @@ const OverviewTab = ({ patientData }: OverviewTabProps) => {
         const patientId = Number(patientData.id)
         if (isNaN(patientId)) return
 
-        const response = await fetch(`/api/patient-prescriptions?patientId=${patientId}&status=active&limit=3`)
+        const response = await fetch(`/api/prescriptions/patient/${patientId}`)
         if (!response.ok) {
           const errorData = await response.json()
           console.error('API Error:', errorData)
@@ -235,7 +224,16 @@ const OverviewTab = ({ patientData }: OverviewTabProps) => {
 
         const data = await response.json()
         console.log('Active prescriptions data:', data)
-        setActivePrescriptions(data)
+        // Filter active prescriptions (those without an end date or with a future end date)
+        const activePrescriptions = data
+          .filter((prescription: any) => {
+            const endDate = prescription.medications[0]?.duration
+              ? new Date(prescription.medications[0].duration)
+              : null
+            return !endDate || endDate > new Date()
+          })
+          .slice(0, 3)
+        setActivePrescriptions(activePrescriptions)
       } catch (error) {
         console.error('Error in fetchActivePrescriptions:', error)
       }
@@ -243,6 +241,32 @@ const OverviewTab = ({ patientData }: OverviewTabProps) => {
 
     fetchActivePrescriptions()
   }, [patientData?.id])
+
+  // Fetch upcoming appointments
+  useEffect(() => {
+    const fetchUpcomingAppointments = async () => {
+      try {
+        if (!patientData?.id) return
+
+        const patientId = Number(patientData.id)
+        if (isNaN(patientId)) return
+
+        // Use the appointments data passed as prop instead of making a new API call
+        const upcomingAppointments = appointments
+          .filter(
+            appointment => appointment.status === 'scheduled' && new Date(appointment.appointment_date) > new Date()
+          )
+          .sort((a, b) => new Date(a.appointment_date).getTime() - new Date(b.appointment_date).getTime())
+          .slice(0, 3)
+
+        setUpcomingAppointments(upcomingAppointments)
+      } catch (error) {
+        console.error('Error in fetchUpcomingAppointments:', error)
+      }
+    }
+
+    fetchUpcomingAppointments()
+  }, [patientData?.id, appointments])
 
   // Fetch vital signs trend data
   useEffect(() => {
@@ -295,12 +319,12 @@ const OverviewTab = ({ patientData }: OverviewTabProps) => {
           {/* Upcoming Appointments */}
           <Grid item xs={12} sm={6} md={4}>
             <CardStatsVertical
-              stats={upcomingAppointments.length.toString()}
+              stats={upcomingAppointments.length > 0 ? upcomingAppointments.length.toString() : t('patient.noData')}
               title={t('patient.upcomingAppointments') || 'Upcoming Appointments'}
               subtitle={t('patient.scheduledVisits') || 'Scheduled Visits'}
               avatarIcon='tabler-calendar-event'
               avatarColor='info'
-              chipText={t('patient.scheduled') || 'Scheduled'}
+              chipText={upcomingAppointments.length > 0 ? t('patient.scheduled') || 'Scheduled' : t('patient.noData')}
               chipColor='info'
               chipVariant='tonal'
             />
@@ -309,7 +333,7 @@ const OverviewTab = ({ patientData }: OverviewTabProps) => {
           {/* Last Visit */}
           <Grid item xs={12} sm={6} md={4}>
             <CardStatsVertical
-              stats={lastVisit?.appointment_date ? formatDateConsistent(lastVisit.appointment_date) : '-'}
+              stats={lastVisit?.visit_date ? formatDateConsistent(lastVisit.visit_date) : t('patient.noData')}
               title={t('patient.lastVisit') || 'Last Visit'}
               subtitle={t('patient.lastVisitDate') || 'Last Visit Date'}
               avatarIcon='tabler-clock'
@@ -317,7 +341,7 @@ const OverviewTab = ({ patientData }: OverviewTabProps) => {
               chipText={
                 lastVisit?.status
                   ? t(`patient.visitStatus.${lastVisit.status}`) || lastVisit.status
-                  : t('patient.unknown')
+                  : t('patient.noData')
               }
               chipColor={
                 lastVisit?.status === 'completed'
@@ -335,7 +359,7 @@ const OverviewTab = ({ patientData }: OverviewTabProps) => {
           {/* BMI Status */}
           <Grid item xs={12} sm={6} md={4}>
             <CardStatsVertical
-              stats={bmi || '-'}
+              stats={bmi ? bmi.toString() : t('patient.noData')}
               title={t('patient.bmi') || 'BMI'}
               subtitle={t('patient.bodyMassIndex') || 'Body Mass Index'}
               avatarIcon='tabler-weight'
@@ -359,7 +383,7 @@ const OverviewTab = ({ patientData }: OverviewTabProps) => {
                       : Number(bmi) < 30
                         ? t('patient.overweight') || 'Overweight'
                         : t('patient.obese') || 'Obese'
-                  : '-'
+                  : t('patient.noData')
               }
               chipColor={
                 bmi
