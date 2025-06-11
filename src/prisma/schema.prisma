@@ -218,6 +218,7 @@ model organisation {
   contacts                Contact[]
   certificateTemplates    CertificateTemplate[]
   certificates            Certificate[]
+  logs                    Log[]
 }
 
 model patient_appointment {
@@ -256,6 +257,7 @@ model UserInternal {
   shortcuts      UserShortcut[]
   notifications  NotificationRead[]
   contacts       Contact[]
+  logs           Log[]
 }
 
 model patient_visit {
@@ -754,4 +756,43 @@ model Certificate {
   @@index([status])
   @@index([issuedAt])
   @@index([parentVersionId])
+}
+
+enum LogActionType {
+  CREATE
+  UPDATE
+  DELETE
+  VIEW
+  PRINT
+  EXPORT
+  LOGIN
+  LOGOUT
+  ARCHIVE
+  RESTORE
+  OTHER
+}
+
+model Log {
+  id              Int           @id @default(autoincrement())
+  organisationId  Int
+  userId          Int?
+  actionType      LogActionType
+  entityType      String        @db.VarChar(50)  // e.g., "invoice", "patient", "prescription", etc.
+  entityId        Int?          // ID of the affected entity
+  description     String        @db.Text         // Detailed description of the action
+  metadata        Json?         // Additional context-specific data
+  ipAddress       String?       @db.VarChar(45)  // IPv4 or IPv6 address
+  userAgent       String?       @db.VarChar(255) // Browser/device information
+  createdAt       DateTime      @default(now())
+  
+  // Relations
+  organisation    organisation  @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  user            UserInternal? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([organisationId])
+  @@index([userId])
+  @@index([actionType])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([createdAt])
 }

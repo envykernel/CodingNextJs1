@@ -9,6 +9,10 @@
 // Next Imports
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/libs/auth'
+import { LogActionType } from '@prisma/client'
+import { logAction } from '@/libs/logger'
 
 // Data Imports
 import { db } from '@/fake-db/apps/invoice'
@@ -135,6 +139,23 @@ export async function POST(req: NextRequest) {
     },
     include: { lines: true }
   })
+
+  // Add logging after successful invoice creation
+  try {
+    await logAction({
+      actionType: LogActionType.CREATE,
+      entityType: 'invoice',
+      entityId: invoice.id,
+      description: `Created invoice ${invoice.invoice_number}`,
+      metadata: {
+        invoiceNumber: invoice.invoice_number
+      },
+      request: req
+    })
+  } catch (error) {
+    // Log the error but don't fail the invoice creation
+    throw new Error(`Invoice created but logging failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
 
   return NextResponse.json(invoice)
 }
