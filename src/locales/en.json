@@ -1721,23 +1721,19 @@
     "search": {
         "placeholder": {
             "patient": "Search patients by name...",
-            "invoice": "Search invoices by patient name...",
-            "visit": "Search visits by patient name..."
+            "invoice": "Search invoices by patient name..."
         },
         "type": {
             "patient": "Search Patients",
-            "invoice": "Search Invoices",
-            "visit": "Search Visits"
+            "invoice": "Search Invoices"
         },
         "aria": {
             "patient": "search by patient name",
-            "invoice": "search invoices by patient name",
-            "visit": "search visits by patient name"
+            "invoice": "search invoices by patient name"
         }
     },
     "loading": {
         "navigatingToPatient": "Navigating to patient details...",
-        "navigatingToInvoice": "Navigating to invoice details...",
-        "navigatingToVisit": "Navigating to visit details..."
+        "navigatingToInvoice": "Navigating to invoice details..."
     }
 }
