@@ -3,6 +3,8 @@ import type { NextRequest } from 'next/server'
 
 import { getToken } from 'next-auth/jwt'
 
+import { patientProtectionMiddleware } from './middleware/patientProtection'
+
 // Paths that don't require organization check
 const publicPaths = [
   '/fr/login',
@@ -22,6 +24,16 @@ const publicPaths = [
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Apply Arcjet protection for patient routes
+  if (pathname.startsWith('/api/')) {
+    const protectionResult = await patientProtectionMiddleware(request)
+
+    if (protectionResult) {
+      return protectionResult
+    }
+  }
+
   const token = await getToken({ req: request })
 
   // Handle root path

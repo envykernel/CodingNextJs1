@@ -78,9 +78,16 @@ const PatientSearchBar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query)
-    if (!query.trim()) {
+  // Handle Enter key press
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      handleSearch()
+    }
+  }
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
       setSearchResults([])
       setShowResults(false)
       return
@@ -89,7 +96,7 @@ const PatientSearchBar = () => {
     setIsLoading(true)
     try {
       // Always search patients first
-      const patientResponse = await fetch(`/api/patients/search?q=${encodeURIComponent(query)}`, {
+      const patientResponse = await fetch(`/api/patients/search?q=${encodeURIComponent(searchQuery)}`, {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
@@ -206,27 +213,7 @@ const PatientSearchBar = () => {
           bgcolor: 'background.paper'
         }}
       >
-        <IconButton sx={{ p: '10px' }} aria-label='search'>
-          <SearchIcon />
-        </IconButton>
-        <InputBase
-          sx={{ ml: 1, flex: 1 }}
-          placeholder={searchType === 'patient' ? t('search.placeholder.patient') : t('search.placeholder.invoice')}
-          value={searchQuery}
-          onChange={e => handleSearch(e.target.value)}
-          onFocus={() => searchQuery && setShowResults(true)}
-          inputProps={{
-            'aria-label': searchType === 'patient' ? t('search.aria.patient') : t('search.aria.invoice')
-          }}
-          endAdornment={
-            isLoading && (
-              <InputAdornment position='end'>
-                <CircularProgress size={20} />
-              </InputAdornment>
-            )
-          }
-        />
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, pr: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, pl: 1 }}>
           <Tooltip title={t('search.type.patient')}>
             <IconButton
               size='small'
@@ -258,6 +245,27 @@ const PatientSearchBar = () => {
             </IconButton>
           </Tooltip>
         </Box>
+        <InputBase
+          sx={{ ml: 1, flex: 1 }}
+          placeholder={searchType === 'patient' ? t('search.placeholder.patient') : t('search.placeholder.invoice')}
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          onKeyPress={handleKeyPress}
+          onFocus={() => searchQuery && setShowResults(true)}
+          inputProps={{
+            'aria-label': searchType === 'patient' ? t('search.aria.patient') : t('search.aria.invoice')
+          }}
+          endAdornment={
+            isLoading && (
+              <InputAdornment position='end'>
+                <CircularProgress size={20} />
+              </InputAdornment>
+            )
+          }
+        />
+        <IconButton sx={{ p: '10px' }} aria-label='search' onClick={handleSearch} disabled={isLoading}>
+          <SearchIcon />
+        </IconButton>
       </Paper>
 
       <Popper
