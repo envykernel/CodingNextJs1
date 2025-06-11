@@ -2,6 +2,7 @@
 
 // Next Imports
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 
 // Third-party Imports
 import classnames from 'classnames'
@@ -15,6 +16,7 @@ import { verticalLayoutClasses } from '@layouts/utils/layoutClasses'
 const FooterContent = () => {
   // Hooks
   const { isBreakpointReached } = useVerticalNav()
+  const params = useParams()
 
   return (
     <div
@@ -25,21 +27,8 @@ const FooterContent = () => {
       </p>
       {!isBreakpointReached && (
         <div className='flex items-center gap-4'>
-          <Link href='https://themeforest.net/licenses/standard' target='_blank' className='text-primary'>
-            License
-          </Link>
-          <Link href='https://themeforest.net/user/pixinvent/portfolio' target='_blank' className='text-primary'>
-            More Themes
-          </Link>
-          <Link
-            href='https://demos.pixinvent.com/vuexy-nextjs-admin-template/documentation'
-            target='_blank'
-            className='text-primary'
-          >
-            Documentation
-          </Link>
-          <Link href='https://pixinvent.ticksy.com' target='_blank' className='text-primary'>
-            Support
+          <Link href={`/${params?.lang || 'en'}/pages/faq`} className='text-primary'>
+            FAQ
           </Link>
         </div>
       )}
