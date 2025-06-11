@@ -1774,19 +1774,23 @@
     "search": {
         "placeholder": {
             "patient": "Rechercher des patients par nom...",
-            "invoice": "Rechercher des factures par nom de patient..."
+            "invoice": "Rechercher des factures par nom de patient...",
+            "visit": "Rechercher des visites par nom de patient..."
         },
         "type": {
             "patient": "Rechercher des Patients",
-            "invoice": "Rechercher des Factures"
+            "invoice": "Rechercher des Factures",
+            "visit": "Rechercher des Visites"
         },
         "aria": {
             "patient": "rechercher par nom de patient",
-            "invoice": "rechercher des factures par nom de patient"
+            "invoice": "rechercher des factures par nom de patient",
+            "visit": "rechercher des visites par nom de patient"
         }
     },
     "loading": {
         "navigatingToPatient": "Navigation vers les détails du patient...",
-        "navigatingToInvoice": "Navigation vers les détails de la facture..."
+        "navigatingToInvoice": "Navigation vers les détails de la facture...",
+        "navigatingToVisit": "Navigation vers les détails de la visite..."
     }
 }

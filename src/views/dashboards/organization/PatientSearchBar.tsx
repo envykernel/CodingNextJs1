@@ -4,6 +4,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useDispatch } from 'react-redux'
+import { useSession } from 'next-auth/react'
 
 // MUI Imports
 import Paper from '@mui/material/Paper'
@@ -26,6 +27,7 @@ import PersonIcon from '@mui/icons-material/Person'
 import ReceiptIcon from '@mui/icons-material/Receipt'
 import PhoneIcon from '@mui/icons-material/Phone'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import EventNoteIcon from '@mui/icons-material/EventNote'
 
 // Context Imports
 import { useTranslation } from '@/contexts/translationContext'
@@ -49,15 +51,25 @@ type Invoice = {
   status: string
 }
 
-type SearchType = 'patient' | 'invoice'
+type Visit = {
+  id: number
+  patient_id: number
+  patient_name: string
+  date: string
+  status: string
+  type: string
+}
 
-type SearchResult = Patient | Invoice
+type SearchType = 'patient' | 'invoice' | 'visit'
+
+type SearchResult = Patient | Invoice | Visit
 
 const PatientSearchBar = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const dispatch = useDispatch()
   const params = useParams<{ lang: string }>()
+  const { data: session } = useSession()
   const [searchQuery, setSearchQuery] = useState('')
   const [searchType, setSearchType] = useState<SearchType>('patient')
   const [isLoading, setIsLoading] = useState(false)
@@ -65,6 +77,8 @@ const PatientSearchBar = () => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const searchInputRef = useRef<HTMLDivElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
+  const [error, setError] = useState<string | null>(null)
+  const organisationId = session?.user?.organisationId
 
   // Handle click outside to close results
   useEffect(() => {
@@ -78,99 +92,87 @@ const PatientSearchBar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query)
-    if (!query.trim()) {
+  const handleSearch = async () => {
+    if (!searchQuery.trim() || !organisationId) {
       setSearchResults([])
-      setShowResults(false)
       return
     }
 
     setIsLoading(true)
-    try {
-      // Always search patients first
-      const patientResponse = await fetch(`/api/patients/search?q=${encodeURIComponent(query)}`, {
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
+    setSearchResults([])
+    setError(null)
 
-      if (!patientResponse.ok) {
-        if (patientResponse.status === 401) {
-          // Handle unauthorized - redirect to login
-          router.push(`/${params?.lang || 'en'}/login`)
+    try {
+      // First, search for patients
+      const patientsResponse = await fetch(
+        `/api/patients/search?query=${encodeURIComponent(searchQuery)}&organisationId=${organisationId}`
+      )
+
+      if (!patientsResponse.ok) {
+        if (patientsResponse.status === 401) {
+          router.push(`/${params?.lang || 'en'}/auth/login`)
           return
         }
-        const errorText = await patientResponse.text()
-        console.error('Patient search failed:', errorText)
-        throw new Error('Patient search failed')
+        throw new Error('Failed to search patients')
       }
 
-      const patientData = await patientResponse.json()
+      const patientsData = await patientsResponse.json()
+      const patientIds = patientsData.map((patient: any) => patient.id)
 
-      if (searchType === 'patient') {
-        setSearchResults(patientData)
-      } else {
-        // For invoice search, get invoices for the found patients
-        const patientIds = patientData.map((p: Patient) => p.id)
-        if (patientIds.length > 0) {
-          const invoiceResponse = await fetch(`/api/invoices/search?patientIds=${patientIds.join(',')}`, {
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
+      if (patientIds.length === 0) {
+        setSearchResults([])
+        return
+      }
 
-          if (!invoiceResponse.ok) {
-            if (invoiceResponse.status === 401) {
-              // Handle unauthorized - redirect to login
-              router.push(`/${params?.lang || 'en'}/login`)
-              return
-            }
-            const errorText = await invoiceResponse.text()
-            console.error('Invoice search failed:', errorText)
-            throw new Error('Invoice search failed')
+      // If searching for invoices or visits, fetch those as well
+      if (searchType === 'invoice' || searchType === 'visit') {
+        const endpoint = searchType === 'invoice' ? 'invoices' : 'visits'
+        const idsParam = searchType === 'invoice' ? 'patientId' : 'patientIds'
+        const idsValue = patientIds.join(',')
+
+        const response = await fetch(`/api/${endpoint}/search?${idsParam}=${encodeURIComponent(idsValue)}`)
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            router.push(`/${params?.lang || 'en'}/auth/login`)
+            return
           }
-
-          const invoiceData = await invoiceResponse.json()
-          setSearchResults(invoiceData)
-        } else {
-          setSearchResults([])
+          throw new Error(`Failed to search ${endpoint}`)
         }
+
+        const data = await response.json()
+        setSearchResults(data)
+      } else {
+        setSearchResults(patientsData)
       }
-      setShowResults(true)
-    } catch (error) {
-      console.error('Search error:', error)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
       setSearchResults([])
-      setShowResults(false)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleSelect = async (item: SearchResult) => {
-    const lang = params?.lang || 'en'
-    const message = searchType === 'patient' ? t('loading.navigatingToPatient') : t('loading.navigatingToInvoice')
-
-    // Set loading state before navigation
-    dispatch(setLoading({ isLoading: true, message }))
-    setShowResults(false)
-    setSearchQuery('')
-
+  const handleResultClick = async (result: any) => {
+    setIsLoading(true)
     try {
+      let url = ''
       if (searchType === 'patient') {
-        await router.push(`/${lang}/apps/patient/view/${item.id}`)
-      } else {
-        await router.push(`/${lang}/apps/invoice/preview/${(item as Invoice).id}`)
+        url = `/${params?.lang || 'en'}/apps/patients/view/${result.id}`
+      } else if (searchType === 'invoice') {
+        url = `/${params?.lang || 'en'}/apps/invoices/view/${result.id}`
+      } else if (searchType === 'visit') {
+        url = `/${params?.lang || 'en'}/apps/visits/view/${result.id}`
+      }
+
+      if (url) {
+        router.push(url)
       }
     } catch (error) {
-      console.error('Navigation error:', error)
-      // Only clear loading state if navigation fails
-      dispatch(setLoading({ isLoading: false }))
+      setError(error instanceof Error ? error.message : 'Failed to navigate')
+    } finally {
+      setIsLoading(false)
     }
-    // Note: We don't clear loading state here anymore
-    // The GlobalLoading component will handle clearing the state when the component unmounts
   }
 
   const handleSearchTypeChange = (type: SearchType) => {
@@ -211,12 +213,23 @@ const PatientSearchBar = () => {
         </IconButton>
         <InputBase
           sx={{ ml: 1, flex: 1 }}
-          placeholder={searchType === 'patient' ? t('search.placeholder.patient') : t('search.placeholder.invoice')}
+          placeholder={
+            searchType === 'patient'
+              ? t('search.placeholder.patient')
+              : searchType === 'invoice'
+                ? t('search.placeholder.invoice')
+                : t('search.placeholder.visit')
+          }
           value={searchQuery}
-          onChange={e => handleSearch(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           onFocus={() => searchQuery && setShowResults(true)}
           inputProps={{
-            'aria-label': searchType === 'patient' ? t('search.aria.patient') : t('search.aria.invoice')
+            'aria-label':
+              searchType === 'patient'
+                ? t('search.aria.patient')
+                : searchType === 'invoice'
+                  ? t('search.aria.invoice')
+                  : t('search.aria.visit')
           }}
           endAdornment={
             isLoading && (
@@ -255,6 +268,21 @@ const PatientSearchBar = () => {
               }}
             >
               <ReceiptIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('search.type.visit')}>
+            <IconButton
+              size='small'
+              onClick={() => handleSearchTypeChange('visit')}
+              sx={{
+                color: searchType === 'visit' ? 'primary.main' : 'text.secondary',
+                bgcolor: searchType === 'visit' ? theme => alpha(theme.palette.primary.main, 0.08) : 'transparent',
+                '&:hover': {
+                  bgcolor: theme => alpha(theme.palette.primary.main, 0.12)
+                }
+              }}
+            >
+              <EventNoteIcon />
             </IconButton>
           </Tooltip>
         </Box>
@@ -307,7 +335,7 @@ const PatientSearchBar = () => {
                 {searchResults.map(item => (
                   <Box
                     key={item.id}
-                    onClick={() => handleSelect(item)}
+                    onClick={() => handleResultClick(item)}
                     sx={{
                       px: 2,
                       py: 1.5,
@@ -329,6 +357,18 @@ const PatientSearchBar = () => {
                           <Box>
                             <Typography variant='body2' sx={{ fontWeight: 500 }}>
                               {(item as Invoice).invoice_number} - {(item as Invoice).patient_name}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      ) : searchType === 'visit' ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <EventNoteIcon fontSize='small' color='primary' />
+                          <Box>
+                            <Typography variant='body2' sx={{ fontWeight: 500 }}>
+                              {(item as Visit).patient_name} - {new Date((item as Visit).date).toLocaleDateString()}
+                            </Typography>
+                            <Typography variant='caption' color='text.secondary'>
+                              {(item as Visit).type} - {(item as Visit).status}
                             </Typography>
                           </Box>
                         </Box>
