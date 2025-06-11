@@ -360,7 +360,8 @@
             "this year": "Cette Année"
         },
         "email": "Email",
-        "phone": "Téléphone"
+        "phone": "Téléphone",
+        "noDoctor": "Aucun médecin assigné"
     },
     "appointmentsList": "Liste des rendez-vous",
     "bookAppointment": "Prendre rendez-vous",
@@ -1774,20 +1775,44 @@
     "search": {
         "placeholder": {
             "patient": "Rechercher des patients par nom...",
-            "invoice": "Rechercher des factures par nom de patient..."
+            "invoice": "Rechercher des factures par nom de patient...",
+            "visit": "Rechercher des visites par nom de patient..."
         },
         "type": {
             "patient": "Rechercher des Patients",
-            "invoice": "Rechercher des Factures"
+            "invoice": "Rechercher des Factures",
+            "visit": "Rechercher des Visites"
         },
         "aria": {
             "patient": "rechercher par nom de patient",
-            "invoice": "rechercher des factures par nom de patient"
+            "invoice": "rechercher des factures par nom de patient",
+            "visit": "rechercher des visites par nom de patient"
         },
         "noResults": "Aucun résultat trouvé"
     },
     "loading": {
         "navigatingToPatient": "Navigation vers les détails du patient...",
-        "navigatingToInvoice": "Navigation vers les détails de la facture..."
+        "navigatingToInvoice": "Navigation vers les détails de la facture...",
+        "navigatingToVisit": "Navigation vers les détails de la visite..."
+    },
+    "appointment": {
+        "types": {
+            "consultation": "Consultation",
+            "follow_up": "Suivi",
+            "emergency": "Urgence",
+            "routine_check": "Contrôle de routine",
+            "medical_check": "Examen médical",
+            "specialist": "Visite spécialiste",
+            "other": "Autre"
+        }
+    },
+    "visit": {
+        "status": {
+            "scheduled": "Planifié",
+            "in_progress": "En cours",
+            "completed": "Terminé",
+            "cancelled": "Annulé",
+            "no_show": "Non présenté"
+        }
     }
 }

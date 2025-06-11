@@ -35,23 +35,42 @@ import { setLoading } from '@/redux-store/slices/loading'
 
 // Types
 type Patient = {
-  id: number
+  id: string
   name: string
-  phone_number: string | null
+  email: string
+  phone: string
 }
 
 type Invoice = {
-  id: number
+  id: string
   invoice_number: string
-  patient_id: number
   patient_name: string
-  amount: number
-  status: string
+  total_amount: number
+  payment_status: string
+  record_status: string
+  invoice_date: string
 }
 
-type SearchType = 'patient' | 'invoice'
+type Visit = {
+  id: string
+  visit_date: string
+  start_time: string
+  end_time: string
+  status: string
+  patient: Patient
+  doctor?: {
+    id: string
+    name: string
+  }
+  appointment?: {
+    id: string
+    appointment_type: string
+  }
+}
 
-type SearchResult = Patient | Invoice
+type SearchType = 'patient' | 'invoice' | 'visit'
+
+type SearchResult = Patient | Invoice | Visit
 
 const PatientSearchBar = () => {
   const { t } = useTranslation()
@@ -122,29 +141,30 @@ const PatientSearchBar = () => {
         setSearchResults(patientData)
         setShowResults(true) // Show results after setting them
       } else {
-        // For invoice search, get invoices for the found patients
+        // For invoice or visit search, get data for the found patients
         const patientIds = patientData.map((p: Patient) => p.id)
         if (patientIds.length > 0) {
-          const invoiceResponse = await fetch(`/api/invoices/search?patientIds=${patientIds.join(',')}`, {
+          const endpoint = searchType === 'invoice' ? 'invoices' : 'visits'
+          const searchResponse = await fetch(`/api/${endpoint}/search?patientIds=${patientIds.join(',')}`, {
             credentials: 'include',
             headers: {
               'Content-Type': 'application/json'
             }
           })
 
-          if (!invoiceResponse.ok) {
-            if (invoiceResponse.status === 401) {
+          if (!searchResponse.ok) {
+            if (searchResponse.status === 401) {
               // Handle unauthorized - redirect to login
               router.push(`/${params?.lang || 'en'}/login`)
               return
             }
-            const errorText = await invoiceResponse.text()
-            console.error('Invoice search failed:', errorText)
-            throw new Error('Invoice search failed')
+            const errorText = await searchResponse.text()
+            console.error(`${searchType} search failed:`, errorText)
+            throw new Error(`${searchType} search failed`)
           }
 
-          const invoiceData = await invoiceResponse.json()
-          setSearchResults(invoiceData)
+          const data = await searchResponse.json()
+          setSearchResults(data)
           setShowResults(true) // Show results after setting them
         } else {
           setSearchResults([])
@@ -160,28 +180,14 @@ const PatientSearchBar = () => {
     }
   }
 
-  const handleSelect = async (item: SearchResult) => {
-    const lang = params?.lang || 'en'
-    const message = searchType === 'patient' ? t('loading.navigatingToPatient') : t('loading.navigatingToInvoice')
-
-    // Set loading state before navigation
-    dispatch(setLoading({ isLoading: true, message }))
-    setShowResults(false)
-    setSearchQuery('')
-
-    try {
-      if (searchType === 'patient') {
-        await router.push(`/${lang}/apps/patient/view/${item.id}`)
-      } else {
-        await router.push(`/${lang}/apps/invoice/preview/${(item as Invoice).id}`)
-      }
-    } catch (error) {
-      console.error('Navigation error:', error)
-      // Only clear loading state if navigation fails
-      dispatch(setLoading({ isLoading: false }))
+  const handleSelect = (result: SearchResult) => {
+    if (searchType === 'patient') {
+      router.push(`/${params?.lang || 'en'}/apps/patient/view/${result.id}`)
+    } else if (searchType === 'invoice') {
+      router.push(`/${params?.lang || 'en'}/apps/invoice/preview/${result.id}`)
+    } else if (searchType === 'visit') {
+      router.push(`/${params?.lang || 'en'}/apps/visits/view/${result.id}`)
     }
-    // Note: We don't clear loading state here anymore
-    // The GlobalLoading component will handle clearing the state when the component unmounts
   }
 
   const handleSearchTypeChange = (type: SearchType) => {
@@ -189,6 +195,18 @@ const PatientSearchBar = () => {
     setSearchResults([])
     setShowResults(false)
     setSearchQuery('')
+  }
+
+  const isPatient = (result: SearchResult): result is Patient => {
+    return 'email' in result && 'phone' in result
+  }
+
+  const isInvoice = (result: SearchResult): result is Invoice => {
+    return 'invoice_number' in result && 'total_amount' in result
+  }
+
+  const isVisit = (result: SearchResult): result is Visit => {
+    return 'visit_date' in result && 'start_time' in result && 'end_time' in result
   }
 
   return (
@@ -230,13 +248,13 @@ const PatientSearchBar = () => {
                 flex: 1,
                 pr: 3
               }}
-              placeholder={searchType === 'patient' ? t('search.placeholder.patient') : t('search.placeholder.invoice')}
+              placeholder={t(`search.placeholder.${searchType}`)}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
               onFocus={() => searchQuery && setShowResults(true)}
               inputProps={{
-                'aria-label': searchType === 'patient' ? t('search.aria.patient') : t('search.aria.invoice')
+                'aria-label': t(`search.aria.${searchType}`)
               }}
               endAdornment={
                 isLoading && (
@@ -256,79 +274,90 @@ const PatientSearchBar = () => {
                 left: 0,
                 right: 0,
                 mt: 1,
-                zIndex: 1300
+                zIndex: 2
               }}
             >
               <Paper
-                elevation={8}
+                elevation={3}
                 sx={{
-                  width: '100%',
-                  maxHeight: '400px',
+                  maxHeight: 400,
                   overflow: 'auto',
-                  borderRadius: '16px',
-                  bgcolor: 'background.paper',
-                  '&::-webkit-scrollbar': {
-                    width: '4px'
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    background: 'transparent'
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    background: 'rgba(0,0,0,0.1)',
-                    borderRadius: '2px'
-                  }
+                  bgcolor: 'background.paper'
                 }}
               >
-                <List sx={{ width: '100%', p: 0.5 }}>
+                <List>
                   {searchResults.length > 0 ? (
                     searchResults.map(item => (
                       <Box
                         key={item.id}
-                        onClick={() => handleSelect(item)}
                         sx={{
                           px: 2,
                           py: 1.5,
                           cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          transition: 'all 0.2s ease',
-                          borderRadius: '8px',
                           '&:hover': {
-                            bgcolor: theme => alpha(theme.palette.primary.main, 0.04)
+                            bgcolor: theme => alpha(theme.palette.primary.main, 0.08)
                           }
                         }}
+                        onClick={() => handleSelect(item)}
                       >
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                          {searchType === 'invoice' ? (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <ReceiptIcon fontSize='small' color='primary' />
-                              <Box>
-                                <Typography variant='body2' sx={{ fontWeight: 500 }}>
-                                  {(item as Invoice).invoice_number} - {(item as Invoice).patient_name}
-                                </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            {searchType === 'invoice' ? (
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <i className='tabler-file-invoice text-lg text-primary' />
+                                <Box>
+                                  <Typography variant='body2' sx={{ fontWeight: 500 }}>
+                                    {(item as Invoice).invoice_number} - {(item as Invoice).patient_name}
+                                  </Typography>
+                                  <Typography variant='caption' color='text.secondary'>
+                                    {new Date((item as Invoice).invoice_date).toLocaleDateString()} •{' '}
+                                    {t(`invoice.paymentStatus.${(item as Invoice).payment_status.toLowerCase()}`)}
+                                  </Typography>
+                                </Box>
                               </Box>
-                            </Box>
-                          ) : (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <PersonIcon fontSize='small' color='primary' />
-                              <Box>
-                                <Typography variant='body2' sx={{ fontWeight: 500 }}>
-                                  {(item as Patient).name}
-                                  {(item as Patient).phone_number && ` - ${(item as Patient).phone_number}`}
-                                </Typography>
+                            ) : searchType === 'visit' ? (
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <i className='tabler-clipboard-check text-lg text-primary' />
+                                <Box>
+                                  <Typography variant='body2' sx={{ fontWeight: 500 }}>
+                                    {(item as Visit).patient.name} -{' '}
+                                    {new Date((item as Visit).visit_date).toLocaleDateString()}{' '}
+                                    {(item as Visit).start_time} - {(item as Visit).end_time}
+                                  </Typography>
+                                  <Typography variant='caption' color='text.secondary'>
+                                    {(() => {
+                                      const appointmentType = (item as Visit).appointment?.appointment_type
+                                      const visitStatus = (item as Visit).status
+                                      const typeText = appointmentType
+                                        ? t(`appointment.types.${appointmentType.toLowerCase().replace(/\s+/g, '_')}`)
+                                        : t('common.noType')
+                                      const statusText = t(`visit.status.${visitStatus}`)
+                                      return `${typeText} • ${statusText}`
+                                    })()}
+                                  </Typography>
+                                </Box>
                               </Box>
-                            </Box>
-                          )}
+                            ) : (
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <PersonIcon fontSize='small' color='primary' />
+                                <Box>
+                                  <Typography variant='body2' sx={{ fontWeight: 500 }}>
+                                    {(item as Patient).name}
+                                    {(item as Patient).phone && ` - ${(item as Patient).phone}`}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            )}
+                          </Box>
+                          <ArrowForwardIosIcon
+                            sx={{
+                              fontSize: '0.875rem',
+                              color: 'text.secondary',
+                              opacity: 0.5,
+                              ml: 1
+                            }}
+                          />
                         </Box>
-                        <ArrowForwardIosIcon
-                          sx={{
-                            fontSize: '0.875rem',
-                            color: 'text.secondary',
-                            opacity: 0.5,
-                            ml: 1
-                          }}
-                        />
                       </Box>
                     ))
                   ) : (
@@ -379,6 +408,23 @@ const PatientSearchBar = () => {
               }}
             >
               <ReceiptIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('search.type.visit')}>
+            <IconButton
+              onClick={() => handleSearchTypeChange('visit')}
+              sx={{
+                width: 40,
+                height: 40,
+                color: searchType === 'visit' ? 'primary.main' : 'text.secondary',
+                bgcolor: searchType === 'visit' ? theme => alpha(theme.palette.primary.main, 0.08) : 'background.paper',
+                border: theme => `1px solid ${alpha(theme.palette.primary.main, 0.12)}`,
+                '&:hover': {
+                  bgcolor: theme => alpha(theme.palette.primary.main, 0.12)
+                }
+              }}
+            >
+              <i className='tabler-clipboard-check text-xl' />
             </IconButton>
           </Tooltip>
         </Box>

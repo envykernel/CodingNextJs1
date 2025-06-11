@@ -203,7 +203,8 @@
             "this year": "This Year"
         },
         "email": "Email",
-        "phone": "Phone"
+        "phone": "Phone",
+        "noDoctor": "No doctor assigned"
     },
     "appointmentsList": "Appointments List",
     "bookAppointment": "Book Appointment",
@@ -1721,20 +1722,44 @@
     "search": {
         "placeholder": {
             "patient": "Search patients by name...",
-            "invoice": "Search invoices by patient name..."
+            "invoice": "Search invoices by patient name...",
+            "visit": "Search visits by patient name..."
         },
         "type": {
             "patient": "Search Patients",
-            "invoice": "Search Invoices"
+            "invoice": "Search Invoices",
+            "visit": "Search Visits"
         },
         "aria": {
             "patient": "search by patient name",
-            "invoice": "search invoices by patient name"
+            "invoice": "search invoices by patient name",
+            "visit": "search visits by patient name"
         },
         "noResults": "No results found"
     },
     "loading": {
         "navigatingToPatient": "Navigating to patient details...",
-        "navigatingToInvoice": "Navigating to invoice details..."
+        "navigatingToInvoice": "Navigating to invoice details...",
+        "navigatingToVisit": "Navigating to visit details..."
+    },
+    "appointment": {
+        "types": {
+            "consultation": "Consultation",
+            "follow_up": "Follow-up",
+            "emergency": "Emergency",
+            "routine_check": "Routine Check",
+            "medical_check": "Medical Check",
+            "specialist": "Specialist Visit",
+            "other": "Other"
+        }
+    },
+    "visit": {
+        "status": {
+            "scheduled": "Scheduled",
+            "in_progress": "In Progress",
+            "completed": "Completed",
+            "cancelled": "Cancelled",
+            "no_show": "No Show"
+        }
     }
 }
