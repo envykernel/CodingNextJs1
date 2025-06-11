@@ -180,13 +180,28 @@ const PatientSearchBar = () => {
     }
   }
 
-  const handleSelect = (result: SearchResult) => {
+  const handleSelect = async (result: SearchResult) => {
+    let loadingMessage = ''
     if (searchType === 'patient') {
-      router.push(`/${params?.lang || 'en'}/apps/patient/view/${result.id}`)
+      loadingMessage = t('loading.navigatingToPatient')
     } else if (searchType === 'invoice') {
-      router.push(`/${params?.lang || 'en'}/apps/invoice/preview/${result.id}`)
-    } else if (searchType === 'visit') {
-      router.push(`/${params?.lang || 'en'}/apps/visits/view/${result.id}`)
+      loadingMessage = t('loading.navigatingToInvoice')
+    } else {
+      loadingMessage = t('loading.navigatingToVisits')
+    }
+
+    dispatch(setLoading({ isLoading: true, message: loadingMessage }))
+    try {
+      if (searchType === 'patient') {
+        await router.push(`/${params?.lang || 'en'}/apps/patient/view/${result.id}`)
+      } else if (searchType === 'invoice') {
+        await router.push(`/${params?.lang || 'en'}/apps/invoice/preview/${result.id}`)
+      } else if (searchType === 'visit') {
+        await router.push(`/${params?.lang || 'en'}/apps/visits/view/${result.id}`)
+      }
+    } catch (error) {
+      console.error('Navigation error:', error)
+      dispatch(setLoading({ isLoading: false, message: '' }))
     }
   }
 

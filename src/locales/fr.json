@@ -1793,7 +1793,8 @@
     "loading": {
         "navigatingToPatient": "Navigation vers les détails du patient...",
         "navigatingToInvoice": "Navigation vers les détails de la facture...",
-        "navigatingToVisit": "Navigation vers les détails de la visite..."
+        "navigatingToVisit": "Navigation vers les détails de la visite...",
+        "navigatingToVisits": "Navigation vers la visite..."
     },
     "appointment": {
         "types": {

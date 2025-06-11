@@ -971,6 +971,7 @@
     "loading": {
         "navigatingToPatient": "جاري الانتقال إلى تفاصيل المريض...",
         "navigatingToInvoice": "جاري الانتقال إلى تفاصيل الفاتورة...",
-        "navigatingToVisit": "جاري الانتقال إلى تفاصيل الزيارة..."
+        "navigatingToVisit": "جاري الانتقال إلى تفاصيل الزيارة...",
+        "navigatingToVisits": "جاري الانتقال إلى الزيارة..."
     }
 }

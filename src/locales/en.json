@@ -1740,7 +1740,8 @@
     "loading": {
         "navigatingToPatient": "Navigating to patient details...",
         "navigatingToInvoice": "Navigating to invoice details...",
-        "navigatingToVisit": "Navigating to visit details..."
+        "navigatingToVisit": "Navigating to visit details...",
+        "navigatingToVisits": "Navigating to visit..."
     },
     "appointment": {
         "types": {
