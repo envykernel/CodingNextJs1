@@ -1770,5 +1770,19 @@
             "title": "Impossible de Charger les Statistiques",
             "message": "Nous rencontrons des difficultés pour charger les statistiques. Veuillez réessayer plus tard."
         }
+    },
+    "search": {
+        "placeholder": {
+            "patient": "Rechercher des patients par nom...",
+            "invoice": "Rechercher des factures par nom de patient..."
+        },
+        "type": {
+            "patient": "Rechercher des Patients",
+            "invoice": "Rechercher des Factures"
+        },
+        "aria": {
+            "patient": "rechercher par nom de patient",
+            "invoice": "rechercher des factures par nom de patient"
+        }
     }
 }

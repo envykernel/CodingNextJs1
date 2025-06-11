@@ -14,10 +14,15 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Fade from '@mui/material/Fade'
 import Popper from '@mui/material/Popper'
 import List from '@mui/material/List'
+import Tooltip from '@mui/material/Tooltip'
 import { alpha } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
 
 // Icon Imports
 import SearchIcon from '@mui/icons-material/Search'
+import PersonIcon from '@mui/icons-material/Person'
+import ReceiptIcon from '@mui/icons-material/Receipt'
 import PhoneIcon from '@mui/icons-material/Phone'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 
@@ -31,14 +36,28 @@ type Patient = {
   phone_number: string | null
 }
 
+type Invoice = {
+  id: number
+  invoice_number: string
+  patient_id: number
+  patient_name: string
+  amount: number
+  status: string
+}
+
+type SearchType = 'patient' | 'invoice'
+
+type SearchResult = Patient | Invoice
+
 const PatientSearchBar = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const params = useParams<{ lang: string }>()
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchType, setSearchType] = useState<SearchType>('patient')
   const [isLoading, setIsLoading] = useState(false)
   const [showResults, setShowResults] = useState(false)
-  const [searchResults, setSearchResults] = useState<Patient[]>([])
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const searchInputRef = useRef<HTMLDivElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
 
@@ -64,22 +83,61 @@ const PatientSearchBar = () => {
 
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/patients/search?q=${encodeURIComponent(query)}`)
-      if (!response.ok) throw new Error('Search failed')
-      const data = await response.json()
-      setSearchResults(data)
+      // Always search patients first
+      const patientResponse = await fetch(`/api/patients/search?q=${encodeURIComponent(query)}`)
+
+      if (!patientResponse.ok) {
+        const errorText = await patientResponse.text()
+        console.error('Patient search failed:', errorText)
+        throw new Error('Patient search failed')
+      }
+
+      const patientData = await patientResponse.json()
+
+      if (searchType === 'patient') {
+        setSearchResults(patientData)
+      } else {
+        // For invoice search, get invoices for the found patients
+        const patientIds = patientData.map((p: Patient) => p.id)
+        if (patientIds.length > 0) {
+          const invoiceResponse = await fetch(`/api/invoices/search?patientIds=${patientIds.join(',')}`)
+
+          if (!invoiceResponse.ok) {
+            const errorText = await invoiceResponse.text()
+            console.error('Invoice search failed:', errorText)
+            throw new Error('Invoice search failed')
+          }
+
+          const invoiceData = await invoiceResponse.json()
+          setSearchResults(invoiceData)
+        } else {
+          setSearchResults([])
+        }
+      }
       setShowResults(true)
     } catch (error) {
       console.error('Search error:', error)
       setSearchResults([])
+      setShowResults(false)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handlePatientSelect = (patientId: number) => {
+  const handleSelect = (item: SearchResult) => {
     const lang = params?.lang || 'en'
-    router.push(`/${lang}/apps/patient/view/${patientId}`)
+    if (searchType === 'patient') {
+      router.push(`/${lang}/apps/patient/view/${item.id}`)
+    } else {
+      router.push(`/${lang}/apps/invoice/preview/${(item as Invoice).id}`)
+    }
+    setShowResults(false)
+    setSearchQuery('')
+  }
+
+  const handleSearchTypeChange = (type: SearchType) => {
+    setSearchType(type)
+    setSearchResults([])
     setShowResults(false)
     setSearchQuery('')
   }
@@ -115,17 +173,53 @@ const PatientSearchBar = () => {
         </IconButton>
         <InputBase
           sx={{ ml: 1, flex: 1 }}
-          placeholder={t('patient.searchPlaceholder')}
+          placeholder={searchType === 'patient' ? t('search.placeholder.patient') : t('search.placeholder.invoice')}
           value={searchQuery}
           onChange={e => handleSearch(e.target.value)}
           onFocus={() => searchQuery && setShowResults(true)}
-          inputProps={{ 'aria-label': 'search patients' }}
+          inputProps={{
+            'aria-label': searchType === 'patient' ? t('search.aria.patient') : t('search.aria.invoice')
+          }}
+          endAdornment={
+            isLoading && (
+              <InputAdornment position='end'>
+                <CircularProgress size={20} />
+              </InputAdornment>
+            )
+          }
         />
-        {isLoading && (
-          <Box sx={{ p: '10px' }}>
-            <CircularProgress size={20} />
-          </Box>
-        )}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, pr: 1 }}>
+          <Tooltip title={t('search.type.patient')}>
+            <IconButton
+              size='small'
+              onClick={() => handleSearchTypeChange('patient')}
+              sx={{
+                color: searchType === 'patient' ? 'primary.main' : 'text.secondary',
+                bgcolor: searchType === 'patient' ? theme => alpha(theme.palette.primary.main, 0.08) : 'transparent',
+                '&:hover': {
+                  bgcolor: theme => alpha(theme.palette.primary.main, 0.12)
+                }
+              }}
+            >
+              <PersonIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('search.type.invoice')}>
+            <IconButton
+              size='small'
+              onClick={() => handleSearchTypeChange('invoice')}
+              sx={{
+                color: searchType === 'invoice' ? 'primary.main' : 'text.secondary',
+                bgcolor: searchType === 'invoice' ? theme => alpha(theme.palette.primary.main, 0.08) : 'transparent',
+                '&:hover': {
+                  bgcolor: theme => alpha(theme.palette.primary.main, 0.12)
+                }
+              }}
+            >
+              <ReceiptIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Paper>
 
       <Popper
@@ -172,10 +266,10 @@ const PatientSearchBar = () => {
               }}
             >
               <List sx={{ width: '100%', p: 0.5 }}>
-                {searchResults.map(patient => (
+                {searchResults.map(item => (
                   <Box
-                    key={patient.id}
-                    onClick={() => handlePatientSelect(patient.id)}
+                    key={item.id}
+                    onClick={() => handleSelect(item)}
                     sx={{
                       px: 2,
                       py: 1.5,
@@ -191,33 +285,25 @@ const PatientSearchBar = () => {
                     }}
                   >
                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Typography
-                        variant='body1'
-                        sx={{
-                          color: 'text.primary',
-                          fontWeight: 400,
-                          mb: 0.5
-                        }}
-                        noWrap
-                      >
-                        {patient.name}
-                      </Typography>
-                      {patient.phone_number && (
-                        <Typography
-                          variant='body2'
-                          sx={{
-                            color: 'text.secondary',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 0.5,
-                            fontSize: '0.75rem',
-                            opacity: 0.7
-                          }}
-                          noWrap
-                        >
-                          <PhoneIcon sx={{ fontSize: '0.75rem' }} />
-                          {patient.phone_number}
-                        </Typography>
+                      {searchType === 'invoice' ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <ReceiptIcon fontSize='small' color='primary' />
+                          <Box>
+                            <Typography variant='body2' sx={{ fontWeight: 500 }}>
+                              {(item as Invoice).invoice_number} - {(item as Invoice).patient_name}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      ) : (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <PersonIcon fontSize='small' color='primary' />
+                          <Box>
+                            <Typography variant='body2' sx={{ fontWeight: 500 }}>
+                              {(item as Patient).name}
+                              {(item as Patient).phone_number && ` - ${(item as Patient).phone_number}`}
+                            </Typography>
+                          </Box>
+                        </Box>
                       )}
                     </Box>
                     <ArrowForwardIosIcon

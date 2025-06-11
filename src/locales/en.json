@@ -1717,5 +1717,19 @@
     },
     "delete": "Delete",
     "deleting": "Deleting...",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "search": {
+        "placeholder": {
+            "patient": "Search patients by name...",
+            "invoice": "Search invoices by patient name..."
+        },
+        "type": {
+            "patient": "Search Patients",
+            "invoice": "Search Invoices"
+        },
+        "aria": {
+            "patient": "search by patient name",
+            "invoice": "search invoices by patient name"
+        }
+    }
 }
