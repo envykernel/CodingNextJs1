@@ -16,6 +16,8 @@
     "removeI18n": "tsx src/remove-translation-scripts/index.ts"
   },
   "dependencies": {
+    "@arcjet/inspect": "1.0.0-beta.8",
+    "@arcjet/next": "1.0.0-beta.8",
     "@auth/prisma-adapter": "2.7.4",
     "@emoji-mart/data": "1.2.1",
     "@emoji-mart/react": "1.1.1",
