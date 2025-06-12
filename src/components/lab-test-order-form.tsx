@@ -49,13 +49,20 @@ interface LabTestOrderFormProps {
   dictionary: any
   initialValues?: any
   onVisitUpdate?: (updatedVisit: any) => void
+  doctorName: string
+  doctorId: number
 }
 
-const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary, initialValues, onVisitUpdate }) => {
+const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({
+  visitId,
+  dictionary,
+  initialValues,
+  onVisitUpdate,
+  doctorName,
+  doctorId
+}) => {
   const { data: session } = useSession()
   const [testTypes, setTestTypes] = useState<LabTestType[]>([])
-  const [doctors, setDoctors] = useState<Doctor[]>([])
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null)
   const [selectedTests, setSelectedTests] = useState<LabTestType[]>([])
   const [testDetails, setTestDetails] = useState<any>({})
   const [success, setSuccess] = useState<string | null>(null)
@@ -73,9 +80,6 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
         if (!Array.isArray(orders)) return
         if (orders.length > 0) {
           setSavedOrderId(orders[0].id)
-          if (orders[0].doctor) {
-            setSelectedDoctor(orders[0].doctor)
-          }
         }
         setSelectedTests(
           orders.map((order: any) => ({
@@ -111,13 +115,13 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
         const res = await fetch('/api/doctors')
         if (!res.ok) throw new Error('Failed to fetch doctors')
         const data = await res.json()
-        setDoctors(data)
+        // setDoctors(data)
 
         // If current user is a doctor, find and select them
         if (session?.user?.role === 'DOCTOR') {
           const currentDoctor = data.find((d: Doctor) => d.name === session.user.name)
           if (currentDoctor) {
-            setSelectedDoctor(currentDoctor)
+            // setSelectedDoctor(currentDoctor)
           }
         }
       } catch (error) {
@@ -167,43 +171,11 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
     }))
   }
 
-  // Add logging to doctor selection change
-  const handleDoctorChange = (_e: any, value: Doctor | null) => {
-    console.log('Doctor selection changed:', value)
-    if (!value) {
-      console.log('No doctor selected in handleDoctorChange')
-      setSelectedDoctor(null)
-      return
-    }
-    if (!value.id) {
-      console.log('Selected doctor has no id:', value)
-      setError(dictionary?.testForm?.selectDoctor || 'Veuillez sélectionner un médecin')
-      return
-    }
-    console.log('Setting selected doctor:', value)
-    setSelectedDoctor(value)
-    setError(null)
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSuccess(null)
     setError(null)
     setLoading(true)
-
-    if (!selectedDoctor) {
-      console.log('No doctor selected in handleSubmit')
-      setError(dictionary?.testForm?.selectDoctor || 'Veuillez sélectionner un médecin')
-      setLoading(false)
-      return
-    }
-
-    if (!selectedDoctor.id) {
-      console.log('Selected doctor has no id in handleSubmit:', selectedDoctor)
-      setError(dictionary?.testForm?.selectDoctor || 'Veuillez sélectionner un médecin')
-      setLoading(false)
-      return
-    }
 
     try {
       // Get the visit data to include required fields
@@ -212,6 +184,12 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
       const visitData = await visitRes.json()
 
       console.log('Visit data:', visitData)
+      console.log('Doctor ID from props:', doctorId)
+
+      if (!doctorId) {
+        console.error('No doctor ID provided')
+        throw new Error(dictionary?.testForm?.noDoctorError || 'No doctor assigned to this visit')
+      }
 
       const tests = selectedTests.map(test => {
         const resultValue = testDetails[test.id]?.result_value || ''
@@ -228,7 +206,7 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
       const requestBody = {
         visitId,
         patientId: visitData.visit.patient_id,
-        doctorId: selectedDoctor.id,
+        doctorId: doctorId,
         organisationId: visitData.visit.organisation_id,
         tests
       }
@@ -251,8 +229,17 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
           setSavedOrderId(data.results[0].id)
         }
 
-        if (onVisitUpdate && data.visit) {
-          onVisitUpdate(data.visit)
+        if (onVisitUpdate) {
+          // Always fetch the latest visit data after saving
+          try {
+            const updatedVisitRes = await fetch(`/api/visits/${visitId}`)
+            if (updatedVisitRes.ok) {
+              const updatedVisitData = await updatedVisitRes.json()
+              onVisitUpdate(updatedVisitData.visit)
+            }
+          } catch (err) {
+            console.error('Failed to fetch updated visit data after saving lab test order', err)
+          }
         }
       } else {
         const errorData = await res.json().catch(() => ({}))
@@ -355,29 +342,12 @@ const LabTestOrderForm: React.FC<LabTestOrderFormProps> = ({ visitId, dictionary
                 {error}
               </Alert>
             )}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant='subtitle2'>
+                {dictionary?.navigation?.doctor || 'Doctor'}: <b>{doctorName || '-'}</b>
+              </Typography>
+            </Box>
             <form onSubmit={handleSubmit}>
-              <Autocomplete
-                options={doctors}
-                getOptionLabel={option => option.name}
-                value={selectedDoctor}
-                onChange={handleDoctorChange}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    label={dictionary?.navigation?.doctor || 'Médecin'}
-                    placeholder={dictionary?.navigation?.selectDoctor || 'Sélectionner un médecin'}
-                    required
-                    error={!selectedDoctor?.id && error !== null}
-                    helperText={
-                      !selectedDoctor?.id && error !== null
-                        ? dictionary?.testForm?.selectDoctor || 'Veuillez sélectionner un médecin'
-                        : ''
-                    }
-                  />
-                )}
-                sx={{ mb: 4 }}
-              />
               <Autocomplete
                 multiple
                 options={testTypes}

@@ -5,7 +5,7 @@ import { prisma } from '@/prisma/prisma'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { status, action } = await req.json()
+    const { status, action, doctor_id } = await req.json()
     const { id } = await params
     const visitId = parseInt(id)
 
@@ -35,6 +35,21 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           start_time: startTime,
           end_time: endTime,
           status: 'in_progress'
+        }
+      })
+
+      return NextResponse.json({ visit: updatedVisit })
+    }
+
+    // Handle doctor assignment
+    if (doctor_id !== undefined) {
+      const updatedVisit = await prisma.patient_visit.update({
+        where: { id: visitId },
+        data: {
+          doctor_id: doctor_id || null // Allow null to unassign doctor
+        },
+        include: {
+          doctor: true // Include doctor data in response
         }
       })
 
@@ -75,7 +90,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ visit: updatedVisit, appointment: updatedAppointment })
     }
 
-    return NextResponse.json({ error: 'Invalid action or status' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid action, status, or doctor_id' }, { status: 400 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

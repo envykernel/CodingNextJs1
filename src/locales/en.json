@@ -36,7 +36,41 @@
             "goToVisit": "Go to Visit"
         },
         "doctors": "Doctors",
-        "printPrescription": "Print"
+        "printPrescription": "Print",
+        "allPrescriptions": "All Prescriptions",
+        "createPrescription": "Create Prescription",
+        "viewPrescription": "View Prescription",
+        "prescriptionDetails": "Prescription Details",
+        "patientInformation": "Patient Information",
+        "prescriptionInformation": "Prescription Information",
+        "additionalNotes": "Additional Notes",
+        "printPrescription": "Print Prescription",
+        "patientName": "Patient Name",
+        "doctor": "Doctor",
+        "medications": "Medications",
+        "medication": "Medication",
+        "addMedication": "Add Medication",
+        "dosage": "Dosage",
+        "frequency": "Frequency",
+        "duration": "Duration",
+        "notes": "Notes",
+        "status": "Status",
+        "date": "Date",
+        "editPrescription": "Edit Prescription",
+        "saveChanges": "Save Changes",
+        "patients": "Patients",
+        "addNewPatient": "Add New Patient",
+        "doctorSignature": "Doctor Signature",
+        "totalAmount": "Total Amount",
+        "paid": "Paid",
+        "remaining": "Remaining",
+        "save": "Save",
+        "editPatient": "Edit Patient",
+        "emergencyContact": "Emergency Contact",
+        "collapseMedications": "Collapse medications",
+        "expandMedications": "Expand medications",
+        "collapseMedication": "Collapse medication",
+        "expandMedication": "Expand medication"
     },
     "patient": {
         "name": "Full Name",
@@ -1761,6 +1795,11 @@
             "completed": "Completed",
             "cancelled": "Cancelled",
             "no_show": "No Show"
-        }
+        },
+        "assignedDoctor": "Assigned Doctor",
+        "selectDoctor": "Select Doctor",
+        "doctorUpdateSuccess": "Doctor updated successfully",
+        "errorFetchingDoctors": "Error fetching doctors list",
+        "noDoctorAssigned": "No doctor is currently assigned to this visit"
     }
 }

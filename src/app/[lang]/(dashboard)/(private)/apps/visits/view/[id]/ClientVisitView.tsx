@@ -218,6 +218,8 @@ export default function ClientVisitView({ data: initialData }: ClientVisitViewPr
         dictionary={dictionary}
         initialValues={visitData.lab_test_orders}
         onVisitUpdate={handleVisitUpdate}
+        doctorName={visitData.doctor?.name || ''}
+        doctorId={visitData.doctor?.id}
       />
     ),
     radiology: (
@@ -233,7 +235,7 @@ export default function ClientVisitView({ data: initialData }: ClientVisitViewPr
     <TranslationProvider dictionary={dictionary}>
       <Grid container spacing={6}>
         <Grid size={{ xs: 12, md: 5, lg: 4 }}>
-          <VisitLeftOverview visitData={visitData} />
+          <VisitLeftOverview visitData={visitData} onVisitUpdate={handleVisitUpdate} />
         </Grid>
         <Grid size={{ xs: 12, md: 7, lg: 8 }}>
           <VisitRight

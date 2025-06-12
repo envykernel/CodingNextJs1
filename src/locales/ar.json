@@ -973,5 +973,19 @@
         "navigatingToInvoice": "جاري الانتقال إلى تفاصيل الفاتورة...",
         "navigatingToVisit": "جاري الانتقال إلى تفاصيل الزيارة...",
         "navigatingToVisits": "جاري الانتقال إلى الزيارة..."
+    },
+    "visit": {
+        "status": {
+            "scheduled": "مجدول",
+            "in_progress": "قيد التنفيذ",
+            "completed": "مكتمل",
+            "cancelled": "ملغي",
+            "no_show": "لم يحضر"
+        },
+        "assignedDoctor": "الطبيب المعين",
+        "selectDoctor": "اختر الطبيب",
+        "doctorUpdateSuccess": "تم تحديث الطبيب بنجاح",
+        "errorFetchingDoctors": "خطأ في جلب قائمة الأطباء",
+        "noDoctorAssigned": "لا يوجد طبيب معين حالياً لهذه الزيارة"
     }
 }

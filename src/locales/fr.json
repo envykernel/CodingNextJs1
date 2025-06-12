@@ -1814,6 +1814,11 @@
             "completed": "Terminé",
             "cancelled": "Annulé",
             "no_show": "Non présenté"
-        }
+        },
+        "assignedDoctor": "Médecin Assigné",
+        "selectDoctor": "Sélectionner un Médecin",
+        "doctorUpdateSuccess": "Médecin mis à jour avec succès",
+        "errorFetchingDoctors": "Erreur lors de la récupération de la liste des médecins",
+        "noDoctorAssigned": "Aucun médecin n'est actuellement assigné à cette visite"
     }
 }

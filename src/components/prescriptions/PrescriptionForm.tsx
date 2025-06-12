@@ -239,25 +239,12 @@ export default function PrescriptionForm({
             control={control}
             render={({ field }) => <input type='hidden' {...field} value={patientId} />}
           />
+          <Controller
+            name='doctor'
+            control={control}
+            render={({ field }) => <input type='hidden' {...field} value={doctorName} />}
+          />
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <Controller
-                name='doctor'
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label={dictionary?.navigation?.doctor}
-                    error={!!errors.doctor}
-                    helperText={errors.doctor?.message || ' '}
-                    required
-                    InputProps={{ readOnly: true }}
-                  />
-                )}
-              />
-            </Grid>
-
             <Grid item xs={12}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant='h6'>{dictionary?.navigation?.medications}</Typography>
