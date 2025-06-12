@@ -986,6 +986,19 @@
         "selectDoctor": "اختر الطبيب",
         "doctorUpdateSuccess": "تم تحديث الطبيب بنجاح",
         "errorFetchingDoctors": "خطأ في جلب قائمة الأطباء",
-        "noDoctorAssigned": "لا يوجد طبيب معين حالياً لهذه الزيارة"
+        "noDoctorAssigned": "لا يوجد طبيب معين حالياً لهذه الزيارة",
+        "statusControls": {
+            "startVisit": "بدء",
+            "markAsCompleted": "إكمال",
+            "markAsCancelled": "إلغاء",
+            "starting": "جاري البدء...",
+            "completing": "جاري الإكمال...",
+            "cancelling": "جاري الإلغاء...",
+            "confirmCancellation": "تأكيد الإلغاء",
+            "cancelConfirmationMessage": "هل أنت متأكد أنك تريد إلغاء هذه الزيارة؟",
+            "yesCancel": "نعم، إلغاء",
+            "no": "لا",
+            "scheduled": "مجدول"
+        }
     }
 }

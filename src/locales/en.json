@@ -1800,6 +1800,19 @@
         "selectDoctor": "Select Doctor",
         "doctorUpdateSuccess": "Doctor updated successfully",
         "errorFetchingDoctors": "Error fetching doctors list",
-        "noDoctorAssigned": "No doctor is currently assigned to this visit"
+        "noDoctorAssigned": "No doctor is currently assigned to this visit",
+        "statusControls": {
+            "startVisit": "Start",
+            "markAsCompleted": "Complete",
+            "markAsCancelled": "Cancel",
+            "starting": "Starting...",
+            "completing": "Completing...",
+            "cancelling": "Cancelling...",
+            "confirmCancellation": "Confirm Cancellation",
+            "cancelConfirmationMessage": "Are you sure you want to cancel this visit?",
+            "yesCancel": "Yes, Cancel",
+            "no": "No",
+            "scheduled": "Scheduled"
+        }
     }
 }

@@ -1819,6 +1819,19 @@
         "selectDoctor": "Sélectionner un Médecin",
         "doctorUpdateSuccess": "Médecin mis à jour avec succès",
         "errorFetchingDoctors": "Erreur lors de la récupération de la liste des médecins",
-        "noDoctorAssigned": "Aucun médecin n'est actuellement assigné à cette visite"
+        "noDoctorAssigned": "Aucun médecin n'est actuellement assigné à cette visite",
+        "statusControls": {
+            "startVisit": "Démarrer",
+            "markAsCompleted": "Terminer",
+            "markAsCancelled": "Annuler",
+            "starting": "Démarrage...",
+            "completing": "Finalisation...",
+            "cancelling": "Annulation...",
+            "confirmCancellation": "Confirmer l'Annulation",
+            "cancelConfirmationMessage": "Êtes-vous sûr de vouloir annuler cette visite ?",
+            "yesCancel": "Oui, Annuler",
+            "no": "Non",
+            "scheduled": "Planifié"
+        }
     }
 }
