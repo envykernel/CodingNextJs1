@@ -1408,6 +1408,12 @@
         "saving": "Enregistrement...",
         "savedSuccessfully": "Examen clinique enregistré avec succès !",
         "selectSections": "Sélectionner les sections à remplir",
+        "availableSections": "Sections Disponibles",
+        "categories": {
+            "general": "Informations Générales",
+            "examination": "Examen Physique",
+            "conclusion": "Évaluation & Plan"
+        },
         "sections": {
             "chiefComplaint": "Motif de Consultation",
             "historyIllness": "Histoire de la Maladie Actuelle",

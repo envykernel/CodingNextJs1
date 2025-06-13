@@ -513,6 +513,12 @@
         "saving": "جاري الحفظ...",
         "savedSuccessfully": "تم حفظ الفحص السريري بنجاح!",
         "selectSections": "اختر الأقسام المراد ملؤها",
+        "availableSections": "الأقسام المتاحة",
+        "categories": {
+            "general": "المعلومات العامة",
+            "examination": "الفحص البدني",
+            "conclusion": "التقييم والخطة"
+        },
         "sections": {
             "chiefComplaint": "الشكوى الرئيسية",
             "historyIllness": "تاريخ المرض الحالي",

@@ -1276,6 +1276,12 @@
         "saving": "Saving...",
         "savedSuccessfully": "Clinical exam saved successfully!",
         "selectSections": "Select sections to fill",
+        "availableSections": "Available Sections",
+        "categories": {
+            "general": "General Information",
+            "examination": "Physical Examination",
+            "conclusion": "Assessment & Plan"
+        },
         "sections": {
             "chiefComplaint": "Chief Complaint",
             "historyIllness": "History of Present Illness",
