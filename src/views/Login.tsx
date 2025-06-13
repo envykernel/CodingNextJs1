@@ -391,7 +391,7 @@ const Login = () => {
       </Box>
       <Footer>
         <Typography variant='body2'>
-          © {new Date().getFullYear()} Medical Cabinet Management Application - Tous droits réservés
+          © {new Date().getFullYear()} Application de Gestion de Cabinet Médical - Tous droits réservés
         </Typography>
       </Footer>
     </LoginContainer>
