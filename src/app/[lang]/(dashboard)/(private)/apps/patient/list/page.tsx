@@ -40,17 +40,37 @@ function transformPatientData(patients: any[]): PatientType[] {
 
 type PageProps = {
   params: Promise<{ lang: Locale }>
+  searchParams: Promise<{
+    page?: string
+    pageSize?: string
+    name?: string
+    city?: string
+    status?: string
+  }>
 }
 
-const PatientListPage = async ({ params }: PageProps) => {
+const PatientListPage = async ({ params, searchParams }: PageProps) => {
   // Vars
   const { lang } = await params
+  const resolvedSearchParams = await searchParams
   const dictionary = await getDictionary(lang)
   const { organisationId } = await getUserOrganisation()
 
-  // Fetch patient data
+  // Parse pagination params
+  const page = resolvedSearchParams?.page ? Number(resolvedSearchParams.page) : 1
+  const pageSize = resolvedSearchParams?.pageSize ? Number(resolvedSearchParams.pageSize) : 10
+  const name = resolvedSearchParams?.name
+  const city = resolvedSearchParams?.city
+  const status = resolvedSearchParams?.status
+
+  // Fetch patient data with search params
   const patientData = await getPatientList({
-    organisationId: organisationId || 0
+    organisationId: organisationId || 0,
+    page,
+    pageSize,
+    name,
+    city,
+    status
   })
 
   // Transform the data to match PatientType

@@ -7,6 +7,8 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import CardContent from '@mui/material/CardContent'
 import Grid from '@mui/material/Grid2'
 import MenuItem from '@mui/material/MenuItem'
+import InputAdornment from '@mui/material/InputAdornment'
+import IconButton from '@mui/material/IconButton'
 
 // Type Imports
 import type { PatientType } from './PatientListTable'
@@ -25,10 +27,17 @@ const PatientTableFilters = ({
   // States
   const [gender, setGender] = useState('')
   const [status, setStatus] = useState('')
+  const [nameSearch, setNameSearch] = useState('')
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const { t } = useTranslation()
+
+  // Initialize name search from URL params
+  useEffect(() => {
+    const nameParam = searchParams?.get('name') || ''
+    setNameSearch(nameParam)
+  }, [searchParams])
 
   useEffect(() => {
     // Only filter by gender and status client-side
@@ -41,6 +50,24 @@ const PatientTableFilters = ({
 
     setData(filteredData || [])
   }, [gender, status, tableData, setData])
+
+  const handleNameSearch = () => {
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
+
+    if (nameSearch) {
+      params.set('name', nameSearch)
+    } else {
+      params.delete('name')
+    }
+    params.set('page', '1') // reset to first page on search
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleNameSearch()
+    }
+  }
 
   return (
     <CardContent>
@@ -64,21 +91,19 @@ const PatientTableFilters = ({
           <CustomTextField
             fullWidth
             id='filter-name'
-            defaultValue={searchParams ? searchParams.get('name') || '' : ''}
-            onChange={e => {
-              const params = new URLSearchParams(searchParams ? searchParams.toString() : '')
-
-              if (e.target.value) {
-                params.set('name', e.target.value)
-                params.set('page', '1') // reset to first page on filter
-              } else {
-                params.delete('name')
-                params.set('page', '1')
-              }
-
-              router.push(`${pathname}?${params.toString()}`)
-            }}
+            value={nameSearch}
+            onChange={e => setNameSearch(e.target.value)}
+            onKeyPress={handleKeyPress}
             placeholder={t('patient.name')}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position='end'>
+                  <IconButton onClick={handleNameSearch} edge='end' aria-label='search'>
+                    <i className='tabler-search' />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
