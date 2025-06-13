@@ -1074,5 +1074,131 @@
             "no": "لا",
             "scheduled": "مجدول"
         }
+    },
+    "medicalCertificates": {
+        "title": "الشهادات الطبية",
+        "addCertificate": "إضافة شهادة",
+        "templateVariables": "متغيرات النموذج",
+        "clickVariableToInsert": "انقر على متغير لإدخاله في المحرر",
+        "editVariableValues": "تعديل قيم المتغيرات",
+        "variables": {
+            "endDate": "تاريخ الانتهاء",
+            "startDate": "تاريخ البدء",
+            "notes": "ملاحظات",
+            "medicalObservation": "ملاحظة طبية",
+            "date": "التاريخ",
+            "sport": "الرياضة",
+            "aptitudeType": "نوع اللياقة",
+            "restrictions": "القيود",
+            "duration": "المدة",
+            "reason": "السبب",
+            "validUntil": "صالح حتى",
+            "profession": "المهنة",
+            "diagnosis": "التشخيص",
+            "exoneration": "الإعفاء",
+            "school": "المدرسة",
+            "inaptitude": "حالة اللياقة",
+            "observations": "الملاحظات",
+            "ald": "حالة طويلة الأمد",
+            "treatment": "العلاج",
+            "recommendations": "التوصيات",
+            "nextAppointment": "الموعد التالي",
+            "recipient": {
+                "name": "اسم المستلم",
+                "specialty": "تخصص المستلم"
+            },
+            "consultationReason": "سبب الاستشارة",
+            "testsDone": "الفحوصات المنجزة",
+            "diagnosticHypothesis": "فرضية التشخيص",
+            "specificQuestions": "أسئلة محددة",
+            "deathDate": "تاريخ الوفاة",
+            "deathTime": "وقت الوفاة",
+            "deathPlace": "مكان الوفاة",
+            "apparentCause": "السبب الظاهر",
+            "circumstances": "الظروف",
+            "suspiciousSigns": "علامات مشبوهة",
+            "vaccineName": "اسم اللقاح",
+            "lotNumber": "رقم الدفعة",
+            "administrationDate": "تاريخ الإعطاء",
+            "doseNumber": "رقم الجرعة",
+            "schedule": "جدول التطعيم",
+            "nextDoseDate": "تاريخ الجرعة التالية",
+            "sideEffects": "الآثار الجانبية"
+        },
+        "cancel": "إلغاء",
+        "create": "إنشاء شهادة",
+        "patient": "المريض",
+        "doctor": "الطبيب",
+        "selectPatient": "اختر المريض",
+        "selectDoctor": "اختر الطبيب",
+        "certificateType": "نوع الشهادة",
+        "typeLabel": "النوع",
+        "selectType": "اختر نوع الشهادة",
+        "startDate": "تاريخ البدء",
+        "endDate": "تاريخ الانتهاء",
+        "notes": "ملاحظات إضافية",
+        "preview": "معاينة الشهادة",
+        "noPatients": "لم يتم العثور على مرضى",
+        "startTyping": "ابدأ الكتابة للبحث عن المرضى",
+        "errors": {
+            "fetchPatientsFailed": "فشل في جلب المرضى",
+            "createFailed": "فشل في إنشاء الشهادة",
+            "required": "هذا الحقل مطلوب",
+            "deleteFailed": "فشل في حذف الشهادة"
+        },
+        "types": {
+            "sickLeave": "شهادة إجازة مرضية",
+            "fitness": "شهادة لياقة",
+            "medicalReport": "تقرير طبي",
+            "other": "شهادة أخرى"
+        },
+        "status": {
+            "draft": "مسودة",
+            "issued": "صادر",
+            "expired": "منتهي",
+            "cancelled": "ملغي"
+        },
+        "actionsLabel": "الإجراءات",
+        "actions": {
+            "view": "عرض",
+            "print": "طباعة",
+            "delete": "حذف",
+            "download": "تحميل"
+        },
+        "list": {
+            "title": "الشهادات الطبية",
+            "noCertificates": "لم يتم العثور على شهادات",
+            "search": "البحث عن شهادات...",
+            "filters": "التصفية",
+            "export": "تصدير",
+            "columns": {
+                "patient": "المريض",
+                "type": "النوع",
+                "startDate": "تاريخ البدء",
+                "endDate": "تاريخ الانتهاء",
+                "status": "الحالة",
+                "actions": "الإجراءات"
+            }
+        },
+        "pagination": {
+            "labelRowsPerPage": "الصفوف في الصفحة:",
+            "labelDisplayedRows": "{from}-{to} من {count}",
+            "firstPageLabel": "الصفحة الأولى",
+            "lastPageLabel": "الصفحة الأخيرة",
+            "nextPageLabel": "الصفحة التالية",
+            "previousPageLabel": "الصفحة السابقة"
+        },
+        "viewCertificate": "عرض الشهادة",
+        "close": "إغلاق",
+        "certificateNumber": "رقم الشهادة",
+        "content": "محتوى الشهادة",
+        "deleteConfirmation": {
+            "title": "حذف الشهادة",
+            "message": "هل أنت متأكد أنك تريد حذف الشهادة {number}؟ لا يمكن التراجع عن هذا الإجراء.",
+            "cancel": "إلغاء",
+            "confirm": "حذف"
+        },
+        "createdAt": "تاريخ الإنشاء",
+        "updatedAt": "تاريخ التحديث"
     }
 }

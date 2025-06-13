@@ -1748,8 +1748,7 @@
             "confirm": "Delete"
         },
         "createdAt": "Created At",
-        "updatedAt": "Updated At",
-        "actions": "Actions"
+        "updatedAt": "Updated At"
     },
     "medicalHistory": {
         "title": "Medical History",
