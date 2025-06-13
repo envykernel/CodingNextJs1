@@ -1,4 +1,8 @@
 {
+    "common": {
+        "edit": "Edit",
+        "delete": "Delete"
+    },
     "patients": "Patients",
     "list": "List",
     "view": "View",
@@ -238,7 +242,9 @@
         },
         "email": "Email",
         "phone": "Phone",
-        "noDoctor": "No doctor assigned"
+        "noDoctor": "No doctor assigned",
+        "edit": "Edit",
+        "delete": "Delete"
     },
     "appointmentsList": "Appointments List",
     "bookAppointment": "Book Appointment",

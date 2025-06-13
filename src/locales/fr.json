@@ -1,4 +1,8 @@
 {
+    "common": {
+        "edit": "Modifier",
+        "delete": "Supprimer"
+    },
     "patients": "Patients",
     "list": "Liste",
     "view": "Voir",
@@ -361,7 +365,9 @@
         },
         "email": "Email",
         "phone": "Téléphone",
-        "noDoctor": "Aucun médecin assigné"
+        "noDoctor": "Aucun médecin assigné",
+        "edit": "Modifier",
+        "delete": "Supprimer"
     },
     "appointmentsList": "Liste des rendez-vous",
     "bookAppointment": "Prendre rendez-vous",
