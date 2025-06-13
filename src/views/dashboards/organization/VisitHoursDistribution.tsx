@@ -3,16 +3,46 @@
 import React, { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useTranslation } from '@/contexts/translationContext'
-import { Card, CardHeader, CardContent, Box, Typography, Alert, CircularProgress } from '@mui/material'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { Card, CardHeader, CardContent, Box, Typography, Alert, CircularProgress, useTheme } from '@mui/material'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts'
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
 interface VisitHourData {
   hour: string
   count: number
 }
 
+const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
+  const { t } = useTranslation()
+  const theme = useTheme()
+
+  if (active && payload && payload.length) {
+    return (
+      <Box
+        sx={{
+          backgroundColor: theme.palette.background.paper,
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: 1,
+          p: 1.5,
+          boxShadow: theme.shadows[3]
+        }}
+      >
+        <Typography variant='body2' sx={{ color: theme.palette.text.primary, fontWeight: 500 }}>
+          {`${t('organization.hour')}: ${label}`}
+        </Typography>
+        <Typography variant='body2' sx={{ color: theme.palette.text.secondary }}>
+          {`${t('organization.visits')}: ${payload[0].value}`}
+        </Typography>
+      </Box>
+    )
+  }
+
+  return null
+}
+
 const VisitHoursDistribution = () => {
   const { t } = useTranslation()
+  const theme = useTheme()
   const { data: session, status: sessionStatus } = useSession()
   const [visitData, setVisitData] = useState<VisitHourData[]>([])
   const [loading, setLoading] = useState(true)
@@ -110,27 +140,33 @@ const VisitHoursDistribution = () => {
                 bottom: 5
               }}
             >
-              <CartesianGrid strokeDasharray='3 3' />
+              <CartesianGrid strokeDasharray='3 3' stroke={theme.palette.divider} />
               <XAxis
                 dataKey='hour'
                 label={{
                   value: t('organization.hourOfDay'),
                   position: 'insideBottom',
-                  offset: -5
+                  offset: -5,
+                  fill: theme.palette.text.primary
                 }}
+                stroke={theme.palette.text.secondary}
               />
               <YAxis
                 label={{
                   value: t('organization.numberOfVisits'),
                   angle: -90,
-                  position: 'insideLeft'
+                  position: 'insideLeft',
+                  fill: theme.palette.text.primary
                 }}
+                stroke={theme.palette.text.secondary}
               />
-              <Tooltip
-                formatter={(value: number) => [value, t('organization.visits')]}
-                labelFormatter={label => `${t('organization.hour')}: ${label}`}
+              <Tooltip content={<CustomTooltip />} />
+              <Bar
+                dataKey='count'
+                fill={theme.palette.primary.main}
+                name={t('organization.visits')}
+                radius={[4, 4, 0, 0]} // Rounded corners on top
               />
-              <Bar dataKey='count' fill='#2196f3' name={t('organization.visits')} />
             </BarChart>
           </ResponsiveContainer>
         </Box>
