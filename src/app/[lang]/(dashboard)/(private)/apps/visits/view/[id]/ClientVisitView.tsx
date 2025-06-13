@@ -209,7 +209,7 @@ export default function ClientVisitView({ data: initialData }: ClientVisitViewPr
           }
         }}
         submitButtonText={dictionary?.navigation?.save || 'Save'}
-        title={dictionary?.navigation?.prescription || 'Prescription'}
+        title={dictionary?.navigation?.visitDetails?.prescriptions || 'Prescription'}
       />
     ),
     tests: (
