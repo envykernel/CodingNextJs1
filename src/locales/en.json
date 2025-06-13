@@ -1325,7 +1325,7 @@
             "saving": "Saving...",
             "success": "Radiology order saved successfully!",
             "error": "Failed to save radiology order",
-            "create": "Create Radiology Order",
+            "create": "Create",
             "update": "Update Order",
             "statusPending": "Order Pending",
             "statusInProgress": "Order In Progress",
@@ -1336,7 +1336,12 @@
                 "in_progress": "In Progress",
                 "completed": "Completed",
                 "cancelled": "Cancelled"
-            }
+            },
+            "selectDoctor": "Please select a doctor",
+            "print": "Print",
+            "category": "Category",
+            "type": "Type",
+            "selectType": "Select Radiology Type"
         },
         "status": {
             "pending": "Pending",

@@ -191,6 +191,50 @@
             "radiology": "الأشعة",
             "goToVisit": "الذهاب إلى الزيارة"
         },
+        "radiology": {
+            "title": "الأشعة",
+            "result": "النتيجة",
+            "resultDate": "تاريخ النتيجة",
+            "noOrders": "لا توجد طلبات أشعة مسجلة",
+            "orderForm": {
+                "title": "طلب الأشعة",
+                "examType": "نوع الفحص",
+                "selectExamType": "اختر نوع الفحص",
+                "notes": "ملاحظات",
+                "status": "الحالة",
+                "result": "النتيجة",
+                "resultDate": "تاريخ النتيجة",
+                "save": "حفظ",
+                "saving": "جاري الحفظ...",
+                "success": "تم حفظ طلب الأشعة بنجاح!",
+                "error": "فشل في حفظ طلب الأشعة",
+                "create": "إنشاء طلب أشعة",
+                "update": "تحديث الطلب",
+                "statusPending": "الطلب قيد الانتظار",
+                "statusInProgress": "الطلب قيد التنفيذ",
+                "statusCompleted": "الطلب مكتمل",
+                "statusCancelled": "الطلب ملغي",
+                "statusOptions": {
+                    "pending": "قيد الانتظار",
+                    "in_progress": "قيد التنفيذ",
+                    "completed": "مكتمل",
+                    "cancelled": "ملغي"
+                },
+                "selectDoctor": "الرجاء اختيار الطبيب",
+                "print": "طباعة طلب الأشعة",
+                "category": "الفئة",
+                "type": "النوع",
+                "selectType": "اختر نوع الأشعة "
+            },
+            "status": {
+                "pending": "قيد الانتظار",
+                "in_progress": "قيد التنفيذ",
+                "completed": "مكتمل",
+                "cancelled": "ملغي"
+            },
+            "notes": "ملاحظات",
+            "orderedAt": "تم الطلب في"
+        },
         "medications": "الأدوية",
         "doctors": "الأطباء",
         "visitHoursDistribution": "توزيع ساعات الزيارة",

@@ -1,5 +1,7 @@
 'use client'
 
+import React from 'react'
+
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -7,6 +9,10 @@ import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
+import Accordion from '@mui/material/Accordion'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import { useTranslation } from '@/contexts/translationContext'
 import { formatRadiologyDate } from '@/utils/date'
@@ -42,15 +48,15 @@ const RadiologyBlock = ({ radiologyOrders }: RadiologyBlockProps) => {
   }
 
   return (
-    <Card>
-      <CardContent>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Typography variant='h6' sx={{ mr: 2 }}>
-            {t('radiology.title') || 'Radiology Orders'}
-          </Typography>
-        </Box>
+    <Accordion defaultExpanded={false}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <div className='flex items-center gap-3'>
+          <i className='tabler-scan text-xl text-primary' />
+          <Typography variant='h6'>{t('radiology.title') || 'Radiology Orders'}</Typography>
+        </div>
+      </AccordionSummary>
+      <AccordionDetails>
         <Divider sx={{ mb: 4 }} />
-
         <Grid container spacing={4}>
           {radiologyOrders.map(order => (
             <Grid item xs={12} key={order.id}>
@@ -105,8 +111,8 @@ const RadiologyBlock = ({ radiologyOrders }: RadiologyBlockProps) => {
             </Grid>
           ))}
         </Grid>
-      </CardContent>
-    </Card>
+      </AccordionDetails>
+    </Accordion>
   )
 }
 

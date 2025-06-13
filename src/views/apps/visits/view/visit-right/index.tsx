@@ -116,7 +116,7 @@ const VisitRight = ({
                 iconPosition='start'
               />
               <Tab
-                icon={<i className='tabler-x-ray' />}
+                icon={<i className='tabler-scan' />}
                 value='radiology'
                 label={t('navigation.visitDetails.radiology') || 'Radiology'}
                 iconPosition='start'

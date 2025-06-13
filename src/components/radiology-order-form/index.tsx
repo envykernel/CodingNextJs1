@@ -22,6 +22,8 @@ import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import PrintIcon from '@mui/icons-material/Print'
 
+import { useTranslation } from '@/contexts/translationContext'
+
 interface ExamType {
   id: number
   name: string
@@ -64,6 +66,7 @@ const convertDateToYYYYMMDD = (dateStr: string | null): string | null => {
 export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }: RadiologyOrderFormProps) {
   const params = useParams() as { lang: string }
   const { lang: locale } = params
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -307,10 +310,10 @@ export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }
     <Card>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-          <Typography variant='h6'>Radiology Orders</Typography>
+          <Typography variant='h6'>{t('radiology.orderForm.title') || 'Radiology Orders'}</Typography>
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button variant='outlined' color='primary' startIcon={<AddIcon />} onClick={addOrder}>
-              Add Radiology Order
+              {t('radiology.orderForm.create') || 'Add Radiology Order'}
             </Button>
             {initialValues && initialValues.length > 0 && initialValues[0].id && (
               <Link
@@ -324,7 +327,7 @@ export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }
                   startIcon={<PrintIcon />}
                   disabled={orders.length === 0 || (orders.length === 1 && !orders[0].exam_type.name)}
                 >
-                  Print Orders
+                  {t('radiology.orderForm.print') || 'Print Orders'}
                 </Button>
               </Link>
             )}
@@ -343,14 +346,21 @@ export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }
                           getOptionLabel={option => option.name}
                           value={examTypes.find(type => type.id === order.exam_type.id) || null}
                           onChange={(_, newValue) => handleExamTypeChange(index, newValue)}
-                          renderInput={params => <TextField {...params} label='Exam Type' required fullWidth />}
+                          renderInput={params => (
+                            <TextField
+                              {...params}
+                              label={t('radiology.orderForm.examType') || 'Exam Type'}
+                              required
+                              fullWidth
+                            />
+                          )}
                           isOptionEqualToValue={(option, value) => option.id === value.id}
-                          groupBy={option => option.category || 'Other'}
+                          groupBy={option => option.category || t('radiology.orderForm.category') || 'Other'}
                         />
                       </Grid>
                       <Grid item xs={12} sm={6}>
                         <TextField
-                          label='Status'
+                          label={t('radiology.orderForm.status') || 'Status'}
                           value={order.status}
                           onChange={e =>
                             handleOrderChange(
@@ -363,15 +373,21 @@ export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }
                           select
                           SelectProps={{ native: true }}
                         >
-                          <option value='pending'>Pending</option>
-                          <option value='in_progress'>In Progress</option>
-                          <option value='completed'>Completed</option>
-                          <option value='cancelled'>Cancelled</option>
+                          <option value='pending'>{t('radiology.orderForm.statusOptions.pending') || 'Pending'}</option>
+                          <option value='in_progress'>
+                            {t('radiology.orderForm.statusOptions.in_progress') || 'In Progress'}
+                          </option>
+                          <option value='completed'>
+                            {t('radiology.orderForm.statusOptions.completed') || 'Completed'}
+                          </option>
+                          <option value='cancelled'>
+                            {t('radiology.orderForm.statusOptions.cancelled') || 'Cancelled'}
+                          </option>
                         </TextField>
                       </Grid>
                       <Grid item xs={12} sm={6}>
                         <TextField
-                          label='Result'
+                          label={t('radiology.orderForm.result') || 'Result'}
                           value={order.result || ''}
                           onChange={e => handleOrderChange(index, 'result', e.target.value as string | null)}
                           fullWidth
@@ -379,7 +395,7 @@ export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }
                       </Grid>
                       <Grid item xs={12} sm={6}>
                         <TextField
-                          label='Result Date'
+                          label={t('radiology.orderForm.resultDate') || 'Result Date'}
                           type='date'
                           value={order.result_date || ''}
                           onChange={e => handleOrderChange(index, 'result_date', e.target.value as string | null)}
@@ -389,7 +405,7 @@ export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }
                       </Grid>
                       <Grid item xs={12}>
                         <TextField
-                          label='Notes'
+                          label={t('radiology.orderForm.notes') || 'Notes'}
                           value={order.notes}
                           onChange={e => handleOrderChange(index, 'notes', e.target.value)}
                           fullWidth
@@ -416,11 +432,11 @@ export default function RadiologyOrderForm({ visitId, initialValues, onSuccess }
               disabled={loading}
               startIcon={loading ? <i className='tabler-loader animate-spin' /> : undefined}
             >
-              {loading ? 'Saving...' : 'Save'}
+              {loading ? t('radiology.orderForm.saving') || 'Saving...' : t('radiology.orderForm.save') || 'Save'}
             </Button>
             {success && (
               <Alert icon={<CheckCircleIcon fontSize='inherit' />} severity='success' sx={{ flex: 1 }}>
-                Radiology orders saved successfully!
+                {t('radiology.orderForm.success') || 'Radiology orders saved successfully!'}
               </Alert>
             )}
             {error && (
