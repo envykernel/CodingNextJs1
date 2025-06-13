@@ -1373,7 +1373,20 @@
         "hasPrePrintedHeader": "Has Pre-printed Header",
         "hasPrePrintedFooter": "Has Pre-printed Footer",
         "headerHeight": "Header Height",
-        "footerHeight": "Footer Height"
+        "footerHeight": "Footer Height",
+        "visitHoursDistribution": "Visit Hours Distribution",
+        "hourOfDay": "Hour of Day",
+        "numberOfVisits": "Number of Visits",
+        "noVisitData": "No visit data available for the selected period",
+        "loading": "Loading visit data...",
+        "error": {
+            "fetchFailed": "Failed to fetch visit data",
+            "unauthorized": "You are not authorized to view this data",
+            "noOrganization": "No organization selected",
+            "generic": "An error occurred while loading visit data"
+        },
+        "visits": "Visits",
+        "hour": "Hour"
     },
     "yourOrganization": "Your Organization",
     "otherOrganization": "Other Organization",
@@ -1405,7 +1418,18 @@
         "hasPrePrintedHeader": "Has Pre-printed Header",
         "hasPrePrintedFooter": "Has Pre-printed Footer",
         "headerHeight": "Header Height",
-        "footerHeight": "Footer Height"
+        "footerHeight": "Footer Height",
+        "visitHoursDistribution": "Visit Hours Distribution",
+        "hourOfDay": "Hour of Day",
+        "numberOfVisits": "Number of Visits",
+        "noVisitData": "No visit data available for the selected period",
+        "loading": "Loading visit data...",
+        "error": {
+            "fetchFailed": "Failed to fetch visit data",
+            "unauthorized": "You are not authorized to view this data",
+            "noOrganization": "No organization selected",
+            "generic": "An error occurred while loading visit data"
+        }
     },
     "doctors": {
         "title": "Doctors List",

@@ -192,7 +192,31 @@
             "goToVisit": "الذهاب إلى الزيارة"
         },
         "medications": "الأدوية",
-        "doctors": "الأطباء"
+        "doctors": "الأطباء",
+        "visitHoursDistribution": "توزيع ساعات الزيارة",
+        "hourOfDay": "ساعة اليوم",
+        "numberOfVisits": "عدد الزيارات",
+        "noVisitData": "لا توجد بيانات زيارات متاحة للفترة المحددة",
+        "loading": "جاري تحميل بيانات الزيارات...",
+        "error": {
+            "fetchFailed": "فشل في جلب بيانات الزيارات",
+            "unauthorized": "غير مصرح لك بعرض هذه البيانات",
+            "noOrganization": "لم يتم تحديد مؤسسة",
+            "generic": "حدث خطأ أثناء تحميل بيانات الزيارات"
+        },
+        "visits": "الزيارات",
+        "hour": "ساعة",
+        "visitHoursDistribution": "توزيع ساعات الزيارة",
+        "hourOfDay": "ساعة اليوم",
+        "numberOfVisits": "عدد الزيارات",
+        "noVisitData": "لا توجد بيانات زيارات متاحة للفترة المحددة",
+        "loading": "جاري تحميل بيانات الزيارات...",
+        "error": {
+            "fetchFailed": "فشل في جلب بيانات الزيارات",
+            "unauthorized": "غير مصرح لك بعرض هذه البيانات",
+            "noOrganization": "لم يتم تحديد مؤسسة",
+            "generic": "حدث خطأ أثناء تحميل بيانات الزيارات"
+        }
     },
     "patient": {
         "name": "الاسم الكامل",

@@ -463,7 +463,20 @@
         "hasPrePrintedHeader": "En-tête Pré-imprimé",
         "hasPrePrintedFooter": "Pied de Page Pré-imprimé",
         "headerHeight": "Hauteur de l'En-tête",
-        "footerHeight": "Hauteur du Pied de Page"
+        "footerHeight": "Hauteur du Pied de Page",
+        "visits": "Visites",
+        "hour": "Heure",
+        "visitHoursDistribution": "Distribution des Heures de Visite",
+        "hourOfDay": "Heure de la Journée",
+        "numberOfVisits": "Nombre de Visites",
+        "noVisitData": "Aucune donnée de visite disponible pour la période sélectionnée",
+        "loading": "Chargement des données de visite...",
+        "error": {
+            "fetchFailed": "Échec de la récupération des données de visite",
+            "unauthorized": "Vous n'êtes pas autorisé à voir ces données",
+            "noOrganization": "Aucune organisation sélectionnée",
+            "generic": "Une erreur s'est produite lors du chargement des données de visite"
+        }
     },
     "yourOrganization": "Votre Organisation",
     "otherOrganization": "Autre Organisation",

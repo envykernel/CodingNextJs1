@@ -9,6 +9,7 @@ import PatientSearchBar from '@/views/dashboards/organization/PatientSearchBar'
 import OrganisationDashboardPatientStatistics from '@/views/dashboards/organization/OrganisationDashboardPatientStatistics'
 import TodayAppointments from '@/views/dashboards/organization/TodayAppointments'
 import AppointmentDayStats from '@/views/dashboards/organization/AppointmentDayStats'
+import VisitHoursDistribution from '@/views/dashboards/organization/VisitHoursDistribution'
 
 const OrganizationDashboard = () => {
   return (
@@ -36,6 +37,11 @@ const OrganizationDashboard = () => {
       {/* Year-to-Date Appointment Distribution */}
       <Grid item xs={12} md={6}>
         <AppointmentDayStats dateRange='year' />
+      </Grid>
+
+      {/* Visit Hours Distribution */}
+      <Grid item xs={12}>
+        <VisitHoursDistribution />
       </Grid>
     </Grid>
   )
