@@ -107,9 +107,26 @@ const prismaClientSingleton = () => {
     query: {
       $allModels: {
         async findMany({ model, args, query }) {
-          const session = await getServerSession(authOptions)
-
           if (ORGANISATION_MODELS.includes(model as OrganisationModel)) {
+            const session = await getServerSession(authOptions)
+
+            if (session?.user?.organisationId) {
+              const orgId = parseInt(session.user.organisationId)
+
+              args.where = {
+                ...args.where,
+                organisation_id: orgId
+              } as any
+            }
+          }
+
+          return query(args)
+        },
+
+        async findFirst({ model, args, query }) {
+          if (ORGANISATION_MODELS.includes(model as OrganisationModel)) {
+            const session = await getServerSession(authOptions)
+
             if (session?.user?.organisationId) {
               const orgId = parseInt(session.user.organisationId)
 
@@ -124,57 +141,48 @@ const prismaClientSingleton = () => {
         },
 
         async findUnique({ model, args, query }) {
-          const session = await getServerSession(authOptions)
-
           if (ORGANISATION_MODELS.includes(model as OrganisationModel)) {
-            if (session?.user?.organisationId) {
-              const orgId = parseInt(session.user.organisationId)
+            const result = await query(args)
 
-              // Add organization check to the where clause
-              args.where = {
-                ...args.where,
-                organisation_id: orgId
-              } as any
-            }
-          }
+            if (result) {
+              const session = await getServerSession(authOptions)
 
-          const result = await query(args)
+              if (session?.user?.organisationId) {
+                const orgId = parseInt(session.user.organisationId)
 
-          if (result) {
-            if (session?.user?.organisationId) {
-              const orgId = parseInt(session.user.organisationId)
-
-              if ('organisation_id' in result && result.organisation_id !== orgId) {
-                return null
+                if ('organisation_id' in result && result.organisation_id !== orgId) {
+                  return null
+                }
               }
             }
+
+            return result
           }
 
-          return result
+          return query(args)
         },
 
         async create({ model, args, query }) {
           const session = await getServerSession(authOptions)
 
-          // First check if we have a valid session
-          if (!session?.user) {
-            throw new Error('User not authenticated')
-          }
-
-          // Then check if we have a role
-          const userRole = session.user.role as Role | undefined
-
-          if (!userRole) {
+          if (!session?.user?.role) {
             throw new Error('User role not found')
           }
 
+          // Special handling for UserInternal model - admin role management
+          if (model === 'UserInternal') {
+            if (!adminRoleRules.canCreateAdminUser(session.user.role as Role, args?.data?.role)) {
+              throw new Error('Only admin users can create users with admin role')
+            }
+          }
+
           // Check role-based access
-          if (!hasPermission(model, 'create', userRole)) {
-            throw new Error(`User with role ${userRole} is not authorized to create ${model} records`)
+          if (!hasPermission(model, 'create', session.user.role as Role)) {
+            throw new Error(`User with role ${session.user.role} is not authorized to create ${model} records`)
           }
 
           if (ORGANISATION_MODELS.includes(model as OrganisationModel)) {
-            if (session.user.organisationId) {
+            if (session?.user?.organisationId) {
               const orgId = parseInt(session.user.organisationId)
 
               args.data = {
@@ -190,25 +198,35 @@ const prismaClientSingleton = () => {
         async update({ model, args, query }) {
           const session = await getServerSession(authOptions)
 
-          // First check if we have a valid session
-          if (!session?.user) {
-            throw new Error('User not authenticated')
-          }
-
-          // Then check if we have a role
-          const userRole = session.user.role as Role | undefined
-
-          if (!userRole) {
+          if (!session?.user?.role) {
             throw new Error('User role not found')
           }
 
+          // Special handling for UserInternal model - admin role management
+          if (model === 'UserInternal') {
+            const existing = await query({
+              ...args,
+              select: { role: true }
+            })
+
+            if (!adminRoleRules.canModifyAdminUser(session.user.role as Role, existing?.role)) {
+              throw new Error('Only admin users can modify admin users')
+            }
+
+            const newRole = adminRoleRules.getRoleFromUpdate(args?.data?.role)
+
+            if (!adminRoleRules.canCreateAdminUser(session.user.role as Role, newRole)) {
+              throw new Error('Only admin users can set users to admin role')
+            }
+          }
+
           // Check role-based access
-          if (!hasPermission(model, 'update', userRole)) {
-            throw new Error(`User with role ${userRole} is not authorized to update ${model} records`)
+          if (!hasPermission(model, 'update', session.user.role as Role)) {
+            throw new Error(`User with role ${session.user.role} is not authorized to update ${model} records`)
           }
 
           if (ORGANISATION_MODELS.includes(model as OrganisationModel)) {
-            if (session.user.organisationId) {
+            if (session?.user?.organisationId) {
               const orgId = parseInt(session.user.organisationId)
 
               args.where = {
@@ -224,25 +242,33 @@ const prismaClientSingleton = () => {
         async delete({ model, args, query }) {
           const session = await getServerSession(authOptions)
 
-          // First check if we have a valid session
-          if (!session?.user) {
-            throw new Error('User not authenticated')
-          }
-
-          // Then check if we have a role
-          const userRole = session.user.role as Role | undefined
-
-          if (!userRole) {
+          if (!session?.user?.role) {
             throw new Error('User role not found')
           }
 
+          // Special handling for UserInternal model - admin role management
+          if (model === 'UserInternal') {
+            const existing = await query({
+              ...args,
+              select: { role: true }
+            })
+
+            if (!adminRoleRules.canDeleteUser(session.user.role as Role, existing?.role)) {
+              if (existing?.role === 'ADMIN') {
+                throw new Error('Only admin users can delete admin users')
+              } else {
+                throw new Error('Only admin and cabinet manager users can delete users')
+              }
+            }
+          }
+
           // Check role-based access
-          if (!hasPermission(model, 'delete', userRole)) {
-            throw new Error(`User with role ${userRole} is not authorized to delete ${model} records`)
+          if (!hasPermission(model, 'delete', session.user.role as Role)) {
+            throw new Error(`User with role ${session.user.role} is not authorized to delete ${model} records`)
           }
 
           if (ORGANISATION_MODELS.includes(model as OrganisationModel)) {
-            if (session.user.organisationId) {
+            if (session?.user?.organisationId) {
               const orgId = parseInt(session.user.organisationId)
 
               args.where = {
