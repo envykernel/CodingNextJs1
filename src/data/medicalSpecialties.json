@@ -1,0 +1,204 @@
+{
+    "specialties": [
+        {
+            "id": "cardiology",
+            "translations": {
+                "fr": "Cardiologie",
+                "en": "Cardiology",
+                "ar": "طب القلب"
+            }
+        },
+        {
+            "id": "dermatology",
+            "translations": {
+                "fr": "Dermatologie",
+                "en": "Dermatology",
+                "ar": "طب الجلد"
+            }
+        },
+        {
+            "id": "endocrinology",
+            "translations": {
+                "fr": "Endocrinologie",
+                "en": "Endocrinology",
+                "ar": "طب الغدد الصماء"
+            }
+        },
+        {
+            "id": "gastroenterology",
+            "translations": {
+                "fr": "Gastro-entérologie",
+                "en": "Gastroenterology",
+                "ar": "طب الجهاز الهضمي"
+            }
+        },
+        {
+            "id": "general_practice",
+            "translations": {
+                "fr": "Médecine générale",
+                "en": "General Practice",
+                "ar": "طب عام"
+            }
+        },
+        {
+            "id": "gynecology",
+            "translations": {
+                "fr": "Gynécologie",
+                "en": "Gynecology",
+                "ar": "طب النساء"
+            }
+        },
+        {
+            "id": "hematology",
+            "translations": {
+                "fr": "Hématologie",
+                "en": "Hematology",
+                "ar": "طب الدم"
+            }
+        },
+        {
+            "id": "internal_medicine",
+            "translations": {
+                "fr": "Médecine interne",
+                "en": "Internal Medicine",
+                "ar": "طب الباطنة"
+            }
+        },
+        {
+            "id": "neurology",
+            "translations": {
+                "fr": "Neurologie",
+                "en": "Neurology",
+                "ar": "طب الأعصاب"
+            }
+        },
+        {
+            "id": "obstetrics",
+            "translations": {
+                "fr": "Obstétrique",
+                "en": "Obstetrics",
+                "ar": "طب التوليد"
+            }
+        },
+        {
+            "id": "ophthalmology",
+            "translations": {
+                "fr": "Ophtalmologie",
+                "en": "Ophthalmology",
+                "ar": "طب العيون"
+            }
+        },
+        {
+            "id": "orthopedics",
+            "translations": {
+                "fr": "Orthopédie",
+                "en": "Orthopedics",
+                "ar": "طب العظام"
+            }
+        },
+        {
+            "id": "otolaryngology",
+            "translations": {
+                "fr": "Oto-rhino-laryngologie",
+                "en": "Otolaryngology",
+                "ar": "طب الأنف والأذن والحنجرة"
+            }
+        },
+        {
+            "id": "pediatrics",
+            "translations": {
+                "fr": "Pédiatrie",
+                "en": "Pediatrics",
+                "ar": "طب الأطفال"
+            }
+        },
+        {
+            "id": "psychiatry",
+            "translations": {
+                "fr": "Psychiatrie",
+                "en": "Psychiatry",
+                "ar": "طب النفس"
+            }
+        },
+        {
+            "id": "pulmonology",
+            "translations": {
+                "fr": "Pneumologie",
+                "en": "Pulmonology",
+                "ar": "طب الرئة"
+            }
+        },
+        {
+            "id": "rheumatology",
+            "translations": {
+                "fr": "Rhumatologie",
+                "en": "Rheumatology",
+                "ar": "طب الروماتيزم"
+            }
+        },
+        {
+            "id": "urology",
+            "translations": {
+                "fr": "Urologie",
+                "en": "Urology",
+                "ar": "طب المسالك البولية"
+            }
+        },
+        {
+            "id": "dentistry",
+            "translations": {
+                "fr": "Dentisterie",
+                "en": "Dentistry",
+                "ar": "طب الأسنان"
+            }
+        },
+        {
+            "id": "dietetics",
+            "translations": {
+                "fr": "Diététique",
+                "en": "Dietetics",
+                "ar": "التغذية العلاجية"
+            }
+        },
+        {
+            "id": "physiotherapy",
+            "translations": {
+                "fr": "Physiothérapie",
+                "en": "Physiotherapy",
+                "ar": "العلاج الطبيعي"
+            }
+        },
+        {
+            "id": "radiology",
+            "translations": {
+                "fr": "Radiologie",
+                "en": "Radiology",
+                "ar": "الأشعة"
+            }
+        },
+        {
+            "id": "anesthesiology",
+            "translations": {
+                "fr": "Anesthésiologie",
+                "en": "Anesthesiology",
+                "ar": "طب التخدير"
+            }
+        },
+        {
+            "id": "emergency_medicine",
+            "translations": {
+                "fr": "Médecine d'urgence",
+                "en": "Emergency Medicine",
+                "ar": "طب الطوارئ"
+            }
+        },
+        {
+            "id": "family_medicine",
+            "translations": {
+                "fr": "Médecine familiale",
+                "en": "Family Medicine",
+                "ar": "طب الأسرة"
+            }
+        }
+    ]
+}

@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 
+import { useParams } from 'next/navigation'
+
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -22,6 +24,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { useSession } from 'next-auth/react'
 
 import { useTranslation } from '@/contexts/translationContext'
+import { getSpecialties } from '@/utils/medicalSpecialties'
 
 interface Doctor {
   id: number
@@ -38,6 +41,7 @@ interface DoctorDrawerProps {
   onClose: () => void
   doctor: Doctor | null
   onSave: () => void
+  onResetFilters?: () => void
 }
 
 // Zod schema for doctor form
@@ -54,14 +58,17 @@ const doctorSchema = z.object({
 
 type DoctorFormValues = z.infer<typeof doctorSchema>
 
-export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDrawerProps) {
+export default function DoctorDrawer({ open, onClose, doctor, onSave, onResetFilters }: DoctorDrawerProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const [existingSpecialties, setExistingSpecialties] = useState<string[]>([])
-  const [isLoadingSpecialties, setIsLoadingSpecialties] = useState(false)
+  const params = useParams()
+  const lang = (params?.lang as string) || 'en' // Default to 'en' if params is null
   const [showSuccess, setShowSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+
+  // Get specialties from our JSON file
+  const specialties = getSpecialties()
 
   const {
     control,
@@ -78,40 +85,6 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
       status: 'enabled'
     }
   })
-
-  // Fetch existing specialties when drawer opens
-  useEffect(() => {
-    const fetchSpecialties = async () => {
-      if (!open) return
-
-      setIsLoadingSpecialties(true)
-
-      try {
-        const response = await fetch('/api/doctors')
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch specialties')
-        }
-
-        const data = (await response.json()) as Doctor[]
-
-        // Get unique specialties, filtering out null values and ensuring they are strings
-        const specialties = Array.from(
-          new Set(
-            data.map(doc => doc.specialty).filter((specialty: string | null): specialty is string => specialty !== null)
-          )
-        )
-
-        setExistingSpecialties(specialties)
-      } catch (error) {
-        console.error('Error fetching specialties:', error)
-      } finally {
-        setIsLoadingSpecialties(false)
-      }
-    }
-
-    fetchSpecialties()
-  }, [open])
 
   // Reset form when drawer opens/closes
   useEffect(() => {
@@ -148,6 +121,10 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
       status: 'enabled'
     })
     onClose()
+
+    if (showSuccess && onResetFilters) {
+      onResetFilters()
+    }
   }
 
   const onSubmit = async (data: DoctorFormValues) => {
@@ -292,10 +269,10 @@ export default function DoctorDrawer({ open, onClose, doctor, onSave }: DoctorDr
             render={({ field }) => (
               <FormControl fullWidth error={!!errors.specialty} sx={{ mb: 4 }}>
                 <InputLabel>{t('doctors.specialty')}</InputLabel>
-                <Select {...field} label={t('doctors.specialty')} disabled={isLoadingSpecialties}>
-                  {existingSpecialties.map(specialty => (
-                    <MenuItem key={specialty} value={specialty}>
-                      {specialty}
+                <Select {...field} label={t('doctors.specialty')}>
+                  {specialties.map(specialty => (
+                    <MenuItem key={specialty.id} value={specialty.id}>
+                      {specialty.translations[lang as keyof typeof specialty.translations]}
                     </MenuItem>
                   ))}
                 </Select>

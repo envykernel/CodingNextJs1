@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react'
 
+import { useParams } from 'next/navigation'
+
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
@@ -22,19 +24,20 @@ import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import TablePagination from '@mui/material/TablePagination'
-import Alert from '@mui/material/Alert'
 import Chip from '@mui/material/Chip'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogActions from '@mui/material/DialogActions'
+import IconButton from '@mui/material/IconButton'
 
 import { useSession } from 'next-auth/react'
 
 import { useTranslation } from '@/contexts/translationContext'
 
 import DoctorDrawer from './DoctorDrawer'
+import { getSpecialties } from '@/utils/medicalSpecialties'
 
 interface Doctor {
   id: number
@@ -61,6 +64,8 @@ const doctorStatusObj = {
 export default function DoctorList() {
   const { t } = useTranslation()
   const { data: session } = useSession()
+  const params = useParams()
+  const lang = (params?.lang as string) || 'en'
   const [doctors, setDoctors] = useState<Doctor[]>([])
   const [loading, setLoading] = useState(true)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -68,6 +73,7 @@ export default function DoctorList() {
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchInput, setSearchInput] = useState('')
   const [specialtyFilter, setSpecialtyFilter] = useState<string>('')
   const [statusFilter, setStatusFilter] = useState<string>('')
 
@@ -82,6 +88,9 @@ export default function DoctorList() {
   const isCabinetManager = session?.user?.role === 'CABINET_MANAGER'
   const canManageDoctors = isAdmin || isCabinetManager
   const userOrgId = Number(session?.user?.organisationId)
+
+  // Get specialties from our JSON file
+  const specialties = getSpecialties()
 
   const fetchDoctors = async () => {
     try {
@@ -109,17 +118,6 @@ export default function DoctorList() {
       fetchDoctors()
     }
   }, [canManageDoctors, userOrgId])
-
-  // Get unique specialties from doctors
-  const specialties = useMemo(() => {
-    const uniqueSpecialties = new Set<string>()
-
-    doctors.forEach(doc => {
-      if (doc.specialty) uniqueSpecialties.add(doc.specialty)
-    })
-
-    return Array.from(uniqueSpecialties).sort()
-  }, [doctors])
 
   // Filter doctors based on search query, specialty, and status
   const filteredDoctors = useMemo(() => {
@@ -194,12 +192,34 @@ export default function DoctorList() {
     setDoctorToDelete(null)
   }
 
+  const handleSearch = () => {
+    setSearchQuery(searchInput)
+    setPage(0)
+  }
+
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleSearch()
+    }
+  }
+
   const clearFilters = () => {
     setSearchQuery('')
+    setSearchInput('')
     setSpecialtyFilter('')
     setStatusFilter('')
     setPage(0)
   }
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const nameParam = params.get('name')
+
+    if (nameParam) {
+      setSearchInput(nameParam)
+      setSearchQuery(nameParam)
+    }
+  }, [])
 
   if (!canManageDoctors) {
     return (
@@ -244,15 +264,15 @@ export default function DoctorList() {
               <TextField
                 size='small'
                 placeholder={t('doctors.filters.searchPlaceholder')}
-                value={searchQuery}
-                onChange={e => {
-                  setSearchQuery(e.target.value)
-                  setPage(0)
-                }}
+                value={searchInput}
+                onChange={e => setSearchInput(e.target.value)}
+                onKeyPress={handleKeyPress}
                 InputProps={{
-                  startAdornment: (
-                    <InputAdornment position='start'>
-                      <i className='tabler-search' />
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <IconButton size='small' onClick={handleSearch} edge='end'>
+                        <i className='tabler-search' />
+                      </IconButton>
                     </InputAdornment>
                   )
                 }}
@@ -271,8 +291,8 @@ export default function DoctorList() {
                 >
                   <MenuItem value=''>{t('doctors.filters.allSpecialties')}</MenuItem>
                   {specialties.map(specialty => (
-                    <MenuItem key={specialty} value={specialty}>
-                      {specialty}
+                    <MenuItem key={specialty.id} value={specialty.id}>
+                      {specialty.translations[lang as keyof typeof specialty.translations]}
                     </MenuItem>
                   ))}
                 </Select>
@@ -304,8 +324,6 @@ export default function DoctorList() {
               <Box sx={{ display: 'flex', justifyContent: 'center', p: 5 }}>
                 <CircularProgress />
               </Box>
-            ) : filteredDoctors.length === 0 ? (
-              <Alert severity='info'>{t('doctors.noDoctorsFound')}</Alert>
             ) : (
               <TableContainer component={Paper}>
                 <Table>
@@ -320,51 +338,69 @@ export default function DoctorList() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {paginatedDoctors.map(doctor => (
-                      <TableRow key={doctor.id}>
-                        <TableCell>{doctor.name}</TableCell>
-                        <TableCell>{doctor.specialty || '-'}</TableCell>
-                        <TableCell>{doctor.email || '-'}</TableCell>
-                        <TableCell>{doctor.phone_number || '-'}</TableCell>
-                        <TableCell>
-                          <Chip
-                            label={t(`doctors.status.${doctor.status}`)}
-                            color={doctorStatusObj[doctor.status as keyof typeof doctorStatusObj].color}
-                            size='small'
-                            variant='tonal'
-                            icon={<i className={doctorStatusObj[doctor.status as keyof typeof doctorStatusObj].icon} />}
-                            sx={{
-                              '& .MuiChip-icon': {
-                                fontSize: '1rem'
-                              }
-                            }}
-                          />
+                    {filteredDoctors.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={canManageDoctors ? 6 : 5} align='center' sx={{ py: 8 }}>
+                          <Typography variant='body1' color='text.secondary'>
+                            {t('doctors.noDoctorsFound')}
+                          </Typography>
                         </TableCell>
-                        {canManageDoctors && (
-                          <TableCell align='right'>
-                            <Button
-                              variant='outlined'
-                              color='primary'
-                              size='small'
-                              onClick={() => handleEdit(doctor)}
-                              sx={{ mr: 1 }}
-                              startIcon={<i className='tabler-edit' />}
-                            >
-                              {t('doctors.actions.edit')}
-                            </Button>
-                            <Button
-                              variant='outlined'
-                              color='error'
-                              size='small'
-                              onClick={() => handleDeleteClick(doctor.id)}
-                              startIcon={<i className='tabler-trash' />}
-                            >
-                              {t('doctors.actions.delete')}
-                            </Button>
-                          </TableCell>
-                        )}
                       </TableRow>
-                    ))}
+                    ) : (
+                      paginatedDoctors.map(doctor => (
+                        <TableRow key={doctor.id}>
+                          <TableCell>{doctor.name}</TableCell>
+                          <TableCell>
+                            {doctor.specialty
+                              ? specialties.find(s => s.id === doctor.specialty)?.translations[
+                                  lang as 'fr' | 'en' | 'ar'
+                                ] || doctor.specialty
+                              : '-'}
+                          </TableCell>
+                          <TableCell>{doctor.email || '-'}</TableCell>
+                          <TableCell>{doctor.phone_number || '-'}</TableCell>
+                          <TableCell>
+                            <Chip
+                              label={t(`doctors.status.${doctor.status}`)}
+                              color={doctorStatusObj[doctor.status as keyof typeof doctorStatusObj].color}
+                              size='small'
+                              variant='tonal'
+                              icon={
+                                <i className={doctorStatusObj[doctor.status as keyof typeof doctorStatusObj].icon} />
+                              }
+                              sx={{
+                                '& .MuiChip-icon': {
+                                  fontSize: '1rem'
+                                }
+                              }}
+                            />
+                          </TableCell>
+                          {canManageDoctors && (
+                            <TableCell align='right'>
+                              <Button
+                                variant='outlined'
+                                color='primary'
+                                size='small'
+                                onClick={() => handleEdit(doctor)}
+                                sx={{ mr: 1 }}
+                                startIcon={<i className='tabler-edit' />}
+                              >
+                                {t('doctors.actions.edit')}
+                              </Button>
+                              <Button
+                                variant='outlined'
+                                color='error'
+                                size='small'
+                                onClick={() => handleDeleteClick(doctor.id)}
+                                startIcon={<i className='tabler-trash' />}
+                              >
+                                {t('doctors.actions.delete')}
+                              </Button>
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
                 <TablePagination
@@ -388,6 +424,7 @@ export default function DoctorList() {
           onClose={() => setDrawerOpen(false)}
           doctor={selectedDoctor}
           onSave={fetchDoctors}
+          onResetFilters={clearFilters}
         />
       )}
 
