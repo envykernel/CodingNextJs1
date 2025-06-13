@@ -20,6 +20,7 @@ import Logo from '@components/layout/shared/Logo'
 const LoginContainer = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
   display: 'flex',
+  flexDirection: 'column',
   background: theme.palette.mode === 'dark' ? '#1A1A1A' : '#FFFFFF',
   position: 'relative',
   overflow: 'hidden'
@@ -208,6 +209,15 @@ const ServiceLabel = styled(Typography)(() => ({
   }
 }))
 
+const Footer = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  textAlign: 'center',
+  color: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
+  fontSize: '0.875rem',
+  borderTop: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+  marginTop: 'auto'
+}))
+
 const Login = () => {
   const searchParams = useSearchParams()
   const error = searchParams?.get('error')
@@ -222,161 +232,166 @@ const Login = () => {
 
   return (
     <LoginContainer>
-      <LeftSection>
-        <Box sx={{ position: 'relative', zIndex: 1 }}>
-          <Typography
-            variant='h3'
-            sx={{
-              fontWeight: 800,
-              mb: 3,
-              color: '#FFFFFF',
-              fontSize: { xs: '2rem', md: '2.5rem' },
-              letterSpacing: '-0.5px'
-            }}
-          >
-            Plateforme de Gestion Médicale
-          </Typography>
-
-          <Typography
-            variant='body1'
-            sx={{
-              opacity: 0.9,
-              maxWidth: '600px',
-              lineHeight: 1.6,
-              mb: 1,
-              fontSize: '1.1rem',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            Une solution simple et efficace pour gérer votre cabinet médical
-          </Typography>
-
-          <ServiceList>
-            <ServiceItem>
-              <i className='tabler-users' />
-              <ServiceLabel>Gestion des Patients</ServiceLabel>
-            </ServiceItem>
-            <ServiceItem>
-              <i className='tabler-calendar-check' />
-              <ServiceLabel>Rendez-vous</ServiceLabel>
-            </ServiceItem>
-            <ServiceItem>
-              <i className='tabler-file-invoice' />
-              <ServiceLabel>Factures</ServiceLabel>
-            </ServiceItem>
-            <ServiceItem>
-              <i className='tabler-credit-card' />
-              <ServiceLabel>Paiements</ServiceLabel>
-            </ServiceItem>
-            <ServiceItem>
-              <i className='tabler-dashboard' />
-              <ServiceLabel>Tableau de Bord Analytique</ServiceLabel>
-            </ServiceItem>
-          </ServiceList>
-        </Box>
-      </LeftSection>
-      <RightSection>
-        <LoginCard>
-          <LogoWrapper>
-            <Logo />
-          </LogoWrapper>
-          <Box sx={{ textAlign: 'center' }}>
+      <Box sx={{ display: 'flex', flex: 1 }}>
+        <LeftSection>
+          <Box sx={{ position: 'relative', zIndex: 1 }}>
             <Typography
-              variant='h4'
+              variant='h3'
               sx={{
-                fontWeight: 700,
-                mb: 1.5,
-                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                color: 'transparent',
+                fontWeight: 800,
+                mb: 3,
+                color: '#FFFFFF',
+                fontSize: { xs: '2rem', md: '2.5rem' },
                 letterSpacing: '-0.5px'
               }}
             >
-              Bienvenue
+              Plateforme de Gestion Médicale
             </Typography>
+
             <Typography
               variant='body1'
               sx={{
-                color: 'text.secondary',
-                mb: 5,
-                fontSize: '1.1rem'
+                opacity: 0.9,
+                maxWidth: '600px',
+                lineHeight: 1.6,
+                mb: 1,
+                fontSize: '1.1rem',
+                whiteSpace: 'nowrap'
               }}
             >
-              Accédez à votre tableau de bord médical en toute sécurité
+              Une solution simple et efficace pour gérer votre cabinet médical
             </Typography>
-            <GoogleButton
-              fullWidth
-              startIcon={<img src='/images/logos/google.png' alt='Google' width={22} />}
-              onClick={() => signIn('google')}
-            >
-              Se connecter avec Google
-            </GoogleButton>
-            <AzureADButton
-              fullWidth
-              startIcon={
-                <img
-                  src='/images/logos/microsoft.svg'
-                  alt='Microsoft'
-                  width={22}
-                  height={22}
-                  style={{
-                    filter: 'brightness(0.9)',
-                    objectFit: 'contain'
-                  }}
-                />
-              }
-              onClick={() => signIn('azure-ad')}
-            >
-              Se connecter avec Microsoft
-            </AzureADButton>
-            {error && (
-              <Alert
-                severity='error'
+
+            <ServiceList>
+              <ServiceItem>
+                <i className='tabler-users' />
+                <ServiceLabel>Gestion des Patients</ServiceLabel>
+              </ServiceItem>
+              <ServiceItem>
+                <i className='tabler-calendar-check' />
+                <ServiceLabel>Rendez-vous</ServiceLabel>
+              </ServiceItem>
+              <ServiceItem>
+                <i className='tabler-file-invoice' />
+                <ServiceLabel>Factures</ServiceLabel>
+              </ServiceItem>
+              <ServiceItem>
+                <i className='tabler-credit-card' />
+                <ServiceLabel>Paiements</ServiceLabel>
+              </ServiceItem>
+              <ServiceItem>
+                <i className='tabler-dashboard' />
+                <ServiceLabel>Tableau de Bord Analytique</ServiceLabel>
+              </ServiceItem>
+            </ServiceList>
+          </Box>
+        </LeftSection>
+        <RightSection>
+          <LoginCard>
+            <LogoWrapper>
+              <Logo />
+            </LogoWrapper>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography
+                variant='h4'
                 sx={{
-                  mt: 3,
-                  '& .MuiAlert-message': {
-                    fontSize: '0.9rem',
-                    textAlign: 'center',
-                    width: '100%'
-                  },
-                  '& .MuiAlert-icon': {
-                    display: 'flex',
-                    alignItems: 'center'
-                  }
+                  fontWeight: 700,
+                  mb: 1.5,
+                  background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                  letterSpacing: '-0.5px'
                 }}
               >
-                {getErrorMessage(error)}
-              </Alert>
-            )}
-            <Box
-              sx={{
-                mt: 4,
-                pt: 4,
-                borderTop: '1px solid',
-                borderColor: 'divider',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 1
-              }}
-            >
-              <i className='tabler-shield-check text-primary' style={{ fontSize: '1.25rem' }} />
+                Bienvenue
+              </Typography>
               <Typography
-                variant='body2'
+                variant='body1'
                 sx={{
                   color: 'text.secondary',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.5
+                  mb: 5,
+                  fontSize: '1.1rem'
                 }}
               >
-                <span>Ne partagez jamais vos identifiants</span>
+                Accédez à votre tableau de bord médical en toute sécurité
               </Typography>
+              <GoogleButton
+                fullWidth
+                startIcon={<img src='/images/logos/google.png' alt='Google' width={22} />}
+                onClick={() => signIn('google')}
+              >
+                Se connecter avec Google
+              </GoogleButton>
+              <AzureADButton
+                fullWidth
+                startIcon={
+                  <img
+                    src='/images/logos/microsoft.svg'
+                    alt='Microsoft'
+                    width={22}
+                    height={22}
+                    style={{
+                      filter: 'brightness(0.9)',
+                      objectFit: 'contain'
+                    }}
+                  />
+                }
+                onClick={() => signIn('azure-ad')}
+              >
+                Se connecter avec Microsoft
+              </AzureADButton>
+              {error && (
+                <Alert
+                  severity='error'
+                  sx={{
+                    mt: 3,
+                    '& .MuiAlert-message': {
+                      fontSize: '0.9rem',
+                      textAlign: 'center',
+                      width: '100%'
+                    },
+                    '& .MuiAlert-icon': {
+                      display: 'flex',
+                      alignItems: 'center'
+                    }
+                  }}
+                >
+                  {getErrorMessage(error)}
+                </Alert>
+              )}
+              <Box
+                sx={{
+                  mt: 4,
+                  pt: 4,
+                  borderTop: '1px solid',
+                  borderColor: 'divider',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 1
+                }}
+              >
+                <i className='tabler-shield-check text-primary' style={{ fontSize: '1.25rem' }} />
+                <Typography
+                  variant='body2'
+                  sx={{
+                    color: 'text.secondary',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5
+                  }}
+                >
+                  <span>Ne partagez jamais vos identifiants</span>
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-        </LoginCard>
-      </RightSection>
+          </LoginCard>
+        </RightSection>
+      </Box>
+      <Footer>
+        <Typography variant='body2'>© 2024 Medical Cabinet Management Application - Tous droits réservés</Typography>
+      </Footer>
     </LoginContainer>
   )
 }
