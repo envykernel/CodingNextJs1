@@ -1389,6 +1389,41 @@
         "saving": "Enregistrement...",
         "savedSuccessfully": "Enregistré avec succès !"
     },
+    "clinicalExamForm": {
+        "title": "Examen Clinique",
+        "chiefComplaint": "Motif de Consultation",
+        "historyIllness": "Histoire de la Maladie Actuelle",
+        "medicalHistory": "Antécédents Médicaux",
+        "generalAppearance": "Aspect Général",
+        "cardiovascular": "Cardiovasculaire",
+        "respiratory": "Respiratoire",
+        "gastrointestinal": "Gastro-intestinal",
+        "neurological": "Neurologique",
+        "musculoskeletal": "Musculo-squelettique",
+        "skin": "Peau",
+        "ent": "ORL (Oreilles, Nez, Gorge)",
+        "assessment": "Évaluation",
+        "plan": "Plan",
+        "save": "Enregistrer",
+        "saving": "Enregistrement...",
+        "savedSuccessfully": "Examen clinique enregistré avec succès !",
+        "selectSections": "Sélectionner les sections à remplir",
+        "sections": {
+            "chiefComplaint": "Motif de Consultation",
+            "historyIllness": "Histoire de la Maladie Actuelle",
+            "medicalHistory": "Antécédents Médicaux",
+            "generalAppearance": "Aspect Général",
+            "cardiovascular": "Cardiovasculaire",
+            "respiratory": "Respiratoire",
+            "gastrointestinal": "Gastro-intestinal",
+            "neurological": "Neurologique",
+            "musculoskeletal": "Musculo-squelettique",
+            "skin": "Peau",
+            "ent": "ORL (Oreilles, Nez, Gorge)",
+            "assessment": "Évaluation",
+            "plan": "Plan"
+        }
+    },
     "financeDashboard": {
         "statistics": {
             "title": "Statistiques",
