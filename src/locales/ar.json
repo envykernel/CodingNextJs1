@@ -2,7 +2,27 @@
     "common": {
         "edit": "تعديل",
         "delete": "حذف",
-        "tryAgainLater": "يرجى المحاولة مرة أخرى لاحقاً"
+        "tryAgainLater": "يرجى المحاولة مرة أخرى لاحقًا",
+        "overview": "نظرة عامة",
+        "security": "الأمان",
+        "billingPlans": "الفواتير والخطط",
+        "notifications": "الإشعارات",
+        "connections": "الاتصالات",
+        "show": "عرض",
+        "loading": "جاري التحميل...",
+        "goToVisit": "الذهاب إلى الزيارة",
+        "noData": "لا توجد بيانات متاحة",
+        "rowsPerPage": "الصفوف في الصفحة",
+        "displayedRows": "عرض {from}-{to} من {count}",
+        "actions": "الإجراءات",
+        "periods": {
+            "this week": "هذا الأسبوع",
+            "this month": "هذا الشهر",
+            "this year": "هذا العام"
+        },
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "noDoctor": "لا يوجد طبيب معين"
     },
     "patients": "المرضى",
     "list": "القائمة",
@@ -43,7 +63,6 @@
         "myCourses": "دوراتي",
         "courseDetails": "تفاصيل الدورة",
         "fleet": "الأسطول",
-        "email": "البريد الإلكتروني",
         "chat": "المحادثة",
         "calendar": "التقويم",
         "kanban": "كانبان",
@@ -413,7 +432,7 @@
     "type": "النوع",
     "status": "الحالة",
     "doctor": "الطبيب",
-    "notes": "ملاحظات",
+    "notes": "الملاحظات",
     "common": {
         "overview": "نظرة عامة",
         "security": "الأمان",

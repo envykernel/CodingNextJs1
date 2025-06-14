@@ -2,7 +2,27 @@
     "common": {
         "edit": "Modifier",
         "delete": "Supprimer",
-        "tryAgainLater": "Veuillez réessayer plus tard"
+        "tryAgainLater": "Veuillez réessayer plus tard",
+        "overview": "Aperçu",
+        "security": "Sécurité",
+        "billingPlans": "Facturation et Plans",
+        "notifications": "Notifications",
+        "connections": "Connexions",
+        "show": "Afficher",
+        "loading": "Chargement...",
+        "goToVisit": "Aller à la visite",
+        "noData": "Aucune donnée disponible",
+        "rowsPerPage": "Lignes par page",
+        "displayedRows": "Affichage de {from}-{to} sur {count}",
+        "actions": "Actions",
+        "periods": {
+            "this week": "Cette semaine",
+            "this month": "Ce mois",
+            "this year": "Cette année"
+        },
+        "email": "Email",
+        "phone": "Téléphone",
+        "noDoctor": "Aucun médecin assigné"
     },
     "patients": "Patients",
     "list": "Liste",
@@ -340,37 +360,12 @@
             "endDate": "Date de fin"
         }
     },
-    "date": "Date :",
+    "date": "Date:",
     "time": "Heure",
     "type": "Type",
     "status": "Statut",
     "doctor": "Médecin",
-    "notes": "Remarques",
-    "common": {
-        "overview": "Aperçu",
-        "security": "Sécurité",
-        "billingPlans": "Facturation & Plans",
-        "notifications": "Notifications",
-        "connections": "Connexions",
-        "show": "Afficher",
-        "loading": "Chargement...",
-        "goToVisit": "Aller à la visite",
-        "noData": "Aucune donnée disponible",
-        "rowsPerPage": "Lignes par page",
-        "displayedRows": "Affichage de {from}-{to} sur {count}",
-        "actions": "Actions",
-        "periods": {
-            "this week": "Cette Semaine",
-            "this month": "Ce Mois",
-            "this year": "Cette Année"
-        },
-        "email": "Email",
-        "phone": "Téléphone",
-        "noDoctor": "Aucun médecin assigné",
-        "edit": "Modifier",
-        "delete": "Supprimer"
-    },
-    "appointmentsList": "Liste des rendez-vous",
+    "notes": "Notes",
     "bookAppointment": "Prendre rendez-vous",
     "appointmentDetails": "Détails du rendez-vous",
     "createAppointment": "Créer un nouveau rendez-vous",
