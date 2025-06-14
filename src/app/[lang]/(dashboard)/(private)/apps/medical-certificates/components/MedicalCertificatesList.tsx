@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 
 import { useParams } from 'next/navigation'
 
-import { Grid, Button, Box, Alert } from '@mui/material'
+import { Grid, Button, Box, Typography, Paper } from '@mui/material'
 
 import { useTranslation } from '@/contexts/translationContext'
 import MedicalCertificatesTable from './MedicalCertificatesTable'
@@ -87,28 +87,47 @@ export function MedicalCertificatesList({ searchParams }: MedicalCertificatesLis
   return (
     <Box>
       <Grid container spacing={6}>
-        {error && (
+        {error ? (
           <Grid item xs={12}>
-            <Alert severity='error' onClose={() => setError(undefined)}>
-              {error.message}
-            </Alert>
+            <Paper
+              sx={{
+                p: 4,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                minHeight: '200px'
+              }}
+            >
+              <Typography variant='h6' color='text.secondary' gutterBottom>
+                {t('common.tryAgainLater')}
+              </Typography>
+            </Paper>
           </Grid>
+        ) : (
+          <>
+            <Grid item xs={12}>
+              <Box display='flex' justifyContent='flex-end' mb={2}>
+                <Button
+                  variant='contained'
+                  startIcon={<i className='tabler-plus' />}
+                  onClick={() => setIsDrawerOpen(true)}
+                >
+                  {t('medicalCertificates.addCertificate')}
+                </Button>
+              </Box>
+            </Grid>
+            <Grid item xs={12}>
+              <MedicalCertificatesTable
+                certificates={certificates}
+                isLoading={isLoading}
+                onDelete={handleDelete}
+                error={error}
+              />
+            </Grid>
+          </>
         )}
-        <Grid item xs={12}>
-          <Box display='flex' justifyContent='flex-end' mb={2}>
-            <Button variant='contained' startIcon={<i className='tabler-plus' />} onClick={() => setIsDrawerOpen(true)}>
-              {t('medicalCertificates.addCertificate')}
-            </Button>
-          </Box>
-        </Grid>
-        <Grid item xs={12}>
-          <MedicalCertificatesTable
-            certificates={certificates}
-            isLoading={isLoading}
-            onDelete={handleDelete}
-            error={error}
-          />
-        </Grid>
         <AddCertificateDrawer
           open={isDrawerOpen}
           onClose={() => {
