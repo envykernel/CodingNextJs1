@@ -1197,7 +1197,8 @@
             "update": "Échec de la mise à jour du service",
             "delete": "Échec de la suppression du service",
             "unknown": "Une erreur inattendue s'est produite",
-            "fetch": "Échec de la récupération des services"
+            "fetch": "Échec de la récupération des services",
+            "fetchFriendly": "Impossible de charger les services pour le moment. Veuillez réessayer plus tard."
         },
         "searchPlaceholder": "Rechercher des services...",
         "noResults": "Aucun service ne correspond à votre recherche",

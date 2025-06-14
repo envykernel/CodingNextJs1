@@ -57,6 +57,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isValidationError, setIsValidationError] = useState(false)
   const [editingService, setEditingService] = useState<Service | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -88,6 +89,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
       setServices([])
       setLoading(true)
       setError(null)
+      setIsValidationError(false)
       setEditingService(null)
       setIsSubmitting(false)
       setSearchQuery('')
@@ -102,17 +104,19 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
     try {
       setLoading(true)
       setError(null)
+      setIsValidationError(false)
       const response = await fetch('/api/services')
 
       if (!response.ok) {
-        throw new Error('Failed to fetch services')
+        throw new Error(t('services.error.fetchFriendly'))
       }
 
       const data = await response.json()
 
       setServices(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : t('services.error.fetchFriendly'))
+      setIsValidationError(false)
     } finally {
       setLoading(false)
     }
@@ -172,10 +176,12 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
     try {
       setIsSubmitting(true)
       setError(null)
+      setIsValidationError(false)
 
       // Validate required fields
       if (!service.name || service.name.trim().length === 0) {
         setError(t('services.error.nameRequired'))
+        setIsValidationError(true)
 
         return
       }
@@ -188,6 +194,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
         if (service.amount !== currentService?.amount) {
           if (typeof service.amount !== 'number' || service.amount <= 0) {
             setError(t('services.error.invalidAmount'))
+            setIsValidationError(true)
 
             return
           }
@@ -244,6 +251,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : t('services.error.unknown'))
+      setIsValidationError(false)
     } finally {
       setIsSubmitting(false)
     }
@@ -260,13 +268,13 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
     try {
       setIsSubmitting(true)
       setError(null)
+      setIsValidationError(false)
 
       const response = await fetch(`/api/services/${serviceToDelete.id}`, {
         method: 'DELETE'
       })
 
       if (!response.ok) {
-        // Only try to parse JSON if there's an error response
         const data = await response.json()
 
         throw new Error(t(data.error || 'services.error.delete'))
@@ -278,6 +286,7 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
       setServiceToDelete(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : t('services.error.unknown'))
+      setIsValidationError(false)
     } finally {
       setIsSubmitting(false)
     }
@@ -433,11 +442,18 @@ const ServicesDrawer = ({ open, onClose }: ServicesDrawerProps) => {
           {/* Content */}
           <PerfectScrollbar options={{ wheelPropagation: false }}>
             <Box sx={{ p: 5, height: '100%' }}>
-              {error && (
+              {error && isValidationError ? (
                 <Alert severity='error' sx={{ mb: 4 }}>
                   {error}
                 </Alert>
-              )}
+              ) : error && !isValidationError ? (
+                <Box className='flex flex-col items-center justify-center min-h-[300px] text-center'>
+                  <i className='tabler-alert-circle text-5xl text-red-400 mb-4' />
+                  <Typography variant='h6' color='error' sx={{ mb: 2 }}>
+                    {error}
+                  </Typography>
+                </Box>
+              ) : null}
 
               {loading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>

@@ -1229,7 +1229,8 @@
             "create": "Failed to create service",
             "update": "Failed to update service",
             "delete": "Failed to delete service",
-            "unknown": "An unexpected error occurred"
+            "unknown": "An unexpected error occurred",
+            "fetchFriendly": "Unable to load services at the moment. Please try again later."
         },
         "searchPlaceholder": "Search services...",
         "noResults": "No services found matching your search",

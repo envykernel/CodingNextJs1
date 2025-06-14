@@ -1224,5 +1224,134 @@
         },
         "createdAt": "تاريخ الإنشاء",
         "updatedAt": "تاريخ التحديث"
+    },
+    "services": {
+        "title": "الخدمات",
+        "addService": "إضافة خدمة",
+        "templateVariables": "متغيرات النموذج",
+        "clickVariableToInsert": "انقر على متغير لإدخاله في المحرر",
+        "editVariableValues": "تعديل قيم المتغيرات",
+        "variables": {
+            "endDate": "تاريخ الانتهاء",
+            "startDate": "تاريخ البدء",
+            "notes": "ملاحظات",
+            "medicalObservation": "ملاحظة طبية",
+            "date": "التاريخ",
+            "sport": "الرياضة",
+            "aptitudeType": "نوع اللياقة",
+            "restrictions": "القيود",
+            "duration": "المدة",
+            "reason": "السبب",
+            "validUntil": "صالح حتى",
+            "profession": "المهنة",
+            "diagnosis": "التشخيص",
+            "exoneration": "الإعفاء",
+            "school": "المدرسة",
+            "inaptitude": "حالة اللياقة",
+            "observations": "الملاحظات",
+            "ald": "حالة طويلة الأمد",
+            "treatment": "العلاج",
+            "recommendations": "التوصيات",
+            "nextAppointment": "الموعد التالي",
+            "recipient": {
+                "name": "اسم المستلم",
+                "specialty": "تخصص المستلم"
+            },
+            "consultationReason": "سبب الاستشارة",
+            "testsDone": "الفحوصات المنجزة",
+            "diagnosticHypothesis": "فرضية التشخيص",
+            "specificQuestions": "أسئلة محددة",
+            "deathDate": "تاريخ الوفاة",
+            "deathTime": "وقت الوفاة",
+            "deathPlace": "مكان الوفاة",
+            "apparentCause": "السبب الظاهر",
+            "circumstances": "الظروف",
+            "suspiciousSigns": "علامات مشبوهة",
+            "vaccineName": "اسم اللقاح",
+            "lotNumber": "رقم الدفعة",
+            "administrationDate": "تاريخ الإعطاء",
+            "doseNumber": "رقم الجرعة",
+            "schedule": "جدول التطعيم",
+            "nextDoseDate": "تاريخ الجرعة التالية",
+            "sideEffects": "الآثار الجانبية",
+            "error": {
+                "fetchFriendly": "تعذر تحميل الخدمات في الوقت الحالي. يرجى المحاولة مرة أخرى لاحقًا."
+            }
+        },
+        "cancel": "إلغاء",
+        "create": "إنشاء خدمة",
+        "patient": "المريض",
+        "doctor": "الطبيب",
+        "selectPatient": "اختر المريض",
+        "selectDoctor": "اختر الطبيب",
+        "certificateType": "نوع الشهادة",
+        "typeLabel": "النوع",
+        "selectType": "اختر نوع الشهادة",
+        "startDate": "تاريخ البدء",
+        "endDate": "تاريخ الانتهاء",
+        "notes": "ملاحظات إضافية",
+        "preview": "معاينة الخدمة",
+        "noPatients": "لم يتم العثور على مرضى",
+        "startTyping": "ابدأ الكتابة للبحث عن المرضى",
+        "errors": {
+            "fetchPatientsFailed": "فشل في جلب المرضى",
+            "createFailed": "فشل في إنشاء الخدمة",
+            "required": "هذا الحقل مطلوب",
+            "deleteFailed": "فشل في حذف الخدمة"
+        },
+        "types": {
+            "sickLeave": "شهادة إجازة مرضية",
+            "fitness": "شهادة لياقة",
+            "medicalReport": "تقرير طبي",
+            "other": "شهادة أخرى"
+        },
+        "status": {
+            "draft": "مسودة",
+            "issued": "صادر",
+            "expired": "منتهي",
+            "cancelled": "ملغي"
+        },
+        "actionsLabel": "الإجراءات",
+        "actions": {
+            "view": "عرض",
+            "print": "طباعة",
+            "delete": "حذف",
+            "download": "تحميل"
+        },
+        "list": {
+            "title": "الخدمات",
+            "noServices": "لم يتم العثور على خدمات",
+            "search": "البحث عن خدمات...",
+            "filters": "التصفية",
+            "export": "تصدير",
+            "columns": {
+                "patient": "المريض",
+                "type": "النوع",
+                "startDate": "تاريخ البدء",
+                "endDate": "تاريخ الانتهاء",
+                "status": "الحالة",
+                "actions": "الإجراءات"
+            }
+        },
+        "pagination": {
+            "labelRowsPerPage": "الصفوف في الصفحة:",
+            "labelDisplayedRows": "{from}-{to} من {count}",
+            "firstPageLabel": "الصفحة الأولى",
+            "lastPageLabel": "الصفحة الأخيرة",
+            "nextPageLabel": "الصفحة التالية",
+            "previousPageLabel": "الصفحة السابقة"
+        },
+        "viewService": "عرض الخدمة",
+        "close": "إغلاق",
+        "serviceNumber": "رقم الخدمة",
+        "content": "محتوى الخدمة",
+        "deleteConfirmation": {
+            "title": "حذف الخدمة",
+            "message": "هل أنت متأكد أنك تريد حذف الخدمة {number}؟ لا يمكن التراجع عن هذا الإجراء.",
+            "cancel": "إلغاء",
+            "confirm": "حذف"
+        },
+        "createdAt": "تاريخ الإنشاء",
+        "updatedAt": "تاريخ التحديث"
     }
 }
