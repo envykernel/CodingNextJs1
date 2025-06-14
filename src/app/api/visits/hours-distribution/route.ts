@@ -10,7 +10,7 @@ export async function GET() {
     const session = await getServerSession(authOptions)
 
     if (!session?.user?.organisationId) {
-      return new NextResponse(JSON.stringify({ error: 'Unauthorized', details: 'No valid session found' }), {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: {
           'Content-Type': 'application/json'
@@ -57,16 +57,28 @@ export async function GET() {
 
       return NextResponse.json(result)
     } catch (dbError) {
-      throw dbError // Re-throw to be caught by outer try-catch
+      // Handle all errors with a generic user-friendly message
+      return new NextResponse(
+        JSON.stringify({
+          error: 'Service temporarily unavailable',
+          message: 'Please try again later'
+        }),
+        {
+          status: 503,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
     }
   } catch (error) {
     return new NextResponse(
       JSON.stringify({
-        error: 'Internal Server Error',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Service temporarily unavailable',
+        message: 'Please try again later'
       }),
       {
-        status: 500,
+        status: 503,
         headers: {
           'Content-Type': 'application/json'
         }
