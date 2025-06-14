@@ -36,19 +36,33 @@ export function MedicalCertificatesList({ searchParams }: MedicalCertificatesLis
       setIsLoading(true)
       setError(undefined)
 
+      console.log('Fetching certificates...')
       const response = await fetch(`/api/certificates?page=${page}&pageSize=${pageSize}`)
+
+      console.log('Response status:', response.status)
 
       if (!response.ok) {
         const errorData = await response.json()
 
-        throw new Error(errorData.message || 'Failed to fetch certificates')
+        console.error('Error response data:', errorData)
+        throw new Error(errorData.message || errorData.error || 'Failed to fetch certificates')
       }
 
       const data = await response.json()
 
+      console.log('Certificates data:', data)
+
       setCertificates(data.certificates || [])
     } catch (err) {
       console.error('Error fetching certificates:', err)
+
+      if (err instanceof Error) {
+        console.error('Error details:', {
+          message: err.message,
+          stack: err.stack
+        })
+      }
+
       setError(err instanceof Error ? err : new Error('An error occurred'))
     } finally {
       setIsLoading(false)
