@@ -1,7 +1,8 @@
 {
     "common": {
         "edit": "Modifier",
-        "delete": "Supprimer"
+        "delete": "Supprimer",
+        "tryAgainLater": "Veuillez réessayer plus tard"
     },
     "patients": "Patients",
     "list": "Liste",
