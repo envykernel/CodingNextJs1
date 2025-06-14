@@ -101,12 +101,17 @@ const VisitHoursDistribution = () => {
   if (error) {
     return (
       <Card>
-        <CardContent>
-          <Alert severity='error' sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-          <Typography variant='body2' color='text.secondary'>
-            {t('common.tryAgainLater') || 'Please try again later or contact support if the problem persists.'}
+        <CardContent
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: 400,
+            textAlign: 'center'
+          }}
+        >
+          <Typography variant='body1' color='text.secondary'>
+            {t('common.tryAgainLater')}
           </Typography>
         </CardContent>
       </Card>
@@ -116,10 +121,18 @@ const VisitHoursDistribution = () => {
   if (!visitData.length) {
     return (
       <Card>
-        <CardContent>
-          <Alert severity='info'>
-            {t('organization.noVisitData') || 'No visit data available for the selected period.'}
-          </Alert>
+        <CardContent
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: 400,
+            textAlign: 'center'
+          }}
+        >
+          <Typography variant='body1' color='text.secondary'>
+            {t('organization.noVisitData')}
+          </Typography>
         </CardContent>
       </Card>
     )
