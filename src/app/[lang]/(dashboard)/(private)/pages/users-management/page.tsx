@@ -1,4 +1,6 @@
 // Component Imports
+import { Grid, Card, Box, Typography } from '@mui/material'
+
 import UsersManagement from '@views/pages/users-management'
 
 // Data Imports
@@ -8,10 +10,23 @@ import type { Locale } from '@configs/i18n'
 import { TranslationProvider } from '@/contexts/translationContext'
 import { getUserOrganisation } from '@/utils/getUserOrganisation'
 
+// MUI Imports
+
 interface SearchParams {
   page?: string | string[]
   pageSize?: string | string[]
   name?: string | string[]
+}
+
+type CommonTranslations = {
+  tryAgainLater: string
+
+  // Add other common translations as needed
+}
+
+type DictionaryWithCommon = {
+  common: CommonTranslations
+  [key: string]: any
 }
 
 const UsersManagementPage = async ({
@@ -23,6 +38,7 @@ const UsersManagementPage = async ({
 }) => {
   const { lang } = await params
   const resolvedSearchParams = await searchParams
+  const dictionary = (await getDictionary(lang)) as DictionaryWithCommon
 
   // Parse pagination params
   const page = resolvedSearchParams?.page
@@ -41,28 +57,42 @@ const UsersManagementPage = async ({
       : resolvedSearchParams.name
     : undefined
 
-  // Get the logged-in user's organisationId
-  const { organisationId } = await getUserOrganisation()
-  const usersData = await getUsersList({ page, pageSize, name, organisationId: organisationId.toString() })
+  try {
+    // Get the logged-in user's organisationId
+    const { organisationId } = await getUserOrganisation()
+    const usersData = await getUsersList({ page, pageSize, name, organisationId: organisationId.toString() })
 
-  // Transform the users data to convert createdAt from string to Date
-  const transformedUsers = usersData.users.map(user => ({
-    ...user,
-    createdAt: new Date(user.createdAt)
-  }))
+    // Transform the users data to convert createdAt from string to Date
+    const transformedUsers = usersData.users.map(user => ({
+      ...user,
+      createdAt: new Date(user.createdAt)
+    }))
 
-  const dictionary = await getDictionary(lang)
-
-  return (
-    <TranslationProvider dictionary={dictionary}>
-      <UsersManagement
-        usersData={transformedUsers}
-        page={usersData.page}
-        pageSize={usersData.pageSize}
-        total={usersData.total}
-      />
-    </TranslationProvider>
-  )
+    return (
+      <TranslationProvider dictionary={dictionary}>
+        <UsersManagement
+          usersData={transformedUsers}
+          page={usersData.page}
+          pageSize={usersData.pageSize}
+          total={usersData.total}
+        />
+      </TranslationProvider>
+    )
+  } catch (error) {
+    return (
+      <TranslationProvider dictionary={dictionary}>
+        <Grid container justifyContent='center' alignItems='center' sx={{ minHeight: '60vh' }}>
+          <Card sx={{ p: 4, textAlign: 'center' }}>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant='h5' color='error'>
+                {dictionary.common.tryAgainLater}
+              </Typography>
+            </Box>
+          </Card>
+        </Grid>
+      </TranslationProvider>
+    )
+  }
 }
 
 export default UsersManagementPage
