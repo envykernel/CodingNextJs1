@@ -3,6 +3,8 @@
 // Next Imports
 import Link from 'next/link'
 
+import Button from '@mui/material/Button'
+
 // MUI Imports
 import useScrollTrigger from '@mui/material/useScrollTrigger'
 
@@ -37,6 +39,16 @@ const Header = () => {
           </div>
           <div className='flex items-center gap-2 sm:gap-4'>
             <ModeDropdown />
+            <Button
+              component={Link}
+              href='/'
+              variant='outlined'
+              color='primary'
+              className='font-medium'
+              startIcon={<i className='tabler-home text-[1.25rem]' />}
+            >
+              Accueil
+            </Button>
           </div>
         </div>
       </div>

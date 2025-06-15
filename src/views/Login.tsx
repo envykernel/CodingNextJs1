@@ -1,7 +1,7 @@
 'use client'
 
 // MUI Imports
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -32,15 +32,10 @@ const LeftSection = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   justifyContent: 'center',
   padding: theme.spacing(8),
-  background:
-    theme.palette.mode === 'dark'
-      ? 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%)'
-      : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+  background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%)',
   color: '#FFFFFF',
   position: 'relative',
-  [theme.breakpoints.down('md')]: {
-    display: 'none'
-  },
+  overflow: 'hidden',
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -49,8 +44,27 @@ const LeftSection = styled(Box)(({ theme }) => ({
     right: 0,
     bottom: 0,
     background: 'url("/images/medical-pattern.png")',
-    opacity: 0.1,
+    opacity: 0.05,
+    zIndex: 0,
+    animation: 'patternFloat 20s linear infinite'
+  },
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'radial-gradient(circle at top right, rgba(255,255,255,0.15) 0%, transparent 70%)',
     zIndex: 0
+  },
+  '@keyframes patternFloat': {
+    '0%': {
+      backgroundPosition: '0 0'
+    },
+    '100%': {
+      backgroundPosition: '100px 100px'
+    }
   }
 }))
 
@@ -152,63 +166,6 @@ const LogoWrapper = styled(Box)(({ theme }) => ({
   }
 }))
 
-const ServiceList = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(6),
-  position: 'relative',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: '2px',
-    background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0.1))',
-    borderRadius: '2px'
-  }
-}))
-
-const ServiceItem = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(2, 0, 2, 4),
-  position: 'relative',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    left: -5,
-    top: '50%',
-    width: '12px',
-    height: '12px',
-    background: '#FFFFFF',
-    borderRadius: '50%',
-    transform: 'translateY(-50%)',
-    opacity: 0.5,
-    transition: 'all 0.3s ease'
-  },
-  '&:hover::before': {
-    opacity: 1,
-    transform: 'translateY(-50%) scale(1.2)'
-  },
-  '& i': {
-    fontSize: '1.25rem',
-    color: '#FFFFFF',
-    opacity: 0.9,
-    marginRight: theme.spacing(3),
-    width: '24px',
-    textAlign: 'center'
-  }
-}))
-
-const ServiceLabel = styled(Typography)(() => ({
-  fontWeight: 500,
-  fontSize: '1.1rem',
-  opacity: 0.9,
-  transition: 'all 0.2s ease',
-  '&:hover': {
-    opacity: 1
-  }
-}))
-
 const Footer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   textAlign: 'center',
@@ -218,9 +175,162 @@ const Footer = styled(Box)(({ theme }) => ({
   marginTop: 'auto'
 }))
 
+const ContentWrapper = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  zIndex: 1,
+  maxWidth: 540,
+  margin: '0 auto',
+  padding: theme.spacing(6),
+  background: 'rgba(255, 255, 255, 0.02)',
+  borderRadius: 4,
+  backdropFilter: 'blur(10px)',
+  border: '1px solid rgba(96, 165, 250, 0.15)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(96, 165, 250, 0.1)',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    inset: 0,
+    borderRadius: 4,
+    background: 'linear-gradient(135deg, rgba(96, 165, 250, 0.1), transparent)',
+    opacity: 0.5,
+    transition: 'opacity 0.3s ease'
+  }
+}))
+
+const TitleWrapper = styled(Box)(({ theme }) => ({
+  marginBottom: theme.spacing(6),
+  position: 'relative',
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    bottom: -theme.spacing(2),
+    left: 0,
+    width: 80,
+    height: 4,
+    background: 'linear-gradient(90deg, #60A5FA, transparent)',
+    borderRadius: 2,
+    animation: 'underlineWidth 2s ease-in-out infinite alternate'
+  },
+  '@keyframes underlineWidth': {
+    '0%': {
+      width: '60px'
+    },
+    '100%': {
+      width: '100px'
+    }
+  }
+}))
+
+const FeatureGrid = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  gap: theme.spacing(3),
+  marginTop: theme.spacing(6),
+  position: 'relative',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '1px',
+    height: '80%',
+    background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent)',
+    zIndex: 0
+  }
+}))
+
+const FeatureItem = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(2),
+  padding: theme.spacing(2.5),
+  background: 'rgba(255, 255, 255, 0.02)',
+  borderRadius: 4,
+  transition: 'all 0.3s ease',
+  position: 'relative',
+  border: '1px solid rgba(96, 165, 250, 0.1)',
+  boxShadow: 'inset 0 0 0 1px rgba(96, 165, 250, 0.05)',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    inset: 0,
+    borderRadius: 4,
+    background: 'linear-gradient(135deg, rgba(96, 165, 250, 0.08), transparent)',
+    opacity: 0,
+    transition: 'opacity 0.3s ease'
+  },
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    background: 'rgba(255, 255, 255, 0.04)',
+    borderColor: 'rgba(96, 165, 250, 0.2)',
+    boxShadow: 'inset 0 0 0 1px rgba(96, 165, 250, 0.1), 0 4px 12px rgba(0, 0, 0, 0.1)',
+    '&::before': {
+      opacity: 1
+    }
+  }
+}))
+
+const IconWrapper = styled(Box)(() => ({
+  width: '32px',
+  height: '32px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  '& i': {
+    fontSize: '1.25rem',
+    color: '#FFFFFF',
+    opacity: 1,
+    position: 'relative',
+    zIndex: 3
+  }
+}))
+
+const CommercialButton = styled(Button)(({ theme }) => ({
+  position: 'relative',
+  padding: theme.spacing(2.5, 4),
+  fontSize: '1.1rem',
+  fontWeight: 500,
+  borderRadius: '8px',
+  textTransform: 'none',
+  background: 'rgba(96, 165, 250, 0.1)',
+  color: '#FFFFFF',
+  border: '1px solid rgba(96, 165, 250, 0.2)',
+  overflow: 'hidden',
+  transition: 'all 0.3s ease',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    background: 'linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.2), transparent)',
+    transform: 'translateX(-100%)',
+    transition: 'transform 0.6s ease'
+  },
+  '&:hover': {
+    background: 'rgba(96, 165, 250, 0.15)',
+    borderColor: 'rgba(96, 165, 250, 0.3)',
+    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 16px rgba(96, 165, 250, 0.15)',
+    '&::before': {
+      transform: 'translateX(100%)'
+    },
+    '& .button-icon': {
+      transform: 'translateX(4px) rotate(-45deg)'
+    }
+  },
+  '&:active': {
+    transform: 'translateY(0)',
+    boxShadow: '0 4px 8px rgba(96, 165, 250, 0.1)'
+  }
+}))
+
 const Login = () => {
   const searchParams = useSearchParams()
   const error = searchParams?.get('error')
+  const router = useRouter()
 
   const getErrorMessage = (errorCode: string | null) => {
     if (errorCode === 'AccessDenied') {
@@ -230,61 +340,123 @@ const Login = () => {
     return 'Une erreur est survenue lors de la connexion. Veuillez réessayer.'
   }
 
+  const handleCommercialClick = () => {
+    router.push('/front-pages/commercial')
+  }
+
   return (
     <LoginContainer>
       <Box sx={{ display: 'flex', flex: 1 }}>
         <LeftSection>
-          <Box sx={{ position: 'relative', zIndex: 1 }}>
-            <Typography
-              variant='h3'
-              sx={{
-                fontWeight: 800,
-                mb: 3,
-                color: '#FFFFFF',
-                fontSize: { xs: '2rem', md: '2.5rem' },
-                letterSpacing: '-0.5px'
-              }}
-            >
-              Plateforme de Gestion Médicale
-            </Typography>
+          <ContentWrapper>
+            <TitleWrapper>
+              <Typography
+                variant='h3'
+                sx={{
+                  fontWeight: 800,
+                  fontSize: { xs: '1.75rem', md: '2rem' },
+                  letterSpacing: '-0.5px',
+                  lineHeight: 1.1,
+                  whiteSpace: 'nowrap',
+                  background: 'linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 100%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                  mb: 2
+                }}
+              >
+                Plateforme de Gestion Médicale
+              </Typography>
+              <Typography
+                variant='body1'
+                sx={{
+                  opacity: 0.9,
+                  fontSize: '1.1rem',
+                  lineHeight: 1.6,
+                  maxWidth: '90%'
+                }}
+              >
+                Une solution simple et efficace pour gérer votre cabinet médical
+              </Typography>
+            </TitleWrapper>
 
-            <Typography
-              variant='body1'
-              sx={{
-                opacity: 0.9,
-                maxWidth: '600px',
-                lineHeight: 1.6,
-                mb: 1,
-                fontSize: '1.1rem',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              Une solution simple et efficace pour gérer votre cabinet médical
-            </Typography>
+            <FeatureGrid>
+              <FeatureItem>
+                <IconWrapper>
+                  <i className='tabler-users' />
+                </IconWrapper>
+                <Typography variant='body1' sx={{ fontWeight: 500 }}>
+                  Gestion des Patients
+                </Typography>
+              </FeatureItem>
+              <FeatureItem>
+                <IconWrapper>
+                  <i className='tabler-calendar-check' />
+                </IconWrapper>
+                <Typography variant='body1' sx={{ fontWeight: 500 }}>
+                  Rendez-vous
+                </Typography>
+              </FeatureItem>
+              <FeatureItem>
+                <IconWrapper>
+                  <i className='tabler-file-invoice' />
+                </IconWrapper>
+                <Typography variant='body1' sx={{ fontWeight: 500 }}>
+                  Factures
+                </Typography>
+              </FeatureItem>
+              <FeatureItem>
+                <IconWrapper>
+                  <i className='tabler-credit-card' />
+                </IconWrapper>
+                <Typography variant='body1' sx={{ fontWeight: 500 }}>
+                  Paiements
+                </Typography>
+              </FeatureItem>
+              <FeatureItem>
+                <IconWrapper>
+                  <i className='tabler-dashboard' />
+                </IconWrapper>
+                <Typography variant='body1' sx={{ fontWeight: 500 }}>
+                  Tableau de Bord
+                </Typography>
+              </FeatureItem>
+              <FeatureItem>
+                <IconWrapper>
+                  <i className='tabler-chart-bar' />
+                </IconWrapper>
+                <Typography variant='body1' sx={{ fontWeight: 500 }}>
+                  Rapports
+                </Typography>
+              </FeatureItem>
+            </FeatureGrid>
 
-            <ServiceList>
-              <ServiceItem>
-                <i className='tabler-users' />
-                <ServiceLabel>Gestion des Patients</ServiceLabel>
-              </ServiceItem>
-              <ServiceItem>
-                <i className='tabler-calendar-check' />
-                <ServiceLabel>Rendez-vous</ServiceLabel>
-              </ServiceItem>
-              <ServiceItem>
-                <i className='tabler-file-invoice' />
-                <ServiceLabel>Factures</ServiceLabel>
-              </ServiceItem>
-              <ServiceItem>
-                <i className='tabler-credit-card' />
-                <ServiceLabel>Paiements</ServiceLabel>
-              </ServiceItem>
-              <ServiceItem>
-                <i className='tabler-dashboard' />
-                <ServiceLabel>Tableau de Bord Analytique</ServiceLabel>
-              </ServiceItem>
-            </ServiceList>
-          </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
+              <CommercialButton
+                onClick={handleCommercialClick}
+                sx={{
+                  mt: 4,
+                  width: '100%',
+                  maxWidth: 400,
+                  mx: 'auto',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 2
+                }}
+              >
+                Découvrir nos formules tarifaires
+                <i
+                  className='tabler-arrow-right button-icon'
+                  style={{
+                    fontSize: '1.25rem',
+                    transition: 'transform 0.3s ease',
+                    transform: 'rotate(-45deg)'
+                  }}
+                />
+              </CommercialButton>
+            </Box>
+          </ContentWrapper>
         </LeftSection>
         <RightSection>
           <LoginCard>
