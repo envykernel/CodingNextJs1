@@ -5,6 +5,7 @@ import { useTranslation } from '@/contexts/translationContext'
 import { Card, CardHeader, CardContent, Box, Typography, CircularProgress, useTheme } from '@mui/material'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
+import { mapDayToEnglish } from '@/utils/dayMapping'
 
 // Import the server action using dynamic import to ensure it's not included in the client bundle
 const getVisitDaysDistribution = async () => {
@@ -31,7 +32,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameT
           borderRadius: 1
         }}
       >
-        <Typography variant='body2'>{`${t('common.organization.day')}: ${t(`common.days.${label}`)}`}</Typography>
+        <Typography variant='body2'>{`${t('common.organization.day')}: ${t(`common.days.${mapDayToEnglish(label)}`)}`}</Typography>
         <Typography variant='body2'>{`${t('common.organization.visits')}: ${payload[0].value}`}</Typography>
       </Box>
     )
@@ -94,7 +95,7 @@ export default function VisitDaysDistribution() {
   // Transform data to use translated day names
   const translatedData = visitData.map(item => ({
     ...item,
-    day: t(`common.days.${item.day}`)
+    day: t(`common.days.${mapDayToEnglish(item.day)}`)
   }))
 
   return (
