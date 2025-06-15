@@ -52,7 +52,8 @@
             "visits": "Visits",
             "visitDaysDistribution": "Visit Days Distribution",
             "numberOfVisits": "Number of Visits",
-            "noVisitData": "No visit data available for the selected period"
+            "noVisitData": "No visit data available for the selected period",
+            "dataPeriod": "Data for the last 30 days"
         }
     },
     "patients": "Patients",

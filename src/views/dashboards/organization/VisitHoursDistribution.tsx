@@ -140,7 +140,11 @@ const VisitHoursDistribution = () => {
 
   return (
     <Card>
-      <CardHeader title={t('organization.visitHoursDistribution')} titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title={t('common.organization.visitHoursDistribution')}
+        titleTypographyProps={{ variant: 'h6' }}
+        subheader={t('common.organization.dataPeriod')}
+      />
       <CardContent>
         <Box sx={{ height: 400, width: '100%' }}>
           <ResponsiveContainer width='100%' height='100%'>
