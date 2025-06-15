@@ -280,7 +280,12 @@ const AddAppointmentDrawer = ({
   // Format date range for display
   const formatWeekRange = (start: Date, end: Date) => {
     const formatDate = (date: Date) => {
-      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+      // Get month name in English and convert to lowercase to match our translation keys
+      const monthName = date.toLocaleDateString('en-US', { month: 'long' }).toLowerCase()
+      const translatedMonth = dictionary.common?.months?.[monthName] || monthName
+      const day = date.getDate()
+
+      return `${translatedMonth} ${day}`
     }
 
     return `${formatDate(start)} - ${formatDate(end)}`
@@ -597,11 +602,12 @@ const AddAppointmentDrawer = ({
                         {/* Show day name and date */}
                         {(() => {
                           const dateObj = new Date(day.date)
+                          const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
 
-                          // Use user's locale for day name
-                          const dayName = dateObj.toLocaleDateString(undefined, { weekday: 'long' })
+                          // Use the translated day name from dictionary
+                          const translatedDayName = dictionary.common?.days?.[dayName] || dayName
 
-                          return `${dayName} - ${day.date}`
+                          return `${translatedDayName} - ${day.date}`
                         })()}
                       </Typography>
                       <Box className='flex flex-wrap gap-2'>

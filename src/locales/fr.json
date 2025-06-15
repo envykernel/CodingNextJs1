@@ -22,7 +22,30 @@
         },
         "email": "Email",
         "phone": "Téléphone",
-        "noDoctor": "Aucun médecin assigné"
+        "noDoctor": "Aucun médecin assigné",
+        "days": {
+            "monday": "Lundi",
+            "tuesday": "Mardi",
+            "wednesday": "Mercredi",
+            "thursday": "Jeudi",
+            "friday": "Vendredi",
+            "saturday": "Samedi",
+            "sunday": "Dimanche"
+        },
+        "months": {
+            "january": "Janvier",
+            "february": "Février",
+            "march": "Mars",
+            "april": "Avril",
+            "may": "Mai",
+            "june": "Juin",
+            "july": "Juillet",
+            "august": "Août",
+            "september": "Septembre",
+            "october": "Octobre",
+            "november": "Novembre",
+            "december": "Décembre"
+        }
     },
     "patients": "Patients",
     "list": "Liste",
@@ -324,8 +347,8 @@
     "appointments": {
         "typeOptions": {
             "consultation": "Consultation",
-            "medical_check": "Examen Médical",
-            "clinical_procedure": "Procédure Clinique",
+            "medical_check": "Bilan médical",
+            "clinical_procedure": "Procédure clinique",
             "other": "Autre"
         },
         "statusOptions": {
@@ -335,30 +358,35 @@
             "in_progress": "En cours"
         },
         "actions": {
-            "goToVisit": "Aller à la Visite",
-            "createVisit": "Créer une Visite",
+            "goToVisit": "Aller à la visite",
+            "createVisit": "Créer une visite",
             "cancel": "Annuler",
             "confirm": "Confirmer",
             "loading": "Chargement...",
-            "confirmCancellation": "Confirmer l'Annulation",
+            "confirmCancellation": "Confirmer l'annulation",
             "cancelAppointmentConfirmation": "Êtes-vous sûr de vouloir annuler ce rendez-vous ?",
             "viewDetails": "Voir les détails"
         },
         "pagination": {
             "rowsPerPage": "Lignes par page",
             "of": "sur",
-            "showing": "Affichage",
+            "showing": "Affichage de",
             "to": "à"
         },
         "noAppointments": "Aucun rendez-vous disponible.",
-        "past": "Rendez-vous Passés",
-        "thisMonth": "Ce Mois",
-        "upcoming": "Rendez-vous à Venir",
+        "past": "Rendez-vous passés",
+        "thisMonth": "Ce mois-ci",
+        "upcoming": "Rendez-vous à venir",
         "filters": {
             "all": "Tous",
             "startDate": "Date de début",
             "endDate": "Date de fin"
-        }
+        },
+        "availabilityTitle": "Disponibilité",
+        "available": "Disponible",
+        "unavailable": "Indisponible",
+        "thisWeek": "Cette semaine",
+        "unavailableWarning": "La date et l'heure sélectionnées ne sont pas disponibles."
     },
     "date": "Date:",
     "time": "Heure",

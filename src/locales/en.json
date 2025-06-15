@@ -22,7 +22,30 @@
         },
         "email": "Email",
         "phone": "Phone",
-        "noDoctor": "No doctor assigned"
+        "noDoctor": "No doctor assigned",
+        "days": {
+            "monday": "Monday",
+            "tuesday": "Tuesday",
+            "wednesday": "Wednesday",
+            "thursday": "Thursday",
+            "friday": "Friday",
+            "saturday": "Saturday",
+            "sunday": "Sunday"
+        },
+        "months": {
+            "january": "January",
+            "february": "February",
+            "march": "March",
+            "april": "April",
+            "may": "May",
+            "june": "June",
+            "july": "July",
+            "august": "August",
+            "september": "September",
+            "october": "October",
+            "november": "November",
+            "december": "December"
+        }
     },
     "patients": "Patients",
     "list": "List",
@@ -235,7 +258,12 @@
             "all": "All",
             "startDate": "Start Date",
             "endDate": "End Date"
-        }
+        },
+        "availabilityTitle": "Availability",
+        "available": "Available",
+        "unavailable": "Unavailable",
+        "thisWeek": "This Week",
+        "unavailableWarning": "The selected date and time is unavailable."
     },
     "date": "Date:",
     "time": "Time",
@@ -249,9 +277,6 @@
     "createAppointment": "Create New Appointment",
     "createVisit": "Create Visit",
     "createVisitSuccess": "Visit created successfully!",
-    "availabilityTitle": "Availability",
-    "available": "Available",
-    "unavailable": "Unavailable",
     "accessDenied": {
         "title": "Access Denied",
         "heading": "You do not have access",
