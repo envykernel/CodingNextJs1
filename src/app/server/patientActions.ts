@@ -342,7 +342,13 @@ export async function getAllPatients(search?: string) {
       id: true,
       name: true,
       birthdate: true,
-      gender: true
+      gender: true,
+      doctor: {
+        select: {
+          id: true,
+          name: true
+        }
+      }
     },
     orderBy: { name: 'asc' }
   })

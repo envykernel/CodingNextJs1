@@ -349,7 +349,15 @@ const AddAppointmentDrawer = ({
                         if (value && value.id === '__add_new__') {
                           setAddPatientOpen(true)
                         } else {
-                          field.onChange(value ? value.id : '')
+                          // Type guard to check if it's a PatientType
+                          const patient = value as PatientType | null
+
+                          field.onChange(patient ? patient.id : '')
+
+                          // Auto-select the patient's assigned doctor if available
+                          if (patient?.doctor?.id) {
+                            setValue('doctor_id', String(patient.doctor.id))
+                          }
                         }
                       }}
                       value={patients.find(p => String(p.id) === String(field.value)) || null}

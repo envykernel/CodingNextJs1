@@ -42,7 +42,13 @@ const AppointmentsList = async ({
     id: p.id,
     name: p.name,
     birthdate: p.birthdate || new Date(),
-    gender: p.gender || 'unknown'
+    gender: p.gender || 'unknown',
+    doctor: p.doctor
+      ? {
+          id: p.doctor.id,
+          name: p.doctor.name
+        }
+      : undefined
   }))
 
   return (
