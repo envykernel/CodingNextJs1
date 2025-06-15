@@ -1,15 +1,12 @@
 import { NextResponse } from 'next/server'
 
 import { getServerSession } from 'next-auth'
-
-import { formatDistanceToNow } from 'date-fns'
-
-import { fr } from 'date-fns/locale'
-
-import type { Notification } from '@prisma/client'
+import type { Prisma } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 
 import { authOptions } from '@/libs/auth'
-import { prisma } from '@/libs/prisma'
+
+const prisma = new PrismaClient()
 
 export async function GET() {
   try {
@@ -30,12 +27,12 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Fetch notifications that are either:
-    // 1. Global (isGlobal = true)
-    // 2. For the user's organization (organisationId matches)
-    const notifications = await prisma.notification.findMany({
+    const orgId = Number(user.organisationId)
+
+    // Create a new query object for each request
+    const query: Prisma.NotificationFindManyArgs = {
       where: {
-        OR: [{ isGlobal: true }, { organisationId: Number(user.organisationId) }],
+        OR: [{ isGlobal: true }, { organisationId: orgId }],
         NOT: {
           readStatus: {
             some: {
@@ -45,60 +42,22 @@ export async function GET() {
         }
       },
       orderBy: {
-        created_at: 'desc'
+        created_at: 'desc' as const
       },
       take: 10
+    }
+
+    // Create a new query object for execution
+    const notifications = await prisma.notification.findMany({
+      ...query,
+      where: { ...query.where } // Create a new where object
     })
 
-    // Transform notifications to match the component's expected format
-    const formattedNotifications = notifications.map((notification: Notification) => ({
-      id: notification.id,
-      title: notification.title,
-      subtitle: notification.message,
-      time: formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: fr }),
-      read: false,
-      avatarIcon: getNotificationIcon(notification.type),
-      avatarColor: getNotificationColor(notification.priority)
-    }))
-
-    return NextResponse.json(formattedNotifications)
+    return NextResponse.json({ notifications })
   } catch (error) {
-    console.error('Error fetching notifications:', error)
-
     return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 })
-  }
-}
-
-// Helper function to get icon based on notification type
-function getNotificationIcon(type: string): string {
-  switch (type.toLowerCase()) {
-    case 'appointment':
-      return 'tabler-calendar'
-    case 'payment':
-      return 'tabler-cash'
-    case 'system':
-      return 'tabler-bell'
-    case 'prescription':
-      return 'tabler-pill'
-    case 'lab_test':
-      return 'tabler-microscope'
-    case 'radiology':
-      return 'tabler-x-ray'
-    default:
-      return 'tabler-bell'
-  }
-}
-
-// Helper function to get color based on notification priority
-function getNotificationColor(priority: string): 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info' {
-  switch (priority.toLowerCase()) {
-    case 'high':
-      return 'error'
-    case 'medium':
-      return 'warning'
-    case 'low':
-      return 'info'
-    default:
-      return 'primary'
+  } finally {
+    // Clean up the Prisma client
+    await prisma.$disconnect()
   }
 }
