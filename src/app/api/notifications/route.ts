@@ -50,10 +50,10 @@ export async function GET() {
     // Create a new query object for execution
     const notifications = await prisma.notification.findMany({
       ...query,
-      where: { ...query.where } // Create a new where object
+      where: { ...query.where }
     })
 
-    return NextResponse.json({ notifications })
+    return NextResponse.json(notifications)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 })
   } finally {
