@@ -8,6 +8,7 @@ import { getServerSession } from 'next-auth'
 
 import { prisma } from '@/prisma/prisma'
 import { authOptions } from '@/libs/auth'
+import { requireAuthAndOrg } from './utils'
 
 const patientSchema = z.object({
   name: z.string().min(1),
@@ -132,6 +133,9 @@ export async function createPatient(data: any) {
   }
 
   try {
+    // Add auth and org check
+    const { organisationId } = await requireAuthAndOrg()
+
     const {
       name,
       birthdate,
@@ -148,18 +152,25 @@ export async function createPatient(data: any) {
       emergency_contact_email
     } = parsed.data
 
-    const data: any = { name, birthdate: new Date(birthdate), gender, status, phone_number }
+    const patientData: any = {
+      name,
+      birthdate: new Date(birthdate),
+      gender,
+      status,
+      phone_number,
+      organisation_id: organisationId // Add organization ID to the data
+    }
 
-    if (doctor_id !== undefined) data.doctor_id = doctor_id
-    if (avatar !== undefined) data.avatar = avatar
-    if (address !== undefined) data.address = address
-    if (city !== undefined) data.city = city
-    if (email !== undefined) data.email = email
-    if (emergency_contact_name !== undefined) data.emergency_contact_name = emergency_contact_name
-    if (emergency_contact_phone !== undefined) data.emergency_contact_phone = emergency_contact_phone
-    if (emergency_contact_email !== undefined) data.emergency_contact_email = emergency_contact_email
-    console.log('Creating patient with data:', data)
-    const patient = await prisma.patient.create({ data })
+    if (doctor_id !== undefined) patientData.doctor_id = doctor_id
+    if (avatar !== undefined) patientData.avatar = avatar
+    if (address !== undefined) patientData.address = address
+    if (city !== undefined) patientData.city = city
+    if (email !== undefined) patientData.email = email
+    if (emergency_contact_name !== undefined) patientData.emergency_contact_name = emergency_contact_name
+    if (emergency_contact_phone !== undefined) patientData.emergency_contact_phone = emergency_contact_phone
+    if (emergency_contact_email !== undefined) patientData.emergency_contact_email = emergency_contact_email
+
+    const patient = await prisma.patient.create({ data: patientData })
 
     return { success: true, patient }
   } catch (error) {
@@ -170,8 +181,14 @@ export async function createPatient(data: any) {
 }
 
 export async function getPatientById(id: number) {
+  // Add auth and org check
+  const { organisationId } = await requireAuthAndOrg()
+
   const patient = await prisma.patient.findUnique({
-    where: { id },
+    where: {
+      id,
+      organisation_id: organisationId // Add organization check
+    },
     include: {
       patient_measurements: true,
       patient_medical: true,
@@ -334,63 +351,77 @@ export async function getAllPatients(search?: string) {
 }
 
 export async function updatePatient(patientId: number, data: any) {
-  await prisma.patient.update({
-    where: { id: patientId },
-    data: {
-      name: data.name,
-      birthdate: data.birthdate ? new Date(data.birthdate) : undefined,
-      gender: data.gender,
-      doctor_id: data.doctor_id,
-      status: data.status,
-      avatar: data.avatar,
-      address: data.address,
-      city: data.city,
-      phone_number: data.phone_number,
-      email: data.email,
-      emergency_contact_name: data.emergency_contact_name,
-      emergency_contact_phone: data.emergency_contact_phone,
-      emergency_contact_email: data.emergency_contact_email,
-      updated_at: new Date()
-    }
-  })
+  try {
+    // Add auth and org check
+    const { organisationId } = await requireAuthAndOrg()
 
-  // Fetch the updated patient with related data
-  const patientWithRelations = await prisma.patient.findUnique({
-    where: { id: patientId },
-    include: {
-      patient_measurements: true,
-      patient_medical: true,
-      patient_medical_history: true,
-      doctor: {
-        select: {
-          id: true,
-          name: true,
-          specialty: true,
-          email: true,
-          phone_number: true
+    // Update with organization check in where clause
+    await prisma.patient.update({
+      where: {
+        id: patientId,
+        organisation_id: organisationId // Add organization check
+      },
+      data: {
+        name: data.name,
+        birthdate: data.birthdate ? new Date(data.birthdate) : undefined,
+        gender: data.gender,
+        doctor_id: data.doctor_id,
+        status: data.status,
+        avatar: data.avatar,
+        address: data.address,
+        city: data.city,
+        phone_number: data.phone_number,
+        email: data.email,
+        emergency_contact_name: data.emergency_contact_name,
+        emergency_contact_phone: data.emergency_contact_phone,
+        emergency_contact_email: data.emergency_contact_email,
+        updated_at: new Date()
+      }
+    })
+
+    // Fetch the updated patient with related data, including organization check
+    const patientWithRelations = await prisma.patient.findUnique({
+      where: {
+        id: patientId,
+        organisation_id: organisationId // Add organization check
+      },
+      include: {
+        patient_measurements: true,
+        patient_medical: true,
+        patient_medical_history: true,
+        doctor: {
+          select: {
+            id: true,
+            name: true,
+            specialty: true,
+            email: true,
+            phone_number: true
+          }
         }
       }
+    })
+
+    if (!patientWithRelations) {
+      throw new Error('Patient not found after update')
     }
-  })
 
-  if (!patientWithRelations) {
-    throw new Error('Patient not found after update')
-  }
-
-  return {
-    ...patientWithRelations,
-    status: patientWithRelations.status ?? undefined,
-    avatar: patientWithRelations.avatar ?? undefined,
-    address: patientWithRelations.address ?? undefined,
-    city: patientWithRelations.city ?? undefined,
-    phone_number: patientWithRelations.phone_number ?? undefined,
-    email: patientWithRelations.email ?? undefined,
-    birthdate: patientWithRelations.birthdate ?? undefined,
-    emergency_contact_name: patientWithRelations.emergency_contact_name ?? undefined,
-    emergency_contact_phone: patientWithRelations.emergency_contact_phone ?? undefined,
-    emergency_contact_email: patientWithRelations.emergency_contact_email ?? undefined,
-    created_at: patientWithRelations.created_at ?? undefined,
-    updated_at: patientWithRelations.updated_at ?? undefined,
-    patient_measurements: serializeMeasurements(patientWithRelations.patient_measurements)
+    return {
+      ...patientWithRelations,
+      status: patientWithRelations.status ?? undefined,
+      avatar: patientWithRelations.avatar ?? undefined,
+      address: patientWithRelations.address ?? undefined,
+      city: patientWithRelations.city ?? undefined,
+      phone_number: patientWithRelations.phone_number ?? undefined,
+      email: patientWithRelations.email ?? undefined,
+      birthdate: patientWithRelations.birthdate ?? undefined,
+      emergency_contact_name: patientWithRelations.emergency_contact_name ?? undefined,
+      emergency_contact_phone: patientWithRelations.emergency_contact_phone ?? undefined,
+      emergency_contact_email: patientWithRelations.emergency_contact_email ?? undefined,
+      created_at: patientWithRelations.created_at ?? undefined,
+      updated_at: patientWithRelations.updated_at ?? undefined,
+      patient_measurements: serializeMeasurements(patientWithRelations.patient_measurements)
+    }
+  } catch (error) {
+    return { error: 'Database error', details: error }
   }
 }

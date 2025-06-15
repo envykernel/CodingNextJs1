@@ -187,8 +187,6 @@ export async function createAppointment(data: any) {
       notes
     }
 
-    console.log('Creating appointment with data:', appointmentData)
-
     const appointment = await prisma.patient_appointment.create({
       data: appointmentData
     })
@@ -211,7 +209,6 @@ export async function createAppointment(data: any) {
  * Excludes slots already booked in patient_appointment for any doctor in the organisation.
  */
 export async function getOrganisationAvailability(organisation_id: number, startDate?: string, endDate?: string) {
-  // Parse dates in local timezone
   const parseLocalDate = (dateStr: string) => {
     const [year, month, day] = dateStr.split('-').map(Number)
     const date = new Date(year, month - 1, day) // month is 0-based in JS Date
@@ -226,13 +223,6 @@ export async function getOrganisationAvailability(organisation_id: number, start
   // Set start to beginning of day and end to end of day
   start.setHours(0, 0, 0, 0)
   end.setHours(23, 59, 59, 999)
-
-  // For debugging
-  console.log('Server - Input dates:', { startDate, endDate })
-  console.log('Server - Parsed dates:', {
-    start: start.toLocaleDateString(),
-    end: end.toLocaleDateString()
-  })
 
   // Fetch organisation working hours
   const organisation = await prisma.organisation.findUnique({

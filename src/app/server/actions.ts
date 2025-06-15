@@ -20,6 +20,7 @@ import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
 import { prisma } from '@/prisma/prisma'
 import { formatDateToDDMMYYYY } from '@/utils/date'
+import { requireAuthAndOrg } from './utils'
 
 export const getEcommerceData = async () => {
   return eCommerceData
@@ -50,15 +51,6 @@ export const getInvoiceData = async () => {
       const firstLine = inv.lines[0] || {}
       const totalPaid = inv.payment_apps.reduce((sum, p) => sum + Number(p.amount_applied), 0)
       const balance = Number(inv.total_amount) - totalPaid
-
-      // Debug log for backend calculation
-      console.log('[DEBUG] Invoice:', {
-        id: inv.id,
-        total_amount: inv.total_amount,
-        payment_apps: inv.payment_apps,
-        totalPaid,
-        balance
-      })
 
       return {
         id: inv.id.toString(),
@@ -197,8 +189,15 @@ export const getPatientData = async () => {
 
 export async function updatePatientAction(patientId: number, data: any) {
   try {
+    // Add auth and org check
+    const { organisationId } = await requireAuthAndOrg()
+
+    // Update with organization check in where clause
     await prisma.patient.update({
-      where: { id: patientId },
+      where: {
+        id: patientId,
+        organisation_id: organisationId // Add organization check
+      },
       data: {
         name: data.name,
         birthdate: data.birthdate ? new Date(data.birthdate) : undefined,
@@ -217,9 +216,12 @@ export async function updatePatientAction(patientId: number, data: any) {
       }
     })
 
-    // Fetch the updated patient with related data
+    // Fetch the updated patient with related data, including organization check
     const patientWithRelations = await prisma.patient.findUnique({
-      where: { id: patientId },
+      where: {
+        id: patientId,
+        organisation_id: organisationId // Add organization check
+      },
       include: {
         patient_measurements: true,
         patient_medical: true,

@@ -4,6 +4,7 @@ import { prisma } from '@/prisma/prisma'
 import { authOptions } from '@/libs/auth'
 import { prismaDecimalToNumber } from '@/utils/prismaDecimalToNumber'
 import type { PrescriptionFormValues } from '@/components/prescriptions/PrescriptionForm'
+import { requireAuthAndOrg } from './utils'
 
 export async function getVisitsByAppointmentIds(appointmentIds: number[]) {
   const session = await getServerSession(authOptions)
@@ -90,19 +91,26 @@ export async function getVisitById(id: number) {
 }
 
 export async function savePrescriptionForVisit(visitId: number, data: PrescriptionFormValues) {
-  // Fetch visit to get doctor_id, organisation_id, patient_id
+  // Add auth and org check
+  const { organisationId } = await requireAuthAndOrg()
+
+  // Fetch visit with org check - this ensures we can only access visits from our organization
   const visit = await prisma.patient_visit.findUnique({
-    where: { id: visitId },
+    where: {
+      id: visitId,
+      organisation_id: organisationId
+    },
     include: { doctor: true, organisation: true, patient: true }
   })
 
   if (!visit) throw new Error('Visit not found')
 
+  // Create prescription using the verified visit's data
   await prisma.prescription.create({
     data: {
       visit_id: visitId,
       doctor_id: visit.doctor_id!,
-      organisation_id: visit.organisation_id,
+      organisation_id: visit.organisation_id, // Safe to use as we've verified the visit belongs to our org
       patient_id: visit.patient_id,
       notes: data.notes,
       lines: {
@@ -119,9 +127,14 @@ export async function savePrescriptionForVisit(visitId: number, data: Prescripti
 }
 
 export async function updatePrescriptionForVisit(visitId: number, data: PrescriptionFormValues) {
-  // Find the existing prescription for this visit
+  const { organisationId } = await requireAuthAndOrg()
+
+  // Find prescription with org check
   const prescription = await prisma.prescription.findFirst({
-    where: { visit_id: visitId },
+    where: {
+      visit_id: visitId,
+      organisation_id: organisationId
+    },
     include: { lines: true }
   })
 
@@ -129,9 +142,14 @@ export async function updatePrescriptionForVisit(visitId: number, data: Prescrip
     throw new Error('Prescription not found for this visit')
   }
 
-  // Delete all existing lines
+  // Delete lines with org check
   await prisma.prescription_line.deleteMany({
-    where: { prescription_id: prescription.id }
+    where: {
+      prescription_id: prescription.id,
+      prescription: {
+        organisation_id: organisationId
+      }
+    }
   })
 
   // Create new lines
@@ -146,13 +164,12 @@ export async function updatePrescriptionForVisit(visitId: number, data: Prescrip
     }))
   })
 
-  // Update prescription main fields
+  // Update prescription with org check
   await prisma.prescription.update({
-    where: { id: prescription.id },
-    data: {
-      notes: data.notes
-
-      // doctor_id and other fields can be updated if needed
-    }
+    where: {
+      id: prescription.id,
+      organisation_id: organisationId
+    },
+    data: { notes: data.notes }
   })
 }

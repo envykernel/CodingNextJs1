@@ -1,4 +1,5 @@
 import { prisma } from '@/prisma/prisma'
+import { requireAuthAndOrg } from './utils'
 
 export type PatientStatisticsType = {
   newPatients: {
@@ -28,6 +29,13 @@ export type PatientStatisticsType = {
 }
 
 export async function getPatientStatistics(organisationId: number): Promise<PatientStatisticsType> {
+  // Add auth check and verify organization
+  const { organisationId: userOrgId } = await requireAuthAndOrg()
+
+  if (userOrgId !== organisationId) {
+    throw new Error('Not authorized to view statistics for this organization')
+  }
+
   // Get the current date and calculate relevant date ranges
   const now = new Date()
   const currentYear = now.getFullYear()

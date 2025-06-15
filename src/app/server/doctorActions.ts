@@ -23,7 +23,7 @@ export async function getAllDoctors() {
     const doctors = await prisma.doctor.findMany({
       where: {
         organisation_id: organisationId,
-        status: 'active' // Only return active doctors by default
+        status: 'enabled' // Only return enabled doctors by default
       },
       select: {
         id: true,
