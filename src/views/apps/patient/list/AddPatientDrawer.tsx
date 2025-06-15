@@ -147,16 +147,6 @@ const PatientDrawer = ({
     }
   })
 
-  // Add debug logs when editPatient changes
-  useEffect(() => {
-    console.log('EditPatient changed:', {
-      editMode,
-      editPatient,
-      gender: editPatient?.gender,
-      fullPatient: editPatient
-    })
-  }, [editMode, editPatient])
-
   // Reset form when drawer opens or editPatient changes
   useEffect(() => {
     if (open) {
@@ -173,13 +163,6 @@ const PatientDrawer = ({
 
       // Get the gender from editPatient data
       const editGender = editMode && editPatient?.gender ? editPatient.gender : ''
-
-      console.log('Resetting form with values:', {
-        editMode,
-        editPatientGender: editPatient?.gender,
-        editGender,
-        fullPatient: editPatient
-      })
 
       reset({
         name: editMode && editPatient ? editPatient.name : '',

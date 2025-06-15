@@ -591,12 +591,6 @@ const AddAppointmentDrawer = ({
                     end.setHours(23, 59, 59, 999)
                     today.setHours(0, 0, 0, 0)
 
-                    // For debugging
-                    console.log('Day:', dayDate.toISOString())
-                    console.log('Today:', today.toISOString())
-                    console.log('Start:', start.toISOString())
-                    console.log('End:', end.toISOString())
-
                     // Check if the day is within the week range AND not in the past
                     // Use getTime() for more reliable date comparison
                     const isInRange = dayDate.getTime() >= start.getTime() && dayDate.getTime() <= end.getTime()
