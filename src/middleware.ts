@@ -19,7 +19,8 @@ const publicPaths = [
   '/fr/reset-password',
   '/en/reset-password',
   '/ar/reset-password',
-  '/no-organisation'
+  '/no-organisation',
+  '/front-pages/commercial'
 ]
 
 export async function middleware(request: NextRequest) {

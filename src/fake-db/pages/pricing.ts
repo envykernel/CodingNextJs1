@@ -3,63 +3,51 @@ import type { PricingPlanType } from '@/types/pages/pricingTypes'
 
 export const db: PricingPlanType[] = [
   {
-    title: 'Basic',
-    monthlyPrice: 0,
-    currentPlan: true,
-    popularPlan: false,
-    subtitle: 'A simple start for everyone',
-    imgSrc: '/images/illustrations/objects/pricing-basic.png',
-    imgHeight: 120,
-    yearlyPlan: {
-      monthly: 0,
-      annually: 0
-    },
-    planBenefits: [
-      '100 responses a month',
-      'Unlimited forms and surveys',
-      'Unlimited fields',
-      'Basic form creation tools',
-      'Up to 2 subdomains'
-    ]
-  },
-  {
-    monthlyPrice: 49,
+    monthlyPrice: 200,
     title: 'Standard',
-    popularPlan: true,
+    popularPlan: false,
     currentPlan: false,
-    subtitle: 'For small to medium businesses',
+    subtitle: 'Pour les cabinets médicaux de taille moyenne',
     imgSrc: '/images/illustrations/objects/pricing-standard.png',
     imgHeight: 120,
     yearlyPlan: {
-      monthly: 40,
-      annually: 480
+      monthly: 180,
+      annually: 2160
     },
     planBenefits: [
-      'Unlimited responses',
-      'Unlimited forms and surveys',
-      'Instagram profile page',
-      'Google Docs integration',
-      'Custom “Thank you” page'
+      'Gestion des rendez-vous illimitée',
+      'Dossiers patients complets',
+      'Historique médical détaillé',
+      'Ordonnances médicales électroniques',
+      "Prescriptions d'analyses et d'imagerie médicale",
+      'Tableau de bord organisationnel',
+      'Support par email',
+      "Jusqu'à 3 utilisateurs",
+      "Jusqu'à 500 patients"
     ]
   },
   {
-    monthlyPrice: 99,
-    popularPlan: false,
+    monthlyPrice: 300,
+    popularPlan: true,
     currentPlan: false,
-    title: 'Enterprise',
-    subtitle: 'Solution for big organizations',
+    title: 'Ultimate',
+    subtitle: 'Solution complète pour les cabinets médicaux exigeants',
     imgSrc: '/images/illustrations/objects/pricing-enterprise.png',
     imgHeight: 120,
     yearlyPlan: {
-      monthly: 80,
-      annually: 960
+      monthly: 270,
+      annually: 3240
     },
     planBenefits: [
-      'PayPal payments',
-      'Logic Jumps',
-      'File upload with 5GB storage',
-      'Custom domain support',
-      'Stripe integration'
+      'Toutes les fonctionnalités Standard',
+      "Nombre illimité d'utilisateurs",
+      'Nombre illimité de patients',
+      'Tableau de bord organisationnel avancé',
+      'Tableau de bord financier complet',
+      'Gestion des factures et paiements',
+      'Suivi des recettes et dépenses',
+      'Rapports financiers détaillés',
+      'Impression de rapports médicaux complets'
     ]
   }
 ]

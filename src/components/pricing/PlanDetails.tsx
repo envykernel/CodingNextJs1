@@ -25,7 +25,7 @@ const PlanDetails = ({ data, pricingPlan }: Props) => {
       {data?.popularPlan ? (
         <Chip
           color='primary'
-          label='Popular'
+          label='Populaire'
           size='small'
           className='absolute block-start-4 inline-end-5'
           variant='tonal'
@@ -45,21 +45,18 @@ const PlanDetails = ({ data, pricingPlan }: Props) => {
       </div>
       <div className='relative mbe-4'>
         <div className='flex justify-center'>
-          <Typography component='sup' className='self-start font-medium'>
-            $
-          </Typography>
           <Typography variant='h1' component='span' color='primary.main'>
             {pricingPlan === 'monthly' ? data?.monthlyPrice : data?.yearlyPlan.monthly}
           </Typography>
           <Typography component='sub' className='self-end font-medium'>
-            /month
+            MAD/mois
           </Typography>
         </div>
         {pricingPlan !== 'monthly' && data?.monthlyPrice !== 0 ? (
           <Typography
             variant='caption'
             className='absolute inline-end-1/2 translate-x-[50%]'
-          >{`USD ${data?.yearlyPlan.annually}/year`}</Typography>
+          >{`${data?.yearlyPlan.annually} MAD/an`}</Typography>
         ) : null}
       </div>
       <div className='flex flex-col gap-4'>
@@ -77,7 +74,7 @@ const PlanDetails = ({ data, pricingPlan }: Props) => {
         color={data?.currentPlan ? 'success' : 'primary'}
         variant={data?.popularPlan ? 'contained' : 'tonal'}
       >
-        {data?.currentPlan ? 'Your Current Plan' : 'Upgrade'}
+        {data?.currentPlan ? 'Votre forfait actuel' : 'Choisir ce forfait'}
       </Button>
     </CardContent>
   )

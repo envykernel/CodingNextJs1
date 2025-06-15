@@ -5,6 +5,8 @@ import { useEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
 
 // Third-party Imports
+import { usePathname } from 'next/navigation'
+
 import styled from '@emotion/styled'
 
 // Type Imports
@@ -53,9 +55,11 @@ const Logo = ({ color }: { color?: CSSProperties['color'] }) => {
   const { isHovered, transitionDuration, isBreakpointReached } = useVerticalNav()
   const { settings } = useSettings()
   const { data: session } = useSession()
+  const pathname = usePathname()
 
   // Vars
   const { layout } = settings
+  const isFrontPage = pathname?.startsWith('/front-pages')
 
   useEffect(() => {
     if (layout !== 'collapsed') {
@@ -83,7 +87,7 @@ const Logo = ({ color }: { color?: CSSProperties['color'] }) => {
         transitionDuration={transitionDuration}
         isBreakpointReached={isBreakpointReached}
       >
-        {(session?.user as any)?.organisationName || themeConfig.templateName}
+        {isFrontPage ? 'Oryxus' : (session?.user as any)?.organisationName || themeConfig.templateName}
       </LogoText>
     </div>
   )

@@ -38,20 +38,20 @@ const Pricing = ({ data }: { data?: PricingPlanType[] }) => {
   return (
     <div className='flex flex-col gap-6'>
       <div className='flex flex-col justify-center items-center gap-2'>
-        <Typography variant='h3'>Pricing Plans</Typography>
-        <div className='flex items-center text-center flex-col  sm:mbe-[3.8rem]'>
+        <Typography variant='h3'>Nos Formules Tarifaires</Typography>
+        <div className='flex items-center text-center flex-col sm:mbe-[3.8rem]'>
           <Typography>
-            All plans include 40+ advanced tools and features to boost your product. Choose the best plan to fit your
-            needs.
+            Tous nos forfaits incluent des outils essentiels pour optimiser la gestion de votre cabinet médical. De la
+            prise de rendez-vous à la gestion des dossiers patients, choisissez la formule adaptée à vos besoins.
           </Typography>
         </div>
         <div className='flex justify-center items-center relative mbs-0.5'>
           <InputLabel htmlFor='pricing-switch' className='cursor-pointer'>
-            Monthly
+            Facturation mensuelle
           </InputLabel>
           <Switch id='pricing-switch' onChange={handleChange} checked={pricingPlan === 'annually'} />
           <InputLabel htmlFor='pricing-switch' className='cursor-pointer'>
-            Annually
+            Facturation annuelle
           </InputLabel>
 
           <div
@@ -65,7 +65,7 @@ const Pricing = ({ data }: { data?: PricingPlanType[] }) => {
               rtlIconClass='tabler-corner-right-down'
               className='mbs-2 mie-1 text-textDisabled'
             />
-            <Chip label='Save up to 10%' size='small' variant='tonal' color='primary' />
+            <Chip label="Économisez jusqu'à 10%" size='small' variant='tonal' color='primary' />
           </div>
         </div>
       </div>
