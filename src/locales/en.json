@@ -45,6 +45,14 @@
             "october": "October",
             "november": "November",
             "december": "December"
+        },
+        "organization": {
+            "day": "Day",
+            "dayOfWeek": "Day of Week",
+            "visits": "Visits",
+            "visitDaysDistribution": "Visit Days Distribution",
+            "numberOfVisits": "Number of Visits",
+            "noVisitData": "No visit data available for the selected period"
         }
     },
     "patients": "Patients",

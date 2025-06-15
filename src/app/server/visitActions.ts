@@ -1,3 +1,5 @@
+'use server'
+
 import { getServerSession } from 'next-auth'
 
 import { prisma } from '@/prisma/prisma'
@@ -172,4 +174,46 @@ export async function updatePrescriptionForVisit(visitId: number, data: Prescrip
     },
     data: { notes: data.notes }
   })
+}
+
+export async function getVisitDaysDistribution() {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user?.organisationId) {
+    throw new Error('Unauthorized')
+  }
+
+  const thirtyDaysAgo = new Date()
+
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+  const visits = await prisma.patient_visit.findMany({
+    where: {
+      organisation_id: Number(session.user.organisationId),
+      visit_date: {
+        gte: thirtyDaysAgo
+      }
+    },
+    select: {
+      visit_date: true
+    }
+  })
+
+  // Initialize counts for each day of the week (0-6, where 0 is Sunday)
+  const dayCounts = Array(7).fill(0)
+
+  // Count visits for each day of the week
+  visits.forEach(visit => {
+    const dayOfWeek = visit.visit_date.getDay() // 0-6 (Sunday-Saturday)
+
+    dayCounts[dayOfWeek]++
+  })
+
+  // Map the counts to day names in English format for translation
+  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+
+  return dayNames.map((day, index) => ({
+    day,
+    count: dayCounts[index]
+  }))
 }

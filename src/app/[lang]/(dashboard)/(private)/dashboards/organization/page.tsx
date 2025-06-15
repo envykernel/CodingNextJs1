@@ -10,6 +10,7 @@ import OrganisationDashboardPatientStatistics from '@/views/dashboards/organizat
 import TodayAppointments from '@/views/dashboards/organization/TodayAppointments'
 import AppointmentDayStats from '@/views/dashboards/organization/AppointmentDayStats'
 import VisitHoursDistribution from '@/views/dashboards/organization/VisitHoursDistribution'
+import VisitDaysDistribution from '@/views/dashboards/organization/VisitDaysDistribution'
 
 const OrganizationDashboard = () => {
   return (
@@ -42,6 +43,11 @@ const OrganizationDashboard = () => {
       {/* Visit Hours Distribution */}
       <Grid item xs={12}>
         <VisitHoursDistribution />
+      </Grid>
+
+      {/* Visit Days Distribution */}
+      <Grid item xs={12}>
+        <VisitDaysDistribution />
       </Grid>
     </Grid>
   )

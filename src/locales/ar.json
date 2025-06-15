@@ -22,7 +22,25 @@
         },
         "email": "البريد الإلكتروني",
         "phone": "الهاتف",
-        "noDoctor": "لا يوجد طبيب معين"
+        "noDoctor": "لا يوجد طبيب معين",
+        "days": {
+            "monday": "الاثنين",
+            "tuesday": "الثلاثاء",
+            "wednesday": "الأربعاء",
+            "thursday": "الخميس",
+            "friday": "الجمعة",
+            "saturday": "السبت",
+            "sunday": "الأحد"
+        },
+        "organization": {
+            "day": "اليوم",
+            "dayOfWeek": "يوم الأسبوع",
+            "visits": "الزيارات",
+            "visitDaysDistribution": "توزيع أيام الزيارة",
+            "numberOfVisits": "عدد الزيارات",
+            "noVisitData": "لا توجد بيانات زيارات متاحة للفترة المحددة",
+            "dataPeriod": "بيانات آخر 30 يوم"
+        }
     },
     "patients": "المرضى",
     "list": "القائمة",

@@ -14,15 +14,20 @@ import { prisma } from '@/libs/prisma'
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)
+    const user = session?.user
 
-    // Get the user's internal ID from the database using their email
-    const user = await prisma.userInternal.findUnique({
-      where: { email: session?.user?.email || '' },
-      select: { id: true, organisationId: true }
+    if (!user?.email || !user?.organisationId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Get the user's internal ID from the database
+    const dbUser = await prisma.userInternal.findUnique({
+      where: { email: user.email },
+      select: { id: true }
     })
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Fetch notifications that are either:
@@ -30,13 +35,11 @@ export async function GET() {
     // 2. For the user's organization (organisationId matches)
     const notifications = await prisma.notification.findMany({
       where: {
-        OR: [{ isGlobal: true }, { organisationId: user.organisationId }],
-
-        // Only get notifications that haven't been read by this user
+        OR: [{ isGlobal: true }, { organisationId: Number(user.organisationId) }],
         NOT: {
           readStatus: {
             some: {
-              userId: user.id
+              userId: dbUser.id
             }
           }
         }
@@ -44,7 +47,7 @@ export async function GET() {
       orderBy: {
         created_at: 'desc'
       },
-      take: 10 // Limit to 10 most recent notifications
+      take: 10
     })
 
     // Transform notifications to match the component's expected format
@@ -62,7 +65,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching notifications:', error)
 
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 })
   }
 }
 
