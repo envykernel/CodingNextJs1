@@ -196,6 +196,7 @@
         "notes": "ملاحظات",
         "status": "الحالة",
         "date": "التاريخ",
+        "time": "الوقت",
         "editPrescription": "تعديل الوصفة الطبية",
         "saveChanges": "حفظ التغييرات",
         "cancel": "إلغاء",
@@ -1002,11 +1003,26 @@
             "title": "المواعيد",
             "upcoming": "المواعيد القادمة",
             "past": "المواعيد السابقة",
-            "noAppointments": "لا توجد مواعيد مجدولة",
+            "thisMonth": "هذا الشهر",
+            "noAppointments": "لا توجد مواعيد متاحة.",
             "bookNew": "حجز موعد جديد",
             "cancel": "إلغاء الموعد",
-            "reschedule": "إعادة الجدولة",
-            "viewDetails": "عرض التفاصيل"
+            "reschedule": "إعادة جدولة",
+            "viewDetails": "عرض التفاصيل",
+            "actions": {
+                "goToVisit": "زيارة",
+                "cancel": "إلغاء",
+                "confirmCancellation": "تأكيد الإلغاء",
+                "cancelAppointmentConfirmation": "هل أنت متأكد أنك تريد إلغاء هذا الموعد؟",
+                "confirm": "تأكيد",
+                "loading": "جاري التحميل..."
+            },
+            "statusOptions": {
+                "scheduled": "مجدول",
+                "completed": "مكتمل",
+                "cancelled": "ملغي",
+                "no_show": "لم يحضر"
+            }
         },
         "billingPlans": {
             "title": "الفواتير والخطط",

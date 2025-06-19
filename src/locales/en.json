@@ -274,7 +274,7 @@
         "thisWeek": "This Week",
         "unavailableWarning": "The selected date and time is unavailable."
     },
-    "date": "Date:",
+    "date": "Date",
     "time": "Time",
     "type": "Type",
     "status": "Status",
@@ -757,11 +757,26 @@
             "title": "Appointments",
             "upcoming": "Upcoming Appointments",
             "past": "Past Appointments",
-            "noAppointments": "No appointments scheduled",
+            "thisMonth": "This Month",
+            "noAppointments": "No appointments available.",
             "bookNew": "Book New Appointment",
             "cancel": "Cancel Appointment",
             "reschedule": "Reschedule",
-            "viewDetails": "View Details"
+            "viewDetails": "View Details",
+            "actions": {
+                "goToVisit": "Visit",
+                "cancel": "Cancel",
+                "confirmCancellation": "Confirm Cancellation",
+                "cancelAppointmentConfirmation": "Are you sure you want to cancel this appointment?",
+                "confirm": "Confirm",
+                "loading": "Loading..."
+            },
+            "statusOptions": {
+                "scheduled": "Scheduled",
+                "completed": "Completed",
+                "cancelled": "Cancelled",
+                "no_show": "No Show"
+            }
         },
         "security": {
             "title": "Security Settings",

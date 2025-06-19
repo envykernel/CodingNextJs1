@@ -397,7 +397,7 @@
         "thisWeek": "Cette semaine",
         "unavailableWarning": "La date et l'heure sélectionnées ne sont pas disponibles."
     },
-    "date": "Date:",
+    "date": "Date",
     "time": "Heure",
     "type": "Type",
     "status": "Statut",
@@ -1774,11 +1774,26 @@
             "title": "Rendez-vous",
             "upcoming": "Rendez-vous à venir",
             "past": "Rendez-vous passés",
-            "noAppointments": "Aucun rendez-vous programmé",
+            "thisMonth": "Ce mois-ci",
+            "noAppointments": "Aucun rendez-vous disponible.",
             "bookNew": "Prendre un nouveau rendez-vous",
             "cancel": "Annuler le rendez-vous",
             "reschedule": "Reprogrammer",
-            "viewDetails": "Voir les détails"
+            "viewDetails": "Voir les détails",
+            "actions": {
+                "goToVisit": "Visite",
+                "cancel": "Annuler",
+                "confirmCancellation": "Confirmer l'annulation",
+                "cancelAppointmentConfirmation": "Êtes-vous sûr de vouloir annuler ce rendez-vous ?",
+                "confirm": "Confirmer",
+                "loading": "Chargement..."
+            },
+            "statusOptions": {
+                "scheduled": "Planifié",
+                "completed": "Terminé",
+                "cancelled": "Annulé",
+                "no_show": "Non présenté"
+            }
         },
         "security": {
             "title": "Paramètres de sécurité",

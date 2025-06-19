@@ -243,7 +243,7 @@ const AppointmentsTab = ({ appointments }: AppointmentsTabProps) => {
         <CardContent>
           <div className='flex items-center gap-3 mb-4'>
             <i className='tabler-calendar-event text-xl text-primary' />
-            <Typography variant='h6'>{t('appointmentsList') || 'Appointments'}</Typography>
+            <Typography variant='h6'>{t('patientView.appointments.title') || 'Appointments'}</Typography>
           </div>
           <Divider className='mb-4' />
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
