@@ -6,21 +6,20 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/libs/auth'
 import { prisma } from '@/prisma/prisma'
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
+    const { id } = await params
 
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const patientId = parseInt(params.id)
+    const patientId = parseInt(id)
 
     if (isNaN(patientId)) {
       return NextResponse.json({ error: 'Invalid patient ID' }, { status: 400 })
     }
-
-    console.log('Fetching prescriptions for patient:', patientId)
 
     // Get all prescriptions for the patient
     const prescriptions = await prisma.prescription.findMany({
@@ -50,12 +49,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       }
     })
 
-    console.log('Raw prescriptions data:', JSON.stringify(prescriptions, null, 2))
-
     // Format the response
     const formattedPrescriptions = prescriptions.map(prescription => {
-      console.log('Processing prescription:', prescription.id, 'Visit:', prescription.visit)
-
       return {
         id: prescription.id,
         date: prescription.visit?.visit_date,
@@ -72,12 +67,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       }
     })
 
-    console.log('Formatted prescriptions:', JSON.stringify(formattedPrescriptions, null, 2))
-
     return NextResponse.json(formattedPrescriptions)
   } catch (error) {
-    console.error('Error fetching prescriptions:', error)
-
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

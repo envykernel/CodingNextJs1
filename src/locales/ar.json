@@ -932,6 +932,7 @@
     "patientView": {
         "tabs": {
             "overview": "نظرة عامة",
+            "medical": "طبي",
             "medicalData": "البيانات الطبية",
             "appointments": "المواعيد",
             "prescriptions": "الوصفات الطبية",
@@ -984,7 +985,18 @@
             "familyHistory": "التاريخ العائلي",
             "immunizations": "التطعيمات",
             "labResults": "نتائج المختبر",
-            "noData": "لا توجد بيانات طبية متاحة"
+            "noData": "لا توجد بيانات طبية متاحة",
+            "measurements": "القياسات",
+            "noMeasurements": "لا توجد قياسات متاحة.",
+            "date": "التاريخ",
+            "weight": "الوزن (كجم)",
+            "height": "الطول (سم)",
+            "temperature": "درجة الحرارة (°م)",
+            "bpSystolic": "ضغط الدم الانقباضي",
+            "bpDiastolic": "ضغط الدم الانبساطي",
+            "otherMedicalInfo": "معلومات طبية أخرى",
+            "noOtherMedicalInfo": "لا توجد معلومات طبية إضافية متاحة.",
+            "recordId": "معرف السجل"
         },
         "appointments": {
             "title": "المواعيد",

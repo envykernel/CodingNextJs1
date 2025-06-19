@@ -19,6 +19,8 @@ import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import { useTheme } from '@mui/material/styles'
 
+import { useTranslation } from '@/contexts/translationContext'
+
 interface LabTestResult {
   id: number
   test_name: string
@@ -33,7 +35,6 @@ interface LabTestResult {
 
 interface PatientLabTestsProps {
   patientId: number
-  dictionary?: any
 }
 
 const formatDate = (dateString: string | null | undefined) => {
@@ -57,12 +58,12 @@ const getStatusColor = (status: string): 'default' | 'info' | 'success' | 'error
   }
 }
 
-const PatientLabTests: React.FC<PatientLabTestsProps> = ({ patientId, dictionary }) => {
+const PatientLabTests: React.FC<PatientLabTestsProps> = ({ patientId }) => {
   const [results, setResults] = useState<LabTestResult[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const theme = useTheme()
-  const t = dictionary?.labTests || {}
+  const { t } = useTranslation()
 
   useEffect(() => {
     const fetchLabTests = async () => {
@@ -99,7 +100,7 @@ const PatientLabTests: React.FC<PatientLabTestsProps> = ({ patientId, dictionary
     return (
       <Card>
         <CardContent>
-          <Typography color='text.secondary'>{t.noResults || 'No lab test results available.'}</Typography>
+          <Typography color='text.secondary'>{t('labTests.noResults')}</Typography>
         </CardContent>
       </Card>
     )
@@ -110,7 +111,7 @@ const PatientLabTests: React.FC<PatientLabTestsProps> = ({ patientId, dictionary
       <CardContent>
         <div className='flex items-center gap-3 mb-4'>
           <i className='tabler-test-pipe text-xl text-primary' />
-          <Typography variant='h6'>{t.title || 'Latest Lab Test Results'}</Typography>
+          <Typography variant='h6'>{t('labTests.title')}</Typography>
         </div>
         <Divider className='mb-4' />
         <TableContainer
@@ -125,19 +126,23 @@ const PatientLabTests: React.FC<PatientLabTestsProps> = ({ patientId, dictionary
             <TableHead>
               <TableRow sx={{ background: theme.palette.action.hover }}>
                 <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
-                  {t.testName || 'Test Name'}
+                  {t('labTests.testName')}
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
-                  {t.status || 'Status'}
+                  {t('labTests.status')}
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
-                  {t.result || 'Result'}
+                  {t('labTests.result')}
                 </TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>{t.unit || 'Unit'}</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
-                  {t.referenceRange || 'Reference Range'}
+                  {t('labTests.unit')}
                 </TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>{t.date || 'Date'}</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
+                  {t('labTests.referenceRange')}
+                </TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
+                  {t('labTests.date')}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -158,7 +163,7 @@ const PatientLabTests: React.FC<PatientLabTestsProps> = ({ patientId, dictionary
                   <TableCell>
                     {result.status === 'pending' ? (
                       <Typography color='text.secondary' sx={{ fontStyle: 'italic' }}>
-                        {t.pendingResult || 'Pending'}
+                        {t('labTests.pendingResult')}
                       </Typography>
                     ) : (
                       result.result_value || '-'

@@ -1704,6 +1704,7 @@
     "patientView": {
         "tabs": {
             "overview": "Aperçu",
+            "medical": "Médical",
             "medicalData": "Données Médicales",
             "appointments": "Rendez-vous",
             "prescriptions": "Ordonnances",
@@ -1756,7 +1757,18 @@
             "familyHistory": "Antécédents familiaux",
             "immunizations": "Vaccinations",
             "labResults": "Résultats de laboratoire",
-            "noData": "Aucune donnée médicale disponible"
+            "noData": "Aucune donnée médicale disponible",
+            "measurements": "Mesures",
+            "noMeasurements": "Aucune mesure disponible.",
+            "date": "Date",
+            "weight": "Poids (kg)",
+            "height": "Taille (cm)",
+            "temperature": "Température (°C)",
+            "bpSystolic": "TA Systolique",
+            "bpDiastolic": "TA Diastolique",
+            "otherMedicalInfo": "Autres Informations Médicales",
+            "noOtherMedicalInfo": "Aucune autre information médicale disponible.",
+            "recordId": "ID d'Enregistrement"
         },
         "appointments": {
             "title": "Rendez-vous",
@@ -1832,13 +1844,13 @@
         "success": "Antécédent médical enregistré avec succès",
         "error": "Erreur lors de l'enregistrement de l'antécédent médical",
         "types": {
-            "allergy": "Allergie",
-            "chronic_disease": "Maladie chronique",
-            "surgery": "Chirurgie",
-            "hospitalization": "Hospitalisation",
-            "family_history": "Antécédents familiaux",
-            "vaccination": "Vaccination",
-            "other": "Autre"
+            "ALLERGY": "Allergie",
+            "CHRONIC_DISEASE": "Maladie chronique",
+            "SURGERY": "Chirurgie",
+            "HOSPITALIZATION": "Hospitalisation",
+            "FAMILY_HISTORY": "Antécédents familiaux",
+            "VACCINATION": "Vaccination",
+            "OTHER": "Autre"
         },
         "noData": "Aucun antécédent médical enregistré",
         "actions": {
@@ -1932,5 +1944,21 @@
             "no": "Non",
             "scheduled": "Planifié"
         }
+    },
+    "patientMeasurementsChart": {
+        "title": "Historique des Mesures",
+        "selectMeasurement": "Sélectionner une Mesure",
+        "noMeasurements": "Aucune mesure disponible."
+    },
+    "labTests": {
+        "title": "Derniers Résultats d'Analyses",
+        "testName": "Nom du Test",
+        "status": "Statut",
+        "result": "Résultat",
+        "unit": "Unité",
+        "referenceRange": "Plage de Référence",
+        "date": "Date",
+        "pendingResult": "En attente",
+        "noResults": "Aucun résultat d'analyse disponible."
     }
 }

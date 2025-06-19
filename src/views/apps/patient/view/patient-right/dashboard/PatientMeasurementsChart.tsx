@@ -15,6 +15,8 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
+import { useTranslation } from '@/contexts/translationContext'
+
 interface Measurement {
   id: number
   measured_at: string
@@ -30,7 +32,6 @@ interface Measurement {
 
 interface PatientMeasurementsChartProps {
   patientId: number
-  dictionary: any
 }
 
 const measurementTypes = [
@@ -50,12 +51,12 @@ const formatDate = (dateString: string) => {
   return date.toISOString().split('T')[0]
 }
 
-const PatientMeasurementsChart: React.FC<PatientMeasurementsChartProps> = ({ patientId, dictionary }) => {
+const PatientMeasurementsChart: React.FC<PatientMeasurementsChartProps> = ({ patientId }) => {
   const [measurements, setMeasurements] = useState<Measurement[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedType, setSelectedType] = useState('weight_kg')
-  const t = dictionary?.patientMeasurementsChart || {}
+  const { t, dictionary } = useTranslation()
 
   useEffect(() => {
     const fetchMeasurements = async () => {
@@ -92,7 +93,7 @@ const PatientMeasurementsChart: React.FC<PatientMeasurementsChartProps> = ({ pat
     return (
       <Card>
         <CardContent>
-          <Typography color='text.secondary'>{t.noMeasurements || 'No measurements available.'}</Typography>
+          <Typography color='text.secondary'>{t('patientMeasurementsChart.noMeasurements')}</Typography>
         </CardContent>
       </Card>
     )
@@ -114,14 +115,14 @@ const PatientMeasurementsChart: React.FC<PatientMeasurementsChartProps> = ({ pat
       <CardContent>
         <div className='flex items-center gap-3 mb-4'>
           <i className='tabler-chart-line text-xl text-primary' />
-          <Typography variant='h6'>{t.title || 'Measurements History'}</Typography>
+          <Typography variant='h6'>{t('patientMeasurementsChart.title')}</Typography>
         </div>
         <Divider className='mb-4' />
         <FormControl fullWidth sx={{ mb: 4 }}>
-          <InputLabel>{t.selectMeasurement || 'Select Measurement'}</InputLabel>
+          <InputLabel>{t('patientMeasurementsChart.selectMeasurement')}</InputLabel>
           <Select
             value={selectedType}
-            label={t.selectMeasurement || 'Select Measurement'}
+            label={t('patientMeasurementsChart.selectMeasurement')}
             onChange={e => setSelectedType(e.target.value)}
           >
             {measurementTypes.map(type => (

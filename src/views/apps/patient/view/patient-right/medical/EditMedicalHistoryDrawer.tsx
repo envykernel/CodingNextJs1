@@ -88,13 +88,13 @@ const EditMedicalHistoryDrawer = ({
   }, [initialData])
 
   const historyTypes = [
-    { value: 'allergy', label: t('medicalHistory.types.allergy') },
-    { value: 'chronic_disease', label: t('medicalHistory.types.chronic_disease') },
-    { value: 'surgery', label: t('medicalHistory.types.surgery') },
-    { value: 'hospitalization', label: t('medicalHistory.types.hospitalization') },
-    { value: 'family_history', label: t('medicalHistory.types.family_history') },
-    { value: 'vaccination', label: t('medicalHistory.types.vaccination') },
-    { value: 'other', label: t('medicalHistory.types.other') }
+    { value: 'ALLERGY', label: t('medicalHistory.types.ALLERGY') },
+    { value: 'CHRONIC_DISEASE', label: t('medicalHistory.types.CHRONIC_DISEASE') },
+    { value: 'SURGERY', label: t('medicalHistory.types.SURGERY') },
+    { value: 'HOSPITALIZATION', label: t('medicalHistory.types.HOSPITALIZATION') },
+    { value: 'FAMILY_HISTORY', label: t('medicalHistory.types.FAMILY_HISTORY') },
+    { value: 'VACCINATION', label: t('medicalHistory.types.VACCINATION') },
+    { value: 'OTHER', label: t('medicalHistory.types.OTHER') }
   ]
 
   const handleChange = (index: number, field: keyof HistoryItem) => (event: React.ChangeEvent<HTMLInputElement>) => {

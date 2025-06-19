@@ -60,7 +60,7 @@ model VerificationToken {
 
 model patient {
   id                      Int                       @id @default(autoincrement())
-  name                    String                    @db.VarChar(100)
+  name                    String                    @db.VarChar(500)
   birthdate               DateTime                  @db.Date
   gender                  String                    @db.VarChar(20)
   doctor_id               Int?
@@ -68,11 +68,12 @@ model patient {
   avatar                  String?                   @db.VarChar(255)
   address                 String?                   @db.VarChar(255)
   city                    String?                   @db.VarChar(100)
-  phone_number            String?                   @db.VarChar(30)
-  email                   String?                   @db.VarChar(100)
-  emergency_contact_name  String?                   @db.VarChar(100)
-  emergency_contact_phone String?                   @db.VarChar(30)
-  emergency_contact_email String?                   @db.VarChar(100)
+  phone_number            String?                   @db.VarChar(500)
+  email                   String?                   @db.VarChar(500)
+  emergency_contact_name  String?                   @db.VarChar(500)
+  emergency_contact_phone String?                   @db.VarChar(500)
+  emergency_contact_email String?                   @db.VarChar(500)
+  is_encrypted            Boolean                   @default(false)
   created_at              DateTime?                 @default(now()) @db.Timestamptz(6)
   updated_at              DateTime?                 @default(now()) @db.Timestamptz(6)
   organisation_id         Int
@@ -137,7 +138,7 @@ model patient_medical {
 model patient_medical_history {
   id              Int          @id @default(autoincrement())
   patient_id      Int
-  history_type    String?      @db.VarChar(100)
+  history_type    HistoryType?
   description     String
   date_occurred   DateTime?    @db.Date
   created_at      DateTime?    @default(now()) @db.Timestamptz(6)
@@ -591,6 +592,16 @@ enum UserRole {
   LAB_TECHNICIAN
   PHARMACIST
   USER
+}
+
+enum HistoryType {
+  ALLERGY
+  CHRONIC_DISEASE
+  SURGERY
+  HOSPITALIZATION
+  FAMILY_HISTORY
+  VACCINATION
+  OTHER
 }
 
 model ShortcutReference {

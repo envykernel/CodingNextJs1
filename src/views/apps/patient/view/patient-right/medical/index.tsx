@@ -136,7 +136,7 @@ const MedicalDataTab = ({ patientData }: MedicalDataTabProps) => {
 
   // Add a function to get the translated history type
   const getTranslatedHistoryType = (type: string) => {
-    return t(`medicalHistory.types.${type.toLowerCase().replace(' ', '_')}`) || type
+    return t(`medicalHistory.types.${type}`) || type
   }
 
   return (
@@ -145,22 +145,22 @@ const MedicalDataTab = ({ patientData }: MedicalDataTabProps) => {
         <CardContent>
           <div className='flex items-center gap-3 mb-4'>
             <i className='tabler-heartbeat text-xl text-primary' />
-            <Typography variant='h6'>Measurements</Typography>
+            <Typography variant='h6'>{t('patientView.medicalData.measurements')}</Typography>
           </div>
           <Divider className='mb-4' />
           {measurements.length === 0 ? (
-            <Typography>No measurements available.</Typography>
+            <Typography>{t('patientView.medicalData.noMeasurements')}</Typography>
           ) : (
             <div className='overflow-x-auto'>
               <table className='min-w-full text-sm'>
                 <thead>
                   <tr>
-                    <th className='text-left p-2'>Date</th>
-                    <th className='text-left p-2'>Weight (kg)</th>
-                    <th className='text-left p-2'>Height (cm)</th>
-                    <th className='text-left p-2'>Temperature (°C)</th>
-                    <th className='text-left p-2'>BP Systolic</th>
-                    <th className='text-left p-2'>BP Diastolic</th>
+                    <th className='text-left p-2'>{t('patientView.medicalData.date')}</th>
+                    <th className='text-left p-2'>{t('patientView.medicalData.weight')}</th>
+                    <th className='text-left p-2'>{t('patientView.medicalData.height')}</th>
+                    <th className='text-left p-2'>{t('patientView.medicalData.temperature')}</th>
+                    <th className='text-left p-2'>{t('patientView.medicalData.bpSystolic')}</th>
+                    <th className='text-left p-2'>{t('patientView.medicalData.bpDiastolic')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -185,7 +185,7 @@ const MedicalDataTab = ({ patientData }: MedicalDataTabProps) => {
           <div className='flex items-center justify-between mb-4'>
             <div className='flex items-center gap-3'>
               <i className='tabler-notes text-xl text-primary' />
-              <Typography variant='h6'>Medical History</Typography>
+              <Typography variant='h6'>{t('medicalHistory.title')}</Typography>
             </div>
             <Button variant='contained' startIcon={<i className='tabler-plus text-xl' />} onClick={handleAddHistory}>
               {t('medicalHistory.addMedicalHistory') || 'Add Medical History'}
@@ -244,17 +244,17 @@ const MedicalDataTab = ({ patientData }: MedicalDataTabProps) => {
         <CardContent>
           <div className='flex items-center gap-3 mb-4'>
             <i className='tabler-medical-cross text-xl text-primary' />
-            <Typography variant='h6'>Other Medical Info</Typography>
+            <Typography variant='h6'>{t('patientView.medicalData.otherMedicalInfo')}</Typography>
           </div>
           <Divider className='mb-4' />
           {medicals.length === 0 ? (
-            <Typography>No additional medical info available.</Typography>
+            <Typography>{t('patientView.medicalData.noOtherMedicalInfo')}</Typography>
           ) : (
             <div className='overflow-x-auto'>
               <table className='min-w-full text-sm'>
                 <thead>
                   <tr>
-                    <th className='text-left p-2'>Record ID</th>
+                    <th className='text-left p-2'>{t('patientView.medicalData.recordId')}</th>
                     {/* Add more headers here if there are more fields */}
                   </tr>
                 </thead>

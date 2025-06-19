@@ -687,6 +687,7 @@
     "patientView": {
         "tabs": {
             "overview": "Overview",
+            "medical": "Medical",
             "medicalData": "Medical Data",
             "appointments": "Appointments",
             "prescriptions": "Prescriptions",
@@ -739,7 +740,18 @@
             "familyHistory": "Family History",
             "immunizations": "Immunizations",
             "labResults": "Lab Results",
-            "noData": "No medical data available"
+            "noData": "No medical data available",
+            "measurements": "Measurements",
+            "noMeasurements": "No measurements available.",
+            "date": "Date",
+            "weight": "Weight (kg)",
+            "height": "Height (cm)",
+            "temperature": "Temperature (°C)",
+            "bpSystolic": "BP Systolic",
+            "bpDiastolic": "BP Diastolic",
+            "otherMedicalInfo": "Other Medical Info",
+            "noOtherMedicalInfo": "No additional medical info available.",
+            "recordId": "Record ID"
         },
         "appointments": {
             "title": "Appointments",
@@ -1804,13 +1816,13 @@
         "success": "Medical history saved successfully",
         "error": "Error saving medical history",
         "types": {
-            "allergy": "Allergy",
-            "chronic_disease": "Chronic Disease",
-            "surgery": "Surgery",
-            "hospitalization": "Hospitalization",
-            "family_history": "Family History",
-            "vaccination": "Vaccination",
-            "other": "Other"
+            "ALLERGY": "Allergy",
+            "CHRONIC_DISEASE": "Chronic Disease",
+            "SURGERY": "Surgery",
+            "HOSPITALIZATION": "Hospitalization",
+            "FAMILY_HISTORY": "Family History",
+            "VACCINATION": "Vaccination",
+            "OTHER": "Other"
         },
         "noData": "No medical history recorded",
         "actions": {
@@ -1886,5 +1898,21 @@
             "no": "No",
             "scheduled": "Scheduled"
         }
+    },
+    "patientMeasurementsChart": {
+        "title": "Measurements History",
+        "selectMeasurement": "Select Measurement",
+        "noMeasurements": "No measurements available."
+    },
+    "labTests": {
+        "title": "Latest Lab Test Results",
+        "testName": "Test Name",
+        "status": "Status",
+        "result": "Result",
+        "unit": "Unit",
+        "referenceRange": "Reference Range",
+        "date": "Date",
+        "pendingResult": "Pending",
+        "noResults": "No lab test results available."
     }
 }

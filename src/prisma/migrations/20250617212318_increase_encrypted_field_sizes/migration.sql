@@ -1,0 +1,10 @@
+-- AlterTable
+ALTER TABLE "patient" ALTER COLUMN "name" SET DATA TYPE VARCHAR(500),
+ALTER COLUMN "phone_number" SET DATA TYPE VARCHAR(500),
+ALTER COLUMN "email" SET DATA TYPE VARCHAR(500),
+ALTER COLUMN "emergency_contact_name" SET DATA TYPE VARCHAR(500),
+ALTER COLUMN "emergency_contact_phone" SET DATA TYPE VARCHAR(500),
+ALTER COLUMN "emergency_contact_email" SET DATA TYPE VARCHAR(500);
+
+-- AlterTable
+ALTER TABLE "radiology_order" ALTER COLUMN "ordered_at" SET DEFAULT CURRENT_TIMESTAMP::text;

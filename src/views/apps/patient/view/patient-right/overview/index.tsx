@@ -115,36 +115,29 @@ const OverviewTab = ({ patientData, appointments }: OverviewTabProps) => {
   const [vitalSignsTrend, setVitalSignsTrend] = useState<ProcessedMeasurement[]>([])
   const [allergies, setAllergies] = useState<any[]>([])
 
-  const getTranslatedHistoryType = (type: string) => {
-    return t(`medicalHistory.types.${type.toLowerCase().replace(' ', '_')}`) || type
-  }
+  const getTranslatedHistoryType = (type: string) => t(`medicalHistory.types.${type}`) || type
 
   // Fetch medical history and filter allergies
   useEffect(() => {
     const fetchMedicalHistory = async () => {
       try {
         if (!patientData?.id) {
-          console.error('Missing patient ID:', patientData)
           return
         }
 
         const patientId = Number(patientData.id)
         if (isNaN(patientId)) {
-          console.error('Invalid patient ID:', patientData.id)
           return
         }
 
-        console.log('Fetching medical history for patient:', patientId)
         const response = await fetch(`/api/patient-medical-history?patientId=${patientId}`)
 
         if (!response.ok) {
           const errorData = await response.json()
-          console.error('API Error:', errorData)
           throw new Error(errorData.error || 'Failed to fetch medical history')
         }
 
         const data = await response.json()
-        console.log('Received medical history data:', data)
 
         // Filter allergies from medical history
         const allergyHistory = data.filter((item: any) => item.history_type === 'allergy')
@@ -161,17 +154,12 @@ const OverviewTab = ({ patientData, appointments }: OverviewTabProps) => {
           .slice(0, 3)
         setRecentMedicalHistory(recentHistory)
       } catch (error) {
-        console.error('Error in fetchMedicalHistory:', error)
+        // Handle error silently
       }
     }
 
     fetchMedicalHistory()
   }, [patientData?.id])
-
-  // Debug logs
-  console.log('OverViewTab patientData:', patientData)
-  console.log('Recent medical history:', recentMedicalHistory)
-  console.log('Allergies:', allergies)
 
   // Get latest measurements
   const latestMeasurements = patientData?.patient_measurements?.[0] || {}
@@ -189,17 +177,15 @@ const OverviewTab = ({ patientData, appointments }: OverviewTabProps) => {
         const response = await fetch(`/api/patient-visits?patientId=${patientId}&limit=1&status=completed`)
         if (!response.ok) {
           const errorData = await response.json()
-          console.error('API Error:', errorData)
           throw new Error(errorData.error || 'Failed to fetch last visit')
         }
 
         const data = await response.json()
-        console.log('Last visit data:', data)
         if (data.length > 0) {
           setLastVisit(data[0])
         }
       } catch (error) {
-        console.error('Error in fetchLastVisit:', error)
+        // Handle error silently
       }
     }
 
@@ -218,12 +204,10 @@ const OverviewTab = ({ patientData, appointments }: OverviewTabProps) => {
         const response = await fetch(`/api/prescriptions/patient/${patientId}`)
         if (!response.ok) {
           const errorData = await response.json()
-          console.error('API Error:', errorData)
           throw new Error(errorData.error || 'Failed to fetch active prescriptions')
         }
 
         const data = await response.json()
-        console.log('Active prescriptions data:', data)
         // Filter active prescriptions (those without an end date or with a future end date)
         const activePrescriptions = data
           .filter((prescription: any) => {
@@ -235,7 +219,7 @@ const OverviewTab = ({ patientData, appointments }: OverviewTabProps) => {
           .slice(0, 3)
         setActivePrescriptions(activePrescriptions)
       } catch (error) {
-        console.error('Error in fetchActivePrescriptions:', error)
+        // Handle error silently
       }
     }
 
@@ -261,7 +245,7 @@ const OverviewTab = ({ patientData, appointments }: OverviewTabProps) => {
 
         setUpcomingAppointments(upcomingAppointments)
       } catch (error) {
-        console.error('Error in fetchUpcomingAppointments:', error)
+        // Handle error silently
       }
     }
 
@@ -280,13 +264,11 @@ const OverviewTab = ({ patientData, appointments }: OverviewTabProps) => {
 
         if (!response.ok) {
           const errorData = await response.json()
-          console.error('API Error:', errorData)
           throw new Error(errorData.error || 'Failed to fetch vital signs')
         }
 
         const data = await response.json()
         if (!Array.isArray(data)) {
-          console.error('Invalid measurements data format:', data)
           throw new Error('Invalid measurements data format')
         }
 
@@ -303,7 +285,6 @@ const OverviewTab = ({ patientData, appointments }: OverviewTabProps) => {
 
         setVitalSignsTrend(processedData)
       } catch (error) {
-        console.error('Error in fetchVitalSignsTrend:', error)
         setVitalSignsTrend([])
       }
     }
@@ -533,10 +514,10 @@ const OverviewTab = ({ patientData, appointments }: OverviewTabProps) => {
 
       {/* Existing Charts */}
       <Grid item xs={12}>
-        <PatientMeasurementsChart patientId={patientData.id} dictionary={patientData.dictionary} />
+        <PatientMeasurementsChart patientId={patientData.id} />
       </Grid>
       <Grid item xs={12}>
-        <PatientLabTests patientId={patientData.id} dictionary={patientData.dictionary} />
+        <PatientLabTests patientId={patientData.id} />
       </Grid>
     </Grid>
   )
