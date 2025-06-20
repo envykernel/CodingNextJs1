@@ -5,13 +5,22 @@ import { getServerSession } from 'next-auth'
 
 import { prisma } from '../../../prisma/prisma'
 import { authOptions } from '@/libs/auth'
+import {
+  UserError,
+  ServerError,
+  ValidationError,
+  NotFoundError,
+  AuthenticationError,
+  formatErrorResponse,
+  logError
+} from '@/utils/errorHandler'
 
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
     if (!session?.user?.organisationId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      throw new AuthenticationError('Please sign in to continue')
     }
 
     const organisationId = parseInt(session.user.organisationId)
@@ -19,7 +28,7 @@ export async function POST(req: NextRequest) {
     const { appointment_id } = body
 
     if (!appointment_id) {
-      return NextResponse.json({ error: 'Missing appointment_id' }, { status: 400 })
+      throw new ValidationError('Appointment ID is required')
     }
 
     // Fetch the appointment
@@ -32,7 +41,7 @@ export async function POST(req: NextRequest) {
     })
 
     if (!appointment) {
-      return NextResponse.json({ error: 'Appointment not found' }, { status: 404 })
+      throw new NotFoundError('Appointment not found')
     }
 
     // Extract date and time from appointment_date
@@ -68,27 +77,53 @@ export async function POST(req: NextRequest) {
     ])
 
     return NextResponse.json({ visit, appointment: updatedAppointment }, { status: 201 })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error) {
+    // Log error for debugging
+    logError(error, 'visits POST API')
+
+    // Handle different error types
+    if (
+      error instanceof UserError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError ||
+      error instanceof AuthenticationError
+    ) {
+      return NextResponse.json(formatErrorResponse(error), { status: error.status })
+    }
+
+    // Handle database-specific errors
+    if (
+      error instanceof Error &&
+      (error.message.includes('connect') || error.message.includes('database') || error.message.includes('prisma'))
+    ) {
+      const dbError = new ServerError('Database operation failed')
+
+      return NextResponse.json(formatErrorResponse(dbError), { status: 500 })
+    }
+
+    // Generic server error
+    const serverError = new ServerError()
+
+    return NextResponse.json(formatErrorResponse(serverError), { status: 500 })
   }
 }
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
-  const id = searchParams.get('id')
-
-  if (!id) {
-    return NextResponse.json({ error: 'Missing id' }, { status: 400 })
-  }
-
   try {
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      throw new ValidationError('Visit ID is required')
+    }
+
     const visit = await prisma.patient_visit.findUnique({
       where: { id: Number(id) },
       include: { patient: true, doctor: true, organisation: true }
     })
 
     if (!visit) {
-      return NextResponse.json({ error: 'Visit not found' }, { status: 404 })
+      throw new NotFoundError('Visit not found')
     }
 
     // Serialize all date fields to ISO strings and return relevant patient/doctor fields
@@ -131,7 +166,28 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ visit: serializedVisit })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error) {
+    // Log error for debugging
+    logError(error, 'visits GET API')
+
+    // Handle different error types
+    if (error instanceof UserError || error instanceof ValidationError || error instanceof NotFoundError) {
+      return NextResponse.json(formatErrorResponse(error), { status: error.status })
+    }
+
+    // Handle database-specific errors
+    if (
+      error instanceof Error &&
+      (error.message.includes('connect') || error.message.includes('database') || error.message.includes('prisma'))
+    ) {
+      const dbError = new ServerError('Database operation failed')
+
+      return NextResponse.json(formatErrorResponse(dbError), { status: 500 })
+    }
+
+    // Generic server error
+    const serverError = new ServerError()
+
+    return NextResponse.json(formatErrorResponse(serverError), { status: 500 })
   }
 }

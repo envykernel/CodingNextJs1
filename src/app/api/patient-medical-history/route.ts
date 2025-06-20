@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server'
 
 import { prisma } from '@/lib/prisma'
+import {
+  UserError,
+  ServerError,
+  ValidationError,
+  NotFoundError,
+  formatErrorResponse,
+  logError
+} from '@/utils/errorHandler'
 
 export async function POST(request: Request) {
   try {
@@ -16,18 +24,24 @@ export async function POST(request: Request) {
     })
 
     if (!patient_id || !organisation_id || !description) {
-      console.error('Missing required fields:', { patient_id, organisation_id, hasDescription: !!description })
-
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+      throw new ValidationError('Missing required fields: patient_id, organisation_id, and description are required')
     }
 
     const patientIdNum = Number(patient_id)
     const organisationIdNum = Number(organisation_id)
 
     if (isNaN(patientIdNum) || isNaN(organisationIdNum)) {
-      console.error('Invalid IDs:', { patient_id, organisation_id })
+      throw new ValidationError('Invalid patient or organisation ID format')
+    }
 
-      return NextResponse.json({ error: 'Invalid patient or organisation ID' }, { status: 400 })
+    // Check if patient exists
+    const patient = await prisma.patient.findUnique({
+      where: { id: patientIdNum },
+      select: { id: true }
+    })
+
+    if (!patient) {
+      throw new NotFoundError('Patient not found')
     }
 
     const medicalHistory = await prisma.patient_medical_history.create({
@@ -44,9 +58,28 @@ export async function POST(request: Request) {
 
     return NextResponse.json(medicalHistory)
   } catch (error) {
-    console.error('Error creating medical history:', error)
+    // Log error for debugging
+    logError(error, 'patient-medical-history POST API')
 
-    return NextResponse.json({ error: 'Failed to create medical history' }, { status: 500 })
+    // Handle different error types
+    if (error instanceof UserError || error instanceof ValidationError || error instanceof NotFoundError) {
+      return NextResponse.json(formatErrorResponse(error), { status: error.status })
+    }
+
+    // Handle database-specific errors
+    if (
+      error instanceof Error &&
+      (error.message.includes('connect') || error.message.includes('database') || error.message.includes('prisma'))
+    ) {
+      const dbError = new ServerError('Database operation failed')
+
+      return NextResponse.json(formatErrorResponse(dbError), { status: 500 })
+    }
+
+    // Generic server error
+    const serverError = new ServerError()
+
+    return NextResponse.json(formatErrorResponse(serverError), { status: 500 })
   }
 }
 
@@ -56,20 +89,26 @@ export async function GET(request: Request) {
     const patientId = searchParams.get('patientId')
 
     if (!patientId) {
-      console.error('Missing patientId parameter')
-
-      return NextResponse.json({ error: 'Patient ID is required' }, { status: 400 })
+      throw new ValidationError('Patient ID is required')
     }
 
     const patientIdNum = parseInt(patientId)
 
     if (isNaN(patientIdNum)) {
-      console.error('Invalid patientId:', patientId)
-
-      return NextResponse.json({ error: 'Invalid patient ID' }, { status: 400 })
+      throw new ValidationError('Invalid patient ID format')
     }
 
     console.log('Fetching medical history for patient:', patientIdNum)
+
+    // Check if patient exists
+    const patient = await prisma.patient.findUnique({
+      where: { id: patientIdNum },
+      select: { id: true }
+    })
+
+    if (!patient) {
+      throw new NotFoundError('Patient not found')
+    }
 
     const medicalHistory = await prisma.patient_medical_history.findMany({
       where: {
@@ -84,8 +123,27 @@ export async function GET(request: Request) {
 
     return NextResponse.json(medicalHistory)
   } catch (error) {
-    console.error('Error fetching medical history:', error)
+    // Log error for debugging
+    logError(error, 'patient-medical-history GET API')
 
-    return NextResponse.json({ error: 'Failed to fetch medical history' }, { status: 500 })
+    // Handle different error types
+    if (error instanceof UserError || error instanceof ValidationError || error instanceof NotFoundError) {
+      return NextResponse.json(formatErrorResponse(error), { status: error.status })
+    }
+
+    // Handle database-specific errors
+    if (
+      error instanceof Error &&
+      (error.message.includes('connect') || error.message.includes('database') || error.message.includes('prisma'))
+    ) {
+      const dbError = new ServerError('Database operation failed')
+
+      return NextResponse.json(formatErrorResponse(dbError), { status: 500 })
+    }
+
+    // Generic server error
+    const serverError = new ServerError()
+
+    return NextResponse.json(formatErrorResponse(serverError), { status: 500 })
   }
 }

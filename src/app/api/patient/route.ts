@@ -1,6 +1,14 @@
 import { z } from 'zod'
 
 import { prisma } from '@/prisma/prisma'
+import {
+  UserError,
+  ServerError,
+  ValidationError,
+  NotFoundError,
+  formatErrorResponse,
+  logError
+} from '@/utils/errorHandler'
 
 const patientSchema = z.object({
   name: z.string().min(1),
@@ -20,17 +28,21 @@ const patientSchema = z.object({
 })
 
 export async function POST(request: Request) {
-  const body = await request.json()
-  const parsed = patientSchema.safeParse(body)
-
-  if (!parsed.success) {
-    return new Response(JSON.stringify({ error: parsed.error.flatten() }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    })
-  }
-
   try {
+    const body = await request.json()
+    const parsed = patientSchema.safeParse(body)
+
+    if (!parsed.success) {
+      const validationError = new ValidationError('Invalid patient data')
+
+      validationError.details = JSON.stringify(parsed.error.flatten().fieldErrors)
+
+      return new Response(JSON.stringify(formatErrorResponse(validationError)), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
     const {
       name,
       birthdate,
@@ -59,7 +71,11 @@ export async function POST(request: Request) {
         }
       })
 
-      doctorId = doctorRecord?.id
+      if (!doctorRecord) {
+        throw new NotFoundError('Doctor not found')
+      }
+
+      doctorId = doctorRecord.id
     }
 
     const data: any = {
@@ -69,7 +85,7 @@ export async function POST(request: Request) {
       status,
       phone_number,
       organisation_id,
-      doctor_id: doctorId // Set doctor_id instead of doctor
+      doctor_id: doctorId
     }
 
     if (avatar !== undefined) data.avatar = avatar
@@ -100,17 +116,39 @@ export async function POST(request: Request) {
       headers: { 'Content-Type': 'application/json' }
     })
   } catch (error) {
-    console.error('Prisma error:', error)
+    // Log error for debugging
+    logError(error, 'patient API')
 
-    return new Response(
-      JSON.stringify({
-        error: 'Database error',
-        details: error instanceof Error ? error.message : JSON.stringify(error)
-      }),
-      {
+    // Handle different error types
+    if (error instanceof UserError || error instanceof ValidationError || error instanceof NotFoundError) {
+      return new Response(JSON.stringify(formatErrorResponse(error)), {
+        status: error.status,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Handle database-specific errors
+    if (
+      error instanceof Error &&
+      (error.message.includes('connect') ||
+        error.message.includes('database') ||
+        error.message.includes('prisma') ||
+        error.message.includes('Unique constraint'))
+    ) {
+      const dbError = new ServerError('Database operation failed')
+
+      return new Response(JSON.stringify(formatErrorResponse(dbError)), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
-      }
-    )
+      })
+    }
+
+    // Generic server error
+    const serverError = new ServerError()
+
+    return new Response(JSON.stringify(formatErrorResponse(serverError)), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    })
   }
 }

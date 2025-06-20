@@ -5,6 +5,15 @@ import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/libs/auth'
 import { prisma } from '@/prisma/prisma'
+import {
+  UserError,
+  ServerError,
+  ValidationError,
+  NotFoundError,
+  AuthenticationError,
+  formatErrorResponse,
+  logError
+} from '@/utils/errorHandler'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,9 +21,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions)
 
     if (!session) {
-      console.log('No session found - unauthorized')
-
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      throw new AuthenticationError('Please sign in to continue')
     }
 
     console.log('Session found for user:', session.user?.email)
@@ -24,9 +31,7 @@ export async function POST(request: NextRequest) {
     const { visit_id, medications, notes } = data
 
     if (!visit_id) {
-      console.log('No visit_id provided')
-
-      return NextResponse.json({ error: 'Visit ID is required' }, { status: 400 })
+      throw new ValidationError('Visit ID is required')
     }
 
     // Fetch visit to get doctor_id, organisation_id, patient_id
@@ -38,9 +43,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!visit) {
-      console.log('Visit not found for id:', visit_id)
-
-      return NextResponse.json({ error: 'Visit not found' }, { status: 404 })
+      throw new NotFoundError('Visit not found')
     }
 
     console.log('Visit found:', {
@@ -115,17 +118,32 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error saving prescription:', error)
+    // Log error for debugging
+    logError(error, 'prescriptions API')
 
-    // Log the full error details
-    if (error instanceof Error) {
-      console.error('Error details:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      })
+    // Handle different error types
+    if (
+      error instanceof UserError ||
+      error instanceof ValidationError ||
+      error instanceof NotFoundError ||
+      error instanceof AuthenticationError
+    ) {
+      return NextResponse.json(formatErrorResponse(error), { status: error.status })
     }
 
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    // Handle database-specific errors
+    if (
+      error instanceof Error &&
+      (error.message.includes('connect') || error.message.includes('database') || error.message.includes('prisma'))
+    ) {
+      const dbError = new ServerError('Database operation failed')
+
+      return NextResponse.json(formatErrorResponse(dbError), { status: 500 })
+    }
+
+    // Generic server error
+    const serverError = new ServerError()
+
+    return NextResponse.json(formatErrorResponse(serverError), { status: 500 })
   }
 }
