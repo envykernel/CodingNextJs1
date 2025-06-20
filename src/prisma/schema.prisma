@@ -220,6 +220,7 @@ model organisation {
   certificateTemplates    CertificateTemplate[]
   certificates            Certificate[]
   logs                    Log[]
+  errorLogs               ErrorLog[]
 }
 
 model patient_appointment {
@@ -259,6 +260,7 @@ model UserInternal {
   notifications  NotificationRead[]
   contacts       Contact[]
   logs           Log[]
+  errorLogs      ErrorLog[]    // Errors reported by this user
 }
 
 model patient_visit {
@@ -806,4 +808,65 @@ model Log {
   @@index([entityType])
   @@index([entityId])
   @@index([createdAt])
+}
+
+enum ErrorSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model ErrorLog {
+  id                Int           @id @default(autoincrement())
+  organisationId    Int?
+  userId            Int?
+  
+  // Error details
+  errorName         String        @db.VarChar(255)  // e.g., "TypeError", "ReferenceError", "ValidationError"
+  errorMessage      String        @db.Text          // The actual error message
+  stackTrace        String?       @db.Text          // Full stack trace
+  errorCode         String?       @db.VarChar(50)   // Custom error code if applicable
+  
+  // Context information
+  url               String?       @db.VarChar(500)  // URL where the error occurred
+  component         String?       @db.VarChar(255)  // React component name
+  page              String?       @db.VarChar(255)  // Page/route name
+  method            String?       @db.VarChar(50)   // HTTP method (GET, POST, etc.)
+  apiEndpoint       String?       @db.VarChar(500)  // API endpoint if applicable
+  
+  // User and session context
+  ipAddress         String?       @db.VarChar(45)   // IPv4 or IPv6 address
+  userAgent         String?       @db.VarChar(500)  // Browser/device information
+  sessionId         String?       @db.VarChar(255)  // Session identifier
+  
+  // Additional context data
+  requestBody       Json?         // Request body data
+  requestHeaders    Json?         // Request headers
+  queryParams       Json?         // URL query parameters
+  formData          Json?         // Form data if applicable
+  
+  // Error classification
+  severity          ErrorSeverity @default(MEDIUM)
+  category          String?       @db.VarChar(100)  // e.g., "API", "UI", "Database", "Authentication"
+  
+  // Metadata
+  tags              String[]      @db.VarChar(50)   // Tags for categorization
+  metadata          Json?         // Additional custom metadata
+  
+  // Timestamps
+  createdAt         DateTime      @default(now())
+  
+  // Relations
+  organisation      organisation? @relation(fields: [organisationId], references: [id], onDelete: SetNull)
+  user              UserInternal? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([organisationId])
+  @@index([userId])
+  @@index([severity])
+  @@index([category])
+  @@index([errorName])
+  @@index([createdAt])
+  @@index([url])
+  @@index([component])
 }
