@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from '@/contexts/translationContext'
+import { HistoryType } from '@/types/medicalHistory'
 
 // MUI Imports
 import Drawer from '@mui/material/Drawer'
@@ -88,13 +89,13 @@ const EditMedicalHistoryDrawer = ({
   }, [initialData])
 
   const historyTypes = [
-    { value: 'ALLERGY', label: t('medicalHistory.types.ALLERGY') },
-    { value: 'CHRONIC_DISEASE', label: t('medicalHistory.types.CHRONIC_DISEASE') },
-    { value: 'SURGERY', label: t('medicalHistory.types.SURGERY') },
-    { value: 'HOSPITALIZATION', label: t('medicalHistory.types.HOSPITALIZATION') },
-    { value: 'FAMILY_HISTORY', label: t('medicalHistory.types.FAMILY_HISTORY') },
-    { value: 'VACCINATION', label: t('medicalHistory.types.VACCINATION') },
-    { value: 'OTHER', label: t('medicalHistory.types.OTHER') }
+    { value: HistoryType.ALLERGY, label: t('medicalHistory.types.ALLERGY') },
+    { value: HistoryType.CHRONIC_DISEASE, label: t('medicalHistory.types.CHRONIC_DISEASE') },
+    { value: HistoryType.SURGERY, label: t('medicalHistory.types.SURGERY') },
+    { value: HistoryType.HOSPITALIZATION, label: t('medicalHistory.types.HOSPITALIZATION') },
+    { value: HistoryType.FAMILY_HISTORY, label: t('medicalHistory.types.FAMILY_HISTORY') },
+    { value: HistoryType.VACCINATION, label: t('medicalHistory.types.VACCINATION') },
+    { value: HistoryType.OTHER, label: t('medicalHistory.types.OTHER') }
   ]
 
   const handleChange = (index: number, field: keyof HistoryItem) => (event: React.ChangeEvent<HTMLInputElement>) => {

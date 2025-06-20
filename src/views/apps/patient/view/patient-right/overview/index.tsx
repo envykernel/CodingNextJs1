@@ -17,6 +17,7 @@ import ListItem from '@mui/material/ListItem'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import { useState, useEffect } from 'react'
+import { HistoryType } from '@/types/medicalHistory'
 
 // Component Imports
 import PatientLabTests from '../dashboard/PatientLabTests'
@@ -140,12 +141,12 @@ const OverviewTab = ({ patientData, appointments }: OverviewTabProps) => {
         const data = await response.json()
 
         // Filter allergies from medical history
-        const allergyHistory = data.filter((item: any) => item.history_type === 'allergy')
+        const allergyHistory = data.filter((item: any) => item.history_type === HistoryType.ALLERGY)
         setAllergies(allergyHistory)
 
         // Get recent medical history (excluding allergies)
         const recentHistory = data
-          .filter((item: any) => item.history_type !== 'allergy')
+          .filter((item: any) => item.history_type !== HistoryType.ALLERGY)
           .sort((a: any, b: any) => {
             const dateA = a.date_occurred ? new Date(a.date_occurred).getTime() : 0
             const dateB = b.date_occurred ? new Date(b.date_occurred).getTime() : 0
