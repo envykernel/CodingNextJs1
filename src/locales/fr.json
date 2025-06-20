@@ -1877,13 +1877,17 @@
         "addNew": "Ajouter un autre élément"
     },
     "errors": {
-        "unauthorized": {
-            "title": "Authentification Requise",
-            "message": "Veuillez vous connecter pour voir les statistiques"
+        "userError": {
+            "title": "Action Requise",
+            "message": "Veuillez vérifier vos données et réessayer"
         },
-        "organization": {
-            "title": "Erreur d'Organisation",
-            "message": "Impossible d'identifier votre organisation"
+        "serverError": {
+            "title": "Service Temporairement Indisponible",
+            "message": "Nous rencontrons des difficultés techniques. Veuillez réessayer plus tard."
+        },
+        "network": {
+            "title": "Erreur de Connexion",
+            "message": "Impossible de se connecter au serveur. Veuillez vérifier votre connexion internet et réessayer."
         },
         "database": {
             "title": "Erreur de Connexion à la Base de Données",
@@ -1894,9 +1898,59 @@
             "message": "La requête a pris trop de temps à s'exécuter. Veuillez réessayer."
         },
         "generic": {
-            "title": "Impossible de Charger les Statistiques",
-            "message": "Nous rencontrons des difficultés pour charger les statistiques. Veuillez réessayer plus tard."
-        }
+            "title": "Une Erreur s'est Produite",
+            "message": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard."
+        },
+        "validation": {
+            "title": "Données Invalides",
+            "message": "Veuillez vérifier vos données et réessayer.",
+            "required": "Ce champ est obligatoire",
+            "email": "Veuillez saisir une adresse email valide",
+            "phone": "Veuillez saisir un numéro de téléphone valide",
+            "minLength": "Doit contenir au moins {min} caractères",
+            "maxLength": "Ne doit pas dépasser {max} caractères",
+            "invalidFormat": "Format invalide"
+        },
+        "authentication": {
+            "title": "Authentification Requise",
+            "message": "Veuillez vous connecter pour continuer",
+            "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+            "invalidCredentials": "Email ou mot de passe incorrect"
+        },
+        "authorization": {
+            "title": "Accès Refusé",
+            "message": "Vous n'avez pas la permission d'effectuer cette action",
+            "insufficientPermissions": "Vous n'avez pas les permissions suffisantes pour cette opération"
+        },
+        "notFound": {
+            "title": "Non Trouvé",
+            "message": "La ressource demandée n'a pas été trouvée",
+            "patientNotFound": "Patient non trouvé",
+            "visitNotFound": "Visite non trouvée",
+            "userNotFound": "Utilisateur non trouvé"
+        },
+        "conflict": {
+            "title": "Conflit",
+            "message": "L'opération demandée est en conflit avec les données existantes",
+            "emailExists": "Un compte avec cet email existe déjà",
+            "usernameExists": "Ce nom d'utilisateur est déjà pris",
+            "duplicateRecord": "Un enregistrement avec ces détails existe déjà"
+        },
+        "unauthorized": {
+            "title": "Authentification Requise",
+            "message": "Veuillez vous connecter pour voir les statistiques"
+        },
+        "organization": {
+            "title": "Erreur d'Organisation",
+            "message": "Impossible d'identifier votre organisation"
+        },
+        "fetchFailed": "Échec de la récupération des données",
+        "saveFailed": "Échec de l'enregistrement des données",
+        "deleteFailed": "Échec de la suppression de l'élément",
+        "updateFailed": "Échec de la mise à jour de l'élément",
+        "createFailed": "Échec de la création de l'élément",
+        "emailCheck": "Échec de la vérification de la disponibilité de l'email",
+        "nameCheck": "Échec de la vérification de la disponibilité du nom d'utilisateur"
     },
     "search": {
         "placeholder": {

@@ -1929,5 +1929,81 @@
         "date": "Date",
         "pendingResult": "Pending",
         "noResults": "No lab test results available."
+    },
+    "errors": {
+        "userError": {
+            "title": "Action Required",
+            "message": "Please check your input and try again"
+        },
+        "serverError": {
+            "title": "Service Temporarily Unavailable",
+            "message": "We're experiencing technical difficulties. Please try again later."
+        },
+        "network": {
+            "title": "Connection Error",
+            "message": "Unable to connect to the server. Please check your internet connection and try again."
+        },
+        "database": {
+            "title": "Database Connection Error",
+            "message": "Unable to connect to the database. Please try again later or contact support if the issue persists."
+        },
+        "timeout": {
+            "title": "Request Timeout",
+            "message": "The request took too long to complete. Please try again."
+        },
+        "generic": {
+            "title": "Something Went Wrong",
+            "message": "An unexpected error occurred. Please try again later."
+        },
+        "validation": {
+            "title": "Invalid Input",
+            "message": "Please check your input and try again.",
+            "required": "This field is required",
+            "email": "Please enter a valid email address",
+            "phone": "Please enter a valid phone number",
+            "minLength": "Must be at least {min} characters",
+            "maxLength": "Must be no more than {max} characters",
+            "invalidFormat": "Invalid format"
+        },
+        "authentication": {
+            "title": "Authentication Required",
+            "message": "Please sign in to continue",
+            "sessionExpired": "Your session has expired. Please sign in again.",
+            "invalidCredentials": "Invalid email or password"
+        },
+        "authorization": {
+            "title": "Access Denied",
+            "message": "You don't have permission to perform this action",
+            "insufficientPermissions": "You don't have sufficient permissions for this operation"
+        },
+        "notFound": {
+            "title": "Not Found",
+            "message": "The requested resource was not found",
+            "patientNotFound": "Patient not found",
+            "visitNotFound": "Visit not found",
+            "userNotFound": "User not found"
+        },
+        "conflict": {
+            "title": "Conflict",
+            "message": "The requested operation conflicts with existing data",
+            "emailExists": "An account with this email already exists",
+            "usernameExists": "This username is already taken",
+            "duplicateRecord": "A record with these details already exists"
+        },
+        "unauthorized": {
+            "title": "Authentication Required",
+            "message": "Please sign in to view statistics"
+        },
+        "organization": {
+            "title": "Organization Error",
+            "message": "Unable to identify your organization"
+        },
+        "fetchFailed": "Failed to fetch data",
+        "saveFailed": "Failed to save data",
+        "deleteFailed": "Failed to delete item",
+        "updateFailed": "Failed to update item",
+        "createFailed": "Failed to create item",
+        "emailCheck": "Failed to check email availability",
+        "nameCheck": "Failed to check username availability"
     }
 }

@@ -1,18 +1,48 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { prisma } from '@/prisma/prisma'
+import {
+  UserError,
+  ServerError,
+  NotFoundError,
+  ValidationError,
+  formatErrorResponse,
+  logError
+} from '@/utils/errorHandler'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'GET') return res.status(405).end()
+  if (req.method !== 'GET') {
+    return res.status(405).json(formatErrorResponse(new UserError('Method not allowed')))
+  }
+
   const { patientId } = req.query
 
-  if (!patientId) return res.status(400).json({ error: 'Missing patientId' })
-
   try {
+    // Validate patientId parameter
+    if (!patientId) {
+      throw new ValidationError('Patient ID is required')
+    }
+
+    const patientIdNum = Number(patientId)
+
+    if (isNaN(patientIdNum) || patientIdNum <= 0) {
+      throw new ValidationError('Invalid patient ID format')
+    }
+
+    // Check if patient exists
+    const patient = await prisma.patient.findUnique({
+      where: { id: patientIdNum },
+      select: { id: true }
+    })
+
+    if (!patient) {
+      throw new NotFoundError('Patient not found')
+    }
+
     // Get all lab test orders for the patient, ordered by date
     const orders = await prisma.lab_test_order.findMany({
       where: {
-        patient_id: Number(patientId),
+        patient_id: patientIdNum,
         status: {
           in: ['completed', 'pending'] // Include both completed and pending tests
         }
@@ -53,7 +83,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.status(200).json(results)
   } catch (error) {
-    console.error('Error fetching patient lab tests:', error)
-    res.status(500).json({ error: 'Failed to fetch patient lab tests' })
+    // Log error for debugging
+    logError(error, 'patient-lab-tests API')
+
+    // Handle different error types
+    if (error instanceof UserError || error instanceof ValidationError || error instanceof NotFoundError) {
+      return res.status(error.status).json(formatErrorResponse(error))
+    }
+
+    // Handle database-specific errors
+    if (
+      error instanceof Error &&
+      (error.message.includes('connect') || error.message.includes('database') || error.message.includes('prisma'))
+    ) {
+      const dbError = new ServerError('Database connection error')
+
+      return res.status(500).json(formatErrorResponse(dbError))
+    }
+
+    // Generic server error
+    const serverError = new ServerError()
+
+    return res.status(500).json(formatErrorResponse(serverError))
   }
 }

@@ -13,13 +13,15 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import { useTheme } from '@mui/material/styles'
 
 import { useTranslation } from '@/contexts/translationContext'
+import { useErrorHandler } from '@/hooks/useErrorHandler'
+import ErrorDisplay from '@/components/ErrorDisplay'
+import { UserError, ServerError, NotFoundError } from '@/utils/errorHandler'
 
 interface LabTestResult {
   id: number
@@ -60,52 +62,124 @@ const getStatusColor = (status: string): 'default' | 'info' | 'success' | 'error
 
 const PatientLabTests: React.FC<PatientLabTestsProps> = ({ patientId }) => {
   const [results, setResults] = useState<LabTestResult[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const theme = useTheme()
   const { t } = useTranslation()
 
+  const { error, isLoading, handleAsyncOperation, clearError } = useErrorHandler({
+    context: 'PatientLabTests',
+    showUserErrors: true,
+    showServerErrors: true
+  })
+
   useEffect(() => {
     const fetchLabTests = async () => {
-      try {
-        const res = await fetch(`/api/patient-lab-tests?patientId=${patientId}`)
+      await handleAsyncOperation(
+        async () => {
+          const res = await fetch(`/api/patient-lab-tests?patientId=${patientId}`)
 
-        if (!res.ok) throw new Error('Failed to fetch lab test results')
-        const data = await res.json()
+          if (!res.ok) {
+            // Handle different error scenarios
+            if (res.status === 404) {
+              throw new NotFoundError(t('errors.notFound.patientNotFound'))
+            } else if (res.status >= 400 && res.status < 500) {
+              throw new UserError(t('errors.fetchFailed'))
+            } else {
+              throw new ServerError()
+            }
+          }
 
-        setResults(data)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error fetching lab test results')
-      } finally {
-        setLoading(false)
-      }
+          const data = await res.json()
+
+          if (!Array.isArray(data)) {
+            throw new ServerError('Invalid data format received')
+          }
+
+          setResults(data)
+          return data
+        },
+        {
+          onSuccess: data => {
+            console.log('Lab tests loaded successfully:', data.length, 'results')
+          },
+          onError: error => {
+            console.error('Failed to load lab tests:', error)
+          }
+        }
+      )
     }
 
     fetchLabTests()
-  }, [patientId])
+  }, [patientId, handleAsyncOperation, t])
 
-  if (loading) {
+  // Show loading state
+  if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-        <CircularProgress />
-      </Box>
+      <Card>
+        <CardContent>
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+            <CircularProgress />
+          </Box>
+        </CardContent>
+      </Card>
     )
   }
 
+  // Show error state
   if (error) {
-    return <Alert severity='error'>{error}</Alert>
+    return (
+      <Card>
+        <CardContent>
+          <div className='flex items-center gap-3 mb-4'>
+            <i className='tabler-test-pipe text-xl text-primary' />
+            <Typography variant='h6'>{t('labTests.title')}</Typography>
+          </div>
+          <Divider className='mb-4' />
+          <ErrorDisplay
+            error={error}
+            onRetry={() => {
+              clearError()
+              // Re-fetch data
+              handleAsyncOperation(async () => {
+                const res = await fetch(`/api/patient-lab-tests?patientId=${patientId}`)
+                if (!res.ok) {
+                  if (res.status === 404) {
+                    throw new NotFoundError(t('errors.notFound.patientNotFound'))
+                  } else if (res.status >= 400 && res.status < 500) {
+                    throw new UserError(t('errors.fetchFailed'))
+                  } else {
+                    throw new ServerError()
+                  }
+                }
+                const data = await res.json()
+                setResults(data)
+                return data
+              })
+            }}
+            onDismiss={clearError}
+            showDetails={process.env.NODE_ENV === 'development'}
+          />
+        </CardContent>
+      </Card>
+    )
   }
 
+  // Show empty state
   if (results.length === 0) {
     return (
       <Card>
         <CardContent>
+          <div className='flex items-center gap-3 mb-4'>
+            <i className='tabler-test-pipe text-xl text-primary' />
+            <Typography variant='h6'>{t('labTests.title')}</Typography>
+          </div>
+          <Divider className='mb-4' />
           <Typography color='text.secondary'>{t('labTests.noResults')}</Typography>
         </CardContent>
       </Card>
     )
   }
 
+  // Show data
   return (
     <Card>
       <CardContent>
