@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
 
-import { prisma } from '@/prisma/prisma'
-import { formatDateToDDMMYYYY } from '@/utils/date'
+import {
+  getRadiologyOrdersByVisit,
+  createRadiologyOrders,
+  updateRadiologyOrder,
+  deleteRadiologyOrder
+} from '@/app/server/radiologyActions'
 
 export async function GET(request: Request) {
   try {
@@ -12,17 +16,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Visit ID is required' }, { status: 400 })
     }
 
-    const orders = await prisma.radiology_order.findMany({
-      where: {
-        visit_id: parseInt(visitId)
-      },
-      include: {
-        exam_type: true
-      },
-      orderBy: {
-        ordered_at: 'desc'
-      }
-    })
+    const orders = await getRadiologyOrdersByVisit(parseInt(visitId))
 
     return NextResponse.json(orders)
   } catch (error) {
@@ -45,54 +39,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'At least one order is required' }, { status: 400 })
     }
 
-    const visit = await prisma.patient_visit.findUnique({
-      where: { id: visit_id },
-      select: {
-        organisation_id: true,
-        patient_id: true,
-        doctor_id: true
-      }
-    })
+    const result = await createRadiologyOrders(visit_id, orders)
 
-    if (!visit) {
-      return NextResponse.json({ error: 'Visit not found' }, { status: 404 })
-    }
-
-    // Create all orders in a transaction
-    const createdOrders = await prisma.$transaction(
-      orders.map(order =>
-        prisma.radiology_order.create({
-          data: {
-            visit_id,
-            exam_type_id: order.exam_type_id,
-            notes: order.notes,
-            status: order.status || 'pending',
-            patient_id: visit.patient_id,
-            organisation_id: visit.organisation_id,
-            ordered_at: formatDateToDDMMYYYY(new Date()),
-            doctor_id: visit.doctor_id || undefined,
-            result: order.result || null,
-            result_date: order.result_date || null
-          },
-          include: {
-            exam_type: true
-          }
-        })
-      )
-    )
-
-    const updatedVisit = await prisma.patient_visit.findUnique({
-      where: { id: visit_id },
-      include: {
-        radiology_orders: {
-          include: {
-            exam_type: true
-          }
-        }
-      }
-    })
-
-    return NextResponse.json({ orders: createdOrders, visit: updatedVisit })
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error creating radiology orders:', error)
 
@@ -109,45 +58,15 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Valid order ID is required' }, { status: 400 })
     }
 
-    // Only update result_date if result is provided
-    const updateData: any = {
+    const result_data = await updateRadiologyOrder(id, {
       exam_type_id,
       notes,
       status,
-      result
-    }
-
-    if (result) {
-      // Convert YYYY-MM-DD to DD/MM/YYYY if result_date is provided, otherwise use current date
-      const [year, month, day] = (result_date || '').split('-')
-
-      updateData.result_date = result_date ? `${day}/${month}/${year}` : formatDateToDDMMYYYY(new Date())
-    }
-
-    const order = await prisma.radiology_order.update({
-      where: { id },
-      data: updateData,
-      include: {
-        exam_type: true
-      }
+      result,
+      result_date
     })
 
-    if (!order.visit_id) {
-      return NextResponse.json({ error: 'Visit ID not found' }, { status: 404 })
-    }
-
-    const visit = await prisma.patient_visit.findUnique({
-      where: { id: order.visit_id },
-      include: {
-        radiology_orders: {
-          include: {
-            exam_type: true
-          }
-        }
-      }
-    })
-
-    return NextResponse.json({ order, visit })
+    return NextResponse.json(result_data)
   } catch (error) {
     console.error('Error updating radiology order:', error)
 
@@ -165,39 +84,9 @@ export async function DELETE(request: Request) {
     }
 
     const orderId = parseInt(id)
+    const result = await deleteRadiologyOrder(orderId)
 
-    // Get the order to find the visit_id for updating the visit data
-    const order = await prisma.radiology_order.findUnique({
-      where: { id: orderId },
-      select: { visit_id: true }
-    })
-
-    if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-    }
-
-    // Delete the order
-    await prisma.radiology_order.delete({
-      where: { id: orderId }
-    })
-
-    // If the order was associated with a visit, fetch the updated visit data
-    if (order.visit_id) {
-      const updatedVisit = await prisma.patient_visit.findUnique({
-        where: { id: order.visit_id },
-        include: {
-          radiology_orders: {
-            include: {
-              exam_type: true
-            }
-          }
-        }
-      })
-
-      return NextResponse.json({ success: true, visit: updatedVisit })
-    }
-
-    return NextResponse.json({ success: true })
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error deleting radiology order:', error)
 

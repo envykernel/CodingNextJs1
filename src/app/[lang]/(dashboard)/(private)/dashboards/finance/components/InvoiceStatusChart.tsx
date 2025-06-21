@@ -10,7 +10,7 @@ import { useTheme } from '@mui/material/styles'
 import { useSession } from 'next-auth/react'
 
 import AppReactApexCharts from '@/libs/styles/AppReactApexCharts'
-import { getInvoiceStatusData } from '../actions'
+import { getInvoiceStatusData } from '@/app/server/financeActions'
 import { useTranslation } from '@/contexts/translationContext'
 
 const InvoiceStatusChart = () => {

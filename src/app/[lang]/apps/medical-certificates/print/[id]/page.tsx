@@ -1,10 +1,10 @@
 import { Typography, Divider, Grid } from '@mui/material'
 
 import { getDictionary } from '@/utils/getDictionary'
-import { prisma } from '@/prisma/prisma'
 import { TranslationProvider } from '@/contexts/translationContext'
 import type { Locale } from '@configs/i18n'
 import PrintButton from './PrintButton'
+import { getCertificate, type CertificateWithRelations } from '@/app/server/certificateActions'
 
 interface PrintCertificatePageProps {
   params: {
@@ -24,39 +24,8 @@ function formatDate(date: string | Date) {
   return `${year}-${month}-${day}`
 }
 
-async function getCertificate(id: string) {
-  const certificate = await prisma.certificate.findUnique({
-    where: { id: parseInt(id) },
-    include: {
-      patient: true,
-      doctor: true,
-      organisation: {
-        select: {
-          id: true,
-          name: true,
-          address: true,
-          city: true,
-          phone_number: true,
-          email: true,
-          has_pre_printed_header: true,
-          has_pre_printed_footer: true,
-          header_height: true,
-          footer_height: true
-        }
-      },
-      template: true
-    }
-  })
-
-  if (!certificate) {
-    throw new Error('Certificate not found')
-  }
-
-  return certificate
-}
-
 // Restore the original GeneratedHeader
-function GeneratedHeader({ organisation }: { organisation: any }) {
+function GeneratedHeader({ organisation }: { organisation: CertificateWithRelations['organisation'] }) {
   return (
     <div className='w-full'>
       <div className='max-w-4xl mx-auto'>
@@ -122,7 +91,7 @@ function GeneratedHeader({ organisation }: { organisation: any }) {
 }
 
 // Generated footer component
-function GeneratedFooter({ organisation }: { organisation: any }) {
+function GeneratedFooter({ organisation }: { organisation: CertificateWithRelations['organisation'] }) {
   return (
     <div className='w-full p-1 border-t border-gray-200 mt-auto relative print:p-2 print:bg-white print:border-t print:border-gray-200 print:text-xs print:leading-tight'>
       <div className='grid grid-cols-2 gap-1 items-center justify-between print:max-w-full print:m-0'>

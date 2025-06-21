@@ -21,7 +21,7 @@ import { useSession } from 'next-auth/react'
 import { useTranslation } from '@/contexts/translationContext'
 
 // Component Imports
-import { getPaymentTrendsData } from '../actions'
+import { getPaymentTrendsData } from '@/app/server/financeActions'
 
 // Type Imports
 import type { PeriodType, ComparisonType } from '@/app/[lang]/(dashboard)/(private)/dashboards/finance/types'

@@ -17,43 +17,17 @@ import Grid from '@mui/material/Grid2'
 import { getServerSession } from 'next-auth'
 
 import FinanceCharts from './components/FinanceCharts'
-import { prisma } from '@/prisma/prisma'
 import { authOptions } from '@/libs/auth'
 import PaymentTrends from './components/PaymentTrends'
 import FinanceStatistics from './components/FinanceStatistics'
+import { getPaymentMethodsData } from '@/app/server/financeActions'
 
 const FinanceDashboard = async () => {
   const session = await getServerSession(authOptions)
   const userOrgId = Number(session?.user?.organisationId)
 
-  // Get payments data for the organization
-  const payments = await prisma.payment.findMany({
-    where: {
-      organisation_id: userOrgId
-    },
-    orderBy: {
-      payment_date: 'desc'
-    }
-  })
-
-  // Group payments by payment method
-  const paymentMethodsMap = payments.reduce(
-    (acc, payment) => {
-      const method = payment.payment_method
-      const amount = Number(payment.amount)
-
-      acc[method] = (acc[method] || 0) + amount
-
-      return acc
-    },
-    {} as Record<string, number>
-  )
-
-  // Prepare data for payment methods chart
-  const paymentMethodsData = {
-    series: Object.values(paymentMethodsMap),
-    labels: Object.keys(paymentMethodsMap).map(method => method.replace('_', ' '))
-  }
+  // Get payment methods data for the organization
+  const paymentMethodsData = await getPaymentMethodsData(userOrgId)
 
   return (
     <Grid container spacing={6}>

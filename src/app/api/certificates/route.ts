@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/libs/auth'
-import { prisma } from '@/prisma/prisma'
+import { getCertificatesByOrganisation, createCertificateWithTemplate } from '@/app/server/certificateActions'
 
 // GET /api/certificates
 export async function GET() {
@@ -16,41 +16,7 @@ export async function GET() {
 
     const organisationId = parseInt(session.user.organisationId)
 
-    const certificates = await prisma.certificate.findMany({
-      where: {
-        organisationId
-      },
-      include: {
-        patient: {
-          select: {
-            id: true,
-            name: true,
-            birthdate: true
-          }
-        },
-        doctor: {
-          select: {
-            id: true,
-            name: true
-          }
-        },
-        organisation: {
-          select: {
-            id: true,
-            name: true
-          }
-        },
-        template: {
-          select: {
-            code: true,
-            name: true
-          }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
+    const certificates = await getCertificatesByOrganisation(organisationId)
 
     return NextResponse.json({ certificates })
   } catch (error) {
@@ -69,90 +35,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { patientId, type, notes, content, doctorId } = await request.json()
-
-    if (!patientId || !type || !doctorId) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-    }
-
+    const body = await request.json()
     const organisationId = parseInt(session.user.organisationId)
 
-    // Get the template
-    const template = await prisma.certificateTemplate.findFirst({
-      where: {
-        code: type,
-        isActive: true,
-        OR: [
-          { organisationId: null }, // Shared templates
-          { organisationId } // Organization-specific templates
-        ]
-      }
-    })
-
-    if (!template) {
-      return NextResponse.json({ error: 'Template not found' }, { status: 404 })
-    }
-
-    // Verify the doctor exists and belongs to the organization
-    const doctor = await prisma.doctor.findFirst({
-      where: {
-        id: parseInt(doctorId),
-        organisation_id: organisationId
-      }
-    })
-
-    if (!doctor) {
-      return NextResponse.json(
-        {
-          error: 'Doctor not found',
-          details: 'The selected doctor was not found in your organization.'
-        },
-        { status: 404 }
-      )
-    }
-
-    // Generate a unique certificate number
-    const certificateNumber = `CERT-${Date.now()}-${Math.floor(Math.random() * 1000)}`
-
-    // Create the certificate with the content
-    const certificate = await prisma.certificate.create({
-      data: {
-        templateId: template.id,
-        organisationId,
-        patientId: parseInt(patientId),
-        doctorId: doctor.id,
-        certificateNumber,
-        status: 'draft',
-        content,
-        notes: notes || ''
-      },
-      include: {
-        patient: {
-          select: {
-            id: true,
-            name: true,
-            birthdate: true
-          }
-        },
-        doctor: {
-          select: {
-            id: true,
-            name: true
-          }
-        },
-        organisation: {
-          select: {
-            id: true,
-            name: true
-          }
-        },
-        template: {
-          select: {
-            code: true,
-            name: true
-          }
-        }
-      }
+    const certificate = await createCertificateWithTemplate({
+      ...body,
+      organisationId
     })
 
     return NextResponse.json(certificate)

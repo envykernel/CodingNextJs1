@@ -21,7 +21,7 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 
 import AppReactApexCharts from '@/libs/styles/AppReactApexCharts'
-import { getServiceRevenueData } from '../actions'
+import { getServiceRevenueData } from '@/app/server/financeActions'
 import { useTranslation } from '@/contexts/translationContext'
 
 type ServiceRevenue = {

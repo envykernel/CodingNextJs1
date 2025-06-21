@@ -970,3 +970,41 @@ export async function getFinanceStatistics(organisationId: number) {
     throw new Error('Failed to fetch finance statistics')
   }
 }
+
+export async function getPaymentMethodsData(organisationId: number) {
+  try {
+    // Get payments data for the organization
+    const payments = await prisma.payment.findMany({
+      where: {
+        organisation_id: organisationId
+      },
+      orderBy: {
+        payment_date: 'desc'
+      }
+    })
+
+    // Group payments by payment method
+    const paymentMethodsMap = payments.reduce(
+      (acc, payment) => {
+        const method = payment.payment_method
+        const amount = Number(payment.amount)
+
+        acc[method] = (acc[method] || 0) + amount
+
+        return acc
+      },
+      {} as Record<string, number>
+    )
+
+    // Prepare data for payment methods chart
+    const paymentMethodsData = {
+      series: Object.values(paymentMethodsMap),
+      labels: Object.keys(paymentMethodsMap).map(method => method.replace('_', ' '))
+    }
+
+    return paymentMethodsData
+  } catch (error) {
+    console.error('Error in getPaymentMethodsData:', error)
+    throw new Error('Failed to fetch payment methods data')
+  }
+}

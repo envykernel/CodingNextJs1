@@ -13,171 +13,16 @@ import {
 } from '@mui/material'
 
 import { getDictionary } from '@/utils/getDictionary'
-import { prisma } from '@/prisma/prisma'
 import { TranslationProvider } from '@/contexts/translationContext'
 import type { Locale } from '@configs/i18n'
 import { formatDate } from '@/utils/formatDate'
 import PrintButton from './PrintButton'
+import { getRadiologyOrder, type RadiologyOrderWithGrouping } from '@/app/server/radiologyActions'
 
 interface PrintRadiologyPageProps {
   params: {
     id: string
     lang: Locale
-  }
-}
-
-interface RadiologyOrderItem {
-  id: number
-  patient_id: number
-  visit_id: number | null
-  doctor_id: number | null
-  exam_type_id: number
-  organisation_id: number
-  ordered_at: Date | null
-  status: string | null
-  result: string | null
-  result_date: Date | null
-  notes: string | null
-  exam_type: {
-    id: number
-    name: string
-    category: string | null
-  }
-}
-
-interface RadiologyOrderWithGrouping {
-  id: number
-  patient_id: number
-  visit_id: number | null
-  doctor_id: number | null
-  exam_type_id: number
-  organisation_id: number
-  ordered_at: Date | null
-  status: string | null
-  result: string | null
-  result_date: Date | null
-  notes: string | null
-  patient: {
-    id: number
-    name: string
-    birthdate: Date
-    gender: string
-  }
-  doctor: {
-    id: number
-    name: string
-  } | null
-  organisation: {
-    id: number
-    name: string
-    address: string | null
-    city: string | null
-    phone_number: string | null
-    email: string | null
-    has_pre_printed_header: boolean
-    has_pre_printed_footer: boolean
-    header_height: number | null
-    footer_height: number | null
-  }
-  visit: {
-    id: number
-  } | null
-  exam_type: {
-    id: number
-    name: string
-  }
-  items: RadiologyOrderItem[]
-  groupedItems: Record<string, RadiologyOrderItem[]>
-}
-
-async function getRadiologyOrder(id: string) {
-  // First get the current radiology order to get the visit_id
-  const currentRadiologyOrder = await prisma.radiology_order.findUnique({
-    where: { id: parseInt(id) },
-    include: {
-      patient: true,
-      doctor: true,
-      organisation: {
-        select: {
-          id: true,
-          name: true,
-          address: true,
-          city: true,
-          phone_number: true,
-          email: true,
-          has_pre_printed_header: true,
-          has_pre_printed_footer: true,
-          header_height: true,
-          footer_height: true
-        }
-      },
-      visit: true,
-      exam_type: {
-        select: {
-          id: true,
-          name: true,
-          category: true
-        }
-      }
-    }
-  })
-
-  if (!currentRadiologyOrder) {
-    throw new Error('Radiology order not found')
-  }
-
-  // If there's a visit_id, get all radiology orders for this visit
-  if (currentRadiologyOrder.visit_id) {
-    const allRadiologyOrders = await prisma.radiology_order.findMany({
-      where: {
-        visit_id: currentRadiologyOrder.visit_id,
-        patient_id: currentRadiologyOrder.patient_id
-      },
-      include: {
-        exam_type: {
-          select: {
-            id: true,
-            name: true,
-            category: true
-          }
-        }
-      },
-      orderBy: [{ exam_type: { category: 'asc' } }, { ordered_at: 'asc' }]
-    })
-
-    // Group the orders by category
-    const groupedOrders = allRadiologyOrders.reduce(
-      (acc, order) => {
-        const category = order.exam_type.category || 'Non catégorisé'
-
-        if (!acc[category]) {
-          acc[category] = []
-        }
-
-        acc[category].push(order)
-
-        return acc
-      },
-      {} as Record<string, typeof allRadiologyOrders>
-    )
-
-    // Return the current order with grouped orders
-    return {
-      ...currentRadiologyOrder,
-      items: allRadiologyOrders,
-      groupedItems: groupedOrders
-    }
-  }
-
-  // If no visit_id, just return the single order
-  const category = currentRadiologyOrder.exam_type.category || 'Non catégorisé'
-
-  return {
-    ...currentRadiologyOrder,
-    items: [currentRadiologyOrder],
-    groupedItems: {
-      [category]: [currentRadiologyOrder]
-    }
   }
 }
 
@@ -198,17 +43,25 @@ function GeneratedHeader({
             <div>
               <Typography
                 variant='h4'
-                className='font-medium text-gray-900 tracking-tight print:text-xl font-sans'
+                className='text-2xl font-bold text-gray-900 print:text-xl print:font-bold print:text-gray-900 font-sans'
                 sx={{ fontFamily: 'inherit' }}
               >
                 {organisation.name}
               </Typography>
-              {doctor && (
-                <Typography variant='subtitle1' className='text-gray-600 mt-1'>
+            </div>
+
+            {/* Doctor info on the right */}
+            {doctor && (
+              <div className='text-right'>
+                <Typography
+                  variant='h6'
+                  className='text-lg font-semibold text-gray-800 print:text-base print:font-semibold print:text-gray-800 font-sans'
+                  sx={{ fontFamily: 'inherit' }}
+                >
                   Dr. {doctor.name}
                 </Typography>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Bottom row: Address and contact info */}
@@ -286,7 +139,7 @@ function GeneratedFooter({ organisation }: { organisation: RadiologyOrderWithGro
 }
 
 export default async function PrintRadiologyPage({ params }: PrintRadiologyPageProps) {
-  const radiologyOrder = (await getRadiologyOrder(params.id)) as RadiologyOrderWithGrouping
+  const radiologyOrder = await getRadiologyOrder(params.id)
   const dictionary = await getDictionary(params.lang)
   const formattedDate = formatDate(radiologyOrder.ordered_at)
 

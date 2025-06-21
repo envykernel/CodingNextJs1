@@ -32,7 +32,7 @@ import TableSortLabel from '@mui/material/TableSortLabel'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 
-import { getMonthlyRevenueData } from '../actions'
+import { getMonthlyRevenueData } from '@/app/server/financeActions'
 import { useTranslation } from '@/contexts/translationContext'
 import { formatDateToDDMMYYYY } from '@/utils/date'
 

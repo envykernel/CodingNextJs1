@@ -3,10 +3,10 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/libs/auth'
-import { prisma } from '@/prisma/prisma'
+import { getCertificateTemplatesByOrganisation } from '@/app/server/certificateActions'
 
 // GET /api/certificates/templates
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
 
@@ -17,27 +17,7 @@ export async function GET(request: Request) {
     const organisationId = parseInt(session.user.organisationId)
 
     // Fetch templates that are either shared (organisationId is null) or specific to this organization
-    const templates = await prisma.certificateTemplate.findMany({
-      where: {
-        isActive: true,
-        OR: [
-          { organisationId: null }, // Shared templates
-          { organisationId } // Organization-specific templates
-        ]
-      },
-      select: {
-        id: true,
-        code: true,
-        name: true,
-        description: true,
-        category: true,
-        contentTemplate: true,
-        variablesSchema: true
-      },
-      orderBy: {
-        category: 'asc'
-      }
-    })
+    const templates = await getCertificateTemplatesByOrganisation(organisationId)
 
     return NextResponse.json({ templates })
   } catch (error) {

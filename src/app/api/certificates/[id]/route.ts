@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/libs/auth'
-import { prisma } from '@/prisma/prisma'
+import { deleteCertificate, verifyCertificateAccess } from '@/app/server/certificateActions'
 
 // DELETE /api/certificates/[id]
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -19,23 +19,14 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     const organisationId = parseInt(session.user.organisationId)
 
     // Check if the certificate exists and belongs to the organization
-    const certificate = await prisma.certificate.findFirst({
-      where: {
-        id: certificateId,
-        organisationId
-      }
-    })
+    const hasAccess = await verifyCertificateAccess(certificateId, organisationId)
 
-    if (!certificate) {
+    if (!hasAccess) {
       return NextResponse.json({ error: 'Certificate not found' }, { status: 404 })
     }
 
     // Delete the certificate
-    await prisma.certificate.delete({
-      where: {
-        id: certificateId
-      }
-    })
+    await deleteCertificate(certificateId)
 
     return NextResponse.json({ success: true })
   } catch (error) {

@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server'
 
-import { prisma } from '@/prisma/prisma'
+import { getRadiologyExamTypes } from '@/app/server/radiologyActions'
 
 export async function GET() {
   try {
     console.log('Fetching radiology exam types...')
 
-    const examTypes = await prisma.radiology_exam_type.findMany({
-      orderBy: {
-        name: 'asc'
-      }
-    })
+    const examTypes = await getRadiologyExamTypes()
 
     console.log('Found exam types:', examTypes.length)
 

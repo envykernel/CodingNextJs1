@@ -22,7 +22,7 @@ import { useTranslation } from '@/contexts/translationContext'
 
 import type { ThemeColor } from '@core/types'
 import FinanceHorizontalWithCircleIcon from './FinanceHorizontalWithCircleIcon'
-import { getFinanceStatistics } from '../actions'
+import { getFinanceStatistics } from '@/app/server/financeActions'
 
 type StatisticsData = {
   totalInvoiced: number
