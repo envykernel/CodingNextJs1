@@ -1,11 +1,11 @@
 import { Typography, Divider, Grid } from '@mui/material'
 
 import { getDictionary } from '@/utils/getDictionary'
-import { prisma } from '@/prisma/prisma'
 import { TranslationProvider } from '@/contexts/translationContext'
 import type { Locale } from '@configs/i18n'
 import { formatDate } from '@/utils/formatDate'
 import PrintButton from '@/app/[lang]/apps/prescriptions/print/[id]/PrintButton'
+import { getPrescription, type PrescriptionWithRelations } from '@/app/server/prescriptionActions'
 
 interface PrintPrescriptionPageProps {
   params: {
@@ -14,40 +14,8 @@ interface PrintPrescriptionPageProps {
   }
 }
 
-async function getPrescription(id: string) {
-  const prescription = await prisma.prescription.findUnique({
-    where: { id: parseInt(id) },
-    include: {
-      patient: true,
-      doctor: true,
-      organisation: {
-        select: {
-          id: true,
-          name: true,
-          address: true,
-          city: true,
-          phone_number: true,
-          email: true,
-          has_pre_printed_header: true,
-          has_pre_printed_footer: true,
-          header_height: true,
-          footer_height: true
-        }
-      },
-      lines: true,
-      visit: true
-    }
-  })
-
-  if (!prescription) {
-    throw new Error('Prescription not found')
-  }
-
-  return prescription
-}
-
 // Generated header component
-function GeneratedHeader({ organisation }: { organisation: any }) {
+function GeneratedHeader({ organisation }: { organisation: PrescriptionWithRelations['organisation'] }) {
   return (
     <div className='w-full'>
       <div className='max-w-4xl mx-auto'>
@@ -117,7 +85,7 @@ function GeneratedHeader({ organisation }: { organisation: any }) {
 }
 
 // Generated footer component
-function GeneratedFooter({ organisation }: { organisation: any }) {
+function GeneratedFooter({ organisation }: { organisation: PrescriptionWithRelations['organisation'] }) {
   return (
     <div className='w-full p-1 border-t border-gray-200 mt-auto relative print:p-2 print:bg-white print:border-t print:border-gray-200 print:text-xs print:leading-tight'>
       <div className='grid grid-cols-2 gap-1 items-center justify-between print:max-w-full print:m-0'>

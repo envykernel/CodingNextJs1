@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/libs/auth'
-import { prisma } from '@/prisma/prisma'
+import { getInvoicesByPatient } from '@/app/server/invoiceActions'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -21,25 +21,27 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Invalid patient ID' }, { status: 400 })
     }
 
-    // Get all invoices for the patient
-    const invoices = await prisma.invoice.findMany({
-      where: {
-        patient_id: patientId,
-        organisation_id: session.user.organisationId ? parseInt(session.user.organisationId) : undefined,
-        record_status: 'ACTIVE'
-      },
-      orderBy: {
+    // Get all invoices for the patient using the action
+    const organisationId = session.user.organisationId ? parseInt(session.user.organisationId) : undefined
+
+    const invoices = await getInvoicesByPatient(
+      patientId,
+      {
         invoice_date: 'desc'
-      }
-    })
+      },
+      organisationId
+    )
+
+    // Filter for active invoices only
+    const activeInvoices = invoices.filter(invoice => invoice.record_status === 'ACTIVE')
 
     // Format the response
-    const formattedInvoices = invoices.map(invoice => ({
+    const formattedInvoices = activeInvoices.map(invoice => ({
       id: invoice.id,
       invoiceNumber: invoice.invoice_number,
       invoiceDate: invoice.invoice_date.toISOString(),
       dueDate: invoice.due_date ? invoice.due_date.toISOString() : null,
-      totalAmount: parseFloat(invoice.total_amount.toString()),
+      totalAmount: invoice.total_amount,
       paymentStatus: invoice.payment_status,
       recordStatus: invoice.record_status,
       notes: invoice.notes
@@ -47,6 +49,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(formattedInvoices)
   } catch (error) {
+    console.error('Error fetching patient invoices:', error)
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

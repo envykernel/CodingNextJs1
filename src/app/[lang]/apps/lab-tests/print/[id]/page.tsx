@@ -13,11 +13,11 @@ import {
 } from '@mui/material'
 
 import { getDictionary } from '@/utils/getDictionary'
-import { prisma } from '@/prisma/prisma'
 import { TranslationProvider } from '@/contexts/translationContext'
 import type { Locale } from '@configs/i18n'
 import { formatDate } from '@/utils/formatDate'
 import PrintButton from './PrintButton'
+import { getLabTestOrder, type LabTestOrderWithGrouping } from '@/app/server/labTestActions'
 
 interface PrintLabTestPageProps {
   params: {
@@ -26,170 +26,8 @@ interface PrintLabTestPageProps {
   }
 }
 
-type LabTestOrderItem = {
-  id: number
-  patient_id: number
-  visit_id: number | null
-  doctor_id: number | null
-  test_type_id: number
-  organisation_id: number
-  ordered_at: Date | null
-  result_value: string | null
-  result_unit: string | null
-  reference_range: string | null
-  status: string | null
-  notes: string | null
-  result_flag: string | null
-  test_type: {
-    id: number
-    name: string
-    category: string | null
-    default_unit: string | null
-    default_reference_range: string | null
-    created_at: Date | null
-    updated_at: Date | null
-  }
-}
-
-interface LabTestOrderWithGrouping {
-  id: number
-  patient_id: number
-  visit_id: number | null
-  doctor_id: number | null
-  test_type_id: number
-  organisation_id: number
-  ordered_at: Date | null
-  result_value: string | null
-  result_unit: string | null
-  reference_range: string | null
-  status: string | null
-  notes: string | null
-  result_flag: string | null
-  patient: {
-    id: number
-    name: string
-    birthdate: Date
-    gender: string
-
-    // ... other patient fields
-  }
-  doctor: {
-    id: number
-    name: string
-
-    // ... other doctor fields
-  } | null
-  organisation: {
-    id: number
-    name: string
-    address: string | null
-    city: string | null
-    phone_number: string | null
-    email: string | null
-    has_pre_printed_header: boolean
-    has_pre_printed_footer: boolean
-    header_height: number | null
-    footer_height: number | null
-  }
-  test_type: {
-    id: number
-    name: string
-    category: string | null
-    default_unit: string | null
-    default_reference_range: string | null
-    created_at: Date | null
-    updated_at: Date | null
-  }
-  visit: {
-    id: number
-
-    // ... other visit fields
-  } | null
-  items: LabTestOrderItem[]
-  groupedItems: Record<string, LabTestOrderItem[]>
-}
-
-async function getLabTestOrder(id: string) {
-  // First get the current lab test order to get the visit_id
-  const currentLabTestOrder = await prisma.lab_test_order.findUnique({
-    where: { id: parseInt(id) },
-    include: {
-      patient: true,
-      doctor: true,
-      organisation: {
-        select: {
-          id: true,
-          name: true,
-          address: true,
-          city: true,
-          phone_number: true,
-          email: true,
-          has_pre_printed_header: true,
-          has_pre_printed_footer: true,
-          header_height: true,
-          footer_height: true
-        }
-      },
-      test_type: true,
-      visit: true
-    }
-  })
-
-  if (!currentLabTestOrder) {
-    throw new Error('Lab test order not found')
-  }
-
-  // If there's a visit_id, get all lab test orders for this visit
-  if (currentLabTestOrder.visit_id) {
-    const allLabTestOrders = await prisma.lab_test_order.findMany({
-      where: {
-        visit_id: currentLabTestOrder.visit_id,
-        patient_id: currentLabTestOrder.patient_id
-      },
-      include: {
-        test_type: true
-      },
-      orderBy: [{ test_type: { category: 'asc' } }, { ordered_at: 'asc' }]
-    })
-
-    // Group the orders by category
-    const groupedOrders = allLabTestOrders.reduce(
-      (acc, order) => {
-        const category = order.test_type.category || 'Non catégorisé'
-
-        if (!acc[category]) {
-          acc[category] = []
-        }
-
-        acc[category].push(order)
-
-        return acc
-      },
-      {} as Record<string, typeof allLabTestOrders>
-    )
-
-    // Return the current order with grouped orders
-    return {
-      ...currentLabTestOrder,
-      items: allLabTestOrders,
-      groupedItems: groupedOrders
-    }
-  }
-
-  // If no visit_id, just return the single order
-  const category = currentLabTestOrder.test_type.category || 'Non catégorisé'
-
-  return {
-    ...currentLabTestOrder,
-    items: [currentLabTestOrder],
-    groupedItems: {
-      [category]: [currentLabTestOrder]
-    }
-  }
-}
-
 // Generated header component
-function GeneratedHeader({ organisation }: { organisation: any }) {
+function GeneratedHeader({ organisation }: { organisation: LabTestOrderWithGrouping['organisation'] }) {
   return (
     <div className='w-full'>
       <div className='max-w-4xl mx-auto'>
@@ -259,7 +97,7 @@ function GeneratedHeader({ organisation }: { organisation: any }) {
 }
 
 // Generated footer component
-function GeneratedFooter({ organisation }: { organisation: any }) {
+function GeneratedFooter({ organisation }: { organisation: LabTestOrderWithGrouping['organisation'] }) {
   return (
     <div className='w-full p-1 border-t border-gray-200 mt-auto relative print:p-2 print:bg-white print:border-t print:border-gray-200 print:text-xs print:leading-tight'>
       <div className='grid grid-cols-2 gap-1 items-center justify-between print:max-w-full print:m-0'>
@@ -288,7 +126,7 @@ function GeneratedFooter({ organisation }: { organisation: any }) {
 }
 
 export default async function PrintLabTestPage({ params }: PrintLabTestPageProps) {
-  const labTestOrder = (await getLabTestOrder(params.id)) as LabTestOrderWithGrouping
+  const labTestOrder = await getLabTestOrder(params.id)
   const dictionary = await getDictionary(params.lang)
   const formattedDate = formatDate(labTestOrder.ordered_at)
 

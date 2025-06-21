@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/libs/auth'
 import { prisma } from '@/prisma/prisma'
+import { createPrescription, updatePrescription } from '@/app/server/prescriptionActions'
 import {
   UserError,
   ServerError,
@@ -14,6 +15,13 @@ import {
   formatErrorResponse,
   logError
 } from '@/utils/errorHandler'
+
+// Helper function to check for existing prescription
+async function getExistingPrescription(visitId: number) {
+  return await prisma.prescription.findFirst({
+    where: { visit_id: visitId }
+  })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -56,64 +64,44 @@ export async function POST(request: NextRequest) {
     // Check if a prescription already exists for this visit
     console.log('Checking for existing prescription')
 
-    const existingPrescription = await prisma.prescription.findFirst({
-      where: { visit_id }
-    })
+    const existingPrescription = await getExistingPrescription(visit_id)
 
     if (existingPrescription) {
       console.log('Found existing prescription:', existingPrescription.id)
 
-      // Update existing prescription
-      // Delete all existing lines
-      console.log('Deleting existing prescription lines')
-      await prisma.prescription_line.deleteMany({
-        where: { prescription_id: existingPrescription.id }
-      })
+      // Update existing prescription using the action
+      const lines = medications.map((med: any) => ({
+        drug_name: med.name,
+        dosage: med.dosage,
+        frequency: med.frequency,
+        duration: med.duration,
+        instructions: med.notes
+      }))
 
-      // Create new lines
-      console.log('Creating new prescription lines')
-      await prisma.prescription_line.createMany({
-        data: medications.map((med: any) => ({
-          prescription_id: existingPrescription.id,
-          drug_name: med.name,
-          dosage: med.dosage,
-          frequency: med.frequency,
-          duration: med.duration,
-          instructions: med.notes
-        }))
-      })
-
-      // Update prescription main fields
-      console.log('Updating prescription notes')
-      await prisma.prescription.update({
-        where: { id: existingPrescription.id },
-        data: { notes }
-      })
+      await updatePrescription(existingPrescription.id, { notes, lines })
       console.log('Prescription updated successfully')
     } else {
       console.log('No existing prescription found, creating new one')
 
-      // Create new prescription
-      const newPrescription = await prisma.prescription.create({
-        data: {
-          visit_id,
-          doctor_id: visit.doctor_id!,
-          organisation_id: visit.organisation_id,
-          patient_id: visit.patient_id,
-          notes,
-          lines: {
-            create: medications.map((med: any) => ({
-              drug_name: med.name,
-              dosage: med.dosage,
-              frequency: med.frequency,
-              duration: med.duration,
-              instructions: med.notes
-            }))
-          }
-        }
+      // Create new prescription using the action
+      const lines = medications.map((med: any) => ({
+        drug_name: med.name,
+        dosage: med.dosage,
+        frequency: med.frequency,
+        duration: med.duration,
+        instructions: med.notes
+      }))
+
+      await createPrescription({
+        visit_id,
+        doctor_id: visit.doctor_id!,
+        organisation_id: visit.organisation_id,
+        patient_id: visit.patient_id,
+        notes,
+        lines
       })
 
-      console.log('New prescription created successfully:', newPrescription.id)
+      console.log('New prescription created successfully')
     }
 
     return NextResponse.json({ success: true })

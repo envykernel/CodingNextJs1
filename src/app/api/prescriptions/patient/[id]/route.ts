@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/libs/auth'
-import { prisma } from '@/prisma/prisma'
+import { getPrescriptionsByPatient } from '@/app/server/prescriptionActions'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -21,33 +21,16 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Invalid patient ID' }, { status: 400 })
     }
 
-    // Get all prescriptions for the patient
-    const prescriptions = await prisma.prescription.findMany({
-      where: {
-        patient_id: patientId,
-        organisation_id: session.user.organisationId ? parseInt(session.user.organisationId) : undefined
-      },
-      include: {
-        doctor: {
-          select: {
-            id: true,
-            name: true,
-            specialty: true
-          }
-        },
-        lines: true,
-        visit: {
-          select: {
-            id: true,
-            visit_date: true,
-            appointment_id: true
-          }
-        }
-      },
-      orderBy: {
+    // Get all prescriptions for the patient using the action
+    const organisationId = session.user.organisationId ? parseInt(session.user.organisationId) : undefined
+
+    const prescriptions = await getPrescriptionsByPatient(
+      patientId,
+      {
         created_at: 'desc'
-      }
-    })
+      },
+      organisationId
+    )
 
     // Format the response
     const formattedPrescriptions = prescriptions.map(prescription => {
